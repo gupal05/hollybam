@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hollybam.hollybam.dao.IF_SignupDao">
+
+    <!-- 사용자 아이디 중복확인 -->
+    <select id="dupCheckId" resultType="int" parameterType="String">
+        SELECT COUNT(*) FROM member WHERE mem_id = #{id}
+    </select>
+
+    <!-- 회원 정보 ins -->
+    <insert id="signup" parameterType="com.hollybam.hollybam.dto.MemberDto">
+        INSERT INTO member (mem_id, mem_pw, mem_name, mem_addr, mem_zip, mem_phone, mem_mail, mem_birth, mem_gender)
+        VALUES (#{memberId}, #{memberPw}, #{memberName}, #{memberAddr}, #{memberZip}, #{memberPhone}, #{memberMail}, #{memberBirth}, #{memberGender})
+    </insert>
+
+    <select id="login" parameterType="com.hollybam.hollybam.dto.MemberDto" resultType="int">
+        select count(*) from member where mem_id = #{memberid} and mem_pw = #{memberPw}
+    </select>
+
+    <select id="getMemberInfo" parameterType="String" resultType="com.hollybam.hollybam.dto.MemberDto">
+        select mem_code as memberCode, mem_name as memberName, mem_id as memberId, mem_pw as memberPw, mem_addr as memberAddr, mem_zip as memberZip, mem_phone as memberPhone, mem_mail as memberMail, mem_birth as memberBirth, mem_gender as memberGender, create_at as createAt, update_at as updateAt
+        from member
+        where mem_id = #{memberId}
+    </select>
+
+
+</mapper>

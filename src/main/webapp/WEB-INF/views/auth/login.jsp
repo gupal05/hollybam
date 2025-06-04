@@ -1,0 +1,527 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HollyBam - 로그인</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+
+    <!-- header.css 외부 CSS 파일 포함 -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css"/>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            color: #333;
+        }
+
+        /* 브레드크럼 */
+        .breadcrumb {
+            background: white;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .breadcrumb-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #333;
+        }
+
+        /* 메인 컨테이너 */
+        .main-container {
+            max-width: 500px;
+            margin: 60px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* 헤더 */
+        .login-header {
+            text-align: center;
+            padding: 40px 20px 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 400;
+            color: #333;
+            margin: 0;
+        }
+
+        /* 소셜 로그인 */
+        .social-login {
+            padding: 30px 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .social-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+        }
+
+        .social-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .social-btn.kakao {
+            background: #fee500;
+            border-color: #fee500;
+            color: #000;
+        }
+
+        .social-btn.naver {
+            background: #03c75a;
+            border-color: #03c75a;
+            color: white;
+        }
+
+        .social-btn.google {
+            border-color: #dadce0;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* 로그인 폼 */
+        .login-form {
+            padding: 30px 40px 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-input::placeholder {
+            color: #9aa0a6;
+        }
+
+        /* 로그인 옵션 */
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #333;
+        }
+
+        .remember-me label {
+            color: #666;
+            cursor: pointer;
+        }
+
+        .forgot-links {
+            display: flex;
+            gap: 8px;
+            color: #666;
+        }
+
+        .forgot-links a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .forgot-links a:hover {
+            color: #333;
+            text-decoration: underline;
+        }
+
+        .forgot-links span {
+            color: #ccc;
+        }
+
+        /* 로그인 버튼 */
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            background: #555;
+        }
+
+        .login-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 회원가입 링크 */
+        .signup-link {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .signup-link a {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* 구분선 */
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 25px 0;
+            color: #666;
+            font-size: 14px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 에러 메시지 */
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fdf2f2;
+            border: 1px solid #fecaca;
+            border-radius: 4px;
+            display: none;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 20px;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .social-login,
+            .login-form {
+                padding: 20px;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+            }
+
+            .login-options {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .login-btn {
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+<!-- header -->
+<jsp:include page="../layout/header.jsp"></jsp:include>
+<div style="height: 105.8px;"></div>
+
+<!-- 메인 컨테이너 -->
+<div class="main-container">
+    <!-- 헤더 -->
+    <div class="login-header">
+        <h1 class="login-title">로그인</h1>
+    </div>
+
+    <!-- 소셜 로그인 -->
+    <div class="social-login">
+        <div class="social-title">간편 로그인</div>
+        <div class="social-buttons">
+            <button class="social-btn kakao" onclick="socialLogin('kakao')">
+                <span>카카오</span>
+            </button>
+            <button class="social-btn naver" onclick="socialLogin('naver')">
+                <span>네이버</span>
+            </button>
+        </div>
+        <button class="social-btn google" onclick="socialLogin('google')">
+            <span>Google</span>
+        </button>
+    </div>
+
+    <!-- 로그인 폼 -->
+    <div class="login-form">
+        <div class="divider">
+            <span>또는</span>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="memberId">아이디</label>
+                <input type="text" id="memberId" name="memberId" class="form-input"
+                       placeholder="아이디를 입력하세요" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="memberPw">비밀번호</label>
+                <input type="password" id="memberPw" name="memberPw" class="form-input"
+                       placeholder="비밀번호를 입력하세요" required>
+            </div>
+
+            <div class="login-options">
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe">아이디 저장</label>
+                </div>
+                <div class="forgot-links">
+                    <a href="/auth/findId">아이디 찾기</a>
+                    <span>|</span>
+                    <a href="/auth/findPassword">비밀번호 찾기</a>
+                </div>
+            </div>
+
+            <div class="error-message" id="loginError"></div>
+
+            <button type="submit" class="login-btn">로그인</button>
+
+            <div class="signup-link">
+                아직 회원이 아니신가요? <a href="/auth/signup">회원가입</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 페이지 로드 시 저장된 아이디 복원
+    $(document).ready(function() {
+        const savedId = localStorage.getItem('savedMemberId');
+        if (savedId) {
+            $('#memberId').val(savedId);
+            $('#rememberMe').prop('checked', true);
+        }
+    });
+
+    // 로그인 폼 제출
+    $('#loginForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const memberId = $('#memberId').val().trim();
+        const memberPw = $('#memberPw').val().trim();
+
+        if (!memberId || !memberPw) {
+            showError('아이디와 비밀번호를 모두 입력해주세요.');
+            return;
+        }
+
+        // 로딩 상태 표시
+        $('.main-container').addClass('loading');
+        $('#loginError').hide();
+
+        // 아이디 저장 처리
+        if ($('#rememberMe').is(':checked')) {
+            localStorage.setItem('savedMemberId', memberId);
+        } else {
+            localStorage.removeItem('savedMemberId');
+        }
+
+        // AJAX 로그인 요청
+        $.ajax({
+            url: '/auth/loginResult',
+            type: 'POST',
+            data: {
+                memberId: memberId,
+                memberPw: memberPw
+            },
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function(response) {
+                $('.main-container').removeClass('loading');
+
+                if (response.loginResult === true || response.loginResult === 'success') {
+                    alert('로그인되었습니다.');
+
+                    // POST 방식으로 이동
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/main';
+
+                    // 예: 서버로 전달할 값이 있다면 input 요소로 추가
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'memberId';
+                    hiddenInput.value = memberId; // 로그인 시 입력한 아이디
+
+                    form.appendChild(hiddenInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                } else {
+                    // 로그인 실패
+                    showError(response.message || '아이디 또는 비밀번호가 올바르지 않습니다.');
+                }
+            },
+            error: function(xhr) {
+                $('.main-container').removeClass('loading');
+                console.error('로그인 오류:', xhr.status, xhr.responseText);
+
+                if (xhr.status === 401) {
+                    showError('아이디 또는 비밀번호가 올바르지 않습니다.');
+                } else if (xhr.status === 403) {
+                    showError('계정이 잠겨있습니다. 관리자에게 문의하세요.');
+                } else {
+                    showError('로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                }
+            }
+        });
+    });
+
+    // 소셜 로그인
+    function socialLogin(provider) {
+        // 소셜 로그인 구현
+        switch(provider) {
+            case 'kakao':
+                // 카카오 로그인 로직
+                window.location.href = '/auth/kakao';
+                break;
+            case 'naver':
+                // 네이버 로그인 로직
+                window.location.href = '/auth/naver';
+                break;
+            case 'google':
+                // 구글 로그인 로직
+                window.location.href = '/auth/google';
+                break;
+        }
+    }
+
+    // 에러 메시지 표시
+    function showError(message) {
+        $('#loginError').text(message).show();
+    }
+
+    // URL 파라미터 가져오기
+    function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    // Enter 키로 로그인
+    $('.form-input').on('keypress', function(e) {
+        if (e.which === 13) {
+            $('#loginForm').submit();
+        }
+    });
+
+    // 입력 시 에러 메시지 숨기기
+    $('.form-input').on('input', function() {
+        $('#loginError').hide();
+    });
+</script>
+</body>
+</html>

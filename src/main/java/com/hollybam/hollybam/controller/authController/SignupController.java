@@ -5,6 +5,7 @@ import com.hollybam.hollybam.services.IF_SignupService;
 import com.hollybam.hollybam.services.SignupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -18,7 +19,8 @@ public class SignupController {
 
     //회원가입 페이지 이동 메서드
     @GetMapping("/signup")
-    public String signup() {
+    public String signup(Model model) {
+        model.addAttribute("memberDto", new MemberDto());
         return "/auth/signup";
     }
 
@@ -40,13 +42,10 @@ public class SignupController {
     @PostMapping("/signupResult")
     @ResponseBody
     public Map<String, Object> signupResult(@ModelAttribute MemberDto memberDto) {
+        System.out.println(memberDto);
         int result = signupService.signup(memberDto);
         Map<String, Object> signupResult = new HashMap<>();
-        if(result > 0) {
-            signupResult.put("signupResult", true);
-        } else {
-            signupResult.put("signupResult", false);
-        }
+        signupResult.put("signupResult", result > 0);
         return signupResult;
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+// 본인 인증을 위한 controller
 @RestController
 public class CertificationController {
 

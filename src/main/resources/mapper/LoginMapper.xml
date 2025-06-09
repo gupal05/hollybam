@@ -6,7 +6,7 @@
 
     <!-- 로그인 -->
     <select id="login" parameterType="com.hollybam.hollybam.dto.MemberDto" resultType="int">
-        select count(*) from member where mem_id = #{memberId} and mem_pw = #{memberPw}
+        select * from member where mem_id = #{memberId} and mem_pw = #{memberPw}
     </select>
 
     <!-- session에 담기 위한 사용자 정보 sel -->

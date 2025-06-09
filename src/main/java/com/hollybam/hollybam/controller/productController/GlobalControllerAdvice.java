@@ -1,10 +1,12 @@
-package com.hollybam.hollybam.controller;
+package com.hollybam.hollybam.controller.productController;
 
+import com.hollybam.hollybam.dto.CategoryDetailDto;
 import com.hollybam.hollybam.dto.CategoryDto;
 import com.hollybam.hollybam.services.IF_CategoryService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
 import java.util.List;
 
 @ControllerAdvice
@@ -25,7 +27,14 @@ public class GlobalControllerAdvice {
 
     @ModelAttribute("categories")
     public List<CategoryDto> categories() {
-        return cachedCategories;
+        List<CategoryDto> categories = categoryService.getCategoryList(); // 대분류 가져오기
+
+        for (CategoryDto category : categories) {
+            List<CategoryDetailDto> details = categoryService.selectAllCategoriesDetails(category.getCategoryCode());
+            category.setCategoryDetailDto(details); // 중분류 set
+        }
+
+        return categories;
     }
 
 }

@@ -32,20 +32,18 @@ dependencies {
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
-	// JSP 컴파일 및 실행을 위한 의존성 추가
-    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
-    implementation 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0' // JSP API
+	// Thymeleaf 추가
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-	// 필요하면 JSTL도 추가
-	implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:2.0.0'
-	runtimeOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
-
-	// JSON 처리 (선택적 - jackson은 spring-web에도 포함됨)
+	// JSON 처리
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// 테스트
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

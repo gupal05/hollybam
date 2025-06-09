@@ -1,6 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -9,8 +8,8 @@
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
 
     <!-- header.css 외부 CSS 파일 포함 -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css"/>
-
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -428,7 +427,7 @@
 </head>
 <body>
 <!-- header -->
-<jsp:include page="../layout/header.jsp"></jsp:include>
+<div th:replace="~{layout/header :: header}"></div>
 <div style="height: 105.8px;"></div>
 <!-- 메인 컨테이너 -->
 <div class="main-container">
@@ -472,19 +471,19 @@
 
     <!-- 회원가입 폼 -->
     <div class="signup-form">
-        <form id="signupForm">
+        <form id="signupForm" th:object="${memberDto}" method="post">
             <div class="form-section">
                 <h3 class="section-title">기본정보 <span style="color: #e74c3c; font-size: 12px;">* 필수입력사항</span></h3>
 
                 <div class="form-group">
                     <label class="form-label" for="memberName">이름 <span class="required">*</span></label>
-                    <input type="text" id="memberName" name="memberName" class="form-input" required>
+                    <input type="text" id="memberName" name="memberName" th:field="*{memberName}" class="form-input" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="memberId">아이디 <span class="required">*</span></label>
                     <div class="button-group">
-                        <input type="text" id="memberId" name="memberId" class="form-input"
+                        <input type="text" id="memberId" name="memberId" th:field="*{memberId}" class="form-input"
                                placeholder="(영문소문자/숫자, 4~16자)" required>
                         <button type="button" class="btn-secondary" onclick="checkUserId()">중복확인</button>
                     </div>
@@ -494,7 +493,7 @@
 
                 <div class="form-group">
                     <label class="form-label" for="memberPw">비밀번호 <span class="required">*</span></label>
-                    <input type="password" id="memberPw" name="memberPw" class="form-input"
+                    <input type="password" id="memberPw" name="memberPw" th:field="*{memberPw}" class="form-input"
                            placeholder="(영문 대소문자/숫자/특수문자 중 2가지 이상 조합, 10자~16자)" required>
                     <div class="error-message" id="passwordError"></div>
                 </div>
@@ -508,7 +507,7 @@
                 <div class="form-group">
                     <label class="form-label" for="memberZip">우편번호 <span class="required">*</span></label>
                     <div class="button-group">
-                        <input type="text" id="memberZip" name="memberZip" class="form-input" placeholder="우편번호" required>
+                        <input type="text" id="memberZip" name="memberZip" th:field="*{memberZip}" class="form-input" placeholder="우편번호" required>
                         <button type="button" class="btn-secondary">주소검색</button>
                     </div>
                 </div>
@@ -516,7 +515,7 @@
                 <div class="form-group">
                     <label class="form-label">주소 <span class="required">*</span></label>
                     <div class="address-group">
-                        <input type="text" class="form-input" id="firstAddr" placeholder="기본주소">
+                        <input type="text" class="form-input" id="firstAddr" th:field="*{memberAddr}" placeholder="기본주소">
                         <input type="text" class="form-input" id="secAddr" placeholder="나머지 주소(선택 입력 가능)">
                     </div>
                 </div>
@@ -561,17 +560,19 @@
                         </select>
                         <input type="text" class="form-input" id="day" placeholder="일" style="width: 80px;">
                     </div>
+                    <!-- 서버에 전송될 진짜 값 -->
+                    <input type="hidden" name="memberBirth" id="memberBirth">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">성별 <span class="required">*</span></label>
                     <div class="gender-group">
                         <div class="radio-item">
-                            <input type="radio" id="male" name="gender" value="남자" checked>
+                            <input type="radio" id="male" name="memberGender" th:field="*{memberGender}" value="남자" checked>
                             <label for="male">남자</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" id="female" name="gender" value="여자">
+                            <input type="radio" id="female" name="memberGender" th:field="*{memberGender}" value="여자">
                             <label for="female">여자</label>
                         </div>
                     </div>
@@ -695,7 +696,6 @@
                         - 이 약관에 동의하고 위 사항들을 확인하거나 거부하는 표시<br>
                         - 재화 등의 구매신청 및 이에 관한 확인 또는 사이트의 확인에 대한 동의<br>
                         - 결제방법의 선택<br>
-
                     </div>
                 </div>
 
@@ -782,15 +782,14 @@
                         - 성명 : 차윤태<br>
                         - 연락처 : 1533-4965<br>
                         - 이메일 : ckdbsxo54321@naver.com<br>
-
                     </div>
                 </div>
 
                 <div class="terms-item">
                     <div class="terms-header" onclick="toggleTerms('terms3')">
                         <div class="terms-check">
-                            <input type="checkbox" id="terms2" name="terms" required onclick="event.stopPropagation()">
-                            <label for="terms2">[필수] 전자금융거래 이용약관 동의</label>
+                            <input type="checkbox" id="terms3" name="terms" required onclick="event.stopPropagation()">
+                            <label for="terms3">[필수] 전자금융거래 이용약관 동의</label>
                         </div>
                         <span class="terms-toggle">▼</span>
                     </div>
@@ -854,22 +853,45 @@
                         제11조 (거래지시의 철회)<br><br>
                         ① 이용자는 지급 효력 발생 전까지 거래지시를 철회할 수 있습니다.<br>
                         ...
-
                     </div>
                 </div>
 
-            <button type="submit" class="submit-btn">회원가입</button>
+                <button type="submit" class="submit-btn">회원가입</button>
             </div>
         </form>
     </div>
 </div>
 <div style="display: none">
-    <form action="/auth/login" method="get" id="move-page-form"></form>
+    <form th:action="@{/auth/login}" method="get" id="move-page-form"></form>
 </div>
 <script>
+    function isValidDate(year, month, day) {
+        const dateStr = `${year}-${month}-${day}`;
+        const date = new Date(dateStr);
+        return (
+            date.getFullYear() == year &&
+            date.getMonth() + 1 == parseInt(month) &&
+            date.getDate() == parseInt(day)
+        );
+    }
+
     // 폼 제출
     $('#signupForm').on('submit', function(e) {
         e.preventDefault();
+
+        const year = $('#year').val().trim();
+        const month = $('#month').val().trim().padStart(2, '0');
+        const day = $('#day').val().trim().padStart(2, '0');
+
+        // memberBirth 필드에 형식 지정해서 설정
+        const fullDate = `${year}-${month}-${day}`;
+        $('#memberBirth').val(fullDate);
+
+        // 날짜 유효성 검사
+        if (!isValidDate(year, month, day)) {
+            alert('올바른 생년월일을 입력해주세요.');
+            return;
+        }
 
         if (validateForm()) {
             // member 가져오기
@@ -880,13 +902,14 @@
                 memberZip: $('#memberZip').val(),
                 memberAddr: $('#firstAddr').val() + $('#secAddr').val(),
                 memberPhone: $('#firstPhone').val() + $('#secPhone').val() + $('#trdPhone').val(),
-                memberBirth: $('#year').val() + '-' + $('#month').val() + '-' + $('#day').val(),
-                memberGender: $('input[name="gender"]:checked').val()
+                memberBirth: fullDate,  // 여기도 명시적으로 보냄
+                memberGender: $('input[name="memberGender"]:checked').val()
             };
 
             // AJAX 요청 보내기 (예: POST 방식)
             $.ajax({
-                url: '/auth/signupResult',
+                /*[+] url: '/auth/signupResult', [+]*/
+                url: /*[[@{/auth/signupResult}]]*/ '/auth/signupResult',
                 type: 'POST',
                 data: data, // key=value&key=value 형식
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -963,7 +986,8 @@
         // AJAX로 아이디 중복 확인 요청
         $.ajax({
             type: 'POST',
-            url: '/auth/dupCheckId',
+            /*[+] url: '/auth/dupCheckId', [+]*/
+            url: /*[[@{/auth/dupCheckId}]]*/ '/auth/dupCheckId',
             data: { memberId: userId },
             success: function(response) {
                 if (response.duplicate) {

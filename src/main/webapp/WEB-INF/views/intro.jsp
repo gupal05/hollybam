@@ -160,11 +160,12 @@
     <!-- 로그인 영역 -->
     <div class="section">
         <h3>회원 로그인</h3>
-        <form id="loginForm">
-            <input type="text" id="memberId" name="memberId" placeholder="아이디 입력">
-            <input type="password" id="memberPw" name="memberPw" placeholder="비밀번호 입력">
-            <input type="submit" value="로그인"> <!-- submit 유지 -->
+        <form id="loginForm" action="/login" method="get">
+            <input type="text" id="memberId" name="username" placeholder="아이디 입력" required>
+            <input type="password" id="memberPw" name="password" placeholder="비밀번호 입력" required>
+            <input type="submit" value="로그인">
         </form>
+
 
         <div class="social-buttons">
             <button>네이버 로그인</button>
@@ -212,7 +213,7 @@
                             if (res.adult === true) {
                                 // POST 방식으로 /main 페이지로 이동
                                 const form = document.createElement("form");
-                                form.method = "POST";
+                                form.method = "get";
                                 form.action = "/main";
 
                                 // 필요한 경우 서버로 보낼 값이 있으면 input 추가 가능
@@ -258,12 +259,7 @@
                 },
                 success: function(res) {
                     if (res.loginResult === true) {
-                        // POST 방식으로 /main 페이지 이동하기 위해 form 동적 생성
-                        const form = document.createElement("form");
-                        form.method = "POST";
-                        form.action = "/main";
-                        document.body.appendChild(form);
-                        form.submit();
+                        window.location.href = '/loading';
                     } else {
                         alert("아이디 또는 비밀번호를 확인해주세요.");
                     }

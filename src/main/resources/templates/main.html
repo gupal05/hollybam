@@ -1,14 +1,14 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Sticky Header with Slide</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css"/>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
 
     <style>
         * { box-sizing: border-box; }
@@ -594,12 +594,12 @@
     </style>
 </head>
 <body>
-<%-- 고정 헤더 --%>
-<jsp:include page="layout/header.jsp"></jsp:include>
-<%-- 슬라이드 --%>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+<!-- 슬라이드 -->
 <div class="slide"> <!-- header style2 = top 80px -->
-    <img src="${pageContext.request.contextPath}/images/da1589be137666f771fcb06bd045c8ff.webp" alt="슬라이드1" class="active"/>
-    <img src="${pageContext.request.contextPath}/images/24e86dfad799d3ffad7d032aa0f9fb68.webp" alt="슬라이드2"/>
+    <img th:src="@{/images/da1589be137666f771fcb06bd045c8ff.webp}" alt="슬라이드1" class="active"/>
+    <img th:src="@{/images/24e86dfad799d3ffad7d032aa0f9fb68.webp}" alt="슬라이드2"/>
     <div class="dots">
         <div class="dot active"></div>
         <div class="dot"></div>
@@ -608,7 +608,7 @@
 
 
 
-<%-- 카테고리 섹션 --%>
+<!-- 카테고리 섹션 -->
 <div class="category-section">
     <div class="category-container">
         <div class="category-grid">
@@ -666,7 +666,7 @@
     </div>
 </div>
 
-<%-- 메인 콘텐츠 --%>
+<!-- 메인 콘텐츠 -->
 <div class="content">
     <div class="inner-box">
         <div class="section-title">베스트 상품</div>
@@ -676,8 +676,8 @@
                     <div class="card-product-top-text">HOT🔥</div>
                     <div class="card-product-img">
                         <img class="product-img"
-                             src="${pageContext.request.contextPath}/images/홀리밤 피스톤 머시 (10종 구성).png"
-                             data-hover="${pageContext.request.contextPath}/images/홀리밤 피스톤 머시 (10종 구성).webp"
+                             th:src="@{/images/홀리밤 피스톤 머시 (10종 구성).png}"
+                             th:attr="data-hover=@{/images/홀리밤 피스톤 머시 (10종 구성).webp}"
                              alt="상품 이미지" />
                     </div>
                     <div class="card-product-info">
@@ -704,9 +704,9 @@
             </article>
 
             <article class="v4-product">
-                <a class="card-product-widget" href="/product/productDetail">
+                <a class="card-product-widget" th:href="@{/product/productDetail}">
                     <div class="card-product-img">
-                        <img src="${pageContext.request.contextPath}/images/귀엽고 섹시한 니아 165cm.jpg" alt="상품 이미지"/>
+                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm.jpg}" alt="상품 이미지"/>
                     </div>
                     <div class="card-product-info">
                         <p class="card-product-title">귀엽고 섹시한 니아 165cm</p>
@@ -734,8 +734,8 @@
                     <div class="card-product-top-text">NEW✨</div>
                     <div class="card-product-img">
                         <img class="product-img"
-                             src="${pageContext.request.contextPath}/images/홀 래빗 진동 흡입기.png"
-                             data-hover="${pageContext.request.contextPath}/images/홀 래빗 진동 흡입기.webp"
+                             th:src="@{/images/홀 래빗 진동 흡입기.png}"
+                             th:attr="data-hover=@{/images/홀 래빗 진동 흡입기.webp}"
                              alt="상품 이미지" />
                     </div>
                     <div class="card-product-info">
@@ -756,7 +756,7 @@
                 </a>
                 <div class="wishlist-wrap">
                     <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
+                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86-8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
                     </button>
                 </div>
             </article>
@@ -764,8 +764,8 @@
                 <a class="card-product-widget" href="#">
                     <div class="card-product-img">
                         <img class="product-img"
-                             src="${pageContext.request.contextPath}/images/홀리밤 페어리 딜도.png"
-                             data-hover="${pageContext.request.contextPath}/images/홀리밤 페어리 딜도.webp"
+                             th:src="@{/images/홀리밤 페어리 딜도.png}"
+                             th:attr="data-hover=@{/images/홀리밤 페어리 딜도.webp}"
                              alt="상품 이미지" />
                     </div>
                     <div class="card-product-info">
@@ -790,125 +790,7 @@
                     </button>
                 </div>
             </article>
-            <article class="v4-product">
-                <a class="card-product-widget" href="#">
-                    <div class="card-product-top-text">HOT🔥</div>
-                    <div class="card-product-img">
-                        <img class="product-img"
-                             src="${pageContext.request.contextPath}/images/홀리밤 피스톤 머시 (10종 구성).png"
-                             data-hover="${pageContext.request.contextPath}/images/홀리밤 피스톤 머시 (10종 구성).webp"
-                             alt="상품 이미지" />
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 피스톤 머신</p>
-                        <div class="card-product-price">
-                            <div class="sale-perc">25%</div>
-                            <div class="sale_price">₩150,000</div>
-                            <div class="regular_price">₩200,000</div>
-                        </div>
-                        <div class="card-product-description">프리미엄 품질의 홀리밤 피스톤 머신 10종 구성</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>45</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.9 (23)</span>
-                        </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
 
-            <article class="v4-product">
-                <a class="card-product-widget" href="/product/productDetail">
-                    <div class="card-product-img">
-                        <img src="${pageContext.request.contextPath}/images/귀엽고 섹시한 니아 165cm.jpg" alt="상품 이미지"/>
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">귀엽고 섹시한 니아 165cm</p>
-                        <div class="card-product-price">
-                            <div class="sale_price">₩3,500,000</div>
-                        </div>
-                        <div class="card-product-description">프리미엄 품질의 165cm 니아</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>32</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.8 (15)</span>
-                        </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
-
-            <article class="v4-product">
-                <a class="card-product-widget" href="#">
-                    <div class="card-product-top-text">NEW✨</div>
-                    <div class="card-product-img">
-                        <img class="product-img"
-                             src="${pageContext.request.contextPath}/images/홀 래빗 진동 흡입기.png"
-                             data-hover="${pageContext.request.contextPath}/images/홀 래빗 진동 흡입기.webp"
-                             alt="상품 이미지" />
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀 래빗 진동 흡입기</p>
-                        <div class="card-product-price">
-                            <div class="sale-perc">26%</div>
-                            <div class="sale_price">₩89,000</div>
-                            <div class="regular_price">₩120,000</div>
-                        </div>
-                        <div class="card-product-description">고급스러운 홀 래빗 진동 흡입기</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>28</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.7 (18)</span>
-                        </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
-            <article class="v4-product">
-                <a class="card-product-widget" href="#">
-                    <div class="card-product-img">
-                        <img class="product-img"
-                             src="${pageContext.request.contextPath}/images/홀리밤 페어리 딜도.png"
-                             data-hover="${pageContext.request.contextPath}/images/홀리밤 페어리 딜도.webp"
-                             alt="상품 이미지" />
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 페어리 딜도</p>
-                        <div class="card-product-price">
-                            <div class="sale-perc">92%</div>
-                            <div class="sale_price">₩79,000</div>
-                            <div class="regular_price">₩1,000,000</div>
-                        </div>
-                        <div class="card-product-description">프리미엄 품질의 홀리밤 페어리 딜도</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>45</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.9 (23)</span>
-                        </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
         </div>
         <div class="instagramtoon-section">
             <div class="section-title">홀리밤 인스타 툰</div>
@@ -940,8 +822,8 @@
                     <div class="card-product-top-text">HOT🔥</div>
                     <div class="card-product-img">
                         <img class="product-img"
-                             src="${pageContext.request.contextPath}/images/홀리밤 피스톤 머시 (10종 구성).png"
-                             data-hover="${pageContext.request.contextPath}/images/홀리밤 피스톤 머시 (10종 구성).webp"
+                             th:src="@{/images/홀리밤 피스톤 머시 (10종 구성).png}"
+                             th:attr="data-hover=@{/images/홀리밤 피스톤 머시 (10종 구성).webp}"
                              alt="상품 이미지" />
                     </div>
                     <div class="card-product-info">
@@ -968,9 +850,9 @@
             </article>
 
             <article class="v4-product">
-                <a class="card-product-widget" href="/product/productDetail">
+                <a class="card-product-widget" th:href="@{/product/productDetail}">
                     <div class="card-product-img">
-                        <img src="${pageContext.request.contextPath}/images/귀엽고 섹시한 니아 165cm.jpg" alt="상품 이미지"/>
+                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm.jpg}" alt="상품 이미지"/>
                     </div>
                     <div class="card-product-info">
                         <p class="card-product-title">귀엽고 섹시한 니아 165cm</p>
@@ -998,8 +880,8 @@
                     <div class="card-product-top-text">NEW✨</div>
                     <div class="card-product-img">
                         <img class="product-img"
-                             src="${pageContext.request.contextPath}/images/홀 래빗 진동 흡입기.png"
-                             data-hover="${pageContext.request.contextPath}/images/홀 래빗 진동 흡입기.webp"
+                             th:src="@{/images/홀 래빗 진동 흡입기.png}"
+                             th:attr="data-hover=@{/images/홀 래빗 진동 흡입기.webp}"
                              alt="상품 이미지" />
                     </div>
                     <div class="card-product-info">
@@ -1025,11 +907,11 @@
                 </div>
             </article>
             <article class="v4-product">
-                <a class="card-product-widget" href="#">
+                <a class="card-product-widget" th:href="@{/product/productDetail}">
                     <div class="card-product-img">
                         <img class="product-img"
-                             src="${pageContext.request.contextPath}/images/홀리밤 페어리 딜도.png"
-                             data-hover="${pageContext.request.contextPath}/images/홀리밤 페어리 딜도.webp"
+                             th:src="@{/images/홀리밤 페어리 딜도.png}"
+                             th:attr="data-hover=@{/images/홀리밤 페어리 딜도.webp}"
                              alt="상품 이미지" />
                     </div>
                     <div class="card-product-info">
@@ -1057,7 +939,9 @@
         </div>
     </div>
 </div>
-<jsp:include page="layout/footer.jsp"></jsp:include>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
 <script>
     let current = 0;
     const images = $('.slide img');
@@ -1103,5 +987,6 @@
         });
     });
 </script>
+
 </body>
 </html>

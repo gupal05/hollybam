@@ -6,9 +6,48 @@
 
     <select id="selectAllCategories" resultType="com.hollybam.hollybam.dto.CategoryDto">
         SELECT
-            cate_code AS categoryId,
+            cate_code AS categoryCode,
             cate_name AS categoryName
         FROM category
     </select>
+
+    <select id="getCateDetailCount" parameterType="String" resultType="int">
+        SELECT COUNT(*)
+        FROM category_detail
+        WHERE cate_code = #{cateCode}
+    </select>
+
+    <select id="selectAllCategoriesDetails" parameterType="String" resultType="com.hollybam.hollybam.dto.CategoryDetailDto">
+        SELECT cd_code AS cateDetailCode, cd_name AS cateDetailName
+        FROM category_detail
+        WHERE cate_code = #{cateCode}
+    </select>
+
+    <resultMap id="categoryDetailMap" type="com.hollybam.hollybam.dto.CategoryDetailDto">
+        <result property="cateDetailCode" column="cd_code"/>
+        <result property="cateDetailName" column="cd_name"/>
+    </resultMap>
+
+    <resultMap id="categoryMap" type="com.hollybam.hollybam.dto.CategoryDto">
+        <result property="categoryCode" column="cate_code"/>
+        <result property="categoryName" column="cate_name"/>
+
+        <collection property="categoryDetailDto" ofType="com.hollybam.hollybam.dto.CategoryDetailDto" resultMap="categoryDetailMap"/>
+    </resultMap>
+
+    <select id="selectCategoryWithDetails" resultMap="categoryMap" parameterType="string">
+        SELECT
+            c.cate_code,
+            c.cate_name,
+            d.cd_code,
+            d.cd_name
+        FROM
+            category c
+                JOIN
+            category_detail d ON c.cate_code = d.cate_code
+        WHERE
+            c.cate_code = #{cateCode}
+    </select>
+
 
 </mapper>

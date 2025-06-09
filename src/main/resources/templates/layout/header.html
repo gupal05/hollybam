@@ -1,0 +1,38 @@
+<div th:fragment="header" class="header">
+    <div class="header-nav" onclick="window.location.href='/main'" style="cursor: pointer">
+        <img th:src="@{/images/hollybam_logo.webp}" width="85px" height="27.42px">
+    </div>
+
+    <div class="header-nav nav-group">
+        <div class="nav-item">
+            <div>제품</div>
+            <div class="dropdown-backdrop"></div>
+            <div class="dropdown">
+                <div class="dropdown-content">
+
+                    <!-- 첫 번째 컬럼 -->
+                    <div th:each="category : ${categories}" class="dropdown-column">
+                        <a th:href="@{/product/list(categoryCode=${category.categoryCode})}" class="dropdown-column-title-link">
+                            <div class="dropdown-column-title" th:text="${category.categoryName}">카테고리 이름</div>
+                        </a>
+                        <div th:each="detail : ${category.categoryDetailDto}" class="dropdown-item">
+                            <a th:href="@{/product/list(categoryCode=${category.categoryCode}, detailCode=${detail.cateDetailCode})}"
+                               class="category-link"
+                               th:text="${detail.cateDetailName}">상세카테고리</a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div>브랜드관</div>
+        <div>코스튬 특가</div>
+    </div>
+
+    <div class="header-nav nav-group-icon">
+        <i class="fa-regular fa-circle-user" style="cursor:pointer;" onclick="window.location.href='/auth/login'"></i>
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <i class="fa-solid fa-bag-shopping"></i>
+    </div>
+</div>

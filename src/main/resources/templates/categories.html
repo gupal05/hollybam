@@ -1,14 +1,13 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>카테고리 - 남성용품</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css"/>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500,700&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
     <style>
@@ -324,59 +323,69 @@
         }
         window.addEventListener('scroll', adjustCategoryPadding);
         window.addEventListener('DOMContentLoaded', adjustCategoryPadding);
+
+            function goToCategory(element) {
+            const categoryCode = element.getAttribute('data-category-code');
+            location.href = `/product/list?categoryCode=${categoryCode}`;
+        }
+
+            function goToSubCategory(element) {
+            const categoryCode = element.getAttribute('data-category-code');
+            const detailCode = element.getAttribute('data-detail-code');
+            location.href = `/product/list?categoryCode=${categoryCode}&detailCode=${detailCode}`;
+        }
     </script>
 </head>
 <body>
-<jsp:include page="layout/header.jsp" />
+<div th:replace="~{layout/header :: header}"></div>
 
 <div class="category-padding-top">
     <div class="category-main-container">
         <section style="flex: 1; width: 100%;">
             <!-- 브레드크럼 -->
             <nav class="breadcrumb" aria-label="breadcrumb">
-                <a href="${pageContext.request.contextPath}/">홈</a>
+                <a th:href="@{/}">홈</a>
                 <span class="breadcrumb-sep">›</span>
-                <a href="${pageContext.request.contextPath}/product/list?categoryCode=${cate.categoryCode}">${cate.categoryName}</a>
-                <c:if test="${not empty active.detailCode}">
-                    <span class="breadcrumb-sep">›</span>
-                    <span class="current">
-                        <c:forEach var="detail" items="${cate.categoryDetailDto}">
-                            <c:if test="${detail.cateDetailCode == active.detailCode}">
-                                ${detail.cateDetailName}
-                            </c:if>
-                        </c:forEach>
-                    </span>
-                </c:if>
+                <a th:href="@{/product/list(categoryCode=${cate.categoryCode})}" th:text="${cate.categoryName}">카테고리명</a>
+                <span th:if="${active != null and not #strings.isEmpty(active.detailCode)}" class="breadcrumb-sep">›</span>
+                <span th:if="${not #strings.isEmpty(active.detailCode)}" class="current">
+                    <span th:each="detail : ${cate.categoryDetailDto}"
+                          th:if="${detail.cateDetailCode == active.detailCode}"
+                          th:text="${detail.cateDetailName}">상세카테고리명</span>
+                </span>
             </nav>
             <div style="display: flex;">
                 <!-- 좌측 카테고리 -->
                 <aside class="category-sidebar">
-                    <div class="main-category-title" style="cursor: pointer" onclick="location.href='/product/list?categoryCode=${cate.categoryCode}'">${cate.categoryName}</div>
+                    <div class="main-category-title"
+                         style="cursor: pointer"
+                         th:attr="data-category-code=${cate.categoryCode}"
+                         th:text="${cate.categoryName}"
+                         onclick="goToCategory(this)">
+                    </div>
+
                     <ul class="sub-category-list">
-                        <c:forEach var="detail" items="${cate.categoryDetailDto}">
-                            <li onclick="location.href='/product/list?categoryCode=${cate.categoryCode}${detail.cateDetailCode}'" class="${detail.cateDetailCode == active.detailCode ? 'sub-category-item active' : 'sub-category-item'}">
-                                    ${detail.cateDetailName}
-                            </li>
-                        </c:forEach>
+                        <li th:each="detail : ${cate.categoryDetailDto}"
+                            th:attr="data-category-code=${cate.categoryCode}, data-detail-code=${detail.cateDetailCode}"
+                            th:class="${detail.cateDetailCode == active.detailCode ? 'sub-category-item active' : 'sub-category-item'}"
+                            th:text="${detail.cateDetailName}"
+                            onclick="goToSubCategory(this)">
+                        </li>
                     </ul>
                 </aside>
+
+
 
                 <section class="category-product-area">
                     <div class="product-list-header">
                         <span class="product-list-title">
-                          ${cate.categoryName} -
-                          <c:choose>
-                              <c:when test="${not empty active.detailCode}">
-                                  <c:forEach var="detail" items="${cate.categoryDetailDto}">
-                                      <c:if test="${detail.cateDetailCode == active.detailCode}">
-                                          ${detail.cateDetailName}
-                                      </c:if>
-                                  </c:forEach>
-                              </c:when>
-                              <c:otherwise>
-                                  전체
-                              </c:otherwise>
-                          </c:choose>
+                          <span th:text="${cate.categoryName}">카테고리명</span> -
+                          <span th:if="${not #strings.isEmpty(active.detailCode)}">
+                              <span th:each="detail : ${cate.categoryDetailDto}"
+                                    th:if="${detail.cateDetailCode == active.detailCode}"
+                                    th:text="${detail.cateDetailName}">상세카테고리명</span>
+                          </span>
+                          <span th:unless="${not #strings.isEmpty(active.detailCode)}">전체</span>
                         </span>
                         <select class="product-sort-select">
                             <option value="latest">최신순</option>
@@ -390,7 +399,7 @@
                         <article class="v4-product">
                             <a class="card-product-widget" href="#">
                                 <div class="card-product-img">
-                                    <img src="${pageContext.request.contextPath}/images/귀엽고 섹시한 니아 165cm.jpg" alt="상품 이미지"/>
+                                    <img th:src="@{/images/귀엽고 섹시한 니아 165cm.jpg}" alt="상품 이미지"/>
                                 </div>
                                 <div class="card-product-info">
                                     <p class="card-product-title">귀엽고 섹시한 니아 165cm</p>
@@ -416,7 +425,7 @@
                         <article class="v4-product">
                             <a class="card-product-widget" href="#">
                                 <div class="card-product-img">
-                                    <img src="${pageContext.request.contextPath}/images/프리미엄 리얼돌 170cm.jpg" alt="상품 이미지"/>
+                                    <img th:src="@{/images/프리미엄 리얼돌 170cm.jpg}" alt="상품 이미지"/>
                                 </div>
                                 <div class="card-product-info">
                                     <p class="card-product-title">프리미엄 리얼돌 170cm</p>
@@ -442,7 +451,7 @@
                         <article class="v4-product">
                             <a class="card-product-widget" href="#">
                                 <div class="card-product-img">
-                                    <img src="${pageContext.request.contextPath}/images/슬림 리얼돌 155cm.jpg" alt="상품 이미지"/>
+                                    <img th:src="@{/images/슬림 리얼돌 155cm.jpg}" alt="상품 이미지"/>
                                 </div>
                                 <div class="card-product-info">
                                     <p class="card-product-title">슬림 리얼돌 155cm</p>
@@ -472,7 +481,7 @@
     </div>
 </div>
 
-<jsp:include page="layout/footer.jsp" />
+<div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
 </script>

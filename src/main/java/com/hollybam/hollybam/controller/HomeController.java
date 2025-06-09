@@ -1,8 +1,10 @@
 package com.hollybam.hollybam.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class HomeController {
@@ -11,18 +13,11 @@ public class HomeController {
         return "intro";
     }
 
-    @PostMapping("/main")
+    @GetMapping("/main")
     public String mainPage(){
         return "main";
     }
 
-    @GetMapping("/product/productDetail")
-    public String productDetailPage(){
-        return "/product/productDetail";
-    }
-
-    @GetMapping("/cate-page")
-    public String catePage(){
-        return "/categories";
-    }
+    @GetMapping("/loading")
+    public String loadingPage(){ return "/loading"; }
 }

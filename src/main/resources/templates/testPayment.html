@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>KG이니시스 결제</title>
+    <script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+</head>
+<body>
+<h1>KG이니시스를 통한 결제</h1>
+
+<form id="payment-form">
+    <label>주문번호:</label>
+    <input type="text" id="merchant_uid" value="order_123456789" /><br>
+
+    <label>상품명:</label>
+    <input type="text" id="name" value="테스트 상품" /><br>
+
+    <label>금액:</label>
+    <input type="number" id="amount" value="1000" /><br>
+
+    <label>구매자 이름:</label>
+    <input type="text" id="buyer_name" value="홍길동" /><br>
+
+    <label>이메일:</label>
+    <input type="email" id="buyer_email" value="hong@example.com" /><br>
+
+    <button type="button" onclick="requestPay()">결제하기</button>
+</form>
+
+<script>
+    const IMP = window.IMP;
+    IMP.init("imp03183375"); // 포트원에서 발급받은 본인의 imp code 입력
+
+    function requestPay() {
+        const data = {
+            pg: "html5_inicis",         // ✅ KG이니시스 설정
+            pay_method: "card",         // 카드 결제
+            merchant_uid: document.getElementById("merchant_uid").value,
+            name: document.getElementById("name").value,
+            amount: parseInt(document.getElementById("amount").value),
+            buyer_email: document.getElementById("buyer_email").value,
+            buyer_name: document.getElementById("buyer_name").value,
+            m_redirect_url: "/verify-callback" // 모바일 결제 시 이동할 URL
+        };
+
+        IMP.request_pay(data, function (rsp) {
+            if (rsp.success) {
+                alert("결제 성공: imp_uid = " + rsp.imp_uid);
+
+                // 서버에 결제 검증 요청
+                fetch(`/verify/${rsp.imp_uid}`)
+                    .then(res => res.text())
+                    .then(msg => alert("검증 결과: " + msg));
+            } else {
+                alert("결제 실패: " + rsp.error_msg);
+            }
+        });
+    }
+</script>
+</body>
+</html>

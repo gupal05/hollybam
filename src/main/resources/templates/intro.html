@@ -123,6 +123,16 @@
   </style>
 </head>
 <body>
+<!-- 메시지를 숨겨 놓음 -->
+<div id="message" th:text="${session.message}" style="display: none;"></div>
+
+<!-- 자바스크립트에서 안전하게 가져와 alert -->
+<script>
+  const msg = document.getElementById('message')?.textContent;
+  if (msg) {
+    alert(msg);
+  }
+</script>
 
 <div class="container">
 
@@ -140,7 +150,7 @@
   <!-- 로그인 영역 -->
   <div class="section">
     <h3>회원 로그인</h3>
-    <form id="loginForm" th:action="@{/login}" method="get">
+    <form id="loginForm">
       <input type="text" id="memberId" name="username" placeholder="아이디 입력" required>
       <input type="password" id="memberPw" name="password" placeholder="비밀번호 입력" required>
       <input type="submit" value="로그인">
@@ -167,7 +177,6 @@
     </p>
   </div>
 </div>
-
 <script th:inline="javascript">
   // 콘솔에 IMP 객체 확인
   IMP.init("imp70328114");

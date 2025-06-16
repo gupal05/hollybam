@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>귀엽고 섹시한 니아 165cm - 홀리밤</title>
+    <title th:text="'홀리밤 - '+${product.productName}">title</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
     <link th:href="@{/css/header.css}" rel="stylesheet"/>
@@ -115,8 +115,8 @@
         .thumbnail-gallery {
             display: flex;
             gap: 12px;
-            justify-content: flex-start; /* 왼쪽 정렬로 변경 */
-            flex-wrap: wrap;  /* 줄 바꿈 허용 */
+            justify-content: flex-start;
+            flex-wrap: wrap;
         }
 
         .thumbnail-item {
@@ -200,11 +200,16 @@
             margin-bottom: 40px;
         }
 
+        .price-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .price-current {
             font-size: 36px;
             font-weight: 700;
             color: #1a1a1a;
-            margin-bottom: 8px;
         }
 
         .price-original {
@@ -227,6 +232,7 @@
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
+            display: block;
         }
 
         .option-select {
@@ -245,24 +251,72 @@
             border-color: #EE386D;
         }
 
+        .option-select:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .selected-options {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .selected-options.show {
+            display: block;
+        }
+
+        .selected-option-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .selected-option-item:last-child {
+            border-bottom: none;
+        }
+
+        .option-info {
+            flex: 1;
+        }
+
+        .option-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .option-price {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .option-price.additional {
+            color: #EE386D;
+        }
+
         .quantity-control {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-top: 20px;
+            gap: 8px;
         }
 
         .quantity-btn {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #e5e5e5;
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e5e5e5;
             background: white;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             transition: all 0.3s ease;
         }
@@ -273,13 +327,45 @@
         }
 
         .quantity-input {
-            width: 60px;
-            height: 40px;
+            width: 50px;
+            height: 32px;
             text-align: center;
-            border: 2px solid #e5e5e5;
-            border-radius: 8px;
-            font-size: 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 600;
+        }
+
+        .remove-option {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 4px;
+            margin-left: 8px;
+        }
+
+        .remove-option:hover {
+            color: #EE386D;
+        }
+
+        .total-price {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e5e5;
+            text-align: right;
+        }
+
+        .total-price-label {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .total-price-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: #EE386D;
         }
 
         /* 구매 버튼 */
@@ -324,6 +410,12 @@
         .btn-secondary:hover {
             background: #1a1a1a;
             transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* 상품 정보 탭 */
@@ -376,40 +468,17 @@
         .detail-images {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 0px; /* 20px에서 0px로 변경 */
             align-items: center;
         }
 
         .detail-images img {
             max-width: 100%;
             height: auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        /* 상품 정보 테이블 */
-        .product-info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .product-info-table th,
-        .product-info-table td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .product-info-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-            width: 30%;
-        }
-
-        .product-info-table td {
-            color: #666;
+            border-radius: 0px; /* 12px에서 0px로 변경 */
+            box-shadow: none; /* 그림자 제거 */
+            display: block; /* 이미지 간격 완전 제거 */
+            margin: 0; /* 마진 제거 */
         }
 
         /* 리뷰 섹션 */
@@ -461,6 +530,15 @@
             transition: width 0.3s ease;
         }
 
+        /* 재고 없음 표시 */
+        .out-of-stock {
+            color: #999 !important;
+        }
+
+        .out-of-stock:after {
+            content: " (품절)";
+        }
+
         /* 반응형 */
         @media (max-width: 768px) {
             .container {
@@ -508,13 +586,23 @@
                 width: 70px;
                 height: 70px;
             }
+
+            .selected-option-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .quantity-control {
+                align-self: flex-end;
+            }
         }
     </style>
 </head>
 <body>
 
 <!-- 고정 헤더 -->
-<div th:replace="layout/header :: header"></div>
+<div th:replace="~{layout/header :: header}"></div>
 
 <div class="container">
     <!-- 브레드크럼 -->
@@ -523,7 +611,7 @@
         <span>></span>
         <a th:href="@{/category/adult}">성인용품</a>
         <span>></span>
-        <span class="current">귀엽고 섹시한 니아 165cm</span>
+        <span class="current" th:text="${product.productName}">제품 이름</span>
     </nav>
 
     <!-- 상품 정보 -->
@@ -532,7 +620,7 @@
             <div class="image-gallery">
                 <!-- 메인 이미지 -->
                 <div class="main-image-container">
-                    <img th:src="@{/images/귀엽고 섹시한 니아 165cm 대표1.jpg}" alt="귀엽고 섹시한 니아 165cm" class="main-image" id="mainImage"/>
+                    <img th:src="@{'/testImage/' + ${thumbnails[0].imageUrl}}" class="main-image" id="mainImage"/>
                     <button class="wishlist-btn">
                         <svg class="heart-icon" viewBox="0 0 24 24">
                             <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>
@@ -542,29 +630,32 @@
 
                 <!-- 썸네일 갤러리 -->
                 <div class="thumbnail-gallery">
-                    <div class="thumbnail-item active"
-                         onclick="changeMainImage('[[ @{/images/귀엽고 섹시한 니아 165cm 대표1.jpg} ]]', this)">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm 대표1.jpg}" alt="대표이미지 1" class="thumbnail-image"/>
-                    </div>
-                    <div class="thumbnail-item"
-                         onclick="changeMainImage('[[ @{/images/귀엽고 섹시한 니아 165cm 대표2.jpg} ]]', this)">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm 대표2.jpg}" alt="대표이미지 2" class="thumbnail-image"/>
-                    </div>
-                    <div class="thumbnail-item"
-                         onclick="changeMainImage('[[ @{/images/귀엽고 섹시한 니아 165cm 대표3.jpg} ]]', this)">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm 대표3.jpg}" alt="대표이미지 3" class="thumbnail-image"/>
-                    </div>
-                    <div class="thumbnail-item"
-                         onclick="changeMainImage('[[ @{/images/귀엽고 섹시한 니아 165cm 대표4.jpg} ]]', this)">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm 대표4.jpg}" alt="대표이미지 4" class="thumbnail-image"/>
+                    <div th:each="img, stat : ${thumbnails}"
+                         class="thumbnail-item"
+                         th:classappend="${stat.index == 0} ? ' active'"
+                         th:onclick="|changeMainImage('@{/testImage/{imgUrl}(imgUrl=${img.imageUrl})}', this)|">
+
+                        <img th:src="@{/testImage/{imgUrl}(imgUrl=${img.imageUrl})}"
+                             th:alt="'대표이미지 ' + ${stat.index + 1}"
+                             class="thumbnail-image"/>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="product-details">
-            <h1 class="product-title">귀엽고 섹시한 니아 165cm</h1>
-            <p class="product-subtitle">프리미엄 품질의 165cm 니아</p>
+            <h1 class="product-title" th:text="${product.productName}">상품 제목</h1>
+            <p class="product-subtitle"
+               th:text="${product.productDescription != null} ? ${product.productDescription} : ''">
+                상품 설명
+            </p>
+
+            <div class="product-price">
+                <div class="price-container">
+                    <span class="price-original" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">115,500원</span>
+                    <span class="price-current" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '원'" id="basePrice">29,000원</span>
+                </div>
+            </div>
 
             <div class="product-rating">
                 <div class="star-rating">
@@ -577,11 +668,37 @@
                 <span class="rating-text">4.8 (15개 리뷰)</span>
             </div>
 
-            <div class="product-price">
-                <div class="price-current">₩3,500,000</div>
+            <!-- 옵션 선택 -->
+            <div class="product-options" th:if="${not #lists.isEmpty(options)}">
+                <div th:each="optionName : ${optionNames}" class="option-group">
+                    <label class="option-label" th:text="${optionName}">옵션명</label>
+                    <select class="option-select" th:data-option-name="${optionName}" onchange="selectOption(this)">
+                        <option value="">선택해주세요</option>
+                        <option value="">=============================</option>
+                        <option th:each="option : ${options}"
+                                th:if="${option.optionName == optionName}"
+                                th:value="${option.optionCode}"
+                                th:text="${option.optionValue + (option.optionPrice > 0 ? ' (+' + #numbers.formatInteger(option.optionPrice, 3, 'COMMA') + '원)' : '')}"
+                                th:classappend="${option.optionQuantity == 0} ? 'out-of-stock'"
+                                th:disabled="${option.optionQuantity == 0}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- 선택된 옵션 표시 -->
+                <div class="selected-options" id="selectedOptions">
+                    <!-- 동적으로 추가될 선택된 옵션들 -->
+                </div>
+
+                <!-- 총 가격 -->
+                <div class="total-price" id="totalPrice" style="display: none;">
+                    <div class="total-price-label">총 상품금액</div>
+                    <div class="total-price-amount" id="totalAmount">0원</div>
+                </div>
             </div>
 
-            <div class="product-options">
+            <!-- 옵션이 없는 경우 기본 수량 선택 -->
+            <div class="product-options" th:if="${#lists.isEmpty(options)}">
                 <div class="quantity-control">
                     <span class="option-label">수량</span>
                     <button class="quantity-btn" onclick="decreaseQuantity()">-</button>
@@ -591,11 +708,11 @@
             </div>
 
             <div class="purchase-buttons">
-                <button class="btn btn-secondary">
+                <button class="btn btn-secondary" id="cartBtn" disabled>
                     <i class="fas fa-shopping-cart"></i>
                     장바구니
                 </button>
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" id="buyBtn" disabled>
                     <i class="fas fa-credit-card"></i>
                     바로구매
                 </button>
@@ -603,68 +720,21 @@
         </div>
     </div>
 
-    <!-- 상품 탭 -->
+    <!-- 상품 탭 (상품정보 탭 제거) -->
     <div class="product-tabs">
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="showTab('detail')">상세정보</button>
-            <button class="tab-btn" onclick="showTab('info')">상품정보</button>
             <button class="tab-btn" onclick="showTab('review')">리뷰 (15)</button>
             <button class="tab-btn" onclick="showTab('qna')">문의</button>
         </div>
 
         <div class="tab-content active" id="detail">
             <div class="detail-images">
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세1.jpg}" alt="상세 이미지 1"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세2.jpg}" alt="상세 이미지 2"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세3.jpg}" alt="상세 이미지 3"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세4.jpg}" alt="상세 이미지 4"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세5.jpg}" alt="상세 이미지 5"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세6.jpg}" alt="상세 이미지 6"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세7.jpg}" alt="상세 이미지 7"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세8.jpg}" alt="상세 이미지 8"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세9.jpg}" alt="상세 이미지 9"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세10.jpg}" alt="상세 이미지 10"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세11.jpg}" alt="상세 이미지 11"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세12.jpg}" alt="상세 이미지 12"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세13.jpg}" alt="상세 이미지 13"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세14.jpg}" alt="상세 이미지 14"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세15.jpg}" alt="상세 이미지 15"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세16.jpg}" alt="상세 이미지 16"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세17.jpg}" alt="상세 이미지 17"/>
+                <div th:each="img : ${contents}">
+                    <img th:src="@{/testImage/{imgUrl}(imgUrl=${img.imageUrl})}"
+                         th:alt="'상세 이미지 ' + ${img.imageOrder + 1}" />
+                </div>
             </div>
-        </div>
-
-        <div class="tab-content" id="info">
-            <table class="product-info-table">
-                <tr>
-                    <th>상품명</th>
-                    <td>귀엽고 섹시한 니아 165cm</td>
-                </tr>
-                <tr>
-                    <th>키</th>
-                    <td>165cm</td>
-                </tr>
-                <tr>
-                    <th>재질</th>
-                    <td>프리미엄 TPE</td>
-                </tr>
-                <tr>
-                    <th>제조국</th>
-                    <td>중국</td>
-                </tr>
-                <tr>
-                    <th>배송비</th>
-                    <td>무료배송</td>
-                </tr>
-                <tr>
-                    <th>배송기간</th>
-                    <td>주문 후 3-5일</td>
-                </tr>
-                <tr>
-                    <th>A/S</th>
-                    <td>6개월 품질보증</td>
-                </tr>
-            </table>
         </div>
 
         <div class="tab-content" id="review">
@@ -707,9 +777,19 @@
     </div>
 </div>
 
-<div th:replace="layout/footer :: footer"></div>
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const options = /*[[${options}]]*/ [];
+    const basePrice = /*[[${product.priceDtoList[0].priceSelling}]]*/ 0;
+    const productCode = /*[[${product.productCode}]]*/ 0; // 이 부분 추가
+    /*]]>*/
+</script>
 
 <script>
+    let selectedOptions = new Map(); // 선택된 옵션들을 저장
+
     function showTab(tabName) {
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -723,18 +803,21 @@
         document.getElementById(tabName).classList.add('active');
     }
 
+    // 옵션이 없는 경우 수량 조절
     function increaseQuantity() {
         const quantityInput = document.getElementById('quantity');
-        quantityInput.value = parseInt(quantityInput.value) + 1;
-        updateTotalPrice();
+        if (quantityInput) {
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+            updatePurchaseButtons();
+        }
     }
 
     function decreaseQuantity() {
         const quantityInput = document.getElementById('quantity');
-        if (parseInt(quantityInput.value) > 1) {
+        if (quantityInput && parseInt(quantityInput.value) > 1) {
             quantityInput.value = parseInt(quantityInput.value) - 1;
+            updatePurchaseButtons();
         }
-        updateTotalPrice();
     }
 
     function changeMainImage(imageUrl, thumbnailElement) {
@@ -746,6 +829,216 @@
 
         thumbnailElement.classList.add("active");
     }
+
+    // 옵션 선택 처리
+    function selectOption(selectElement) {
+        const optionCode = selectElement.value;
+        const optionName = selectElement.dataset.optionName;
+
+        if (!optionCode) {
+            // 옵션 선택 해제
+            if (selectedOptions.has(optionName)) {
+                selectedOptions.delete(optionName);
+                updateSelectedOptionsDisplay();
+            }
+            return;
+        }
+
+        // 선택된 옵션 정보 찾기
+        const selectedOption = options.find(opt => opt.optionCode == optionCode);
+        if (selectedOption) {
+            selectedOptions.set(optionName, {
+                optionCode: selectedOption.optionCode,
+                optionName: selectedOption.optionName,
+                optionValue: selectedOption.optionValue,
+                optionPrice: selectedOption.optionPrice,
+                optionQuantity: selectedOption.optionQuantity,
+                quantity: 1
+            });
+            updateSelectedOptionsDisplay();
+        }
+    }
+
+    // 선택된 옵션들 화면에 표시
+    function updateSelectedOptionsDisplay() {
+        const container = document.getElementById('selectedOptions');
+        const totalPriceDiv = document.getElementById('totalPrice');
+
+        if (selectedOptions.size === 0) {
+            container.style.display = 'none';
+            container.innerHTML = '';
+            totalPriceDiv.style.display = 'none';
+            updatePurchaseButtons();
+            return;
+        }
+
+        container.style.display = 'block';
+        container.classList.add('show');
+
+        let html = '';
+        selectedOptions.forEach((option, optionName) => {
+            const itemPrice = (basePrice + option.optionPrice) * option.quantity;
+            html += `
+            <div class="selected-option-item" data-option-name="${optionName}">
+                <div class="option-info">
+                    <div class="option-name">${option.optionValue}</div>
+                    <div class="option-price ${option.optionPrice > 0 ? 'additional' : ''}">${option.optionPrice > 0 ? '+' + option.optionPrice.toLocaleString() + '원' : ''}</div>
+                </div>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="changeOptionQuantity('${optionName}', -1)">-</button>
+                    <input type="number" class="quantity-input" value="${option.quantity}" min="1" max="${option.optionQuantity}"
+                           onchange="setOptionQuantity('${optionName}', this.value)" readonly>
+                    <button class="quantity-btn" onclick="changeOptionQuantity('${optionName}', 1)">+</button>
+                    <button class="remove-option" onclick="removeOption('${optionName}')">✕</button>
+                </div>
+            </div>
+        `;
+        });
+
+        container.innerHTML = html;
+        updateTotalPrice();
+        updatePurchaseButtons();
+    }
+
+    // 옵션 수량 변경
+    function changeOptionQuantity(optionName, change) {
+        const option = selectedOptions.get(optionName);
+        if (!option) return;
+
+        const newQuantity = option.quantity + change;
+        if (newQuantity >= 1 && newQuantity <= option.optionQuantity) {
+            option.quantity = newQuantity;
+            updateSelectedOptionsDisplay();
+        }
+    }
+
+    // 옵션 수량 직접 설정
+    function setOptionQuantity(optionName, quantity) {
+        const option = selectedOptions.get(optionName);
+        if (!option) return;
+
+        const newQuantity = parseInt(quantity);
+        if (newQuantity >= 1 && newQuantity <= option.optionQuantity) {
+            option.quantity = newQuantity;
+            updateSelectedOptionsDisplay();
+        }
+    }
+
+    // 옵션 제거
+    function removeOption(optionName) {
+        selectedOptions.delete(optionName);
+
+        // 해당 옵션의 select 요소 초기화
+        const selectElement = document.querySelector(`[data-option-name="${optionName}"]`);
+        if (selectElement) {
+            selectElement.value = '';
+        }
+
+        updateSelectedOptionsDisplay();
+    }
+
+    // 총 가격 계산 및 표시
+    function updateTotalPrice() {
+        const totalPriceDiv = document.getElementById('totalPrice');
+        const totalAmountDiv = document.getElementById('totalAmount');
+
+        if (selectedOptions.size === 0) {
+            totalPriceDiv.style.display = 'none';
+            return;
+        }
+
+        let totalAmount = 0;
+        selectedOptions.forEach(option => {
+            totalAmount += (basePrice + option.optionPrice) * option.quantity;
+        });
+
+        totalPriceDiv.style.display = 'block';
+        totalAmountDiv.textContent = totalAmount.toLocaleString() + '원';
+    }
+
+    // 구매 버튼 활성화/비활성화
+    function updatePurchaseButtons() {
+        const cartBtn = document.getElementById('cartBtn');
+        const buyBtn = document.getElementById('buyBtn');
+        const quantityInput = document.getElementById('quantity');
+
+        let canPurchase = false;
+
+        if (options && options.length > 0) {
+            // 옵션이 있는 상품: 모든 옵션 그룹에서 선택이 되어야 함
+            const optionGroups = new Set(options.map(opt => opt.optionName));
+            canPurchase = selectedOptions.size === optionGroups.size && selectedOptions.size > 0;
+        } else {
+            // 옵션이 없는 상품: 수량만 확인
+            canPurchase = quantityInput && parseInt(quantityInput.value) > 0;
+        }
+
+        cartBtn.disabled = !canPurchase;
+        buyBtn.disabled = !canPurchase;
+    }
+
+    // 페이지 로드 시 초기 설정
+    document.addEventListener('DOMContentLoaded', function() {
+        updatePurchaseButtons();
+
+        // 옵션이 없는 경우 수량 변경 시 버튼 상태 업데이트
+        const quantityInput = document.getElementById('quantity');
+        if (quantityInput) {
+            quantityInput.addEventListener('change', updatePurchaseButtons);
+        }
+    });
+
+    // 장바구니 담기
+    document.getElementById('cartBtn').addEventListener('click', function() {
+        if (this.disabled) return;
+
+        let cartItems = [];
+
+        if (options && options.length > 0) {
+            // 옵션이 있는 상품: 선택된 옵션들을 장바구니에 추가
+            selectedOptions.forEach((option, optionName) => {
+                cartItems.push({
+                    productCode: productCode,
+                    optionCode: option.optionCode,
+                    quantity: option.quantity
+                });
+            });
+        } else {
+            // 옵션이 없는 상품: 기본 수량으로 추가
+            const quantity = parseInt(document.getElementById('quantity').value);
+            cartItems.push({
+                productCode: productCode,
+                optionCode: null,
+                quantity: quantity
+            });
+        }
+
+        // 서버로 장바구니 데이터 전송
+        $.ajax({
+            url: '/cart/add',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ cartItems: cartItems }),
+            success: function(response) {
+                if (response.status) {
+                    alert(response.message);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                alert('장바구니 담기에 실패했습니다.');
+            }
+        });
+    });
+
+    // 바로 구매
+    document.getElementById('buyBtn').addEventListener('click', function() {
+        if (this.disabled) return;
+
+        // 바로 구매 로직
+        alert('주문 페이지로 이동합니다.');
+    });
 </script>
 </body>
 </html>

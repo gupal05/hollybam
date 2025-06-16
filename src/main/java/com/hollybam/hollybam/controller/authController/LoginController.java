@@ -27,9 +27,11 @@ public class LoginController {
     @PostMapping("/loginResult")
     @ResponseBody
     public Map<String, Object> loginResult(@ModelAttribute MemberDto memberDto) {
-        System.out.println(memberDto);
         Map<String, Object> result = new HashMap<>();
         if(loginService.login(memberDto)) {
+            session.removeAttribute("temp");
+            memberDto = loginService.getMemberInfo(memberDto.getMemberId());
+            System.out.println(memberDto);
             session.setAttribute("member", memberDto);
             result.put("loginResult", true);
         } else {

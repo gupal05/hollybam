@@ -671,23 +671,30 @@
     <div class="inner-box">
         <div class="section-title">베스트 상품</div>
         <div class="product-row">
-            <article class="v4-product">
-                <a class="card-product-widget" href="#">
+            <article class="v4-product" th:each="product : ${proList}">
+                <a class="card-product-widget" th:href="@{'/product/' + ${product.productId}}">
                     <div class="card-product-top-text">HOT🔥</div>
                     <div class="card-product-img">
                         <img class="product-img"
-                             th:src="@{/images/홀리밤 피스톤 머시 (10종 구성).png}"
-                             th:attr="data-hover=@{/images/홀리밤 피스톤 머시 (10종 구성).webp}"
+                             th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
+                             th:if="${product.imageDtoList[0].imageWebp != null}"
+                             th:attr="data-hover=@{/testImage/{hover}(hover=${product.imageDtoList[0].imageWebp})}"
+                             alt="상품 이미지" />
+                        <img class="product-img"
+                             th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
+                             th:unless="${product.imageDtoList[0].imageWebp != null}"
                              alt="상품 이미지" />
                     </div>
                     <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 피스톤 머신</p>
+                        <p class="card-product-title" th:text="${product.productName}">상품 이름</p>
                         <div class="card-product-price">
                             <div class="sale-perc">25%</div>
-                            <div class="sale_price">₩150,000</div>
-                            <div class="regular_price">₩200,000</div>
+                            <div class="sale_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '₩'">₩150,000</div>
+                            <div class="regular_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '₩'">₩200,000</div>
                         </div>
-                        <div class="card-product-description">프리미엄 품질의 홀리밤 피스톤 머신 10종 구성</div>
+                        <div class="card-product-description" th:text="${product.productDescription}">
+                            상품 설명
+                        </div>
                         <div class="product_review_container">
                             <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             <span>45</span>
@@ -702,95 +709,6 @@
                     </button>
                 </div>
             </article>
-
-            <article class="v4-product">
-                <a class="card-product-widget" th:href="@{/product/productDetail}">
-                    <div class="card-product-img">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm.jpg}" alt="상품 이미지"/>
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">귀엽고 섹시한 니아 165cm</p>
-                        <div class="card-product-price">
-                            <div class="sale_price">₩3,500,000</div>
-                        </div>
-                        <div class="card-product-description">프리미엄 품질의 165cm 니아</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>32</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.8 (15)</span>
-                        </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
-
-            <article class="v4-product">
-                <a class="card-product-widget" href="#">
-                    <div class="card-product-top-text">NEW✨</div>
-                    <div class="card-product-img">
-                        <img class="product-img"
-                             th:src="@{/images/홀 래빗 진동 흡입기.png}"
-                             th:attr="data-hover=@{/images/홀 래빗 진동 흡입기.webp}"
-                             alt="상품 이미지" />
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀 래빗 진동 흡입기</p>
-                        <div class="card-product-price">
-                            <div class="sale-perc">26%</div>
-                            <div class="sale_price">₩89,000</div>
-                            <div class="regular_price">₩120,000</div>
-                        </div>
-                        <div class="card-product-description">고급스러운 홀 래빗 진동 흡입기</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>28</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.7 (18)</span>
-                        </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86-8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
-            <article class="v4-product">
-                <a class="card-product-widget" href="#">
-                    <div class="card-product-img">
-                        <img class="product-img"
-                             th:src="@{/images/홀리밤 페어리 딜도.png}"
-                             th:attr="data-hover=@{/images/홀리밤 페어리 딜도.webp}"
-                             alt="상품 이미지" />
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 페어리 딜도</p>
-                        <div class="card-product-price">
-                            <div class="sale-perc">92%</div>
-                            <div class="sale_price">₩79,000</div>
-                            <div class="regular_price">₩1,000,000</div>
-                        </div>
-                        <div class="card-product-description">프리미엄 품질의 홀리밤 페어리 딜도</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>45</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.9 (23)</span>
-                        </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
-
         </div>
         <div class="instagramtoon-section">
             <div class="section-title">홀리밤 인스타 툰</div>
@@ -977,15 +895,18 @@
             const originalSrc = img.getAttribute("src");
             const hoverSrc = img.getAttribute("data-hover");
 
-            img.addEventListener("mouseenter", () => {
-                img.setAttribute("src", hoverSrc);
-            });
+            if (hoverSrc) { // hover 이미지가 있는 경우만 처리
+                img.addEventListener("mouseenter", () => {
+                    img.setAttribute("src", hoverSrc);
+                });
 
-            img.addEventListener("mouseleave", () => {
-                img.setAttribute("src", originalSrc);
-            });
+                img.addEventListener("mouseleave", () => {
+                    img.setAttribute("src", originalSrc);
+                });
+            }
         });
     });
+
 </script>
 
 </body>

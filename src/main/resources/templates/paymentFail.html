@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>결제 실패 - 홀리밤</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+    <link th:href="@{/css/header.css}" rel="stylesheet"/>
+    <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            line-height: 1.6;
+            color: #333;
+            padding-top: 80px;
+        }
+
+        .main-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fail-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .fail-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        .fail-icon i {
+            color: white;
+            font-size: 32px;
+        }
+
+        .fail-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .fail-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .error-details {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+            word-break: break-word;
+            max-width: 60%;
+        }
+
+        .error-message {
+            background: #fff2f2;
+            border: 1px solid #ffcccc;
+            color: #d63060;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+            min-width: 120px;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #EE386D 0%, #d63060 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(238, 56, 109, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(238, 56, 109, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .help-section {
+            background: #f8f9ff;
+            border: 1px solid #d6d9ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .help-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4c63d2;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-list li {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .help-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #4c63d2;
+            font-weight: bold;
+        }
+
+        .contact-info {
+            background: #fff8f0;
+            border: 1px solid #ffd6a5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .contact-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #d63060;
+            margin-bottom: 12px;
+        }
+
+        .contact-details {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .contact-phone {
+            font-size: 18px;
+            font-weight: 700;
+            color: #EE386D;
+            margin: 8px 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px 16px;
+            }
+
+            .error-details {
+                padding: 20px;
+                border-radius: 16px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: none;
+            }
+
+            .fail-title {
+                font-size: 24px;
+            }
+
+            .fail-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .fail-icon i {
+                font-size: 24px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .detail-value {
+                text-align: left;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 메인 컨테이너 -->
+<div class="main-container">
+    <!-- 실패 헤더 -->
+    <div class="fail-header">
+        <div class="fail-icon">
+            <i class="fas fa-times"></i>
+        </div>
+        <h1 class="fail-title">결제에 실패했습니다</h1>
+        <p class="fail-subtitle">결제 처리 중 문제가 발생했습니다. 다시 시도해 주세요.</p>
+    </div>
+
+    <!-- 오류 상세 정보 -->
+    <div class="error-details">
+        <div class="detail-row" th:if="${orderId}">
+            <span class="detail-label">주문번호</span>
+            <span class="detail-value" th:text="${orderId}">ORDER_20241216_12345678</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">실패 시간</span>
+            <span class="detail-value" th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2024-12-16 14:30:25</span>
+        </div>
+        <div class="detail-row" th:if="${errorMsg}">
+            <span class="detail-label">실패 사유</span>
+            <span class="detail-value" th:text="${errorMsg}">카드 한도 초과</span>
+        </div>
+
+        <div class="error-message" th:if="${errorMsg}">
+            <strong>오류 내용:</strong><br>
+            <span th:text="${errorMsg}">결제 승인이 거절되었습니다. 카드사에 문의하시거나 다른 결제 수단을 이용해 주세요.</span>
+        </div>
+
+        <!-- 기본 오류 메시지 (errorMsg가 없을 때) -->
+        <div class="error-message" th:unless="${errorMsg}">
+            <strong>일반적인 실패 사유:</strong><br>
+            • 카드 한도 초과 또는 잔액 부족<br>
+            • 카드 정보 입력 오류<br>
+            • 네트워크 연결 문제<br>
+            • 카드사 시스템 점검 중<br>
+            • 해외 결제 차단 설정
+        </div>
+    </div>
+
+    <!-- 액션 버튼 -->
+    <div class="action-buttons">
+        <button class="btn btn-secondary" onclick="history.back()">
+            <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
+            다시 시도
+        </button>
+        <a href="/cart" class="btn btn-primary">
+            <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i>
+            장바구니로
+        </a>
+    </div>
+
+    <!-- 도움말 섹션 -->
+    <div class="help-section">
+        <div class="help-title">
+            <i class="fas fa-question-circle"></i>
+            결제 실패 시 해결 방법
+        </div>
+        <ul class="help-list">
+            <li>카드 정보(카드번호, 유효기간, CVC)를 정확히 입력했는지 확인해 주세요.</li>
+            <li>카드 한도나 계좌 잔액이 충분한지 확인해 주세요.</li>
+            <li>해외 결제나 온라인 결제가 차단되어 있지 않은지 카드사에 문의해 주세요.</li>
+            <li>다른 카드나 결제 수단(계좌이체, 가상계좌 등)을 이용해 보세요.</li>
+            <li>브라우저의 쿠키와 캐시를 삭제하고 다시 시도해 주세요.</li>
+            <li>문제가 지속되면 고객센터로 연락해 주세요.</li>
+        </ul>
+    </div>
+
+    <!-- 고객센터 연락처 -->
+    <div class="contact-info">
+        <div class="contact-title">문제가 해결되지 않으시나요?</div>
+        <div class="contact-details">
+            홀리밤 고객센터로 연락해 주시면<br>
+            신속하게 도움을 드리겠습니다.
+        </div>
+        <div class="contact-phone">📞 1588-0000</div>
+        <div class="contact-details">
+            운영시간: 평일 09:00-18:00 (주말, 공휴일 휴무)<br>
+            이메일: support@hollybam.com
+        </div>
+    </div>
+</div>
+
+<!-- 고정 풋터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    $(document).ready(function() {
+        // 실패 아이콘 애니메이션
+        $('.fail-icon').css({
+            'transform': 'scale(0)',
+            'opacity': '0'
+        }).animate({
+            'opacity': '1'
+        }, 300).animate({
+            'transform': 'scale(1)'
+        }, 200);
+
+        // 오류 상세 정보 슬라이드 인 효과
+        $('.error-details').css({
+            'transform': 'translateY(30px)',
+            'opacity': '0'
+        }).delay(200).animate({
+            'opacity': '1',
+            'transform': 'translateY(0)'
+        }, 400);
+
+        // 결제 실패 로그 (분석용)
+        logPaymentFailure();
+    });
+
+    function logPaymentFailure() {
+        const failureData = {
+            orderId: /*[[${orderId}]]*/ null,
+            errorMsg: /*[[${errorMsg}]]*/ null,
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            url: window.location.href
+        };
+
+        // 실패 로그를 서버에 전송 (선택사항)
+        /*
+        $.ajax({
+            url: '/payment/log-failure',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(failureData),
+            success: function() {
+                console.log('Payment failure logged');
+            },
+            error: function() {
+                console.log('Failed to log payment failure');
+            }
+        });
+        */
+    }
+
+    // 다시 시도 버튼 기능 개선
+    function retryPayment() {
+        // 로컬 스토리지에서 이전 결제 정보 확인
+        const savedCartData = localStorage.getItem('cartCodes');
+        if (savedCartData) {
+            // 장바구니 코드가 있으면 결제 페이지로 이동
+            const cartCodes = JSON.parse(savedCartData);
+            window.location.href = '/payment/checkout?cartCodes=' + cartCodes.join(',');
+        } else {
+            // 없으면 장바구니로 이동
+            window.location.href = '/cart';
+        }
+    }
+
+    // 페이지 새로고침 방지 (의도하지 않은 재시도 방지)
+    let isRetrying = false;
+
+    $('button, a').click(function() {
+        if (isRetrying) {
+            return false;
+        }
+        isRetrying = true;
+
+        // 2초 후 다시 클릭 가능하도록 설정
+        setTimeout(function() {
+            isRetrying = false;
+        }, 2000);
+    });
+</script>
+</body>
+</html>

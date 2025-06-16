@@ -39,4 +39,16 @@ public class SignupService implements IF_SignupService{
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    @Transactional
+    public MemberDto getGuestInfo(String uuId){
+        return signupDao.getGuestInfo(uuId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteGuestByUuid(String uuid){
+        signupDao.deleteGuestByUuid(uuid);
+    }
 }

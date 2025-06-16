@@ -24,4 +24,9 @@ public class MemberDto {
     private String memberGender;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
+
+    private boolean isAdultVerified;
+    private LocalDateTime adultVerifiedAt;
+    private boolean isDeleted;
+    private LocalDateTime deletedAt;
 }

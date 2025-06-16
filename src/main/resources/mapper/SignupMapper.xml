@@ -25,5 +25,19 @@
         where mem_id = #{memberId}
     </select>
 
+    <select id="getGuestInfo" parameterType="String" resultType="com.hollybam.hollybam.dto.MemberDto">
+        select guest_birth as memberBirth,
+               guest_gender as memberGender,
+               guest_phone as memberPhone,
+               is_adult_verified as isAdultVerified,
+               adult_verified_at as adultVerifiedAt
+        from guest_user
+        where guest_uuid = #{uuid}
+    </select>
+
+    <delete id="deleteGuestByUuid">
+        DELETE FROM guest_user WHERE guest_uuid = #{uuid}
+    </delete>
+
 
 </mapper>

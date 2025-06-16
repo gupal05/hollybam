@@ -2,6 +2,7 @@ package com.hollybam.hollybam.controller;
 
 import com.hollybam.hollybam.dto.CertificationDto;
 import com.hollybam.hollybam.services.CertificationService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 // 본인 인증을 위한 controller
 @RestController
@@ -21,7 +24,7 @@ public class CertificationController {
     }
 
     @PostMapping("/verify-cert")
-    public ResponseEntity<?> verifyCert(@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> verifyCert(@RequestBody Map<String, String> body, HttpSession session) {
         String impUid = body.get("imp_uid");
 
         if (impUid == null || impUid.isBlank()) {
@@ -30,17 +33,33 @@ public class CertificationController {
 
         try {
             CertificationDto result = certificationService.verifyAdultByImpUid(impUid);
-            System.out.println("인증 결과: " + result); // 여기서 사용자 정보 출력
+            if (result.isAdult()) {
+                // 세션 UUID 발급 또는 기존 세션 유지
+                String guestUuid = Optional.ofNullable((String) session.getAttribute("guest_uuid"))
+                        .orElse(UUID.randomUUID().toString());
 
-            return ResponseEntity.ok(Map.of(
-                    "adult", result.isAdult(),
-                    "message", result.isAdult() ? "성인 인증 완료" : "성인 인증 실패"
-            ));
+                session.setAttribute("guest_uuid", guestUuid);
+
+                // guest_user DB 저장
+                certificationService.saveGuestUser(guestUuid, result);
+
+                return ResponseEntity.ok(Map.of(
+                        "adult", true,
+                        "message", "성인 인증 완료"
+                ));
+            } else {
+                return ResponseEntity.ok(Map.of(
+                        "adult", false,
+                        "message", "19세 미만은 접근할 수 없습니다."
+                ));
+            }
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "서버 오류: " + e.getMessage()));
         }
     }
+
 
 }
 

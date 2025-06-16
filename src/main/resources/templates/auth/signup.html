@@ -6,6 +6,8 @@
     <title>HollyBam - 회원가입</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+    <!-- kakao 주소 api -->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
     <!-- header.css 외부 CSS 파일 포함 -->
     <link rel="stylesheet" th:href="@{/css/header.css}"/>
@@ -426,6 +428,8 @@
     </style>
 </head>
 <body>
+
+
 <!-- header -->
 <div th:replace="~{layout/header :: header}"></div>
 <div style="height: 105.8px;"></div>
@@ -507,16 +511,16 @@
                 <div class="form-group">
                     <label class="form-label" for="memberZip">우편번호 <span class="required">*</span></label>
                     <div class="button-group">
-                        <input type="text" id="memberZip" name="memberZip" th:field="*{memberZip}" class="form-input" placeholder="우편번호" required>
-                        <button type="button" class="btn-secondary">주소검색</button>
+                        <input type="text" id="memberZip" name="memberZip" th:field="*{memberZip}" class="form-input" placeholder="우편번호" readonly required>
+                        <button type="button" class="btn-secondary" id="find-addr-btn">주소검색</button>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">주소 <span class="required">*</span></label>
                     <div class="address-group">
-                        <input type="text" class="form-input" id="firstAddr" th:field="*{memberAddr}" placeholder="기본주소">
-                        <input type="text" class="form-input" id="secAddr" placeholder="나머지 주소(선택 입력 가능)">
+                        <input type="text" class="form-input" id="firstAddr" th:field="*{memberAddr}" readonly placeholder="기본주소">
+                        <input type="text" class="form-input" id="secAddr" placeholder="상세 주소">
                     </div>
                 </div>
 
@@ -861,9 +865,50 @@
         </form>
     </div>
 </div>
+<input type="hidden" id="adultVerifiedAt" name="adultVerifiedAt">
+
 <div style="display: none">
     <form th:action="@{/auth/login}" method="get" id="move-page-form"></form>
 </div>
+<script th:inline="javascript">
+    let guestInfo = /*[[${guestInfo}]]*/ {};
+
+    if (guestInfo) {
+        // 전화번호 분리: 010-2349-1054
+        if (guestInfo.memberPhone) {
+            let phone = guestInfo.memberPhone;
+            let first = phone.substring(0, 3);
+            let second = phone.substring(3, 7);
+            let third = phone.substring(7);
+            document.getElementById('firstPhone').value = first;
+            document.getElementById('secPhone').value = second;
+            document.getElementById('trdPhone').value = third;
+        }
+
+        // 생년월일: 1998-10-26
+        if (guestInfo.memberBirth) {
+            const birth = guestInfo.memberBirth.split('-');
+            document.getElementById('year').value = birth[0];
+            document.getElementById('month').value = birth[1];
+            document.getElementById('day').value = birth[2];
+        }
+
+        // 성별
+        if (guestInfo.memberGender) {
+            const gender = guestInfo.memberGender;
+            if (gender === '남자') {
+                document.getElementById('male').checked = true;
+            } else if (gender === '여자') {
+                document.getElementById('female').checked = true;
+            }
+        }
+
+        if (guestInfo && guestInfo.adultVerifiedAt) {
+            document.getElementById('adultVerifiedAt').value = guestInfo.adultVerifiedAt;
+        }
+    }
+</script>
+
 <script>
     function isValidDate(year, month, day) {
         const dateStr = `${year}-${month}-${day}`;
@@ -903,7 +948,8 @@
                 memberAddr: $('#firstAddr').val() + $('#secAddr').val(),
                 memberPhone: $('#firstPhone').val() + $('#secPhone').val() + $('#trdPhone').val(),
                 memberBirth: fullDate,  // 여기도 명시적으로 보냄
-                memberGender: $('input[name="memberGender"]:checked').val()
+                memberGender: $('input[name="memberGender"]:checked').val(),
+                adultVerifiedAt: $('#adultVerifiedAt').val()
             };
 
             // AJAX 요청 보내기 (예: POST 방식)
@@ -1016,6 +1062,18 @@
             $('#passwordConfirmError').hide();
         }
     });
+
+    $('#find-addr-btn').on('click', function(){
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 우편번호
+                $('#memberZip').val(data.zonecode);
+                // 도로명 및 지번주소
+                $("#firstAddr").val(data.roadAddress);
+            }
+        }).open();
+    });
+
 </script>
 </body>
 </html>

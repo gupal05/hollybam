@@ -115,6 +115,8 @@
                 JOIN price pr ON p.product_code = pr.product_code
                 LEFT JOIN image title_img ON p.product_code = title_img.product_code AND title_img.image_type = 'title'
                 LEFT JOIN image webp_img ON p.product_code = webp_img.product_code AND webp_img.image_type = 'webp'
+        WHERE
+            p.product_active = 1
         ORDER BY p.product_order_count DESC
     </select>
 
@@ -139,6 +141,7 @@
             p.product_active = 1
         ORDER BY
             p.create_at DESC
+        LIMIT 4
     </select>
 
 

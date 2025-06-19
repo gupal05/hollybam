@@ -38,6 +38,7 @@ public class HomeController {
     public ModelAndView mainPage(ModelAndView mav, RedirectAttributes rttr){
         List<ProductDto> proList = productService.selectBestProducts();
         List<ProductDto> newProList = productService.selectNewProducts();
+        System.out.println(newProList.size());
         mav.addObject("proList", proList);
         mav.addObject("newProList", newProList);
         mav.setViewName("main");

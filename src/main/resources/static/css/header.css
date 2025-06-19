@@ -1,0 +1,425 @@
+/* header.css - z-index 문제 해결 */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 105.8px;
+    background: linear-gradient(to bottom, rgba(196, 30, 80, 0.9), rgba(238, 56, 109, 0));
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    transition: height 0.3s ease;
+    z-index: 1000; /* 헤더가 가장 위에 보이도록 */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-weight: bold;
+    padding: 0 20px;
+    color: white;
+}
+
+.header-nav {
+    flex: 1;
+    text-align: center;
+}
+
+.nav-group {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.nav-group-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;  /* 아이콘 수직 정렬 추가 */
+    gap: 15px;
+    flex-wrap: wrap;
+    font-size: 28px;
+    font-weight: 100;
+    color: white;
+}
+
+.nav-group div {
+    cursor: pointer;
+}
+
+/* 배경 블러 오버레이 - 헤더 아래 영역만 (덜 어둡게 수정) */
+.dropdown-backdrop {
+    position: fixed;
+    top: 105.8px;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 105.8px);
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    z-index: 998; /* 드롭다운보다 아래 */
+    pointer-events: none;
+}
+
+/* 스크롤 시 헤더 높이가 줄어들 때 */
+.header-scrolled .dropdown-backdrop {
+    top: 58.5px;
+    height: calc(100vh - 58.5px);
+}
+
+.nav-item:hover .dropdown-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 로마 스타일 드롭다운 - 헤더 아래에 위치하도록 수정 */
+.nav-item {
+    position: relative;
+    display: inline-block;
+}
+
+/* 호버 영역을 확장하기 위한 가상 요소 */
+.nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: -20px;
+    right: -20px;
+    height: 15px;
+    background: transparent;
+    z-index: 1001; /* 헤더보다 약간 높게 설정하여 호버 감지 */
+}
+
+.dropdown {
+    position: fixed;
+    top: 105.8px; /* 헤더 바로 아래 */
+    left: 0;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    z-index: 999; /* 헤더보다 아래 */
+    width: 100%;
+    padding-top: 40px; /* 헤더 아래 여백만 */
+    padding-left: 60px;
+    padding-right: 60px;
+    padding-bottom: 40px;
+    border: none;
+}
+
+.header-scrolled .dropdown {
+    top: 58.5px;
+    padding-top: 40px;
+}
+
+.nav-item:hover .dropdown,
+.dropdown:hover {
+    opacity: 1;
+    visibility: visible;
+}
+
+.dropdown-content {
+    display: flex;
+    justify-content: center;  /* 가운데 정렬 */
+    gap: 60px;
+    margin: 0 auto;
+    overflow-x: auto;         /* 가로 스크롤 허용 */
+    white-space: nowrap;      /* 줄 바꿈 방지 */
+    max-width: 100%;
+    scroll-behavior: smooth;
+}
+
+.dropdown-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-column-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: #333333;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.dropdown-column-title-link {
+    text-decoration: none;
+    color: inherit;
+    display: block; /* div처럼 동작하게 함 */
+}
+
+.dropdown-item {
+    margin: 0;
+    padding: 0;
+}
+
+.category-link {
+    display: block;
+    text-decoration: none;
+    color: #666666;
+    font-weight: 400;
+    font-size: 14px;
+    padding: 8px 0;
+    transition: color 0.2s ease;
+    line-height: 1.4;
+}
+
+.category-link:hover {
+    color: #ee386d;
+}
+
+/* 드롭다운 화살표 제거 (로마 스타일에는 없음) */
+.dropdown::before {
+    display: none;
+}
+
+/* 사용자 드롭다운 스타일 */
+.user-nav-item {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;  /* 아이콘 중앙 정렬 */
+}
+
+.user-nav-item i {
+    transition: color 0.2s ease;
+    display: flex;  /* 아이콘 내부 정렬 */
+    align-items: center;
+    justify-content: center;
+}
+
+.user-nav-item:hover i {
+    color: #ee386d;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;  /* 중앙 정렬을 위해 변경 */
+    transform: translateX(-50%) translateY(-10px);  /* X축 중앙 정렬 추가 */
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    z-index: 1002;
+    min-width: 180px;
+    overflow: hidden;
+}
+
+.user-nav-item:hover .user-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);  /* 호버 시에도 중앙 유지 */
+}
+
+.user-dropdown-content {
+    padding: 8px 0;
+}
+
+.user-dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333333;
+    font-size: 14px;
+    font-weight: 400;
+    transition: all 0.2s ease;
+}
+
+.user-dropdown-link:hover {
+    background-color: #f8f8f8;
+    color: #ee386d;
+}
+
+.user-dropdown-link i {
+    width: 16px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.user-dropdown-divider {
+    height: 1px;
+    background-color: #f0f0f0;
+    margin: 8px 0;
+}
+
+.user-dropdown-link.logout {
+    color: #666666;
+}
+
+.user-dropdown-link.logout:hover {
+    color: #ff4444;
+}
+
+.user-dropdown-link.login {
+    color: #ee386d;
+    font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .dropdown-content {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 40px;
+    }
+}
+
+@media (max-width: 900px) {
+    .dropdown-content {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+    }
+
+    .dropdown {
+        padding: 30px 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    .header-nav {
+        flex: unset;
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-group {
+        gap: 20px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-group-icon {
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .dropdown {
+        position: static;
+        transform: none;
+        width: 100%;
+        max-width: none;
+        padding: 20px;
+        opacity: 1;
+        visibility: visible;
+        box-shadow: none;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        margin-top: 10px;
+    }
+
+    .dropdown-backdrop {
+        display: none;
+    }
+
+    .nav-item::after {
+        display: none;
+    }
+
+    .dropdown-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .dropdown-column-title {
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+
+    .category-link {
+        padding: 6px 0;
+        font-size: 13px;
+    }
+
+    /* 모바일에서 사용자 드롭다운 */
+    .user-dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+        min-width: auto;
+        width: 100%;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .user-nav-item:hover .user-dropdown {
+        transform: translateY(0);
+    }
+
+    .user-dropdown-content {
+        padding: 20px 0;
+    }
+
+    .user-dropdown-link {
+        padding: 16px 24px;
+        font-size: 16px;
+    }
+
+    .user-dropdown-link i {
+        font-size: 18px;
+    }
+
+    /* 모바일에서 터치를 위한 JavaScript 필요 */
+    .user-nav-item.active .user-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* 모바일 배경 오버레이 */
+    .user-dropdown-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.25s ease;
+        z-index: 1001;
+    }
+
+    .user-nav-item.active .user-dropdown-overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+@media (max-width: 480px) {
+    .dropdown-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .nav-group-icon {
+        font-size: 24px;
+    }
+
+    .header-nav img {
+        width: 70px;
+        height: 22.5px;
+    }
+
+    .user-dropdown-link {
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+}

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.IF_CartDao">
+
+    <!-- 장바구니에 추가 -->
+    <insert id="addToCart" parameterType="com.hollybam.hollybam.dto.CartDto">
+        INSERT INTO cart (mem_code, guest_code, product_code, option_code, quantity)
+        VALUES (
+        <choose>
+            <when test="memCode != null">#{memCode}</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        <choose>
+            <when test="guestCode != null">#{guestCode}</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        #{productCode},
+        <choose>
+            <when test="optionCode != null">#{optionCode}</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        #{quantity}
+        )
+    </insert>
+
+    <!-- 회원 장바구니 목록 조회 - resultMap 사용으로 수정 -->
+    <resultMap id="CartResultMap" type="com.hollybam.hollybam.dto.CartDto">
+        <id property="cartCode" column="cart_code"/>
+        <result property="memCode" column="mem_code"/>
+        <result property="guestCode" column="guest_code"/>
+        <result property="productCode" column="product_code"/>
+        <result property="optionCode" column="option_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="selected" column="selected"/>
+        <result property="createAt" column="create_at"/>
+        <result property="updateAt" column="update_at"/>
+
+        <!-- 조인 객체들 -->
+        <association property="productDto" javaType="com.hollybam.hollybam.dto.ProductDto">
+            <result property="productName" column="product_name"/>
+            <result property="productId" column="product_id"/>
+        </association>
+
+        <association property="productOptionDto" javaType="com.hollybam.hollybam.dto.ProductOptionDto">
+            <result property="optionName" column="option_name"/>
+            <result property="optionValue" column="option_value"/>
+            <result property="optionPrice" column="option_price"/>
+        </association>
+
+        <association property="priceDto" javaType="com.hollybam.hollybam.dto.PriceDto">
+            <result property="priceSelling" column="price_selling"/>
+            <result property="priceOriginal" column="price_original"/>
+        </association>
+
+        <association property="imageDto" javaType="com.hollybam.hollybam.dto.ImageDto">
+            <result property="imageUrl" column="image_url"/>
+        </association>
+    </resultMap>
+
+    <!-- 회원 장바구니 목록 조회 -->
+    <select id="getCartItemsByMember" parameterType="int" resultMap="CartResultMap">
+        SELECT c.cart_code, c.mem_code, c.guest_code, c.product_code, c.option_code,
+               c.quantity, c.selected, c.create_at, c.update_at,
+               p.product_name, p.product_id, pr.price_selling,
+               po.option_name, po.option_value, po.option_price,
+               i.image_url, pr.price_original
+        FROM cart c
+                 JOIN product p ON c.product_code = p.product_code
+                 JOIN price pr ON p.product_code = pr.product_code
+                 LEFT JOIN product_option po ON c.option_code = po.option_code
+                 LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
+        WHERE c.mem_code = #{memCode}
+        ORDER BY c.create_at DESC
+    </select>
+
+    <!-- 비회원 장바구니 목록 조회 -->
+    <select id="getCartItemsByGuest" parameterType="String" resultMap="CartResultMap">
+        SELECT c.cart_code, c.mem_code, c.guest_code, c.product_code, c.option_code,
+               c.quantity, c.selected, c.create_at, c.update_at,
+               p.product_name, p.product_id, pr.price_selling,
+               po.option_name, po.option_value, po.option_price,
+               i.image_url, pr.price_original
+        FROM cart c
+                 JOIN guest_user g ON c.guest_code = g.guest_code
+                 JOIN product p ON c.product_code = p.product_code
+                 JOIN price pr ON p.product_code = pr.product_code
+                 LEFT JOIN product_option po ON c.option_code = po.option_code
+                 LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
+        WHERE g.guest_uuid = #{guestUuid}
+        ORDER BY c.create_at DESC
+    </select>
+
+    <!-- 기존 장바구니 아이템 찾기 -->
+    <select id="findExistingCartItem" parameterType="com.hollybam.hollybam.dto.CartDto" resultType="com.hollybam.hollybam.dto.CartDto">
+        SELECT * FROM cart
+        WHERE product_code = #{productCode}
+        AND (option_code = #{optionCode} OR (option_code IS NULL AND #{optionCode} IS NULL))
+        AND (
+        <choose>
+            <when test="memCode != null and memCode > 0">
+                mem_code = #{memCode}
+            </when>
+            <when test="guestCode != null and guestCode > 0">
+                guest_code = #{guestCode}
+            </when>
+        </choose>
+        )
+    </select>
+
+    <!-- UUID로 guest_code 조회 -->
+    <select id="getGuestCodeByUuid" parameterType="String" resultType="int">
+        SELECT guest_code FROM guest_user WHERE guest_uuid = #{guestUuid}
+    </select>
+
+    <!-- 수량 업데이트 -->
+    <update id="updateCartQuantity">
+        UPDATE cart SET quantity = #{quantity}, update_at = CURRENT_TIMESTAMP
+        WHERE cart_code = #{cartCode}
+    </update>
+
+    <!-- 장바구니 아이템 삭제 -->
+    <delete id="removeFromCart" parameterType="int">
+        DELETE FROM cart WHERE cart_code = #{cartCode}
+    </delete>
+
+    <!-- 누락된 메소드들 추가 -->
+    <delete id="clearCartByMember" parameterType="int">
+        DELETE FROM cart WHERE mem_code = #{memCode}
+    </delete>
+
+    <delete id="clearCartByGuest" parameterType="String">
+        DELETE FROM cart WHERE guest_code = (
+            SELECT guest_code FROM guest_user WHERE guest_uuid = #{guestUuid}
+        )
+    </delete>
+
+    <select id="getCartOwner" parameterType="int" resultType="com.hollybam.hollybam.dto.CartDto">
+        SELECT cart_code, mem_code, guest_code
+        FROM cart
+        WHERE cart_code = #{cartCode}
+    </select>
+
+    <!-- 선택 상태 업데이트 -->
+    <update id="updateCartSelection">
+        UPDATE cart
+        SET selected = #{selected}, update_at = CURRENT_TIMESTAMP
+        WHERE cart_code = #{cartCode}
+    </update>
+
+    <!-- 다중 삭제 -->
+    <delete id="removeMultipleFromCart">
+        DELETE FROM cart
+        WHERE cart_code IN
+        <foreach collection="cartCodes" item="cartCode" open="(" separator="," close=")">
+            #{cartCode}
+        </foreach>
+    </delete>
+
+</mapper>

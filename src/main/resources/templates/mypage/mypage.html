@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>마이페이지 - 홀리밤</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" th:href="@{/css/header.css}"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      line-height: 1.6;
+    }
+
+    /* 메인 컨테이너 */
+    .mypage-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 140px 20px 60px;
+      display: flex;
+      gap: 30px;
+    }
+
+    /* 사이드바 */
+    .sidebar {
+      width: 280px;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      height: fit-content;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 140px;
+    }
+
+    .user-profile {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .profile-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      color: white;
+      font-size: 32px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
+    }
+
+    .user-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 5px;
+    }
+
+    .user-grade {
+      font-size: 14px;
+      color: #EE386D;
+      font-weight: 500;
+    }
+
+    .membership-status {
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+      padding: 15px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .membership-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .points-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .points-label {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .points-value {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu li {
+      margin-bottom: 8px;
+    }
+
+    .sidebar-menu a {
+      display: block;
+      padding: 12px 16px;
+      text-decoration: none;
+      color: #666;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+      background: #EE386D;
+      color: white;
+      transform: translateX(5px);
+    }
+
+    .sidebar-menu i {
+      width: 20px;
+      margin-right: 12px;
+    }
+
+    /* 메인 콘텐츠 */
+    .main-content {
+      flex: 1;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 30px;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    .page-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      border-radius: 2px;
+    }
+
+    /* 주문 내역 카드 */
+    .order-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .order-card {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .order-card:hover {
+      border-color: #EE386D;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(238, 56, 109, 0.15);
+    }
+
+    .order-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      color: white;
+      font-size: 20px;
+    }
+
+    .order-count {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 5px;
+    }
+
+    .order-label {
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    /* 최근 주문 */
+    .recent-orders {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .view-all {
+      font-size: 14px;
+      color: #EE386D;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .order-item {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .order-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .order-date {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .order-status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #EE386D;
+      color: white;
+    }
+
+    .order-products {
+      display: flex;
+      gap: 15px;
+    }
+
+    .product-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      background: #e9ecef;
+      flex-shrink: 0;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .product-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 5px;
+    }
+
+    .product-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: #EE386D;
+      margin-bottom: 5px;
+    }
+
+    .product-quantity {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* 위시리스트 */
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .wishlist-item {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .wishlist-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .wishlist-image {
+      width: 100%;
+      height: 160px;
+      background: #e9ecef;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+
+    .remove-wishlist {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #EE386D;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .remove-wishlist:hover {
+      background: #EE386D;
+      color: white;
+    }
+
+    /* 반응형 */
+    @media (max-width: 1024px) {
+      .mypage-container {
+        flex-direction: column;
+        padding: 120px 20px 60px;
+      }
+
+      .sidebar {
+        width: 100%;
+        position: static;
+      }
+
+      .order-summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mypage-container {
+        padding: 100px 16px 40px;
+        gap: 20px;
+      }
+
+      .sidebar {
+        padding: 25px;
+      }
+
+      .main-content {
+        padding: 30px 20px;
+      }
+
+      .page-title {
+        font-size: 24px;
+        margin-bottom: 25px;
+      }
+
+      .order-summary {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .order-products {
+        flex-direction: column;
+      }
+
+      .wishlist-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 25px 15px;
+      }
+
+      .sidebar {
+        padding: 20px;
+      }
+
+      .wishlist-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .edit-profile-btn {
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .edit-profile-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(238, 56, 109, 0.4);
+    }
+
+    /* 모달 스타일 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: white;
+      margin: 10% auto;
+      padding: 0;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 25px 30px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #666;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: #f8f9fa;
+      color: #EE386D;
+    }
+
+    .modal-body {
+      padding: 20px 30px;
+    }
+
+    .modal-body p {
+      margin: 0 0 20px;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .modal-footer {
+      padding: 20px 30px 30px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-footer .btn {
+      flex: 1;
+      padding: 12px 20px;
+    }
+
+    .modal-error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 10px;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* 모달 내 폼 요소 스타일 조정 */
+    .modal .form-group {
+      margin-bottom: 15px;
+    }
+
+    .modal .form-input {
+      font-size: 14px;
+      padding: 12px 40px 12px 16px;
+    }
+
+    .modal .password-group {
+      position: relative;
+    }
+
+    .modal .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+    }
+
+    /* 반응형 */
+    @media (max-width: 480px) {
+      .modal-content {
+        margin: 20% auto;
+        width: 95%;
+      }
+
+      .modal-header, .modal-body, .modal-footer {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 마이페이지 컨테이너 -->
+<div class="mypage-container">
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <div class="user-profile">
+      <div class="profile-image">
+        <span th:text="${#strings.substring(session.member.memberName, 0, 1)}">홍</span>
+      </div>
+      <div class="user-name" th:text="${session.member.memberName}">홍길동</div>
+      <div class="user-grade">guest 회원</div>
+      <button class="edit-profile-btn" onclick="changePage()">
+        <i class="fas fa-edit"></i> 정보 수정
+      </button>
+    </div>
+
+    <div class="membership-status">
+      <div class="membership-title">Member Since 2025</div>
+      <div class="points-info">
+        <span class="points-label">🎁 쿠폰 0개</span>
+        <span class="points-label">💎 포인트 0원</span>
+      </div>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li><a href="/mypage" class="active"><i class="fas fa-user"></i>계정 정보</a></li>
+      <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+      <li><a href="/mypage/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+      <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
+      <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
+      <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
+    </ul>
+  </aside>
+
+  <!-- 메인 콘텐츠 -->
+  <main class="main-content">
+    <h1 class="page-title">안녕하세요, guest님! 👋</h1>
+
+    <!-- 주문 현황 요약 -->
+    <div class="order-summary">
+      <div class="order-card" style="cursor: pointer;">
+        <div class="order-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="order-label" style="font-weight: bold; color: #1a1a1a;">결제완료</div>
+        <div class="order-count" style="font-weight: bold;">2건</div>
+      </div>
+      <div class="order-card">
+        <div class="order-icon">
+          <i class="fas fa-truck"></i>
+        </div>
+        <div class="order-label" style="font-weight: bold; color: #1a1a1a;">배송중</div>
+        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">1</div>
+      </div>
+      <div class="order-card">
+        <div class="order-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="order-label" style="font-weight: bold; color: #1a1a1a;">배송완료</div>
+        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">5</div>
+      </div>
+      <div class="order-card">
+        <div class="order-icon">
+          <i class="fas fa-undo"></i>
+        </div>
+        <div class="order-label" style="font-weight: bold; color: #1a1a1a;">취소/반품</div>
+        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">0</div>
+      </div>
+      <div class="order-card">
+        <div class="order-icon">
+          <i class="fas fa-headset"></i>
+        </div>
+        <div class="order-count" style="display: none;">0</div>
+        <div class="order-label" style="font-weight: bold; color: #1a1a1a; margin-top: 30px; font-size: 21px;">1:1 문의</div>
+      </div>
+      <div class="order-card">
+        <div class="order-icon">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="order-count" style="display: none;">0</div>
+        <div class="order-label" style="font-weight: bold; color: #1a1a1a; margin-top: 22px; font-size: 21px;">작성한 리뷰</div>
+      </div>
+    </div>
+
+    <!-- 최근 주문 내역 -->
+    <section class="recent-orders">
+      <div class="section-title">
+        최근 주문 내역
+        <a href="#" class="view-all">전체 보기 →</a>
+      </div>
+
+      <div class="order-item">
+        <div class="order-header">
+          <span class="order-date">2025.06.15</span>
+          <span class="order-status">배송중</span>
+        </div>
+        <div class="order-products">
+          <div class="product-image"></div>
+          <div class="product-info">
+            <div class="product-name">홀리밤 프리미엄 세트</div>
+            <div class="product-price">₩150,000</div>
+            <div class="product-quantity">수량: 1개</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-item">
+        <div class="order-header">
+          <span class="order-date">2025.06.10</span>
+          <span class="order-status">배송완료</span>
+        </div>
+        <div class="order-products">
+          <div class="product-image"></div>
+          <div class="product-info">
+            <div class="product-name">홀리밤 스페셜 에디션</div>
+            <div class="product-price">₯89,000</div>
+            <div class="product-quantity">수량: 2개</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 위시리스트 -->
+    <section class="wishlist">
+      <div class="section-title">
+        위시리스트
+        <a href="#" class="view-all">전체 보기 →</a>
+      </div>
+
+      <div class="wishlist-grid">
+        <div class="wishlist-item">
+          <button class="remove-wishlist">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="wishlist-image"></div>
+          <div class="product-name">홀리밤 신상품</div>
+          <div class="product-price">₩120,000</div>
+        </div>
+
+        <div class="wishlist-item">
+          <button class="remove-wishlist">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="wishlist-image"></div>
+          <div class="product-name">홀리밤 베스트셀러</div>
+          <div class="product-price">₩95,000</div>
+        </div>
+
+        <div class="wishlist-item">
+          <button class="remove-wishlist">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="wishlist-image"></div>
+          <div class="product-name">홀리밤 한정판</div>
+          <div class="product-price">₩200,000</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<!-- 비밀번호 확인 모달 -->
+<div id="passwordModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>본인 확인</h3>
+      <button type="button" class="modal-close" onclick="closePasswordModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>정보 수정을 위해 현재 비밀번호를 입력해주세요.</p>
+      <div class="form-group">
+        <label for="modalPassword" class="form-label">현재 비밀번호</label>
+        <div class="password-group">
+          <input type="password" id="modalPassword" class="form-input" placeholder="현재 비밀번호를 입력하세요" autofocus>
+          <button type="button" class="toggle-password" data-target="modalPassword">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      <div id="modalError" class="modal-error" style="display: none;">
+        비밀번호가 올바르지 않습니다. 다시 입력해주세요.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">취소</button>
+      <button type="button" class="btn btn-primary" onclick="verifyPassword()">확인</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 현재 페이지에 따른 사이드바 메뉴 활성화
+  $(document).ready(function() {
+    const currentPath = window.location.pathname;
+    $('.sidebar-menu a').removeClass('active');
+    $(`.sidebar-menu a[href="${currentPath}"]`).addClass('active');
+  });
+
+  // 위시리스트 제거
+  $('.remove-wishlist').on('click', function() {
+    $(this).closest('.wishlist-item').fadeOut(300, function() {
+      $(this).remove();
+    });
+  });
+
+  // 주문 카드 클릭 이벤트
+  $('.order-card').on('click', function() {
+    const orderType = $(this).find('.order-label').text();
+    console.log('주문 카드 클릭:', orderType);
+
+    // 주문 상태별 페이지 이동
+    let filterUrl = '/mypage/orders';
+    switch(orderType) {
+      case '결제완료':
+        filterUrl += '?status=pending';
+        break;
+      case '배송중':
+        filterUrl += '?status=shipping';
+        break;
+      case '배송완료':
+        filterUrl += '?status=delivered';
+        break;
+      case '취소/반품':
+        filterUrl += '?status=cancelled';
+        break;
+    }
+    window.location.href = filterUrl;
+  });
+
+  // changeInfo 함수
+  function changePage() {
+    openPasswordModal();
+  }
+
+  // 비밀번호 모달 열기
+  function openPasswordModal() {
+    document.getElementById('passwordModal').style.display = 'block';
+    document.getElementById('modalPassword').focus();
+
+    // 기존 에러 메시지 숨기기
+    document.getElementById('modalError').style.display = 'none';
+    document.getElementById('modalPassword').value = '';
+  }
+
+  // 비밀번호 모달 닫기
+  function closePasswordModal() {
+    document.getElementById('passwordModal').style.display = 'none';
+    document.getElementById('modalPassword').value = '';
+    document.getElementById('modalError').style.display = 'none';
+  }
+
+  // 비밀번호 확인
+  function verifyPassword() {
+    const password = document.getElementById('modalPassword').value;
+
+    if (!password) {
+      document.getElementById('modalError').textContent = '비밀번호를 입력해주세요.';
+      document.getElementById('modalError').style.display = 'block';
+      return;
+    }
+
+    // 실제 구현 시에는 아래와 같이 서버 검증
+    $.ajax({
+      url: '/auth/verify-password',
+      method: 'POST',
+      data: { memberPw: password },
+      success: function(response) {
+        if (response.valid) {
+          closePasswordModal();
+          window.location.href = '/mypage/profile/edit';
+        } else {
+          document.getElementById('modalError').style.display = 'block';
+        }
+      },
+      error: function() {
+        document.getElementById('modalError').textContent = '서버 오류가 발생했습니다.';
+        document.getElementById('modalError').style.display = 'block';
+      }
+    });
+  }
+
+  // 모달 외부 클릭 시 닫기
+  window.onclick = function(event) {
+    const modal = document.getElementById('passwordModal');
+    if (event.target === modal) {
+      closePasswordModal();
+    }
+  }
+
+  // Enter 키로 확인
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('modalPassword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        verifyPassword();
+      }
+    });
+  });
+</script>
+</body>
+</html>

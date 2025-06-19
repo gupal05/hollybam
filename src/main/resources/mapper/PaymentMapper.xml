@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hollybam.hollybam.dao.IF_PaymentDao">
+
+    <!-- 주문 등록 -->
+    <insert id="insertOrder" parameterType="com.hollybam.hollybam.dto.OrderDto" useGeneratedKeys="true" keyProperty="orderCode">
+        INSERT INTO orders (
+            order_id, mem_code, guest_code,
+            orderer_name, orderer_phone, orderer_email,
+            receiver_name, receiver_phone, receiver_zip, receiver_addr, receiver_addr_detail, delivery_request,
+            payment_method, total_amount, discount_amount, delivery_fee, final_amount,
+            order_status, payment_status, adult_verified, adult_verified_at
+        ) VALUES (
+                     #{orderId}, #{memCode}, #{guestCode},
+                     #{ordererName}, #{ordererPhone}, #{ordererEmail},
+                     #{receiverName}, #{receiverPhone}, #{receiverZip}, #{receiverAddr}, #{receiverAddrDetail}, #{deliveryRequest},
+                     #{paymentMethod}, #{totalAmount}, #{discountAmount}, #{deliveryFee}, #{finalAmount},
+                     #{orderStatus}, #{paymentStatus}, #{adultVerified}, #{adultVerifiedAt}
+                 )
+    </insert>
+
+    <!-- 주문 상품 등록 -->
+    <insert id="insertOrderItems" parameterType="list">
+        INSERT INTO order_items (
+        order_code, product_code, option_code, quantity, unit_price, option_price, total_price
+        ) VALUES
+        <foreach collection="orderItems" item="item" separator=",">
+            (#{item.orderCode}, #{item.productCode}, #{item.optionCode}, #{item.quantity},
+            #{item.unitPrice}, #{item.optionPrice}, #{item.totalPrice})
+        </foreach>
+    </insert>
+
+    <!-- 주문 조회 -->
+    <select id="selectOrderByOrderId" parameterType="string" resultType="com.hollybam.hollybam.dto.OrderDto">
+        SELECT
+            order_code, order_id, mem_code, guest_code,
+            orderer_name, orderer_phone, orderer_email,
+            receiver_name, receiver_phone, receiver_zip, receiver_addr, receiver_addr_detail, delivery_request,
+            payment_method, total_amount, discount_amount, delivery_fee, final_amount,
+            imp_uid, pg_provider, pg_tid,
+            order_status, payment_status, adult_verified, adult_verified_at,
+            create_at, update_at
+        FROM orders
+        WHERE order_id = #{orderId}
+    </select>
+
+    <!-- 회원 주문 목록 조회 -->
+    <select id="selectOrdersByMember" parameterType="int" resultType="com.hollybam.hollybam.dto.OrderDto">
+        SELECT
+            order_code, order_id, mem_code, guest_code,
+            orderer_name, orderer_phone, orderer_email,
+            receiver_name, receiver_phone, receiver_zip, receiver_addr, receiver_addr_detail, delivery_request,
+            payment_method, total_amount, discount_amount, delivery_fee, final_amount,
+            imp_uid, pg_provider, pg_tid,
+            order_status, payment_status, adult_verified, adult_verified_at,
+            create_at, update_at
+        FROM orders
+        WHERE mem_code = #{memCode}
+        ORDER BY create_at DESC
+    </select>
+
+    <!-- 비회원 주문 목록 조회 -->
+    <select id="selectOrdersByGuest" parameterType="int" resultType="com.hollybam.hollybam.dto.OrderDto">
+        SELECT
+            order_code, order_id, mem_code, guest_code,
+            orderer_name, orderer_phone, orderer_email,
+            receiver_name, receiver_phone, receiver_zip, receiver_addr, receiver_addr_detail, delivery_request,
+            payment_method, total_amount, discount_amount, delivery_fee, final_amount,
+            imp_uid, pg_provider, pg_tid,
+            order_status, payment_status, adult_verified, adult_verified_at,
+            create_at, update_at
+        FROM orders
+        WHERE guest_code = #{guestCode}
+        ORDER BY create_at DESC
+    </select>
+
+    <!-- 주문 상태 업데이트 -->
+    <update id="updateOrderStatus">
+        UPDATE orders
+        SET order_status = #{status}, update_at = CURRENT_TIMESTAMP
+        WHERE order_id = #{orderId}
+    </update>
+
+    <!-- 결제 정보 업데이트 -->
+    <update id="updatePaymentInfo">
+        UPDATE orders
+        SET imp_uid = #{impUid},
+            pg_provider = #{pgProvider},
+            pg_tid = #{pgTid},
+            payment_status = #{paymentStatus},
+            update_at = CURRENT_TIMESTAMP
+        WHERE order_id = #{orderId}
+    </update>
+
+    <!-- 장바구니 상품 정보 조회 (상품, 옵션, 가격, 이미지 정보 포함) -->
+    <select id="selectCartItemsWithDetails" parameterType="list" resultMap="CartResultMap">
+        SELECT
+        c.cart_code, c.mem_code, c.guest_code, c.product_code, c.option_code, c.quantity, c.selected,
+        p.product_name, p.product_description,
+        pr.price_selling,
+        po.option_name, po.option_value, po.option_price,
+        i.image_url
+        FROM cart c
+        INNER JOIN product p ON c.product_code = p.product_code
+        INNER JOIN price pr ON p.product_code = pr.product_code
+        LEFT JOIN product_option po ON c.option_code = po.option_code
+        LEFT JOIN (
+        SELECT product_code, image_url,
+        ROW_NUMBER() OVER(PARTITION BY product_code ORDER BY create_at) as rn
+        FROM image
+        WHERE image_type = 'title'
+        ) i ON p.product_code = i.product_code AND i.rn = 1
+        WHERE c.cart_code IN
+        <foreach collection="cartCodes" item="cartCode" open="(" separator="," close=")">
+            #{cartCode}
+        </foreach>
+        AND c.selected = 1
+    </select>
+
+    <!-- 장바구니 결과 매핑 -->
+    <resultMap id="CartResultMap" type="com.hollybam.hollybam.dto.CartDto">
+        <id property="cartCode" column="cart_code"/>
+        <result property="memCode" column="mem_code"/>
+        <result property="guestCode" column="guest_code"/>
+        <result property="productCode" column="product_code"/>
+        <result property="optionCode" column="option_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="selected" column="selected"/>
+
+        <association property="productDto" javaType="com.hollybam.hollybam.dto.ProductDto">
+            <result property="productName" column="product_name"/>
+            <result property="productDescription" column="product_description"/>
+        </association>
+
+        <association property="priceDto" javaType="com.hollybam.hollybam.dto.PriceDto">
+            <result property="priceSelling" column="price_selling"/>
+        </association>
+
+        <association property="productOptionDto" javaType="com.hollybam.hollybam.dto.ProductOptionDto">
+            <result property="optionName" column="option_name"/>
+            <result property="optionValue" column="option_value"/>
+            <result property="optionPrice" column="option_price"/>
+        </association>
+
+        <association property="imageDto" javaType="com.hollybam.hollybam.dto.ImageDto">
+            <result property="imageUrl" column="image_url"/>
+        </association>
+    </resultMap>
+
+    <!-- 장바구니 상품 삭제 -->
+    <delete id="deleteCartItems" parameterType="list">
+        DELETE FROM cart
+        WHERE cart_code IN
+        <foreach collection="cartCodes" item="cartCode" open="(" separator="," close=")">
+            #{cartCode}
+        </foreach>
+    </delete>
+
+    <!-- 상품 재고 업데이트 -->
+    <update id="updateProductStock">
+        UPDATE product
+        SET product_quantity = product_quantity + #{quantity}
+        WHERE product_code = #{productCode}
+    </update>
+
+    <!-- 옵션 재고 업데이트 -->
+    <update id="updateOptionStock">
+        UPDATE product_option
+        SET option_quantity = option_quantity + #{quantity}
+        WHERE option_code = #{optionCode}
+    </update>
+
+    <!-- 상품 재고 조회 -->
+    <select id="selectProductStock" parameterType="int" resultType="int">
+        SELECT product_quantity
+        FROM product
+        WHERE product_code = #{productCode}
+    </select>
+
+    <!-- 옵션 재고 조회 -->
+    <select id="selectOptionStock" parameterType="int" resultType="int">
+        SELECT option_quantity
+        FROM product_option
+        WHERE option_code = #{optionCode}
+    </select>
+
+    <!-- 회원 성인인증 확인 -->
+    <select id="isAdultVerifiedMember" parameterType="int" resultType="boolean">
+        SELECT is_adult_verified
+        FROM member
+        WHERE mem_code = #{memCode}
+    </select>
+
+    <!-- 비회원 성인인증 확인 -->
+    <select id="isAdultVerifiedGuest" parameterType="int" resultType="boolean">
+        SELECT is_adult_verified
+        FROM guest_user
+        WHERE guest_code = #{guestCode}
+    </select>
+
+    <!-- 비회원 UUID로 코드 조회 -->
+    <select id="selectGuestCodeByUuid" parameterType="string" resultType="int">
+        SELECT guest_code
+        FROM guest_user
+        WHERE guest_uuid = #{guestUuid}
+    </select>
+
+    <!-- 결제 로그 저장 -->
+    <insert id="insertPaymentLog" parameterType="com.hollybam.hollybam.dto.PaymentLogDto">
+        INSERT INTO payment_logs (
+            order_id, imp_uid, merchant_uid, amount, status, pg_provider, pg_tid, pay_method,
+            adult_verified, buyer_birth, verification_method, response_data, error_msg
+        ) VALUES (
+                     #{orderId}, #{impUid}, #{merchantUid}, #{amount}, #{status}, #{pgProvider}, #{pgTid}, #{payMethod},
+                     #{adultVerified}, #{buyerBirth}, #{verificationMethod}, #{responseData}, #{errorMsg}
+                 )
+    </insert>
+
+    <!-- 주문 아이템 조회 -->
+    <select id="selectOrderItemsByOrderCode" parameterType="int" resultType="com.hollybam.hollybam.dto.OrderItemDto">
+        SELECT
+            order_item_code, order_code, product_code, option_code,
+            quantity, unit_price, option_price, total_price, create_at
+        FROM order_items
+        WHERE order_code = #{orderCode}
+    </select>
+
+</mapper>

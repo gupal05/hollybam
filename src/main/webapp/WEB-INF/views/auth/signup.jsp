@@ -1,0 +1,997 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HollyBam - 회원가입</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+
+    <!-- header.css 외부 CSS 파일 포함 -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css"/>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            color: #333;
+        }
+
+        /* 브레드크럼 */
+        .breadcrumb {
+            background: white;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .breadcrumb-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #333;
+        }
+
+        /* 메인 컨테이너 */
+        .main-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* 헤더 */
+        .signup-header {
+            text-align: center;
+            padding: 40px 20px 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .signup-title {
+            font-size: 28px;
+            font-weight: 400;
+            color: #333;
+            margin: 0;
+        }
+
+        /* 소셜 로그인 */
+        .social-login {
+            padding: 30px 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .social-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .social-btn.kakao {
+            background: #fee500;
+            border-color: #fee500;
+            color: #000;
+        }
+
+        .social-btn.naver {
+            background: #03c75a;
+            border-color: #03c75a;
+            color: white;
+        }
+
+        .social-btn.google {
+            border-color: #dadce0;
+        }
+
+        /* 회원 유형 선택 */
+        .member-type {
+            margin-bottom: 25px;
+        }
+
+        .type-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .radio-item input[type="radio"] {
+            margin: 0;
+            accent-color: #333;
+        }
+
+        .radio-item label {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* 폼 */
+        .signup-form {
+            padding: 30px 40px 40px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-input::placeholder {
+            color: #9aa0a6;
+        }
+
+        .input-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* 버튼 그룹 */
+        .button-group {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .button-group .form-input {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            padding: 12px 20px;
+            background: white;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+        }
+
+        /* 주소 검색 */
+        .address-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .address-search {
+            display: flex;
+            gap: 8px;
+        }
+
+        .address-search input {
+            flex: 1;
+        }
+
+        /* 생년월일 */
+        .birth-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .birth-select {
+            padding: 12px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .birth-select:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        /* 성별 선택 */
+        .gender-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* 휴대전화 */
+        .phone-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .phone-group select {
+            width: 80px;
+            padding: 12px 8px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        /* 약관 동의 */
+        .terms-section {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .terms-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .terms-item.all-agree {
+            background: white;
+            border: 2px solid #e0e0e0;
+            font-weight: 500;
+        }
+
+        .terms-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .terms-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terms-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #333;
+        }
+
+        .terms-check label {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .terms-toggle {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .terms-content {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            display: none;
+        }
+
+        /* 제출 버튼 */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: #555;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 20px;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .social-login,
+            .signup-form {
+                padding: 20px;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+            }
+
+            .birth-group,
+            .phone-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .address-search {
+                flex-direction: column;
+            }
+        }
+
+        /* 에러 메시지 */
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<!-- header -->
+<jsp:include page="../layout/header.jsp"></jsp:include>
+<div style="height: 105.8px;"></div>
+<!-- 메인 컨테이너 -->
+<div class="main-container">
+    <!-- 헤더 -->
+    <div class="signup-header">
+        <h1 class="signup-title">회원가입</h1>
+    </div>
+
+    <!-- 소셜 로그인 -->
+    <div class="social-login">
+        <div class="social-buttons">
+            <button class="social-btn kakao">
+                <span>카카오 계정</span>
+            </button>
+            <button class="social-btn naver">
+                <span>네이버 계정</span>
+            </button>
+        </div>
+        <button class="social-btn google">
+            <span>Google 계정</span>
+        </button>
+
+        <!-- 회원인증 -->
+        <div class="member-type">
+            <div class="radio-group">
+                <div class="radio-item">
+                    <input type="radio" id="phoneAuth" name="authType" value="phone" checked>
+                    <label for="phoneAuth">휴대폰인증</label>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" id="ipin" name="authType" value="ipin">
+                    <label for="ipin">이메일인증</label>
+                </div>
+            </div>
+            <div class="input-desc">
+                휴대폰인증<br>
+                본인 명의의 휴대폰으로 본인인증을 진행합니다.
+            </div>
+        </div>
+    </div>
+
+    <!-- 회원가입 폼 -->
+    <div class="signup-form">
+        <form id="signupForm">
+            <div class="form-section">
+                <h3 class="section-title">기본정보 <span style="color: #e74c3c; font-size: 12px;">* 필수입력사항</span></h3>
+
+                <div class="form-group">
+                    <label class="form-label" for="memberName">이름 <span class="required">*</span></label>
+                    <input type="text" id="memberName" name="memberName" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="memberId">아이디 <span class="required">*</span></label>
+                    <div class="button-group">
+                        <input type="text" id="memberId" name="memberId" class="form-input"
+                               placeholder="(영문소문자/숫자, 4~16자)" required>
+                        <button type="button" class="btn-secondary" onclick="checkUserId()">중복확인</button>
+                    </div>
+                    <div class="error-message" id="userIdError"></div>
+                    <div class="success-message" id="userIdSuccess"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="memberPw">비밀번호 <span class="required">*</span></label>
+                    <input type="password" id="memberPw" name="memberPw" class="form-input"
+                           placeholder="(영문 대소문자/숫자/특수문자 중 2가지 이상 조합, 10자~16자)" required>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="passwordConfirm">비밀번호 확인 <span class="required">*</span></label>
+                    <input type="password" id="passwordConfirm" name="passwordConfirm" class="form-input" required>
+                    <div class="error-message" id="passwordConfirmError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="memberZip">우편번호 <span class="required">*</span></label>
+                    <div class="button-group">
+                        <input type="text" id="memberZip" name="memberZip" class="form-input" placeholder="우편번호" required>
+                        <button type="button" class="btn-secondary">주소검색</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">주소 <span class="required">*</span></label>
+                    <div class="address-group">
+                        <input type="text" class="form-input" id="firstAddr" placeholder="기본주소">
+                        <input type="text" class="form-input" id="secAddr" placeholder="나머지 주소(선택 입력 가능)">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">휴대전화 <span class="required">*</span></label>
+                    <div class="phone-group">
+                        <select name="mobileArea" id="firstPhone">
+                            <option value="010">010</option>
+                            <option value="011">011</option>
+                            <option value="016">016</option>
+                        </select>
+                        <span>-</span>
+                        <input type="text" class="form-input" id="secPhone" style="width: 100px;" required>
+                        <span>-</span>
+                        <input type="text" class="form-input" id="trdPhone" style="width: 100px;" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">추가정보</h3>
+
+                <div class="form-group">
+                    <label class="form-label">생년월일 <span class="required">*</span></label>
+                    <div class="birth-group">
+                        <input type="text" class="form-input" id="year" placeholder="년" style="width: 100px;">
+                        <select class="birth-select" id="month" style="width: 80px;">
+                            <option>월</option>
+                            <option value="01">01</option>
+                            <option value="02">02</option>
+                            <option value="03">03</option>
+                            <option value="04">04</option>
+                            <option value="05">05</option>
+                            <option value="06">06</option>
+                            <option value="07">07</option>
+                            <option value="08">08</option>
+                            <option value="09">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                        <input type="text" class="form-input" id="day" placeholder="일" style="width: 80px;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">성별 <span class="required">*</span></label>
+                    <div class="gender-group">
+                        <div class="radio-item">
+                            <input type="radio" id="male" name="gender" value="남자" checked>
+                            <label for="male">남자</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="female" name="gender" value="여자">
+                            <label for="female">여자</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 약관 동의 -->
+            <div class="form-section terms-section">
+                <h3 class="section-title">전체 동의</h3>
+
+                <div class="terms-item all-agree">
+                    <div class="terms-check">
+                        <input type="checkbox" id="allAgree" onchange="toggleAllTerms()">
+                        <label for="allAgree">모든 약관을 확인하고 전체 동의합니다.</label>
+                    </div>
+                    <div class="input-desc">(전체 동의는 필수 및 선택 정보에 대한 동의도 포함되어 있습니다.)</div>
+                </div>
+
+                <div class="terms-item">
+                    <div class="terms-header" onclick="toggleTerms('terms1')">
+                        <div class="terms-check">
+                            <input type="checkbox" id="terms1" name="terms" required onclick="event.stopPropagation()">
+                            <label for="terms1">[필수] 회원약관 동의</label>
+                        </div>
+                        <span class="terms-toggle">▼</span>
+                    </div>
+                    <div class="terms-content" id="terms1Content">
+                        제1장 총칙<br>
+                        <br>
+                        제1조 목적<br>
+                        이 약관은 (주)혜안파트너스(이하 "사이트"로 칭함)가 운영하는 인터넷 쇼핑몰의 회원가입 및 서비스 이용에 대한 이용자의 권리, 의무 및 책임사항을 규정함을 목적으로 한다.<br>
+                        <br>
+                        제2조 정의<br>
+                        사이트가 재화나 용역을 이용자에게 제공하기 위하여 컴퓨터 등 정보통신 설비를 이용하여 재화 또는 용역을 거래할 수 있도록 설정한 인터넷상의 쇼핑몰과 실제로 점포를 운영하는 실물 매장을 말하며,<br>
+                        또한 이를 운영하는 사업자의 의미로도 사용한다.<br>
+                        "이용자"란 사이트에 접속하거나 방문하여 이 약관에 따라 사이트가 제공하는 서비스를 받는 회원 및 비회원을 말한다.<br>
+                        "회원"이라 함은 사이트에 개인정보를 제공하여 회원 등록을 한 자로서,<br>
+                        사이트의 정보를 지속적으로 제공받으며,<br>
+                        사이트가 제공하는 서비스를 계속적으로 이용할 수 있는 자를 말한다.<br>
+                        "비회원"이라 함은 회원에 가입하지 않고 사이트가 제공하는 서비스를 이용하는 자를 말한다.<br>
+                        <br>
+                        제3조 약관의 명시와 개정<br>
+                        사이트는 이 약관의 내용과 상호,<br>
+                        영업소 소재지,<br>
+                        대표자의 성명,<br>
+                        사업자 등록번호,<br>
+                        통신판매업 신고번호,<br>
+                        연락처[전화, 팩스, 전자우편 주소 등] 등을 이용자가 알 수 있도록 사이트 인터넷 사이트의 초기 서비스 화면[전면]에 게시한다.<br>
+                        사이트는 약관의 규제 등에 관한 법률,<br>
+                        전자거래기본법,<br>
+                        전자서명법,<br>
+                        정보통신망 이용촉진 등에 관한 법률,<br>
+                        방문판매 등에 관한 법률,<br>
+                        소비자보호법 등 관련법을 위배하지 않는 범위에서 이 약관을 개정할 수 있다.<br>
+                        사이트가 이 약관을 개정할 경우에는 적용일자 및 개정사유를 명시하여,<br>
+                        현행 약관과 함께 몰의 초기화면에 그 적용일자 7일 이전부터 적용일자 전일까지 공지한다.<br>
+                        사이트가 이 약관을 개정할 경우에는 그 개정 약관은 그 적용일자 이후에 체결되는 계약에만 적용되고,<br>
+                        그 이전에 이미 체결된 계약에 대해서는 개정 전의 약관 조항이 그대로 적용된다.<br>
+                        다만 이미 계약을 체결한 이용자가 개정 약관 조항의 적용을 받기를 원하는 뜻을 제3항에 의한 개정 약관의 공지 기간 내에 사이트에 송신하여 사이트의 동의를 받은 경우에는 개정 약관 조항이 적용된다.<br>
+                        이 약관에서 정하지 아니한 사항과 이 약관의 해석에 관하여는 정부가 제정한 전자거래 소비자 보호지침 및 관계 법령 또는 상관례에 따른다.<br>
+                        <br>
+                        제4조 약관의 효력<br>
+                        이 약관은 회원 가입 시 인터넷 화면이나 회원 가입 양식에 들어있는 약관 내용에 회원 가입 신청자가 동의함에 따라 효력이 발생하며,<br>
+                        약관에 동의해야만 회원 가입을 신청할 수 있다.<br>
+                        사이트의 약관 수정 시 변경된 약관은 사이트 웹사이트에 게시한 날부터 그 효력이 발생한다.<br>
+                        <br>
+                        제5조 서비스의 제공 및 변경<br>
+                        사이트는 다음과 같은 업무를 수행한다.<br>
+                        - 재화 또는 용역에 대한 정보 제공 및 구매계약의 체결<br>
+                        - 구매계약이 체결된 재화 또는 용역의 배송<br>
+                        - 기타 사이트가 정하는 업무<br>
+                        사이트는 재화의 품절 또는 기술적 사양의 변경 등의 경우에는 장차 체결되는 계약에 의해 제공할 재화·용역의 내용을 변경할 수 있다.<br>
+                        이 경우에는 변경된 재화·용역의 내용 및 제공일자를 명시하여,<br>
+                        현재의 재화·용역의 내용을 게시한 곳에 그 제공일자 이전 7일부터 공지한다.<br>
+                        사이트가 제공하기로 이용자와 계약을 체결한 서비스의 내용을 재화의 품절 또는 기술적 사양의 변경 등의 사유로 변경할 경우에는,<br>
+                        사이트는 이로 인하여 이용자가 입은 손해를 배상한다.<br>
+                        단, 사이트의 고의 또는 과실이 없는 경우에는 그러하지 아니한다.<br>
+                        <br>
+                        제6조 서비스의 중단<br>
+                        사이트는 컴퓨터 등 정보통신설비의 보수점검·교체 및 고장,<br>
+                        통신의 두절 등의 사유가 발생한 경우에는 서비스의 제공을 일시적으로 중단할 수 있다.<br>
+                        이 경우 사이트는 제8조에 정한 방법으로 이용자에게 통지한다.<br>
+                        장기적으로 서비스의 중단이 필요한 경우,<br>
+                        사이트는 이용자에게 사전 통지 후 서비스를 종료할 수 있다.<br>
+                        <br>
+                        제7조 회원가입<br>
+                        이용자는 사이트가 정한 가입 양식에 따라 회원정보를 기입한 후 이 약관에 동의한다는 의사표시를 함으로서 회원가입을 신청한다.<br>
+                        사이트는 제1항과 같이 회원으로 가입할 것을 신청한 이용자 중 다음 각호에 해당하지 않는 한 회원으로 등록한다.<br>
+                        - 가입신청자가 이 약관 제9조 제3항에 의하여 이전에 회원자격을 상실한 적이 있는 경우<br>
+                        - 등록 내용에 허위, 기재누락, 오기가 있는 경우<br>
+                        - 기타 회원으로 등록하는 것이 사이트의 기술상 현저히 지장이 있다고 판단되는 경우<br>
+                        회원가입계약의 성립시기는 사이트의 승낙이 가입신청자에게 도달한 시점으로 한다.<br>
+                        회원은 제15조 제1항에 의한 등록사항에 변경이 있는 경우,<br>
+                        즉시 전자우편 기타 방법으로 사이트에 대하여 그 변경사항을 알려야 한다.<br>
+                        <br>
+                        제8조 회원 탈퇴 및 자격 상실 등<br>
+                        회원은 사이트에 언제든지 탈퇴를 요청할 수 있으며 사이트는 즉시 회원탈퇴를 처리한다.<br>
+                        회원이 다음 각호의 사유에 해당하는 경우,<br>
+                        사이트는 회원자격을 제한 및 정지시킬 수 있다.<br>
+                        - 가입 신청 시에 허위 내용을 등록한 경우<br>
+                        - 다른 사람의 사이트 이용을 방해하거나 그 정보를 도용하는 등 전자상거래 질서를 위협하는 경우<br>
+                        - 사이트를 이용하여 법령과 이 약관이 금지하거나 공서양속에 반하는 행위를 하는 경우<br>
+                        사이트가 회원 자격을 제한·정지시킨 후,<br>
+                        동일한 행위가 2회 이상 반복되거나 30일 이내에 그 사유가 시정되지 아니하는 경우 사이트는 회원자격을 상실시킬 수 있다.<br>
+                        사이트가 회원자격을 상실시키는 경우에는 회원등록을 말소한다.<br>
+                        이 경우 회원에게 이를 통지하고,<br>
+                        회원등록 말소 전에 최소한 30일 이상의 기간을 정하여 소명할 기회를 부여한다.<br>
+                        <br>
+                        제9조 회원에 대한 통지<br>
+                        사이트가 회원에 대한 통지를 하는 경우,<br>
+                        회원이 사이트와 미리 약정하여 지정한 전자우편 주소로 할 수 있다.<br>
+                        사이트는 불특정다수 회원에 대한 통지의 경우 1주일 이상 사이트 게시판에 게시함으로서 개별 통지에 갈음할 수 있다.<br>
+                        다만 회원 본인의 거래와 관련하여 중대한 영향을 미치는 사항에 대하여는 개별 통지를 한다.<br>
+                        <br>
+                        제10조 구매신청<br>
+                        이용자는 사이트상에서 다음 또는 이와 유사한 방법에 의하여 구매를 신청하며,<br>
+                        사이트는 이용자가 구매신청을 함에 있어서 다음의 각 내용을 알기 쉽게 제공하여야 한다.<br>
+                        - 재화 등의 검색 및 선택<br>
+                        - 받는 사람의 성명, 주소, 전화번호 등의 입력<br>
+                        - 약관내용, 청약철회권이 제한되는 서비스, 배송료 등의 비용부담과 관련한 내용에 대한 확인<br>
+                        - 이 약관에 동의하고 위 사항들을 확인하거나 거부하는 표시<br>
+                        - 재화 등의 구매신청 및 이에 관한 확인 또는 사이트의 확인에 대한 동의<br>
+                        - 결제방법의 선택<br>
+
+                    </div>
+                </div>
+
+                <div class="terms-item">
+                    <div class="terms-header" onclick="toggleTerms('terms2')">
+                        <div class="terms-check">
+                            <input type="checkbox" id="terms2" name="terms" required onclick="event.stopPropagation()">
+                            <label for="terms2">[필수] 개인정보 취급방침 동의</label>
+                        </div>
+                        <span class="terms-toggle">▼</span>
+                    </div>
+                    <div class="terms-content" id="terms2Content">
+                        ■ 개인정보의 수집목적 및 이용목적<br>
+                        <br>
+                        "(주)혜안파트너스"은(는) [이하 "당사"는]<br>
+                        회원님께 최대한으로 최적화되고 맞춤화된 서비스를 제공하기 위하여 다음과 같은 목적으로 개인정보를 수집하고 있습니다.<br>
+                        - 성명, 아이디, 비밀번호 : 회원제 서비스 이용에 따른 본인 식별 절차에 이용<br>
+                        - 이메일주소, 이메일 수신여부, 전화번호 : 고지사항 전달, 본인 의사 확인, 불만 처리 등 원활한 의사소통 경로의 확보, 새로운 서비스/신상품이나 이벤트 정보의 안내<br>
+                        - 주소, 자택전화, 휴대전화 : 경품과 쇼핑 물품 배송에 대한 정확한 배송지의 확보<br>
+                        - 그 외 선택항목 : 개인맞춤 서비스를 제공하기 위한 자료<br>
+                        ② 단, 이용자의 기본적 인권 침해의 우려가 있는 민감한 개인정보(인종 및 민족, 사상 및 신조, 출신지 및 본적지, 정치적 성향 및 범죄기록, 건강상태 및 성생활 등)는 수집하지 않습니다.<br>
+                        <br>
+                        ■ 개인정보의 수집범위<br>
+                        <br>
+                        당사는 별도의 회원가입 절차 없이 대부분의 컨텐츠에 자유롭게 접근할 수 있습니다.<br>
+                        당사의 회원제 서비스를 이용하시고자 할 경우 다음의 정보를 입력해주셔야 하며 선택항목을 입력하시지 않았다 하여 서비스 이용에 제한은 없습니다.<br>
+                        1) 회원 가입시 수집하는 개인정보의 범위<br>
+                        - 수집항목 : 희망 ID, 비밀번호, 이름, 생일, 주소, 전화번호, 휴대전화, 이메일주소, 이메일 수신 여부, SMS 수신 여부<br>
+                        <br>
+                        ■ 비회원의 고객 개인정보보호<br>
+                        <br>
+                        당사는 회원 뿐만 아니라 비회원 또한 물품 및 서비스 상품의 구매를 하실 수 있습니다.<br>
+                        당사는 비회원 주문의 경우 배송 및 대금 결제, 상품 배송에 반드시 필요한 개인정보 만을 고객에게 요청하고 있습니다.<br>
+                        당사에서 비회원으로 구매를 하신 경우 비회원 고객께서 입력하신 지불인 정보 및 수령인 정보는 대금 결제 및 상품 배송에 관련한 용도 외에는 다른 어떠한 용도로도 사용되지 않습니다.<br>
+                        당사 비회원의 경우도 당사 회원과 동일하게 개인정보를 보호합니다.<br>
+                        <br>
+                        ■ 쿠키에 의한 개인정보 수집<br>
+                        <br>
+                        ① 쿠키(cookie)란?<br>
+                        당사는 귀하에 대한 정보를 저장하고 수시로 찾아내는 쿠키(cookie)를 사용합니다.<br>
+                        쿠키는 웹사이트가 귀하의 컴퓨터 브라우저(넷스케이프, 인터넷 익스플로러 등)로 전송하는 소량의 정보입니다.<br>
+                        귀하께서 웹사이트에 접속을 하면 당사의 컴퓨터는 귀하의 브라우저에 있는 쿠키의 내용을 읽고,<br>
+                        귀하의 추가정보를 귀하의 컴퓨터에서 찾아 접속에 따른 성명 등의 추가 입력 없이 서비스를 제공할 수 있습니다.<br>
+                        쿠키는 귀하의 컴퓨터는 식별하지만 귀하를 개인적으로 식별하지는 않습니다.<br>
+                        또한 귀하는 쿠키에 대한 선택권이 있습니다.<br>
+                        웹브라우저 상단의 도구 > 인터넷옵션 탭(option tab)에서 모든 쿠키를 다 받아들이거나,<br>
+                        쿠키가 설치될 때 통지를 보내도록 하거나, 아니면 모든 쿠키를 거부할 수 있는 선택권을 가질 수 있습니다.<br>
+                        ② 당사의 쿠키(cookie) 운용<br>
+                        당사는 이용자의 편의를 위하여 쿠키를 운영합니다.<br>
+                        당사가 쿠키를 통해 수집하는 정보는 당사 회원 ID에 한하며, 그 외의 다른 정보는 수집하지 않습니다.<br>
+                        당사가 쿠키(cookie)를 통해 수집한 회원 ID는 다음의 목적을 위해 사용됩니다.<br>
+                        - 개인의 관심 분야에 따라 차별화된 정보를 제공<br>
+                        - 회원과 비회원의 접속빈도 또는 머문시간 등을 분석하여 이용자의 취향과 관심분야를 파악하여 타겟(target) 마케팅에 활용<br>
+                        - 쇼핑한 품목들에 대한 정보와 관심있게 둘러본 품목들에 대한 자취를 추적하여 다음번 쇼핑 때 개인 맞춤 서비스를 제공<br>
+                        - 회원들의 습관을 분석하여 서비스 개편 등의 척도<br>
+                        - 게시판 글 등록<br>
+                        쿠키는 브라우저의 종료시나 로그아웃시 만료됩니다.<br>
+                        <br>
+                        ■ 개인정보의 보유기간 및 이용기간<br>
+                        <br>
+                        ① 귀하의 개인정보는 다음과 같이 개인정보의 수집목적 또는 제공받은 목적이 달성되면 파기됩니다.<br>
+                        단, 상법 등 관련법령의 규정에 의하여 다음과 같이 거래 관련 권리 의무 관계의 확인 등을 이유로<br>
+                        일정기간 보유하여야 할 필요가 있을 경우에는 일정기간 보유합니다.<br>
+                        - 회원가입정보의 경우, 회원가입을 탈퇴하거나 회원에서 제명된 경우 등 일정한 사전에 보유목적, 기간 및 보유하는 개인정보 항목을 명시하여 동의를 구합니다.<br>
+                        - 계약 또는 청약철회 등에 관한 기록 : 5년<br>
+                        - 대금결제 및 재화등의 공급에 관한 기록 : 5년<br>
+                        - 소비자의 불만 또는 분쟁처리에 관한 기록 : 3년<br>
+                        ② 귀하의 동의를 받아 보유하고 있는 거래정보 등을 귀하께서 열람을 요구하는 경우<br>
+                        당사는 지체없이 그 열람,확인 할 수 있도록 조치합니다.<br>
+                        <br>
+                        ■ 이용자의 권리와 그 행사방법<br>
+                        <br>
+                        이용자 및 법정 대리인은 언제든지 등록되어 있는 자신의 개인정보를 당사 쇼핑몰을 통해 조회 하거나 수정할 수 있으며,<br>
+                        당사의 개인정보 처리에 동의하지 않는 경우 동의를 거부하거나 가입해지(회원탈퇴)를 요청하실 수 있습니다.<br>
+                        다만, 그러한 경우 서비스의 일부 또는 전부 이용이 어려울 수 있습니다.<br>
+                        이용자의 개인정보 조회 및 수정을 위해서는 당사 쇼핑몰을 통해 "회원정보조회"를 클릭하여 직접 열람, 정정 또는 탈퇴가 가능합니다.<br>
+                        이용자가 개인정보의 오류에 대한 정정을 요청하신 경우에는 정정을 완료하기 전까지 당해 개인정보를 이용 또는 제공하지 않습니다.<br>
+                        당사는 이용자의 요청에 의해 해지 또는 삭제된 개인정보는 "■ 개인정보의 보유기간 및 이용기간"에 명시된 바에 따라 처리하고<br>
+                        그 외의 용도로 열람 또는 이용할 수 없도록 처리하고 있습니다.<br>
+                        <br>
+                        ■ 개인정보보호 책임자<br>
+                        <br>
+                        - 부서 : 팀장<br>
+                        - 성명 : 차윤태<br>
+                        - 연락처 : 1533-4965<br>
+                        - 이메일 : ckdbsxo54321@naver.com<br>
+
+                    </div>
+                </div>
+
+                <div class="terms-item">
+                    <div class="terms-header" onclick="toggleTerms('terms3')">
+                        <div class="terms-check">
+                            <input type="checkbox" id="terms2" name="terms" required onclick="event.stopPropagation()">
+                            <label for="terms2">[필수] 전자금융거래 이용약관 동의</label>
+                        </div>
+                        <span class="terms-toggle">▼</span>
+                    </div>
+                    <div class="terms-content" id="terms3Content">
+                        제1조 (목적)<br><br>
+                        이 약관은 나이스정보통신(주)(이하 "회사"라 합니다)가 제공하는 전자지급결제대행서비스를 이용자가 이용함에 있어 회사와 이용자 사이의 전자금융거래에 관한 기본적인 사항을 정함을 목적으로 합니다.<br><br>
+
+                        제2조 (용어의 정의)<br><br>
+                        이 약관에서 정하는 용어의 정의는 다음과 같습니다.<br>
+                        1. "전자금융거래"라 함은 회사가 전자적 장치를 통하여 전자지급결제대행서비스 및 결제대금예치서비스(이하 "전자금융거래 서비스"라고 합니다)를 제공하고, 이용자가 회사의 종사자와 직접 대면하거나 의사소통을 하지 아니하고 자동화된 방식으로 이를 이용하는 거래를 말합니다.<br>
+                        2. "전자지급결제대행서비스"라 함은 전자적 방법으로 재화의 구입 또는 용역의 이용에 있어서 지급결제정보를 송신하거나 수신하는 것 또는 그 대가의 정산을 대행하거나 매개하는 서비스를 말합니다.<br>
+                        3. "이용자"라 함은 이 약관에 동의하고 회사가 제공하는 전자금융거래 서비스를 이용하는 자를 말합니다.<br>
+                        4. "접근매체"라 함은 전자금융거래에 있어서 거래지시를 하거나 이용자 및 거래내용의 진실성과 정확성을 확보하기 위하여 사용되는 수단 또는 정보로서 전자식 카드 및 이에 준하는 전자적 정보(신용카드번호를 포함한다), "전자서명법"상의 인증서, 회사에 등록된 이용자번호, 이용자의 생체정보, 이상의 수단이나 정보를 사용하는데 필요한 비밀번호 등 전자금융거래법 제2조 제10호에서 정하고 있는 것을 말합니다.<br>
+                        5. "거래지시"라 함은 이용자가 본 약관에 의하여 체결되는 전자금융거래계약에 따라 회사에 대하여 전자금융거래의 처리를 지시하는 것을 말합니다.<br>
+                        6. "오류"라 함은 이용자의 고의 또는 과실 없이 전자금융거래가 전자금융거래계약 또는 이용자의 거래지시에 따라 이행되지 아니한 경우를 말합니다.<br><br>
+
+                        제3조 (약관의 명시 및 변경)<br><br>
+                        ① 회사는 이용자가 전자금융거래 서비스를 이용하기 전에 이 약관을 게시하고 이용자가 이 약관의 중요한 내용을 확인할 수 있도록 합니다.<br>
+                        ② 회사는 이용자의 요청이 있는 경우 전자문서의 전송방식에 의하여 본 약관의 사본을 이용자에게 교부합니다.<br>
+                        ③ 회사가 약관을 변경하는 때에는 그 시행일 1개월 전에 변경되는 약관을 회사가 제공하는 전자금융거래 서비스 이용 초기화면 및 회사의 홈페이지에 게시함으로써 이용자에게 공지합니다.<br><br>
+
+                        제4조 (전자지급결제대행서비스의 종류)<br><br>
+                        회사가 제공하는 전자지급결제대행서비스는 지급결제수단에 따라 다음과 같이 구별됩니다.<br>
+                        1. 신용카드결제대행서비스<br>
+                        2. 계좌이체대행서비스<br>
+                        3. 가상계좌서비스<br>
+                        4. 기타(휴대폰 결제, ARS, 상품권 등)<br><br>
+
+                        제5조 (이용시간)<br><br>
+                        ① 회사는 연중무휴 24시간 서비스를 제공함을 원칙으로 합니다.<br>
+                        ② 단, 시스템 점검 등 필요 시 사전 또는 사후 공지를 통해 서비스가 일시 중단될 수 있습니다.<br><br>
+
+                        제6조 (접근매체의 선정과 사용 및 관리)<br><br>
+                        ① 회사는 접근매체를 통해 이용자 식별, 거래지시 내용 확인 등을 합니다.<br>
+                        ② 이용자는 접근매체를 제3자에게 대여하거나 양도할 수 없습니다.<br>
+                        ③ 접근매체의 누설, 노출, 방치로 인한 피해 방지를 위해 주의를 기울여야 합니다.<br>
+                        ④ 접근매체 분실 또는 도난 시 통지한 시점부터 제3자 사용으로 인한 손해에 대해 회사가 배상책임을 집니다.<br><br>
+
+                        제7조 (거래내용의 확인)<br><br>
+                        ① 회사는 전자적 방법으로 거래내역을 확인할 수 있도록 하며, 요청 시 2주 이내 서면 교부합니다.<br>
+                        ② 주요 거래기록은 5년간, 소액 등은 1년간 보관됩니다.<br>
+                        ③ 서면 요청 주소 및 연락처<br>
+                        - 주소: 인천 연수구 송도과학로16번길 13-18 송도건원테크노큐브 710호<br>
+                        - 전화: 1533-4965<br>
+                        - 이메일: ckdbsxo54321@naver.com<br><br>
+
+                        제8조 (오류의 정정 등)<br><br>
+                        ① 이용자는 거래 오류 발견 시 정정을 요구할 수 있습니다.<br>
+                        ② 회사는 즉시 조사하고, 2주 이내 처리결과를 통지합니다.<br><br>
+
+                        제9조 (회사의 책임)<br><br>
+                        ① 회사가 접근매체의 발급주체가 아닌 경우 손해배상 책임이 없습니다.<br>
+                        ② 발급주체이거나 사용관리주체인 경우 손해배상 책임이 있으나, 이용자의 중대한 과실 시 제외됩니다.<br>
+                        ③ 전송 및 처리과정 중 사고 발생 시 책임이 있으며, 법인(소기업 제외) 및 보안절차 준수 시 예외가 적용됩니다.<br>
+                        ④ 불가항력적 사유로 인한 지연 또는 불능 시 통지한 경우 회사는 면책됩니다.<br><br>
+
+                        제10조 (전자지급거래계약의 효력)<br><br>
+                        ① 회사는 이용자의 거래지시를 대행하며, 지급이 이루어지도록 처리합니다.<br>
+                        ② 지급 실패 시 수령 자금을 반환합니다.<br><br>
+
+                        제11조 (거래지시의 철회)<br><br>
+                        ① 이용자는 지급 효력 발생 전까지 거래지시를 철회할 수 있습니다.<br>
+                        ...
+
+                    </div>
+                </div>
+
+            <button type="submit" class="submit-btn">회원가입</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div style="display: none">
+    <form action="/auth/login" method="get" id="move-page-form"></form>
+</div>
+<script>
+    // 폼 제출
+    $('#signupForm').on('submit', function(e) {
+        e.preventDefault();
+
+        if (validateForm()) {
+            // member 가져오기
+            let data = {
+                memberId: $('#memberId').val(),
+                memberName: $('#memberName').val(),
+                memberPw: $('#memberPw').val(),
+                memberZip: $('#memberZip').val(),
+                memberAddr: $('#firstAddr').val() + $('#secAddr').val(),
+                memberPhone: $('#firstPhone').val() + $('#secPhone').val() + $('#trdPhone').val(),
+                memberBirth: $('#year').val() + '-' + $('#month').val() + '-' + $('#day').val(),
+                memberGender: $('input[name="gender"]:checked').val()
+            };
+
+            // AJAX 요청 보내기 (예: POST 방식)
+            $.ajax({
+                url: '/auth/signupResult',
+                type: 'POST',
+                data: data, // key=value&key=value 형식
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                processData: true,
+                success: function(response) {
+                    if (response.signupResult === true || signupResult.result === 'true') {
+                        alert('회원가입이 완료되었습니다!');
+                        // alert 후 로그인 페이지로 이동
+                        $('#move-page-form').submit();
+                    } else {
+                        alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+                    }
+                },
+                error: function(xhr) {
+                    console.log(xhr.status, xhr.responseText);
+                    alert('서버와 통신 중 오류가 발생했습니다.');
+                }
+            });
+        }
+    });
+
+    // 폼 유효성 검사
+    function validateForm() {
+        const requiredTerms = $('input[name="terms"]:required');
+        const checkedTerms = $('input[name="terms"]:required:checked');
+
+        if (requiredTerms.length !== checkedTerms.length) {
+            alert('필수 약관에 동의해주세요.');
+            return false;
+        }
+
+        return true;
+    }
+
+
+    // 전체 약관 동의
+    function toggleAllTerms() {
+        const allChecked = $('#allAgree').is(':checked');
+        $('input[name="terms"]').prop('checked', allChecked);
+        $('input[name="marketing"]').prop('checked', allChecked);
+    }
+
+    // 개별 약관 체크 시 전체 동의 상태 업데이트
+    $('input[name="terms"], input[name="marketing"]').on('change', function() {
+        const totalTerms = $('input[name="terms"], input[name="marketing"]').length;
+        const checkedTerms = $('input[name="terms"]:checked, input[name="marketing"]:checked').length;
+        $('#allAgree').prop('checked', totalTerms === checkedTerms);
+    });
+
+    // 약관 내용 토글
+    function toggleTerms(termsId) {
+        const content = $('#' + termsId + 'Content');
+        const toggle = content.siblings('.terms-header').find('.terms-toggle');
+
+        if (content.is(':visible')) {
+            content.slideUp();
+            toggle.text('▼');
+        } else {
+            content.slideDown();
+            toggle.text('▲');
+        }
+    }
+
+    // 아이디 중복확인
+    function checkUserId() {
+        const userId = $('#memberId').val();
+
+        if (userId.length < 4) {
+            $('#userIdError').text('아이디는 4자 이상이어야 합니다.').show();
+            $('#userIdSuccess').hide();
+            return;
+        }
+
+        // AJAX로 아이디 중복 확인 요청
+        $.ajax({
+            type: 'POST',
+            url: '/auth/dupCheckId',
+            data: { memberId: userId },
+            success: function(response) {
+                if (response.duplicate) {
+                    $('#userIdError').text('이미 사용 중인 아이디입니다.').show();
+                    $('#userIdSuccess').hide();
+                } else {
+                    $('#userIdError').hide();
+                    $('#userIdSuccess').text('사용 가능한 아이디입니다.').show();
+                }
+            },
+            error: function() {
+                $('#userIdError').text('서버 오류가 발생했습니다.').show();
+                $('#userIdSuccess').hide();
+            }
+        });
+    }
+
+    // 비밀번호 확인
+    $('#passwordConfirm').on('keyup', function() {
+        const password = $('#memberPw').val();
+        const passwordConfirm = $(this).val();
+
+        if (password !== passwordConfirm) {
+            $('#passwordConfirmError').text('비밀번호가 일치하지 않습니다.').show();
+        } else {
+            $('#passwordConfirmError').hide();
+        }
+    });
+</script>
+</body>
+</html>

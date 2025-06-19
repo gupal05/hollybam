@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 등록 - 관리자</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .breadcrumb {
+            font-size: 0.875rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .breadcrumb a:hover {
+            background: #eff6ff;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 2.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 0.75rem;
+            color: #3b82f6;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .option-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .option-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .option-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .option-item-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .option-remove-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .option-remove-btn:hover {
+            background: #dc2626;
+        }
+
+        .option-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .option-values-container {
+            grid-column: 1 / -1;
+            margin-top: 1rem;
+        }
+
+        .option-values-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .option-values-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .add-value-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .add-value-btn:hover {
+            background: #4b5563;
+        }
+
+        .option-values-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-value-item {
+            display: grid;
+            grid-template-columns: 1fr 100px 100px auto;
+            gap: 0.75rem;
+            align-items: center;
+            padding: 0.75rem;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+        }
+
+        .option-value-input {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .option-value-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .remove-value-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .remove-value-btn:hover {
+            background: #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .option-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .option-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .option-value-item {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .required {
+            color: #ef4444;
+            margin-left: 0.25rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.875rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .file-upload {
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            min-height: 120px;
+        }
+
+        .file-label:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .file-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .file-text {
+            font-size: 0.875rem;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .file-subtext {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 2rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-item:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .radio-item:has(input:checked) {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .radio-input {
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
+        }
+
+        .radio-label {
+            font-size: 0.875rem;
+            color: #374151;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .form-actions {
+            background: #f8fafc;
+            padding: 2rem 2.5rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-addon {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-right: none;
+            padding: 0.875rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            border-radius: 8px 0 0 8px;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .input-group .form-input {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .help-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .file-upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .selected-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .file-remove {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .file-remove:hover {
+            background: #fee2e2;
+        }
+
+        /* 상품 코드 입력 관련 스타일 */
+        .product-code-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .code-input-container {
+            display: flex;
+            align-items: stretch;
+            gap: 0.5rem;
+        }
+
+        .code-input {
+            flex: 1;
+        }
+
+        .code-generate-btn {
+            padding: 0.875rem 1.5rem;
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .code-generate-btn:hover {
+            background: #4b5563;
+        }
+
+        .code-format-info {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+            padding: 0.5rem;
+            background: #f9fafb;
+            border-radius: 4px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .duplicate-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .duplicate-check.success {
+            color: #059669;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        .duplicate-check.error {
+            color: #dc2626;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .duplicate-check.checking {
+            color: #d97706;
+            background: #fffbeb;
+            border: 1px solid #fed7aa;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 1024px) {
+            .main-container {
+                padding: 1.5rem;
+            }
+
+            .form-section {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+
+            .form-section {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .price-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+                padding: 1.5rem;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .code-input-container {
+                flex-direction: column;
+            }
+
+            .code-generate-btn {
+                align-self: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="admin-header">
+    <div class="header-content">
+        <h1>관리자 페이지</h1>
+        <nav class="breadcrumb">
+            <a href="#" th:href="@{/admin}">홈</a>
+            <span>›</span>
+            <a href="#" th:href="@{/admin/products}">상품 관리</a>
+            <span>›</span>
+            <span>상품 등록</span>
+        </nav>
+    </div>
+</header>
+
+<div class="main-container">
+    <div class="page-title">
+        <h2>상품 등록</h2>
+    </div>
+
+    <div class="form-container">
+        <form th:action="@{/admin/products}" th:object="${productDto}" method="post" enctype="multipart/form-data">
+
+            <!-- 카테고리 섹션 -->
+            <div class="form-section">
+                <div class="section-header">
+                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    <h3 class="section-title">카테고리 설정</h3>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="parentCategory">
+                            상위 카테고리 <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="parentCategory" name="categoryCode" required>
+                            <option value="">상위 카테고리를 선택하세요</option>
+                            <option th:each="category : ${categories}"
+                                    th:value="${category.categoryCode}"
+                                    th:text="${category.categoryName}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="childCategory">
+                            하위 카테고리 <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="childCategory" name="cateDetailCode" required>
+                            <option value="">하위 카테고리를 선택하세요</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 기본 정보 섹션 -->
+            <div class="form-section">
+                <div class="section-header">
+                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="section-title">기본 정보</h3>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="productCode">
+                            상품 코드 <span class="required">*</span>
+                        </label>
+                        <div class="product-code-group">
+                            <div class="code-input-container">
+                                <input type="text" class="form-input code-input" id="productCode"
+                                       th:field="*{productId}" placeholder="예: PR-A001, TH-A001" required>
+                                <button type="button" class="code-generate-btn" id="generateCodeBtn">
+                                    중복확인
+                                </button>
+                            </div>
+                            <div class="code-format-info">
+                                <strong>상품 코드 형식:</strong> 카테고리코드-숫자 (예: TA-001, CL-001, AC-001)
+                            </div>
+                            <div class="duplicate-check" id="duplicateCheck" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="productName">
+                            상품 이름 <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="productName"
+                               th:field="*{productName}" placeholder="상품 이름을 입력하세요" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="productQuantity">
+                            전체 재고 수량 <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="productQuantity"
+                               th:field="*{productQuantity}" placeholder="0" min="0" required>
+                        <div class="help-text">
+                            옵션이 있는 경우: 옵션별 재고의 합계가 자동으로 계산되어 저장됩니다.<br>
+                            옵션이 없는 경우: 입력한 수량이 전체 재고로 저장됩니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label" for="productDescription">
+                        상품 설명
+                    </label>
+                    <textarea class="form-textarea" id="productDescription"
+                              th:field="*{productDescription}" placeholder="상품에 대한 간단한 설명을 입력하세요"></textarea>
+                </div>
+            </div>
+
+            <!-- 기본 정보 섹션 다음에 추가할 옵션 관리 섹션 -->
+            <div class="form-section">
+                <div class="section-header">
+                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                    </svg>
+                    <h3 class="section-title">상품 옵션 관리</h3>
+                </div>
+
+                <div class="option-container">
+                    <div class="option-header">
+                        <p class="help-text">상품에 색상, 크기 등의 옵션을 추가할 수 있습니다. 옵션이 없는 경우 건너뛰어도 됩니다.</p>
+                        <button type="button" class="btn btn-secondary" id="addOptionBtn">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            옵션 추가
+                        </button>
+                    </div>
+
+                    <div id="optionList" class="option-list">
+                        <!-- 동적으로 옵션이 추가될 영역 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 이미지 섹션 -->
+            <div class="form-section">
+                <div class="section-header">
+                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <h3 class="section-title">이미지 관리</h3>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            상품 타이틀 이미지 <span class="required">*</span>
+                        </label>
+                        <div class="file-upload">
+                            <input type="file" class="file-input" name="titleImage" id="titleImage" accept="image/*" required>
+                            <div class="file-label">
+                                <svg class="file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <div class="file-text">타이틀 이미지 업로드</div>
+                                <div class="file-subtext">JPG, PNG 파일 업로드</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            상품 타이틀 이미지2 (WebP)
+                        </label>
+                        <div class="file-upload">
+                            <input type="file" class="file-input" id="titleImage2" name="titleImage2" accept=".webp">
+                            <div class="file-label">
+                                <svg class="file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <div class="file-text">WebP 이미지 업로드</div>
+                                <div class="file-subtext">WebP 형식만 지원</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            상품 썸네일 (다중 선택 가능)
+                        </label>
+                        <div class="file-upload-container">
+                            <div class="file-upload">
+                                <input type="file" class="file-input" id="thumbnails" name="thumbnails" accept="image/*" multiple>
+                                <div class="file-label">
+                                    <svg class="file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <div class="file-text">썸네일 이미지 업로드</div>
+                                    <div class="file-subtext">여러 이미지를 동시에 선택할 수 있습니다</div>
+                                </div>
+                            </div>
+                            <div class="selected-files" id="thumbnailFiles"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            상품 상세 이미지 <span class="required">*</span>
+                        </label>
+                        <div class="file-upload-container">
+                            <div class="file-upload">
+                                <input type="file" class="file-input" id="detailImages" name="detailImages" accept="image/*" multiple required>
+                                <div class="file-label">
+                                    <svg class="file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <div class="file-text">상세 이미지 업로드</div>
+                                    <div class="file-subtext">여러 이미지를 동시에 선택할 수 있습니다</div>
+                                </div>
+                            </div>
+                            <div class="selected-files" id="detailFiles"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 가격 정보 섹션 -->
+            <div class="form-section">
+                <div class="section-header">
+                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                    <h3 class="section-title">가격 정보</h3>
+                </div>
+                <div class="price-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="priceCost">
+                            상품 원가 <span class="required">*</span>
+                        </label>
+                        <div class="input-group">
+                            <div class="input-addon">₩</div>
+                            <input type="number" class="form-input" id="priceCost"
+                                   name="priceCost" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="priceOriginal">
+                            상품 정가
+                        </label>
+                        <div class="input-group">
+                            <div class="input-addon">₩</div>
+                            <input type="number" class="form-input" id="priceOriginal"
+                                   name="priceOriginal" placeholder="0" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="priceSelling">
+                            상품 판매가 <span class="required">*</span>
+                        </label>
+                        <div class="input-group">
+                            <div class="input-addon">₩</div>
+                            <input type="number" class="form-input" id="priceSelling"
+                                   name="priceSelling" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 판매 설정 섹션 -->
+            <div class="form-section">
+                <div class="section-header">
+                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <h3 class="section-title">판매 설정</h3>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        상품 판매상태 <span class="required">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" class="radio-input" id="productActiveTrue"
+                                   th:field="*{productActive}" value="1" required>
+                            <label class="radio-label" for="productActiveTrue">판매 가능</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" class="radio-input" id="productActiveFalse"
+                                   th:field="*{productActive}" value="0" required>
+                            <label class="radio-label" for="productActiveFalse">판매 불가</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 액션 버튼 -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="history.back()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    취소
+                </button>
+                <button type="button" class="btn btn-primary" id="submitBtn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    상품 등록
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const categories = /*[[${categories}]]*/ '[]';
+    /*]]>*/
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    document.getElementById('productActiveTrue').addEventListener('click', function() {
+        this.checked = true;
+        document.getElementById('productActiveFalse').checked = false;
+    });
+
+    document.getElementById('productActiveFalse').addEventListener('click', function() {
+        this.checked = true;
+        document.getElementById('productActiveTrue').checked = false;
+    });
+
+    $(document).ready(function() {
+        // 카테고리 선택
+        $('#parentCategory').on('change', function() {
+            const selectedCategoryCode = $(this).val();
+            const $childCategorySelect = $('#childCategory');
+
+            // 초기화
+            $childCategorySelect.html('<option value="">하위 카테고리를 선택하세요</option>');
+
+            if (selectedCategoryCode) {
+                const selectedCategory = categories.find(cat => cat.categoryCode === selectedCategoryCode);
+
+                if (selectedCategory?.categoryDetailDto) {
+                    selectedCategory.categoryDetailDto.forEach(detail => {
+                        const option = `<option value="${detail.cateDetailCode}">${detail.cateDetailName}</option>`;
+                        $childCategorySelect.append(option);
+                    });
+                }
+            }
+        });
+
+        // 파일 관리를 위한 전역 변수
+        let thumbnailFiles = [];
+        let detailFiles = [];
+
+        // 파일 업로드 시 파일명 표시
+        $('.file-input').on('change', function() {
+            const $label = $(this).next();
+            const files = Array.from(this.files);
+            const inputName = $(this).attr('name');
+
+            if (files.length > 0) {
+                if (inputName === 'thumbnails') {
+                    // 기존 파일에 새 파일들 추가
+                    files.forEach(file => {
+                        if (!thumbnailFiles.some(f => f.name === file.name && f.size === file.size)) {
+                            thumbnailFiles.push(file);
+                        }
+                    });
+                    updateFileDisplay('thumbnailFiles', thumbnailFiles, 'thumbnails');
+                    updateFileInput(this, thumbnailFiles);
+
+                } else if (inputName === 'detailImages') {
+                    // 기존 파일에 새 파일들 추가
+                    files.forEach(file => {
+                        if (!detailFiles.some(f => f.name === file.name && f.size === file.size)) {
+                            detailFiles.push(file);
+                        }
+                    });
+                    updateFileDisplay('detailFiles', detailFiles, 'detailImages');
+                    updateFileInput(this, detailFiles);
+
+                } else {
+                    // 기존 단일 파일 처리
+                    if (files.length === 1) {
+                        $label.find('.file-text').text(files[0].name);
+                    }
+                    $label.css({
+                        'border-color': '#3b82f6',
+                        'background': '#eff6ff'
+                    });
+                }
+            }
+        });
+
+        // 파일 표시 업데이트 함수
+        function updateFileDisplay(containerId, fileArray, inputName) {
+            const $container = $('#' + containerId);
+            $container.empty();
+
+            fileArray.forEach((file, index) => {
+                const fileItem = `
+                <div class="file-item">
+                    <span>${file.name}</span>
+                    <button type="button" class="file-remove" onclick="removeFile('${inputName}', ${index})">
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+                $container.append(fileItem);
+            });
+        }
+
+        // 파일 제거 함수
+        window.removeFile = function(inputName, index) {
+            if (inputName === 'thumbnails') {
+                thumbnailFiles.splice(index, 1);
+                updateFileDisplay('thumbnailFiles', thumbnailFiles, 'thumbnails');
+                updateFileInput($('input[name="thumbnails"]')[0], thumbnailFiles);
+            } else if (inputName === 'detailImages') {
+                detailFiles.splice(index, 1);
+                updateFileDisplay('detailFiles', detailFiles, 'detailImages');
+                updateFileInput($('input[name="detailImages"]')[0], detailFiles);
+            }
+        };
+
+        // File input 업데이트 함수
+        function updateFileInput(input, fileArray) {
+            const dt = new DataTransfer();
+            fileArray.forEach(file => dt.items.add(file));
+            input.files = dt.files;
+
+            // 레이블 업데이트
+            const $label = $(input).next();
+            if (fileArray.length > 0) {
+                $label.find('.file-text').text(`${fileArray.length}개 파일 선택됨`);
+                $label.css({
+                    'border-color': '#3b82f6',
+                    'background': '#eff6ff'
+                });
+            } else {
+                const originalText = {
+                    'thumbnails': '썸네일 이미지 업로드',
+                    'detailImages': '상세 이미지 업로드'
+                };
+                $label.find('.file-text').text(originalText[$(input).attr('name')]);
+                $label.css({
+                    'border-color': '#d1d5db',
+                    'background': '#f9fafb'
+                });
+            }
+        }
+
+        // 상품 등록 버튼 클릭 이벤트
+        $('#submitBtn').on('click', function() {
+            // 옵션 데이터 수집
+            const optionData = collectOptionData();
+
+            let image = {
+                titleImage: $('#titleImage')[0].files[0],
+                titleImage2: $('#titleImage2')[0].files[0],
+                thumbnails: $('#thumbnails')[0].files,
+                detailImages: $('#detailImages')[0].files
+            }
+
+            let formData = new FormData();
+            formData.append('titleImage', image.titleImage);
+            formData.append('titleImage2', image.titleImage2);
+            for(let i=0; i<image.thumbnails.length; i++) {
+                formData.append('thumbnails[]', image.thumbnails[i]);
+            }
+            for(let i=0; i<image.detailImages.length; i++) {
+                formData.append('detailImages[]', image.detailImages[i]);
+            }
+
+            $.ajax({
+                url: '/admin/upload/images',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if(response.status) {
+                        let formData = new FormData();
+
+                        // productDto
+                        let productDto = {
+                            productId: $('#productCode').val(),
+                            productName: $('#productName').val(),
+                            productQuantity: $('#productQuantity').val(),
+                            productDescription: $('#productDescription').val(),
+                            productActive: document.querySelector('input[name="productActive"]:checked').value
+                        };
+
+                        // price
+                        let price = {
+                            priceCost: $('#priceCost').val(),
+                            priceOriginal: $('#priceOriginal').val(),
+                            priceSelling: $('#priceSelling').val()
+                        };
+
+                        // category
+                        let category = {
+                            categoryCode: $('#parentCategory').val()
+                        };
+                        let cateDetail = {
+                            cateDetailCode : $('#childCategory').val()
+                        }
+
+                        // Add the JSON objects to FormData
+                        formData.append('productDto', JSON.stringify(productDto));
+                        formData.append('price', JSON.stringify(price));
+                        formData.append('category', JSON.stringify(category));
+                        formData.append('cateDetailCode', JSON.stringify(cateDetail));
+
+                        // 옵션 데이터 추가
+                        formData.append('productOptions', JSON.stringify(optionData));
+
+                        // Add images (if any)
+                        let image = {
+                            titleImage: $('#titleImage')[0].files[0],
+                            titleImage2: $('#titleImage2')[0].files[0],
+                            thumbnails: $('#thumbnails')[0].files,
+                            detailImages: $('#detailImages')[0].files
+                        };
+
+                        if (image.titleImage) formData.append('titleImage', image.titleImage);
+                        // titleImage2는 null일 수 있음 → 항상 key는 넣고, 없으면 빈 Blob
+                        formData.append('titleImage2', image.titleImage2 || new Blob());
+                        if (image.thumbnails.length > 0) {
+                            for (let i = 0; i < image.thumbnails.length; i++) {
+                                formData.append('thumbnails[]', image.thumbnails[i]);
+                            }
+                        } else {
+                            // thumbnails[] 키 보장 (빈 Blob 또는 빈 파일)
+                            formData.append('thumbnails[]', new Blob());
+                        }
+                        for (let i = 0; i < image.detailImages.length; i++) {
+                            formData.append('detailImages[]', image.detailImages[i]);
+                        }
+
+                        $.ajax({
+                            url: '/admin/upload/product',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                alert(response.message);
+                                if (response.status) {
+                                    window.location.href="/main";
+                                } else {
+                                    // 폼 초기화
+                                    $('#childCategory').val('');
+                                    $('#parentCategory').val('');
+                                    $('#productCode').val('');
+                                    $('#productName').val('');
+                                    $('#productQuantity').val('');
+                                    $('#productDescription').val('');
+                                    $('#titleImage').val('');
+                                    $('#titleImage2').val('');
+                                    $('#thumbnails').val('');
+                                    $('#detailImages').val('');
+                                    $('#priceCost').val('');
+                                    $('#priceOriginal').val('');
+                                    $('#priceSelling').val('');
+                                    // 옵션 초기화
+                                    $('#optionList').empty();
+                                    optionCounter = 0;
+                                }
+                            },
+                            error: function(err) {
+                                console.error('업로드 실패', err);
+                            }
+                        });
+                    }
+                },
+                error: function(err) {
+                    console.error('업로드 실패', err);
+                }
+            });
+        });
+        $('#generateCodeBtn').on('click', function () {
+            const code = $('#productCode').val();
+
+            if (!code) {
+                $('#duplicateCheck')
+                    .text('상품 코드를 입력해주세요.')
+                    .css({ color: 'red', display: 'block' });
+                return;
+            }
+
+            $.ajax({
+                url: '/admin/upload/is-product-code',
+                type: 'POST',
+                data: { productCode: code },
+                success: function (response) {
+                    if (response === false || response === 'false') {
+                        $('#duplicateCheck')
+                            .text('사용 가능한 상품코드입니다.')
+                            .css({ color: 'green', display: 'block' });
+                    } else {
+                        $('#duplicateCheck')
+                            .text('중복된 상품코드입니다.')
+                            .css({ color: 'red', display: 'block' });
+                    }
+                },
+                error: function (err) {
+                    console.error('조회 실패:', err);
+                    $('#duplicateCheck')
+                        .text('서버 오류가 발생했습니다.')
+                        .css({ color: 'red', display: 'block' });
+                }
+            });
+        });
+
+    });
+
+</script>
+<script>
+    // 옵션 관리 관련 JavaScript
+    let optionCounter = 0;
+
+    // 옵션 추가 버튼 클릭 이벤트
+    $('#addOptionBtn').on('click', function() {
+        addOption();
+    });
+
+    // 옵션 추가 함수
+    function addOption() {
+        optionCounter++;
+        const optionHtml = `
+        <div class="option-item" data-option-index="${optionCounter}">
+            <div class="option-item-header">
+                <h4 class="option-item-title">옵션 ${optionCounter}</h4>
+                <button type="button" class="option-remove-btn" onclick="removeOption(${optionCounter})">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="option-fields">
+                <div class="form-group">
+                    <label class="form-label">
+                        옵션명 <span class="required">*</span>
+                    </label>
+                    <input type="text" class="form-input option-name"
+                           placeholder="예: 색상, 크기, 재질" required>
+                </div>
+            </div>
+            <div class="option-values-container">
+                <div class="option-values-header">
+                    <span class="option-values-title">옵션값 설정</span>
+                    <button type="button" class="add-value-btn" onclick="addOptionValue(${optionCounter})">
+                        값 추가
+                    </button>
+                </div>
+                <div class="option-values-list" id="optionValues-${optionCounter}">
+                    <!-- 옵션값들이 동적으로 추가될 영역 -->
+                </div>
+            </div>
+        </div>
+    `;
+
+        $('#optionList').append(optionHtml);
+
+        // 첫 번째 옵션값 자동 추가
+        addOptionValue(optionCounter);
+    }
+
+    // 옵션 제거 함수
+    function removeOption(optionIndex) {
+        $(`.option-item[data-option-index="${optionIndex}"]`).remove();
+    }
+
+    // 옵션값 추가 함수
+    function addOptionValue(optionIndex) {
+        const valueHtml = `
+        <div class="option-value-item">
+            <input type="text" class="option-value-input option-value"
+                   placeholder="옵션값 (예: 빨강, Large)">
+            <input type="number" class="option-value-input option-price"
+                   placeholder="추가금액" min="0">
+            <input type="number" class="option-value-input option-quantity"
+                   placeholder="재고" min="0">
+            <button type="button" class="remove-value-btn" onclick="removeOptionValue(this)">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+    `;
+
+        $(`#optionValues-${optionIndex}`).append(valueHtml);
+    }
+
+    // 옵션값 제거 함수
+    function removeOptionValue(button) {
+        $(button).closest('.option-value-item').remove();
+    }
+
+    // 옵션 데이터 수집 함수
+    function collectOptionData() {
+        const options = [];
+
+        $('.option-item').each(function() {
+            const $optionItem = $(this);
+            const optionName = $optionItem.find('.option-name').val().trim();
+
+            if (optionName) {
+                const optionValues = [];
+
+                $optionItem.find('.option-value-item').each(function() {
+                    const $valueItem = $(this);
+                    const value = $valueItem.find('.option-value').val().trim();
+                    const price = parseInt($valueItem.find('.option-price').val()) || 0;
+                    const quantity = parseInt($valueItem.find('.option-quantity').val()) || 0;
+
+                    if (value) {
+                        optionValues.push({
+                            optionValue: value,
+                            optionPrice: price,
+                            optionQuantity: quantity
+                        });
+                    }
+                });
+
+                if (optionValues.length > 0) {
+                    options.push({
+                        optionName: optionName,
+                        values: optionValues
+                    });
+                }
+            }
+        });
+
+        return options;
+    }
+</script>
+</body>
+</html>

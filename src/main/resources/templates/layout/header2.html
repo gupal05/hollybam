@@ -1,0 +1,117 @@
+<div th:fragment="header2" class="header">
+    <!-- Logo -->
+    <div class="header-logo" onclick="window.location.href='/main'">
+        <img th:src="@{/images/KakaoTalk_20250611_143159216.png}" width="150px" height="150px">
+    </div>
+
+    <!-- Navigation -->
+    <div class="header-nav">
+        <div class="nav-item">
+            카테고리
+            <div class="dropdown">
+                <div class="dropdown-content">
+                    <div class="dropdown-column">
+                        <a href="/product/list?categoryCode=fashion" class="dropdown-column-title">패션</a>
+                        <a href="/product/list?categoryCode=fashion&detailCode=top" class="category-link">상의</a>
+                        <a href="/product/list?categoryCode=fashion&detailCode=bottom" class="category-link">하의</a>
+                        <a href="/product/list?categoryCode=fashion&detailCode=outer" class="category-link">아우터</a>
+                        <a href="/product/list?categoryCode=fashion&detailCode=shoes" class="category-link">신발</a>
+                    </div>
+                    <div class="dropdown-column">
+                        <a href="/product/list?categoryCode=beauty" class="dropdown-column-title">뷰티</a>
+                        <a href="/product/list?categoryCode=beauty&detailCode=skincare" class="category-link">스킨케어</a>
+                        <a href="/product/list?categoryCode=beauty&detailCode=makeup" class="category-link">메이크업</a>
+                        <a href="/product/list?categoryCode=beauty&detailCode=fragrance" class="category-link">향수</a>
+                        <a href="/product/list?categoryCode=beauty&detailCode=hair" class="category-link">헤어케어</a>
+                    </div>
+                    <div class="dropdown-column">
+                        <a href="/product/list?categoryCode=lifestyle" class="dropdown-column-title">라이프스타일</a>
+                        <a href="/product/list?categoryCode=lifestyle&detailCode=home" class="category-link">홈데코</a>
+                        <a href="/product/list?categoryCode=lifestyle&detailCode=kitchen" class="category-link">주방용품</a>
+                        <a href="/product/list?categoryCode=lifestyle&detailCode=bath" class="category-link">욕실용품</a>
+                        <a href="/product/list?categoryCode=lifestyle&detailCode=pet" class="category-link">반려동물</a>
+                    </div>
+                    <div class="dropdown-column">
+                        <a href="/product/list?categoryCode=tech" class="dropdown-column-title">테크</a>
+                        <a href="/product/list?categoryCode=tech&detailCode=mobile" class="category-link">모바일</a>
+                        <a href="/product/list?categoryCode=tech&detailCode=computer" class="category-link">컴퓨터</a>
+                        <a href="/product/list?categoryCode=tech&detailCode=audio" class="category-link">오디오</a>
+                        <a href="/product/list?categoryCode=tech&detailCode=gaming" class="category-link">게이밍</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-item">브랜드관</div>
+        <div class="nav-item">코스튬 특가</div>
+    </div>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+        <!-- Search -->
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="검색어를 입력하세요">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
+        <!-- User Menu -->
+        <button class="action-button user-menu">
+            <i class="far fa-user"></i>
+            <div class="user-dropdown">
+                <!-- Logged in user menu -->
+                <div class="user-dropdown-content" id="logged-in-menu" style="display: block;">
+                    <a href="/mypage" class="user-dropdown-link">
+                        <i class="far fa-user"></i>
+                        <span>마이페이지</span>
+                    </a>
+                    <a href="/mypage/wishlist" class="user-dropdown-link">
+                        <i class="far fa-heart"></i>
+                        <span>위시리스트</span>
+                    </a>
+                    <a href="/mypage/orders" class="user-dropdown-link">
+                        <i class="fas fa-box"></i>
+                        <span>주문조회</span>
+                    </a>
+                    <a href="https://www.cjlogistics.com/ko/tool/parcel/tracking" class="user-dropdown-link">
+                        <i class="fas fa-truck"></i>
+                        <span>배송조회</span>
+                    </a>
+                    <a href="/customer/center" class="user-dropdown-link">
+                        <i class="fas fa-headset"></i>
+                        <span>고객센터</span>
+                    </a>
+                    <div class="user-dropdown-divider"></div>
+                    <a href="/auth/logout" class="user-dropdown-link logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>로그아웃</span>
+                    </a>
+                </div>
+
+                <!-- Guest menu (hidden by default) -->
+                <div class="user-dropdown-content" id="guest-menu" style="display: none;">
+                    <a href="/order/guest" class="user-dropdown-link">
+                        <i class="fas fa-box"></i>
+                        <span>주문조회</span>
+                    </a>
+                    <a href="/delivery/guest" class="user-dropdown-link">
+                        <i class="fas fa-truck"></i>
+                        <span>배송조회</span>
+                    </a>
+                    <a href="/customer/center" class="user-dropdown-link">
+                        <i class="fas fa-headset"></i>
+                        <span>고객센터</span>
+                    </a>
+                    <div class="user-dropdown-divider"></div>
+                    <a href="/auth/login" class="user-dropdown-link login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>로그인/회원가입</span>
+                    </a>
+                </div>
+            </div>
+        </button>
+
+        <!-- Cart -->
+        <button class="action-button" onclick="window.location.href='/cart'">
+            <i class="fas fa-shopping-bag"></i>
+        </button>
+    </div>
+</div>

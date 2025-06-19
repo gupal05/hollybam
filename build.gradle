@@ -1,0 +1,59 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.hollybam'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://jitpack.io' } // 포트원
+}
+
+dependencies {
+	// Spring Boot 기본
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// MySQL + MyBatis
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// Thymeleaf 추가
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	// JSON 처리
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// 포트원 라이브러리
+	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
+
+	// 테스트
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

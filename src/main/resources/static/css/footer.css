@@ -1,0 +1,159 @@
+/* 풋터 */
+.footer {
+    background: #f8f9fa;
+    padding: 40px 0 20px;
+    margin-top: 80px;
+    border-top: 1px solid #e9ecef;
+}
+
+.footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.footer-section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.footer-links a {
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #EE386D;
+}
+
+.footer-links a.highlight {
+    font-weight: 700;
+    color: #333;
+}
+
+.company-info {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.company-info div {
+    margin-bottom: 4px;
+}
+
+.copyright {
+    font-size: 13px;
+    color: #666;
+    margin-top: 16px;
+}
+
+.customer-service {
+    background: #f8f9fa;
+    padding: 24px;
+    border-radius: 12px;
+    border: none;
+}
+
+.phone-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: #EE386D;
+    margin-bottom: 12px;
+}
+
+.service-hours {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.bank-info {
+    background: #f8f9fa;
+    padding: 24px;
+    border-radius: 12px;
+    border: none;
+}
+
+.bank-info h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.bank-details {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.return-address {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.return-address h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.return-address p {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+}
+
+.pg-service {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+    font-size: 12px;
+    color: #999;
+}
+
+.pg-service a {
+    color: #EE386D;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .footer-links {
+        gap: 15px;
+    }
+
+    .phone-number {
+        font-size: 20px;
+    }
+
+    .customer-service,
+    .bank-info {
+        padding: 20px;
+    }
+}

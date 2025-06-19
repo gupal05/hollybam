@@ -595,6 +595,10 @@
         padding-right: 20px;
       }
     }
+
+    .clickable {
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -627,7 +631,7 @@
     <ul class="sidebar-menu">
       <li><a href="/mypage" class="active"><i class="fas fa-user"></i>계정 정보</a></li>
       <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
-      <li><a href="/mypage/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+      <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
       <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
       <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
       <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
@@ -726,36 +730,82 @@
     <section class="wishlist">
       <div class="section-title">
         위시리스트
-        <a href="#" class="view-all">전체 보기 →</a>
+        <a href="/wishlist" class="view-all">전체 보기 →</a>
       </div>
 
-      <div class="wishlist-grid">
-        <div class="wishlist-item">
-          <button class="remove-wishlist">
+      <!-- 위시리스트가 있는 경우 -->
+      <div class="wishlist-grid" th:if="${recentWishlist != null and !recentWishlist.isEmpty()}">
+        <div class="wishlist-item" th:each="item : ${recentWishlist}">
+          <button class="remove-wishlist"
+                  th:data-product-code="${item.productCode}"
+                  onclick="removeFromWishlist(this)">
             <i class="fas fa-times"></i>
           </button>
-          <div class="wishlist-image"></div>
-          <div class="product-name">홀리밤 신상품</div>
-          <div class="product-price">₩120,000</div>
-        </div>
 
-        <div class="wishlist-item">
-          <button class="remove-wishlist">
-            <i class="fas fa-times"></i>
-          </button>
-          <div class="wishlist-image"></div>
-          <div class="product-name">홀리밤 베스트셀러</div>
-          <div class="product-price">₩95,000</div>
-        </div>
+          <!-- 상품 이미지 -->
+          <div class="wishlist-image"
+               th:attr="data-product-id=${item.productId}"
+               onclick="goToProduct(this)">
+            <img th:if="${item.productImage != null and !item.productImage.isEmpty()}"
+                 th:src="@{'/testImage/' + ${item.productImage}}"
+                 th:alt="${item.productName}"
+                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
-        <div class="wishlist-item">
-          <button class="remove-wishlist">
-            <i class="fas fa-times"></i>
-          </button>
-          <div class="wishlist-image"></div>
-          <div class="product-name">홀리밤 한정판</div>
-          <div class="product-price">₩200,000</div>
+            <!-- 기본 이미지 (이미지 로드 실패시 표시) -->
+            <div class="default-image"
+                 style="width: 100%; height: 100%; background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); display: none; align-items: center; justify-content: center; color: #999; font-size: 14px; border-radius: 12px;">
+              <i class="fas fa-image" style="font-size: 24px;"></i>
+            </div>
+          </div>
+
+          <!-- 상품 정보 -->
+          <div class="product-name clickable"
+               th:text="${item.productName}"
+               th:attr="data-product-id=${item.productId}"
+               onclick="goToProduct(this)">
+            홀리밤 신상품
+          </div>
+
+          <!-- 가격 정보 -->
+          <div class="product-price-container">
+            <!-- 할인율 -->
+            <span class="discount-badge"
+                  th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}"
+                  th:with="discountRate=${T(java.lang.Math).round((1.0 - item.sellingPrice * 1.0 / item.originalPrice) * 100)}"
+                  th:text="${discountRate + '%'}"
+                  style="background: #EE386D; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 5px;">
+          20%
+        </span>
+
+            <!-- 판매가 -->
+            <div class="product-price"
+                 th:text="${'₩' + #numbers.formatInteger(item.sellingPrice, 3, 'COMMA')}">
+              ₩120,000
+            </div>
+
+            <!-- 정가 (할인이 있는 경우만) -->
+            <div class="original-price"
+                 th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}"
+                 th:text="${'₩' + #numbers.formatInteger(item.originalPrice, 3, 'COMMA')}"
+                 style="font-size: 12px; color: #999; text-decoration: line-through; margin-top: 2px;">
+              ₩150,000
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- 위시리스트가 비어있는 경우 -->
+      <div class="empty-wishlist"
+           th:if="${recentWishlist == null or recentWishlist.isEmpty()}"
+           style="text-align: center; padding: 40px 20px; background: #f8f9fa; border-radius: 16px;">
+        <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;">💝</div>
+        <div style="font-size: 16px; color: #666; margin-bottom: 10px;">위시리스트가 비어있습니다</div>
+        <div style="font-size: 14px; color: #999; margin-bottom: 20px;">마음에 드는 상품을 위시리스트에 추가해보세요</div>
+        <a href="/main"
+           style="display: inline-block; background: #EE386D; color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-size: 14px;">
+          쇼핑하러 가기
+        </a>
       </div>
     </section>
   </main>
@@ -902,6 +952,13 @@
       }
     });
   });
+
+  function goToProduct(element) {
+    const productId = element.getAttribute('data-product-id');
+    if (productId) {
+      window.location.href = '/product/' + productId;
+    }
+  }
 </script>
 </body>
 </html>

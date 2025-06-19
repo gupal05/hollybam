@@ -16,4 +16,10 @@
                      #{isAdult}, NOW()
                  )
     </insert>
+
+    <select id="selectGuestCodeByUuid" parameterType="string" resultType="java.lang.Integer">
+        SELECT guest_code
+        FROM guest_user
+        WHERE guest_uuid = #{guestUuid}
+    </select>
 </mapper>

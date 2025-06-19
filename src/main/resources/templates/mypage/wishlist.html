@@ -95,6 +95,11 @@
             color: white;
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .wishlist-content {
             background: white;
             border-radius: 20px;
@@ -102,7 +107,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
-        /* 메인페이지 스타일 적용 */
+        /* 위시리스트 그리드 */
         .wishlist-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -142,26 +147,13 @@
             height: 100%;
         }
 
-        .card-product-top-text {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #EE386D;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 700;
-            z-index: 2;
-        }
-
         .card-product-img {
             position: relative;
             background: #f5f5f5;
             border-radius: 20px;
             overflow: hidden;
             aspect-ratio: 1;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .card-product-img img {
@@ -177,8 +169,8 @@
 
         .remove-item {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             z-index: 3;
             background: rgba(255,255,255,0.9);
             border: none;
@@ -197,55 +189,53 @@
         .remove-item:hover {
             background: #EE386D;
             color: white;
+            transform: scale(1.1);
         }
 
         .card-product-info {
             padding: 0;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            flex: 1;
         }
 
         .card-product-title {
             font-size: 14px;
-            font-weight: 600;
-            color: #333333;
+            font-weight: 500;
+            color: #333;
+            margin: 0 0 10px 0;
             line-height: 1.4;
-            margin-bottom: 5px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            min-height: 38px;
         }
 
         .card-product-price {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
 
         .sale-perc {
+            display: inline-block;
             background: #EE386D;
             color: white;
             padding: 2px 6px;
-            border-radius: 8px;
+            border-radius: 4px;
             font-size: 12px;
             font-weight: 700;
+            margin-right: 8px;
         }
 
         .sale_price {
             font-size: 16px;
             font-weight: 700;
-            color: #000000;
-            letter-spacing: -0.3px;
+            color: #EE386D;
+            margin-right: 8px;
         }
 
         .regular_price {
             font-size: 12px;
-            color: #888888;
+            color: #999;
             text-decoration: line-through;
         }
 
@@ -253,66 +243,78 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 11px;
-            color: #888888;
-            font-weight: 600;
-            margin-top: auto;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #666;
         }
 
-        .heart-icon, .star-icon {
-            width: 12px;
-            height: 12px;
-            fill: #EE386D;
+        .product_review_container svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .product_review_container .heart-icon {
+            fill: #e74c3c;
+        }
+
+        .product_review_container .star-icon {
+            fill: #ffc107;
         }
 
         .item-actions {
             display: flex;
             gap: 8px;
-            margin-top: 12px;
+            margin-top: auto;
+        }
+
+        .item-actions .btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            border-radius: 6px;
         }
 
         .btn-sm {
-            flex: 1;
-            padding: 10px;
-            font-size: 13px;
-            text-align: center;
-            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
         }
 
+        /* 비어있는 위시리스트 */
         .empty-wishlist {
             text-align: center;
-            padding: 100px 20px;
-            color: #666;
+            padding: 80px 20px;
         }
 
         .empty-icon {
             font-size: 80px;
-            color: #e9ecef;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            opacity: 0.7;
         }
 
         .empty-title {
             font-size: 24px;
             font-weight: 600;
+            color: #333;
             margin-bottom: 15px;
-            color: #1a1a1a;
         }
 
         .empty-desc {
             font-size: 16px;
-            margin-bottom: 40px;
+            color: #666;
             line-height: 1.6;
+            margin-bottom: 30px;
         }
 
         .shop-now-btn {
-            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            display: inline-block;
+            background: #EE386D;
             color: white;
+            text-decoration: none;
             padding: 15px 30px;
             border-radius: 25px;
-            text-decoration: none;
             font-weight: 600;
             font-size: 16px;
-            display: inline-block;
             transition: all 0.3s ease;
         }
 
@@ -321,6 +323,7 @@
             box-shadow: 0 8px 25px rgba(238, 56, 109, 0.3);
         }
 
+        /* 대량 작업 플로팅 버튼 */
         .bulk-actions {
             position: fixed;
             bottom: 30px;
@@ -350,6 +353,60 @@
             color: #EE386D;
         }
 
+        /* 로딩 상태 */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #EE386D;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 토스트 메시지 */
+        .toast-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast-message.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-message.toast-success {
+            background: #27ae60;
+        }
+
+        .toast-message.toast-error {
+            background: #e74c3c;
+        }
+
         /* 반응형 */
         @media (max-width: 1024px) {
             .wishlist-grid {
@@ -366,6 +423,7 @@
             .page-header,
             .wishlist-content {
                 padding: 25px 20px;
+                border-radius: 15px;
             }
 
             .page-title {
@@ -405,11 +463,11 @@
             }
 
             .card-product-title {
-                font-size: 13px;
+                font-size: 12px;
             }
 
             .sale_price {
-                font-size: 15px;
+                font-size: 14px;
             }
 
             .item-actions {
@@ -442,7 +500,7 @@
         <p class="page-subtitle">관심 있는 상품들을 모아보세요.</p>
 
         <div class="wishlist-controls">
-            <div class="item-count">총 <span id="totalCount">8</span>개의 상품</div>
+            <div class="item-count">총 <span id="totalCount" th:text="${totalCount ?: 0}">0</span>개의 상품</div>
             <div class="control-buttons">
                 <button class="btn" id="selectAll">전체선택</button>
                 <button class="btn" id="deleteSelected">선택삭제</button>
@@ -454,243 +512,50 @@
     <!-- 위시리스트 콘텐츠 -->
     <div class="wishlist-content">
         <!-- 위시리스트가 있는 경우 -->
-        <div class="wishlist-grid" id="wishlistGrid">
-            <!-- 위시리스트 아이템 1 -->
-            <article class="wishlist-item">
-                <input type="checkbox" class="item-checkbox" data-item-id="1">
-                <a class="card-product-widget" href="#">
-                    <button class="remove-item" data-item-id="1" type="button">
+        <div class="wishlist-grid" id="wishlistGrid" th:if="${wishlistItems != null and !wishlistItems.isEmpty()}">
+            <!-- 위시리스트 아이템 반복 -->
+            <article class="wishlist-item" th:each="item : ${wishlistItems}">
+                <input type="checkbox" class="item-checkbox" th:data-product-code="${item.productCode}">
+                <a class="card-product-widget" th:href="@{/product/detail/{id}(id=${item.productCode})}">
+                    <button class="remove-item"
+                            th:data-product-code="${item.productCode}"
+                            type="button"
+                            title="위시리스트에서 제거">
                         <i class="fas fa-times"></i>
                     </button>
                     <div class="card-product-img">
-                        <img th:src="@{/images/홀리밤 피스톤 머시 (10종 구성).png}" alt="상품이미지">
+                        <img th:src="@{${item.productImage != null ? '/testImage/' + item.productImage : '/images/no-image.png'}}"
+                             th:alt="${item.productName}">
                     </div>
                     <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 피스톤 머신 (10종 구성)</p>
+                        <p class="card-product-title" th:text="${item.productName}">상품명</p>
                         <div class="card-product-price">
-                            <span class="sale-perc">25%</span>
-                            <span class="sale_price">₩150,000</span>
-                            <span class="regular_price">₩200,000</span>
+                            <!-- 할인율 계산 및 표시 -->
+                            <th:block th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}">
+                                <span class="sale-perc"
+                                      th:with="discountRate=${T(java.lang.Math).round((1.0 - item.sellingPrice * 1.0 / item.originalPrice) * 100)}"
+                                      th:text="${discountRate + '%'}">
+                                    25%
+                                </span>
+                            </th:block>
+                            <span class="sale_price" th:text="${'₩' + #numbers.formatInteger(item.sellingPrice, 3, 'COMMA')}">₩150,000</span>
+                            <span class="regular_price"
+                                  th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}"
+                                  th:text="${'₩' + #numbers.formatInteger(item.originalPrice, 3, 'COMMA')}">₩200,000</span>
                         </div>
                         <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            <svg class="heart-icon" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
                             <span>45</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg class="star-icon" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
                             <span>4.9 (23)</span>
                         </div>
                         <div class="item-actions">
-                            <button class="btn btn-sm">장바구니</button>
-                            <button class="btn btn-sm btn-primary">바로구매</button>
-                        </div>
-                    </div>
-                </a>
-            </article>
-
-            <!-- 위시리스트 아이템 2 -->
-            <article class="wishlist-item">
-                <input type="checkbox" class="item-checkbox" data-item-id="2">
-                <a class="card-product-widget" href="#">
-                    <button class="remove-item" data-item-id="2" type="button">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="card-product-img">
-                        <img th:src="@{/images/홀 래빗 진동 흡입기.png}" alt="상품이미지">
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀 래빗 진동 흡입기</p>
-                        <div class="card-product-price">
-                            <span class="sale-perc">26%</span>
-                            <span class="sale_price">₩89,000</span>
-                            <span class="regular_price">₩120,000</span>
-                        </div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>28</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.7 (18)</span>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm">장바구니</button>
-                            <button class="btn btn-sm btn-primary">바로구매</button>
-                        </div>
-                    </div>
-                </a>
-            </article>
-
-            <!-- 위시리스트 아이템 3 -->
-            <article class="wishlist-item">
-                <input type="checkbox" class="item-checkbox" data-item-id="3">
-                <a class="card-product-widget" href="#">
-                    <button class="remove-item" data-item-id="3" type="button">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="card-product-img">
-                        <img th:src="@{/images/홀리밤 페어리 딜도.png}" alt="상품이미지">
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 페어리 딜도</p>
-                        <div class="card-product-price">
-                            <span class="sale-perc">92%</span>
-                            <span class="sale_price">₩79,000</span>
-                            <span class="regular_price">₩1,000,000</span>
-                        </div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>52</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.9 (23)</span>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm">장바구니</button>
-                            <button class="btn btn-sm btn-primary">바로구매</button>
-                        </div>
-                    </div>
-                </a>
-            </article>
-
-            <!-- 위시리스트 아이템 4 -->
-            <article class="wishlist-item">
-                <input type="checkbox" class="item-checkbox" data-item-id="4">
-                <a class="card-product-widget" href="#">
-                    <button class="remove-item" data-item-id="4" type="button">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="card-product-img">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm.jpg}" alt="상품이미지">
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">귀엽고 섹시한 니아 165cm</p>
-                        <div class="card-product-price">
-                            <span class="sale_price">₩3,500,000</span>
-                        </div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>32</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.8 (15)</span>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm">장바구니</button>
-                            <button class="btn btn-sm btn-primary">바로구매</button>
-                        </div>
-                    </div>
-                </a>
-            </article>
-
-            <!-- 추가 더미 아이템들 -->
-            <article class="wishlist-item">
-                <input type="checkbox" class="item-checkbox" data-item-id="5">
-                <a class="card-product-widget" href="#">
-                    <button class="remove-item" data-item-id="5" type="button">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="card-product-img">
-                        <img th:src="@{/images/product-placeholder.jpg}" alt="상품이미지">
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 로맨틱 세트</p>
-                        <div class="card-product-price">
-                            <span class="sale-perc">40%</span>
-                            <span class="sale_price">₩120,000</span>
-                            <span class="regular_price">₩200,000</span>
-                        </div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>67</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.8 (32)</span>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm">장바구니</button>
-                            <button class="btn btn-sm btn-primary">바로구매</button>
-                        </div>
-                    </div>
-                </a>
-            </article>
-
-            <article class="wishlist-item">
-                <input type="checkbox" class="item-checkbox" data-item-id="6">
-                <a class="card-product-widget" href="#">
-                    <button class="remove-item" data-item-id="6" type="button">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="card-product-img">
-                        <img th:src="@{/images/product-placeholder.jpg}" alt="상품이미지">
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 럭셔리 컬렉션</p>
-                        <div class="card-product-price">
-                            <span class="sale_price">₩450,000</span>
-                        </div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>12</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>5.0 (8)</span>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm">장바구니</button>
-                            <button class="btn btn-sm btn-primary">바로구매</button>
-                        </div>
-                    </div>
-                </a>
-            </article>
-
-            <article class="wishlist-item">
-                <input type="checkbox" class="item-checkbox" data-item-id="7">
-                <a class="card-product-widget" href="#">
-                    <button class="remove-item" data-item-id="7" type="button">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="card-product-img">
-                        <img th:src="@{/images/product-placeholder.jpg}" alt="상품이미지">
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 베스트셀러 패키지</p>
-                        <div class="card-product-price">
-                            <span class="sale-perc">30%</span>
-                            <span class="sale_price">₩210,000</span>
-                            <span class="regular_price">₩300,000</span>
-                        </div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>89</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.9 (47)</span>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm">장바구니</button>
-                            <button class="btn btn-sm btn-primary">바로구매</button>
-                        </div>
-                    </div>
-                </a>
-            </article>
-
-            <article class="wishlist-item">
-                <input type="checkbox" class="item-checkbox" data-item-id="8">
-                <a class="card-product-widget" href="#">
-                    <button class="remove-item" data-item-id="8" type="button">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="card-product-img">
-                        <img th:src="@{/images/product-placeholder.jpg}" alt="상품이미지">
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 기프트 세트</p>
-                        <div class="card-product-price">
-                            <span class="sale-perc">15%</span>
-                            <span class="sale_price">₩85,000</span>
-                            <span class="regular_price">₩100,000</span>
-                        </div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>34</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.6 (21)</span>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm">장바구니</button>
-                            <button class="btn btn-sm btn-primary">바로구매</button>
+                            <button class="btn btn-sm cart-btn" th:data-product-code="${item.productCode}">장바구니</button>
+                            <button class="btn btn-sm btn-primary buy-btn" th:data-product-code="${item.productCode}">바로구매</button>
                         </div>
                     </div>
                 </a>
@@ -698,11 +563,11 @@
         </div>
 
         <!-- 위시리스트가 비어있는 경우 -->
-        <div class="empty-wishlist" id="emptyWishlist" style="display: none;">
+        <div class="empty-wishlist" id="emptyWishlist" th:if="${wishlistItems == null or wishlistItems.isEmpty()}">
             <div class="empty-icon">💝</div>
             <div class="empty-title">위시리스트가 비어있습니다</div>
             <div class="empty-desc">마음에 드는 상품을 위시리스트에 추가해보세요.<br>나중에 쉽게 찾아볼 수 있습니다.</div>
-            <a href="/product/list" class="shop-now-btn">쇼핑하러 가기</a>
+            <a href="/main" class="shop-now-btn">쇼핑하러 가기</a>
         </div>
     </div>
 </div>
@@ -710,8 +575,8 @@
 <!-- 대량 작업 플로팅 버튼 -->
 <div class="bulk-actions" id="bulkActions">
     <span class="selected-count"><span id="selectedCount">0</span>개 선택됨</span>
-    <button class="btn btn-sm">선택 삭제</button>
-    <button class="btn btn-sm btn-primary">선택 구매</button>
+    <button class="btn btn-sm" id="bulkDelete">선택 삭제</button>
+    <button class="btn btn-sm btn-primary" id="bulkAddToCart">선택 구매</button>
 </div>
 
 <!-- 푸터 -->
@@ -719,16 +584,16 @@
 
 <script>
     $(document).ready(function() {
-        // 체크박스 상태 관리
+        // 선택된 상품들을 관리하는 Set
         let selectedItems = new Set();
 
         // 개별 체크박스 이벤트
         $('.item-checkbox').on('change', function() {
-            const itemId = $(this).data('item-id');
+            const productCode = parseInt($(this).data('product-code'));
             if ($(this).is(':checked')) {
-                selectedItems.add(itemId);
+                selectedItems.add(productCode);
             } else {
-                selectedItems.delete(itemId);
+                selectedItems.delete(productCode);
             }
             updateBulkActions();
         });
@@ -738,12 +603,11 @@
             const isAllSelected = $('.item-checkbox:checked').length === $('.item-checkbox').length;
             $('.item-checkbox').prop('checked', !isAllSelected);
 
+            selectedItems.clear();
             if (!isAllSelected) {
                 $('.item-checkbox').each(function() {
-                    selectedItems.add($(this).data('item-id'));
+                    selectedItems.add(parseInt($(this).data('product-code')));
                 });
-            } else {
-                selectedItems.clear();
             }
             updateBulkActions();
         });
@@ -760,87 +624,152 @@
             }
         }
 
-        // 위시리스트 아이템 제거 - 이벤트 전파 중지
+        // 위시리스트 아이템 제거 (개별)
         $('.remove-item').on('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
 
-            const itemId = $(this).data('item-id');
+            const productCode = parseInt($(this).data('product-code'));
             const $item = $(this).closest('.wishlist-item');
 
             if (confirm('이 상품을 위시리스트에서 제거하시겠습니까?')) {
-                $item.fadeOut(300, function() {
-                    $(this).remove();
-                    selectedItems.delete(itemId);
-                    updateItemCount();
-                    updateBulkActions();
-
-                    // 위시리스트가 비어있는지 확인
-                    if ($('.wishlist-item').length === 0) {
-                        $('#wishlistGrid').hide();
-                        $('#emptyWishlist').show();
-                    }
-                });
+                removeFromWishlist(productCode, $item);
             }
         });
 
-        // 선택 삭제
-        $('#deleteSelected').on('click', function() {
+        // 선택 삭제 버튼
+        $('#deleteSelected, #bulkDelete').on('click', function() {
             if (selectedItems.size === 0) {
-                alert('삭제할 상품을 선택해주세요.');
+                showToast('삭제할 상품을 선택해주세요.', 'error');
                 return;
             }
 
             if (confirm(`선택한 ${selectedItems.size}개의 상품을 위시리스트에서 제거하시겠습니까?`)) {
-                selectedItems.forEach(itemId => {
-                    $(`.item-checkbox[data-item-id="${itemId}"]`).closest('.wishlist-item').fadeOut(300, function() {
-                        $(this).remove();
-                    });
-                });
-
-                selectedItems.clear();
-                updateItemCount();
-                updateBulkActions();
-
-                // 모든 아이템이 삭제되었는지 확인
-                setTimeout(function() {
-                    if ($('.wishlist-item').length === 0) {
-                        $('#wishlistGrid').hide();
-                        $('#emptyWishlist').show();
-                    }
-                }, 300);
+                removeMultipleFromWishlist(Array.from(selectedItems));
             }
         });
 
-        // 장바구니 담기
-        $('#addToCart, .bulk-actions .btn-primary').on('click', function() {
-            if (selectedItems.size === 0) {
-                alert('장바구니에 담을 상품을 선택해주세요.');
-                return;
-            }
-
-            // 장바구니 추가 로직
-            console.log('장바구니에 추가할 상품들:', Array.from(selectedItems));
-            alert(`${selectedItems.size}개의 상품이 장바구니에 추가되었습니다.`);
-        });
-
-        // 개별 장바구니/바로구매 버튼 - 이벤트 전파 중지
-        $('.item-actions .btn').on('click', function(e) {
+        // 장바구니 담기 (개별)
+        $('.cart-btn').on('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
 
-            const action = $(this).text();
-            const productName = $(this).closest('.wishlist-item').find('.card-product-title').text();
-
-            if (action === '장바구니') {
-                console.log('장바구니 추가:', productName);
-                alert(`${productName}이(가) 장바구니에 추가되었습니다.`);
-            } else if (action === '바로구매') {
-                console.log('바로구매:', productName);
-                // 바로구매 페이지로 이동
-                // window.location.href = '/order/direct?productId=' + productId;
-            }
+            const productCode = parseInt($(this).data('product-code'));
+            addToCart([productCode]);
         });
+
+        // 장바구니 담기 (선택)
+        $('#addToCart, #bulkAddToCart').on('click', function() {
+            if (selectedItems.size === 0) {
+                showToast('장바구니에 담을 상품을 선택해주세요.', 'error');
+                return;
+            }
+
+            addToCart(Array.from(selectedItems));
+        });
+
+        // 바로구매 버튼
+        $('.buy-btn').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const productCode = parseInt($(this).data('product-code'));
+            window.location.href = `/order/direct?productCode=${productCode}`;
+        });
+
+        // 위시리스트에서 제거 함수
+        function removeFromWishlist(productCode, $item = null) {
+            $.ajax({
+                url: '/wishlist/remove',
+                type: 'DELETE',
+                data: { productCode: productCode },
+                success: function(response) {
+                    if (response.success) {
+                        if ($item) {
+                            $item.fadeOut(300, function() {
+                                $(this).remove();
+                                updateItemCount();
+                                checkEmptyWishlist();
+                            });
+                        }
+                        showToast(response.message, 'success');
+
+                        // 선택된 항목에서도 제거
+                        selectedItems.delete(productCode);
+                        updateBulkActions();
+                    } else {
+                        showToast(response.message, 'error');
+                    }
+                },
+                error: function() {
+                    showToast('제거 중 오류가 발생했습니다.', 'error');
+                }
+            });
+        }
+
+        // 여러 상품 위시리스트에서 제거
+        function removeMultipleFromWishlist(productCodes) {
+            let completed = 0;
+            let errors = 0;
+
+            productCodes.forEach(productCode => {
+                $.ajax({
+                    url: '/wishlist/remove',
+                    type: 'DELETE',
+                    data: { productCode: productCode },
+                    success: function(response) {
+                        completed++;
+                        if (response.success) {
+                            $(`.wishlist-item .item-checkbox[data-product-code="${productCode}"]`)
+                                .closest('.wishlist-item')
+                                .fadeOut(300, function() {
+                                    $(this).remove();
+                                    if (completed === productCodes.length) {
+                                        finishBulkDelete(productCodes.length - errors);
+                                    }
+                                });
+                        } else {
+                            errors++;
+                        }
+                    },
+                    error: function() {
+                        completed++;
+                        errors++;
+                        if (completed === productCodes.length) {
+                            finishBulkDelete(productCodes.length - errors);
+                        }
+                    }
+                });
+            });
+        }
+
+        function finishBulkDelete(successCount) {
+            selectedItems.clear();
+            updateBulkActions();
+            updateItemCount();
+            checkEmptyWishlist();
+            showToast(`${successCount}개의 상품이 위시리스트에서 제거되었습니다.`, 'success');
+        }
+
+        // 장바구니 추가 함수
+        function addToCart(productCodes) {
+            // 실제 장바구니 API 호출
+            $.ajax({
+                url: '/cart/add-multiple',
+                type: 'POST',
+                data: { productCodes: productCodes },
+                success: function(response) {
+                    if (response.success) {
+                        showToast(`${productCodes.length}개의 상품이 장바구니에 추가되었습니다.`, 'success');
+                    } else {
+                        showToast(response.message || '장바구니 추가 중 오류가 발생했습니다.', 'error');
+                    }
+                },
+                error: function() {
+                    showToast('장바구니 추가 중 오류가 발생했습니다.', 'error');
+                }
+            });
+        }
 
         // 아이템 개수 업데이트
         function updateItemCount() {
@@ -848,16 +777,40 @@
             $('#totalCount').text(count);
         }
 
-        // 상품 클릭 시 상세페이지 이동 (체크박스, 제거버튼, 액션버튼 제외)
+        // 빈 위시리스트 체크
+        function checkEmptyWishlist() {
+            if ($('.wishlist-item').length === 0) {
+                $('#wishlistGrid').hide();
+                $('#emptyWishlist').show();
+            }
+        }
+
+        // 토스트 메시지 표시
+        function showToast(message, type = 'info') {
+            const $toast = $(`
+            <div class="toast-message toast-${type}">
+                <span>${message}</span>
+            </div>
+        `);
+
+            $('body').append($toast);
+
+            setTimeout(() => {
+                $toast.addClass('show');
+            }, 100);
+
+            setTimeout(() => {
+                $toast.removeClass('show');
+                setTimeout(() => $toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 상품 클릭 시 상세페이지 이동 (버튼 제외)
         $('.card-product-widget').on('click', function(e) {
-            // 클릭된 요소가 버튼, 체크박스, 또는 그들의 자식 요소인지 확인
             if ($(e.target).closest('.remove-item, .item-checkbox, .item-actions').length > 0) {
                 e.preventDefault();
                 return;
             }
-
-            // 상세페이지로 이동
-            console.log('상품 상세페이지 이동');
         });
 
         // 체크박스 클릭 시 이벤트 전파 중지

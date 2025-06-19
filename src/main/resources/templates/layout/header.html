@@ -1,11 +1,11 @@
 <div th:fragment="header" class="header">
     <div class="header-nav" onclick="window.location.href='/main'" style="cursor: pointer">
-        <img th:src="@{/images/hollybam_logo.webp}" width="85px" height="27.42px">
+        <img th:src="@{/images/KakaoTalk_20250611_143159216.png}" width="150px" height="150px">
     </div>
 
     <div class="header-nav nav-group">
         <div class="nav-item">
-            <div>제품</div>
+            <div>카테고리</div>
             <div class="dropdown-backdrop"></div>
             <div class="dropdown">
                 <div class="dropdown-content">
@@ -26,12 +26,70 @@
                 </div>
             </div>
         </div>
-        <div>브랜드관</div>
-        <div>코스튬 특가</div>
+        <div>브랜드</div>
+        <div>리뷰</div>
+        <div>이벤트</div>
+        <div>고객센터</div>
+        <div>공지사항</div>
     </div>
 
     <div class="header-nav nav-group-icon">
-        <i class="fa-regular fa-circle-user" style="cursor:pointer;" onclick="window.location.href='/auth/login'"></i>
+        <!-- 사용자 아이콘 드롭다운 추가 -->
+        <div class="nav-item user-nav-item">
+            <i class="fa-regular fa-circle-user"></i>
+            <div class="user-dropdown">
+                <!-- 로그인한 사용자 메뉴 -->
+                <div th:if="${session.member != null}" class="user-dropdown-content">
+                    <a href="/mypage" class="user-dropdown-link">
+                        <i class="fa-regular fa-user"></i>
+                        <span>마이페이지</span>
+                    </a>
+                    <a href="/mypage/wishlist" class="user-dropdown-link">
+                        <i class="fa-regular fa-heart"></i>
+                        <span>위시리스트</span>
+                    </a>
+                    <a href="/mypage/orders" class="user-dropdown-link">
+                        <i class="fa-solid fa-box"></i>
+                        <span>주문조회</span>
+                    </a>
+                    <a href="https://www.cjlogistics.com/ko/tool/parcel/tracking" class="user-dropdown-link">
+                        <i class="fa-solid fa-truck"></i>
+                        <span>배송조회</span>
+                    </a>
+                    <a href="/customer/center" class="user-dropdown-link">
+                        <i class="fa-solid fa-headset"></i>
+                        <span>고객센터</span>
+                    </a>
+                    <div class="user-dropdown-divider"></div>
+                    <a href="/auth/logout" class="user-dropdown-link logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>로그아웃</span>
+                    </a>
+                </div>
+
+                <!-- 비회원 메뉴 -->
+                <div th:if="${session.member == null}" class="user-dropdown-content">
+                    <a href="/order/guest" class="user-dropdown-link">
+                        <i class="fa-solid fa-box"></i>
+                        <span>주문조회</span>
+                    </a>
+                    <a href="/delivery/guest" class="user-dropdown-link">
+                        <i class="fa-solid fa-truck"></i>
+                        <span>배송조회</span>
+                    </a>
+                    <a href="/customer/center" class="user-dropdown-link">
+                        <i class="fa-solid fa-headset"></i>
+                        <span>고객센터</span>
+                    </a>
+                    <div class="user-dropdown-divider"></div>
+                    <a href="/auth/login" class="user-dropdown-link login">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>로그인/회원가입</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <i class="fa-solid fa-magnifying-glass"></i>
         <i class="fa-solid fa-bag-shopping" style="cursor:pointer;" onclick="window.location.href='/cart'"></i>
     </div>

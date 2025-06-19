@@ -281,6 +281,33 @@
             fill: #888888;
             transition: fill 0.3s ease;
         }
+
+        /* 상품이 없을 때 표시할 스타일 */
+        .no-products {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            text-align: center;
+            color: #666;
+        }
+        .no-products i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        .no-products h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #444;
+        }
+        .no-products p {
+            font-size: 14px;
+            color: #888;
+        }
+
         @media (max-width: 1024px) {
             .category-main-container {
                 flex-direction: column;
@@ -324,15 +351,26 @@
         window.addEventListener('scroll', adjustCategoryPadding);
         window.addEventListener('DOMContentLoaded', adjustCategoryPadding);
 
-            function goToCategory(element) {
+        function goToCategory(element) {
             const categoryCode = element.getAttribute('data-category-code');
             location.href = `/product/list?categoryCode=${categoryCode}`;
         }
 
-            function goToSubCategory(element) {
+        function goToSubCategory(element) {
             const categoryCode = element.getAttribute('data-category-code');
             const detailCode = element.getAttribute('data-detail-code');
             location.href = `/product/list?categoryCode=${categoryCode}&detailCode=${detailCode}`;
+        }
+
+        // 할인율 계산 함수
+        function calculateDiscountPercentage(originalPrice, sellingPrice) {
+            if (originalPrice <= sellingPrice) return 0;
+            return Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
+        }
+
+        // 가격 포맷팅 함수
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
     </script>
 </head>
@@ -374,8 +412,6 @@
                     </ul>
                 </aside>
 
-
-
                 <section class="category-product-area">
                     <div class="product-list-header">
                         <span class="product-list-title">
@@ -394,86 +430,93 @@
                             <option value="lowprice">가격낮은순</option>
                         </select>
                     </div>
-                    <div class="product-row">
-                        <!-- 상품 카드 예시 1 -->
-                        <article class="v4-product">
-                            <a class="card-product-widget" href="#">
-                                <div class="card-product-img">
-                                    <img th:src="@{/images/귀엽고 섹시한 니아 165cm.jpg}" alt="상품 이미지"/>
+
+                    <!-- 상품 리스트 -->
+                    <div class="product-row" th:if="${productList != null and !productList.isEmpty()}">
+                        <article class="v4-product" th:each="product : ${productList}">
+                            <a class="card-product-widget" th:href="@{'/product/' + ${product.productId}}">
+                                <!-- 할인율 표시 (할인이 있을 때만) -->
+                                <div class="card-product-top-text"
+                                     th:if="${product.priceDtoList != null and !product.priceDtoList.isEmpty() and product.priceDtoList[0].priceOriginal > product.priceDtoList[0].priceSelling}"
+                                     th:text="${#numbers.formatInteger(((product.priceDtoList[0].priceOriginal - product.priceDtoList[0].priceSelling) * 100 / product.priceDtoList[0].priceOriginal), 0)}+'%'">
                                 </div>
-                                <div class="card-product-info">
-                                    <p class="card-product-title">귀엽고 섹시한 니아 165cm</p>
-                                    <div class="card-product-price">
-                                        <div class="sale_price">₩3,500,000</div>
+
+                                <div class="card-product-img">
+                                    <!-- 타이틀 이미지 표시 -->
+                                    <th:block th:if="${product.imageDtoList != null and !product.imageDtoList.isEmpty()}">
+                                        <th:block th:each="image : ${product.imageDtoList}">
+                                            <img th:if="${image.imageType == 'title'}"
+                                                 th:src="@{'/testImage/' + ${image.imageUrl}}"
+                                                 th:alt="${product.productName}" />
+                                        </th:block>
+                                    </th:block>
+
+                                    <!-- 이미지가 없을 때 기본 이미지 -->
+                                    <div th:if="${product.imageDtoList == null or product.imageDtoList.isEmpty()}"
+                                         style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f0f0f0; color: #999;">
+                                        <i class="fas fa-image" style="font-size: 48px;"></i>
                                     </div>
-                                    <div class="card-product-description">프리미엄 품질의 165cm 니아</div>
+                                </div>
+
+                                <div class="card-product-info">
+                                    <p class="card-product-title" th:text="${product.productName}">상품 이름</p>
+
+                                    <!-- 가격 정보 -->
+                                    <div class="card-product-price" th:if="${product.priceDtoList != null and !product.priceDtoList.isEmpty()}">
+                                        <!-- 할인율 표시 (할인이 있을 때만) -->
+                                        <div class="sale-perc"
+                                             th:if="${product.priceDtoList[0].priceOriginal > product.priceDtoList[0].priceSelling}"
+                                             th:text="${#numbers.formatInteger(((product.priceDtoList[0].priceOriginal - product.priceDtoList[0].priceSelling) * 100 / product.priceDtoList[0].priceOriginal), 0)}+'%'">
+                                        </div>
+
+                                        <!-- 판매가 -->
+                                        <div class="sale_price"
+                                             th:text="'₩' + ${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')}">
+                                        </div>
+
+                                        <!-- 정가 (할인이 있을 때만) -->
+                                        <div class="regular_price"
+                                             th:if="${product.priceDtoList[0].priceOriginal > product.priceDtoList[0].priceSelling}"
+                                             th:text="'₩' + ${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')}">
+                                        </div>
+                                    </div>
+
+                                    <!-- 상품 설명 (있을 때만) -->
+                                    <div class="card-product-description"
+                                         th:if="${product.productDescription != null and !#strings.isEmpty(product.productDescription)}"
+                                         th:text="${product.productDescription}">
+                                    </div>
+
+                                    <!-- 리뷰 정보 (임시 데이터) -->
                                     <div class="product_review_container">
-                                        <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                        <svg class="heart-icon" viewBox="0 0 24 24">
+                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                        </svg>
                                         <span>32</span>
-                                        <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star-icon" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
                                         <span>4.8 (15)</span>
                                     </div>
                                 </div>
                             </a>
+
+                            <!-- 위시리스트 버튼 -->
                             <div class="wishlist-wrap">
                                 <button class="wishlist-button" type="button">
-                                    <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
+                                    <svg class="heart-empty" viewBox="0 0 24 24">
+                                        <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>
+                                    </svg>
                                 </button>
                             </div>
                         </article>
-                        <!-- 상품 카드 예시 2 -->
-                        <article class="v4-product">
-                            <a class="card-product-widget" href="#">
-                                <div class="card-product-img">
-                                    <img th:src="@{/images/프리미엄 리얼돌 170cm.jpg}" alt="상품 이미지"/>
-                                </div>
-                                <div class="card-product-info">
-                                    <p class="card-product-title">프리미엄 리얼돌 170cm</p>
-                                    <div class="card-product-price">
-                                        <div class="sale_price">₩4,200,000</div>
-                                    </div>
-                                    <div class="card-product-description">실감나는 피부와 디테일</div>
-                                    <div class="product_review_container">
-                                        <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                        <span>21</span>
-                                        <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <span>4.9 (12)</span>
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="wishlist-wrap">
-                                <button class="wishlist-button" type="button">
-                                    <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                                </button>
-                            </div>
-                        </article>
-                        <!-- 상품 카드 예시 3 -->
-                        <article class="v4-product">
-                            <a class="card-product-widget" href="#">
-                                <div class="card-product-img">
-                                    <img th:src="@{/images/슬림 리얼돌 155cm.jpg}" alt="상품 이미지"/>
-                                </div>
-                                <div class="card-product-info">
-                                    <p class="card-product-title">슬림 리얼돌 155cm</p>
-                                    <div class="card-product-price">
-                                        <div class="sale_price">₩2,950,000</div>
-                                    </div>
-                                    <div class="card-product-description">슬림한 바디와 가벼운 무게</div>
-                                    <div class="product_review_container">
-                                        <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                        <span>12</span>
-                                        <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <span>4.7 (7)</span>
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="wishlist-wrap">
-                                <button class="wishlist-button" type="button">
-                                    <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                                </button>
-                            </div>
-                        </article>
-                        <!-- 필요시 더 추가 -->
+                    </div>
+
+                    <!-- 상품이 없을 때 표시할 영역 -->
+                    <div class="no-products" th:if="${productList == null or productList.isEmpty()}">
+                        <i class="fas fa-box-open"></i>
+                        <h3>등록된 상품이 없습니다</h3>
+                        <p>현재 이 카테고리에는 상품이 등록되어 있지 않습니다.<br>다른 카테고리를 확인해보세요.</p>
                     </div>
                 </section>
             </div>
@@ -484,6 +527,42 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
+    // 이미지 호버 효과 (webp 이미지가 있는 경우)
+    document.addEventListener("DOMContentLoaded", function () {
+        const imgs = document.querySelectorAll(".card-product-img img");
+
+        imgs.forEach(img => {
+            const originalSrc = img.getAttribute("src");
+            const product = img.closest('.v4-product');
+
+            // webp 이미지 찾기
+            const webpImage = product.querySelector('[data-webp]');
+            if (webpImage) {
+                const hoverSrc = webpImage.getAttribute('data-webp');
+
+                img.addEventListener("mouseenter", () => {
+                    img.setAttribute("src", hoverSrc);
+                });
+
+                img.addEventListener("mouseleave", () => {
+                    img.setAttribute("src", originalSrc);
+                });
+            }
+        });
+    });
+
+    // 정렬 기능
+    document.addEventListener("DOMContentLoaded", function() {
+        const sortSelect = document.querySelector('.product-sort-select');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function() {
+                const sortValue = this.value;
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('sort', sortValue);
+                window.location.href = currentUrl.toString();
+            });
+        }
+    });
 </script>
 
 </body>

@@ -120,6 +120,7 @@
       margin-top: 12px;
       text-align: left;
     }
+
   </style>
 </head>
 <body>
@@ -157,8 +158,12 @@
     </form>
 
     <div class="social-buttons">
-      <button>네이버 로그인</button>
-      <button>카카오 로그인</button>
+      <div style="cursor: pointer;" onclick="window.location.href='/auth/login/naver'">
+        <img th:src="@{/images/btnG_padded_320x40.png}" alt="네이버 로그인" style="margin: 0; width: 100%; height: 100%;">
+      </div>
+      <div style="cursor: pointer;" onclick="window.location.href='/auth/login/naver'">
+        <img th:src="@{/images/kakao_login_clean_320x40.png}" alt="카카오 로그인" style="margin: 0; width: 100%; height: 100%;">
+      </div>
       <button>구글 로그인</button>
     </div>
   </div>

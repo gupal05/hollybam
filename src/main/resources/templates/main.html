@@ -111,7 +111,7 @@
             cursor: pointer;
             transition: transform 0.2s ease;
             flex-shrink: 0;
-            min-width: 70px;
+            min-width: 90px; /* 70px → 90px */
         }
 
         .category-item:hover {
@@ -119,14 +119,14 @@
         }
 
         .category-icon {
-            width: 55px;
-            height: 55px;
+            width: 75px; /* 55px → 75px */
+            height: 75px; /* 55px → 75px */
             background: #ffffff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px; /* 8px → 10px */
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             transition: all 0.2s ease;
             position: relative;
@@ -147,13 +147,13 @@
         }
 
         .category-icon i {
-            font-size: 22px;
+            font-size: 30px; /* 22px → 30px */
             color: #EE386D;
         }
 
         .category-label {
-            font-size: 12px;
-            font-weight: 400;
+            font-size: 14px; /* 12px → 14px */
+            font-weight: 500; /* 400 → 500 */
             color: #666666;
             text-align: center;
             line-height: 1.2;
@@ -166,10 +166,10 @@
             right: -3px;
             background: #EE386D;
             color: white;
-            font-size: 8px;
+            font-size: 10px; /* 8px → 10px */
             font-weight: 600;
-            padding: 1px 4px;
-            border-radius: 6px;
+            padding: 2px 6px; /* 1px 4px → 2px 6px */
+            border-radius: 8px; /* 6px → 8px */
             z-index: 2;
         }
 
@@ -210,6 +210,174 @@
             border-radius: 1px;
         }
 
+        /* 베스트 리뷰 섹션 */
+        .best-reviews-section {
+            margin: 60px 0;
+            padding: 80px 0 60px; /* 상단 패딩 증가 */
+            overflow: visible;
+        }
+
+        .reviews-slider-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding: 20px 0;
+            max-width: calc(100% - 40px);  /* 추가 - 양쪽 여백 확보 */
+        }
+
+        .reviews-slider {
+            display: flex;
+            transition: transform 0.5s ease;
+            gap: 20px;
+        }
+
+        .review-card {
+            flex: 0 0 calc(25% - 15px); /* 더 정확한 계산 */
+            width: calc(25% - 15px);
+            height: calc(25vw - 50px); /* 뷰포트 기준 정사각형 */
+            max-height: 295px; /* 최대 높이 */
+            min-height: 250px; /* 최소 높이 */
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .review-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .review-product-img {
+            width: 60px; /* 기존 50px에서 60px로 증가 */
+            height: 60px; /* 기존 50px에서 60px로 증가 */
+            border-radius: 8px;
+            object-fit: cover;
+            background: #f5f5f5;
+        }
+
+        .review-product-info {
+            flex: 1;
+        }
+
+        .review-product-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            width: 14px;
+            height: 14px;
+            fill: #ffd700;
+        }
+
+        .star.empty {
+            fill: #e0e0e0;
+        }
+
+        .rating-text {
+            font-size: 12px;
+            color: #666;
+            margin-left: 4px;
+        }
+
+        .review-content {
+            font-size: 13px; /* 기존 14px에서 13px로 줄임 */
+            line-height: 1.5; /* 기존 1.6에서 1.5로 줄임 */
+            color: #555;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* 기존 4줄에서 3줄로 줄임 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1; /* 남은 공간을 차지하도록 */
+        }
+
+        .review-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .review-author {
+            font-size: 12px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .review-date {
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        .review-author-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .review-author {
+            font-size: 12px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .review-age {
+            font-size: 11px;
+            color: #aaa;
+            font-weight: 400;
+        }
+
+        .review-date {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+
+        .review-likes {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .like-icon {
+            width: 14px;
+            height: 14px;
+            fill: #EE386D;
+        }
+
         /* 업데이트된 상품 카드 디자인 */
         .product-row {
             display: grid;
@@ -220,17 +388,17 @@
 
         .v4-product {
             position: relative;
-            background: transparent; /* 배경 투명하게 */
-            border: none; /* 테두리 제거 */
-            border-radius: 0; /* 카드 테두리 곡선 제거 */
-            box-shadow: none; /* 그림자 제거 */
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
             overflow: visible;
             transition: transform 0.3s ease;
             cursor: pointer;
         }
 
         .v4-product:hover {
-            transform: translateY(-3px); /* 호버 효과 살짝 줄임 */
+            transform: translateY(-3px);
         }
 
         .card-product-widget {
@@ -256,10 +424,10 @@
         .card-product-img {
             position: relative;
             background: #f5f5f5;
-            border-radius: 20px; /* 상하좌우 모든 모서리 둥글게 */
+            border-radius: 20px;
             overflow: hidden;
             aspect-ratio: 1;
-            margin-bottom: 10px; /* 이미지와 텍스트 사이 간격 */
+            margin-bottom: 10px;
         }
 
         .card-product-img img {
@@ -274,7 +442,7 @@
         }
 
         .card-product-info {
-            padding: 0; /* 패딩 제거 */
+            padding: 0;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -392,12 +560,11 @@
 
         /* 홀리밤 인스타 툰 섹션 */
         .instagramtoon-section {
-            margin-top: 120px; /* 기존 60px에서 120px로 증가 */
+            margin-top: 120px;
             width: 100%;
             position: relative;
         }
 
-        /* 섹션 구분을 위한 subtle한 구분선 추가 */
         .instagramtoon-section::before {
             content: '';
             position: absolute;
@@ -414,15 +581,124 @@
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 700px;
-            background: #f8f9fa;
-            border-radius: 20px;
+            height: 600px; /* 높이 줄임 */
+            background: transparent; /* 배경 제거 */
+            border-radius: 0; /* 둥근 모서리 제거 */
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-top: 20px; /* 타이틀과 컨테이너 사이 간격 추가 */
+            box-shadow: none; /* 그림자 제거 */
+            margin-top: 20px;
+            position: relative;
         }
 
-        .instagramtoon-placeholder {
+        /* 이미지 슬라이드 컨테이너 */
+        .news-slider-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 0px;
+        }
+
+        .news-slider {
+            display: flex;
+            transition: transform 0.8s ease;
+            width: 100%;
+            height: 100%;
+        }
+
+        .news-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent; /* 배경 제거 */
+        }
+
+        .news-slide img {
+            width: 400px; /* 고정 너비 */
+            height: 500px; /* 고정 높이 - 세로가 긴 직사각형 */
+            object-fit: cover; /* contain에서 cover로 변경 */
+            border-radius: 0; /* 둥근 모서리 제거 */
+            box-shadow: none; /* 그림자 제거 */
+            transition: transform 0.3s ease;
+        }
+
+        .news-slide img:hover {
+            transform: scale(1.02);
+        }
+
+        /* 슬라이드 컨트롤 */
+        .news-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .news-nav-btn:hover {
+            background: #EE386D;
+            color: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .news-nav-btn.prev {
+            left: 20px;
+        }
+
+        .news-nav-btn.next {
+            right: 20px;
+        }
+
+        .news-nav-btn i {
+            font-size: 18px;
+        }
+
+        /* 인디케이터 */
+        .news-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .news-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.3); /* 어두운 배경으로 변경 */
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .news-indicator.active {
+            background: #EE386D;
+            transform: scale(1.2);
+        }
+
+        .news-indicator:hover {
+            background: rgba(238, 56, 109, 0.7);
+        }
+
+        /* 플레이스홀더 (이미지가 없을 때) */
+        .news-placeholder {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -432,6 +708,17 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             text-align: center;
+        }
+
+        .news-placeholder h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .news-placeholder p {
+            font-size: 14px;
+            opacity: 0.8;
         }
 
         .instagramtoon-placeholder h3 {
@@ -445,7 +732,6 @@
             opacity: 0.8;
         }
 
-        /* 유튜브 iframe 스타일 (나중에 사용) */
         .youtube-iframe {
             width: 100%;
             height: 100%;
@@ -455,6 +741,23 @@
 
         /* 반응형 */
         @media (max-width: 1024px) {
+            .category-item {
+                min-width: 80px; /* 조정 */
+            }
+
+            .category-icon {
+                width: 65px; /* 50px → 65px */
+                height: 65px; /* 50px → 65px */
+            }
+
+            .category-icon i {
+                font-size: 26px; /* 20px → 26px */
+            }
+
+            .category-label {
+                font-size: 13px;
+            }
+
             .category-grid {
                 gap: 15px;
             }
@@ -484,6 +787,29 @@
                 top: -50px;
                 width: 80px;
             }
+            .instagramtoon-container {
+                height: 600px;
+            }
+
+            .news-nav-btn {
+                width: 45px;
+                height: 45px;
+            }
+
+            .news-nav-btn.prev {
+                left: 15px;
+            }
+
+            .news-nav-btn.next {
+                right: 15px;
+            }
+            .review-card {
+                flex: 0 0 calc(33.333% - 13.33px);
+                width: calc(33.333% - 13.33px);
+                height: calc(33.333vw - 40px);
+                max-height: 280px;
+                min-height: 230px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -496,21 +822,23 @@
                 padding: 0 5px;
             }
             .category-item {
-                min-width: 60px;
+                min-width: 70px; /* 60px → 70px */
             }
+
             .category-icon {
-                width: 45px;
-                height: 45px;
+                width: 55px; /* 45px → 55px */
+                height: 55px; /* 45px → 55px */
             }
             .category-icon img {
                 width: 28px;
                 height: 28px;
             }
             .category-icon i {
-                font-size: 18px;
+                font-size: 22px; /* 18px → 22px */
             }
+
             .category-label {
-                font-size: 11px;
+                font-size: 12px; /* 11px → 12px */
             }
             .content {
                 padding: 40px 16px 0;
@@ -531,15 +859,73 @@
                 width: 60px;
             }
             .instagramtoon-container {
-                height: 600px;
+                height: 500px;
                 border-radius: 15px;
                 margin-top: 16px;
             }
+
+            .news-slider-container {
+                border-radius: 15px;
+            }
+
+            .news-nav-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .news-nav-btn.prev {
+                left: 10px;
+            }
+
+            .news-nav-btn.next {
+                right: 10px;
+            }
+
+            .news-nav-btn i {
+                font-size: 16px;
+            }
+
+            .news-indicators {
+                bottom: 20px;
+                gap: 10px;
+            }
+
+            .news-indicator {
+                width: 10px;
+                height: 10px;
+            }
+
+            .news-placeholder h3 {
+                font-size: 20px;
+            }
+
+            .news-placeholder p {
+                font-size: 12px;
+            }
+
             .instagramtoon-placeholder h3 {
                 font-size: 20px;
             }
             .instagramtoon-placeholder p {
                 font-size: 12px;
+            }
+            .review-card {
+                flex: 0 0 calc(50% - 10px);
+                width: calc(50% - 10px);
+                height: calc(50vw - 30px);
+                max-height: 250px;
+                min-height: 200px;
+                padding: 18px;
+            }
+
+            .review-product-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .best-reviews-section {
+                margin: 80px 0;
+                padding: 30px 0;
             }
         }
 
@@ -549,21 +935,28 @@
                 padding: 0;
             }
             .category-item {
-                min-width: 50px;
+                min-width: 60px; /* 50px → 60px */
             }
+
             .category-icon {
-                width: 40px;
-                height: 40px;
+                width: 48px; /* 40px → 48px */
+                height: 48px; /* 40px → 48px */
             }
             .category-icon img {
                 width: 25px;
                 height: 25px;
             }
             .category-icon i {
-                font-size: 16px;
+                font-size: 20px; /* 16px → 20px */
             }
+
             .category-label {
-                font-size: 10px;
+                font-size: 11px; /* 10px → 11px */
+            }
+
+            .category-badge {
+                font-size: 9px;
+                padding: 1px 4px;
             }
             .product-row {
                 grid-template-columns: repeat(2, 1fr);
@@ -580,15 +973,50 @@
                 margin-top: 60px;
             }
             .instagramtoon-section::before {
-                display: none; /* 모바일에서는 구분선 숨김 */
+                display: none;
             }
             .instagramtoon-container {
-                height: 500px;
+                height: 400px;
                 border-radius: 12px;
                 margin-top: 12px;
             }
             .instagramtoon-placeholder h3 {
                 font-size: 18px;
+            }
+
+            .news-slider-container {
+                border-radius: 12px;
+            }
+
+            .news-nav-btn {
+                width: 35px;
+                height: 35px;
+            }
+
+            .news-nav-btn i {
+                font-size: 14px;
+            }
+
+            .news-placeholder h3 {
+                font-size: 18px;
+            }
+
+            .review-card {
+                flex: 0 0 calc(50% - 10px);
+                width: calc(50% - 10px);
+                height: calc(50vw - 25px);
+                max-height: 280px;
+                min-height: 220px;
+                padding: 16px;
+            }
+
+            .review-product-img {
+                width: 45px;
+                height: 45px;
+            }
+            .best-reviews-section {
+                margin: 60px 0;
+                padding: 24px 0;
             }
         }
     </style>
@@ -617,50 +1045,50 @@
                     <span class="category-badge">HOT</span>
                     <i class="fas fa-heart"></i>
                 </div>
-                <div class="category-label">인기브랜드</div>
+                <div class="category-label">이달의 특가</div>
             </div>
             <div class="category-item">
                 <div class="category-icon">
                     <span class="category-badge">New</span>
                     <i class="fas fa-user"></i>
                 </div>
-                <div class="category-label">MD픽</div>
+                <div class="category-label">홀리밤 픽</div>
             </div>
             <div class="category-item">
                 <div class="category-icon">
                     <i class="fas fa-gift"></i>
                 </div>
-                <div class="category-label">첫날밤 용품</div>
+                <div class="category-label">리얼돌</div>
             </div>
             <div class="category-item">
                 <div class="category-icon">
                     <i class="fas fa-star"></i>
                 </div>
-                <div class="category-label">첫날밤 약</div>
+                <div class="category-label">SM용품</div>
             </div>
             <div class="category-item">
                 <div class="category-icon">
                     <i class="fas fa-laptop"></i>
                 </div>
-                <div class="category-label">건강용품</div>
+                <div class="category-label">뜨밤 패키지</div>
             </div>
             <div class="category-item">
                 <div class="category-icon">
                     <i class="fas fa-dumbbell"></i>
                 </div>
-                <div class="category-label">헬스케어</div>
+                <div class="category-label">콘돔</div>
             </div>
             <div class="category-item">
                 <div class="category-icon">
                     <i class="fas fa-cube"></i>
                 </div>
-                <div class="category-label">기념품</div>
+                <div class="category-label">러브젤</div>
             </div>
             <div class="category-item">
                 <div class="category-icon">
                     <i class="fas fa-female"></i>
                 </div>
-                <div class="category-label">여성케어</div>
+                <div class="category-label">홀리밤 소식</div>
             </div>
         </div>
     </div>
@@ -710,136 +1138,230 @@
                 </div>
             </article>
         </div>
-        <div class="instagramtoon-section">
-            <div class="section-title">홀리밤 인스타 툰</div>
-            <div class="instagramtoon-container">
-                <!-- 현재는 플레이스홀더, 나중에 iframe으로 교체 -->
-                <div class="instagramtoon-placeholder">
-                    <h3>홀리밤 인스타 툰</h3>
-                    <p>유튜브 영상이 여기에 표시됩니다</p>
+        <!-- 베스트 리뷰 섹션 -->
+        <div class="best-reviews-section">
+            <div class="section-title">베스트 리뷰</div>
+            <div class="reviews-slider-container">
+                <div class="reviews-slider" id="reviewsSlider">
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                            <div class="review-product-info">
+                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
+                                <div class="review-rating">
+                                    <div class="star-rating">
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    </div>
+                                    <span class="rating-text">4.71 (494)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                        </div>
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <span class="review-author">윤익**</span>
+                                    <span class="review-age">20대 여성</span>
+                                </div>
+                                <div class="review-date">2025년 05월 1일</div>
+                            </div>
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>506</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                            <div class="review-product-info">
+                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
+                                <div class="review-rating">
+                                    <div class="star-rating">
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    </div>
+                                    <span class="rating-text">4.71 (494)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                        </div>
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <span class="review-author">윤익**</span>
+                                    <span class="review-age">20대 여성</span>
+                                </div>
+                                <div class="review-date">2025년 05월 1일</div>
+                            </div>
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>506</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                            <div class="review-product-info">
+                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
+                                <div class="review-rating">
+                                    <div class="star-rating">
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    </div>
+                                    <span class="rating-text">4.71 (494)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                        </div>
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <span class="review-author">윤익**</span>
+                                    <span class="review-age">20대 여성</span>
+                                </div>
+                                <div class="review-date">2025년 05월 1일</div>
+                            </div>
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>506</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                            <div class="review-product-info">
+                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
+                                <div class="review-rating">
+                                    <div class="star-rating">
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    </div>
+                                    <span class="rating-text">4.71 (494)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                        </div>
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <span class="review-author">윤익**</span>
+                                    <span class="review-age">20대 여성</span>
+                                </div>
+                                <div class="review-date">2025년 05월 1일</div>
+                            </div>
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>506</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                            <div class="review-product-info">
+                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
+                                <div class="review-rating">
+                                    <div class="star-rating">
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    </div>
+                                    <span class="rating-text">4.71 (494)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                        </div>
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <span class="review-author">윤익**</span>
+                                    <span class="review-age">20대 여성</span>
+                                </div>
+                                <div class="review-date">2025년 05월 1일</div>
+                            </div>
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>506</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- 나중에 유튜브 연결 시 아래 iframe 주석 해제하고 위의 placeholder div 삭제 -->
-                <!--
-                <iframe
-                    class="youtube-iframe"
-                    src="https://www.youtube.com/embed/videoseries?si=E-736Jojxc_7Dm5L&list=PLFZwuSDJTOCqSd1PFcBidLXtIBnX6bzCu"
-                    title="홀리밤 인스타 툰"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen>
-                </iframe>
-                -->
             </div>
         </div>
-        <div class="section-title" style="margin-top: 120px;">신제품</div>
+        <div class="section-title">신상품</div>
         <div class="product-row">
-            <article class="v4-product">
-                <a class="card-product-widget" href="#">
+            <article class="v4-product" th:each="product : ${newProList}">
+                <a class="card-product-widget" th:href="@{'/product/' + ${product.productId}}">
                     <div class="card-product-top-text">HOT🔥</div>
                     <div class="card-product-img">
                         <img class="product-img"
-                             th:src="@{/images/홀리밤 피스톤 머시 (10종 구성).png}"
-                             th:attr="data-hover=@{/images/홀리밤 피스톤 머시 (10종 구성).webp}"
+                             th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
+                             th:if="${product.imageDtoList[0].imageWebp != null}"
+                             th:attr="data-hover=@{/testImage/{hover}(hover=${product.imageDtoList[0].imageWebp})}"
+                             alt="상품 이미지" />
+                        <img class="product-img"
+                             th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
+                             th:unless="${product.imageDtoList[0].imageWebp != null}"
                              alt="상품 이미지" />
                     </div>
                     <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 피스톤 머신</p>
+                        <p class="card-product-title" th:text="${product.productName}">상품 이름</p>
                         <div class="card-product-price">
                             <div class="sale-perc">25%</div>
-                            <div class="sale_price">₩150,000</div>
-                            <div class="regular_price">₩200,000</div>
+                            <div class="sale_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '₩'">₩150,000</div>
+                            <div class="regular_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '₩'">₩200,000</div>
                         </div>
-                        <div class="card-product-description">프리미엄 품질의 홀리밤 피스톤 머신 10종 구성</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>45</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.9 (23)</span>
+                        <div class="card-product-description" th:text="${product.productDescription}">
+                            상품 설명
                         </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
-
-            <article class="v4-product">
-                <a class="card-product-widget" th:href="@{/product/productDetail}">
-                    <div class="card-product-img">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm.jpg}" alt="상품 이미지"/>
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">귀엽고 섹시한 니아 165cm</p>
-                        <div class="card-product-price">
-                            <div class="sale_price">₩3,500,000</div>
-                        </div>
-                        <div class="card-product-description">프리미엄 품질의 165cm 니아</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>32</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.8 (15)</span>
-                        </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
-
-            <article class="v4-product">
-                <a class="card-product-widget" href="#">
-                    <div class="card-product-top-text">NEW✨</div>
-                    <div class="card-product-img">
-                        <img class="product-img"
-                             th:src="@{/images/홀 래빗 진동 흡입기.png}"
-                             th:attr="data-hover=@{/images/홀 래빗 진동 흡입기.webp}"
-                             alt="상품 이미지" />
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀 래빗 진동 흡입기</p>
-                        <div class="card-product-price">
-                            <div class="sale-perc">26%</div>
-                            <div class="sale_price">₩89,000</div>
-                            <div class="regular_price">₩120,000</div>
-                        </div>
-                        <div class="card-product-description">고급스러운 홀 래빗 진동 흡입기</div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>28</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>4.7 (18)</span>
-                        </div>
-                    </div>
-                </a>
-                <div class="wishlist-wrap">
-                    <button class="wishlist-button" type="button">
-                        <svg class="heart-empty" viewBox="0 0 24 24"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
-                    </button>
-                </div>
-            </article>
-            <article class="v4-product">
-                <a class="card-product-widget" th:href="@{/product/productDetail}">
-                    <div class="card-product-img">
-                        <img class="product-img"
-                             th:src="@{/images/홀리밤 페어리 딜도.png}"
-                             th:attr="data-hover=@{/images/홀리밤 페어리 딜도.webp}"
-                             alt="상품 이미지" />
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title">홀리밤 페어리 딜도</p>
-                        <div class="card-product-price">
-                            <div class="sale-perc">92%</div>
-                            <div class="sale_price">₩79,000</div>
-                            <div class="regular_price">₩1,000,000</div>
-                        </div>
-                        <div class="card-product-description">프리미엄 품질의 홀리밤 페어리 딜도</div>
                         <div class="product_review_container">
                             <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             <span>45</span>
@@ -855,6 +1377,47 @@
                 </div>
             </article>
         </div>
+        <div class="instagramtoon-section">
+            <div class="section-title">홀리밤 소식</div>
+            <div class="instagramtoon-container">
+                <div class="news-slider-container">
+                    <!-- 이미지 슬라이드 -->
+                    <div class="news-slider" id="newsSlider">
+                        <!-- 예시 이미지들 - 실제 이미지 경로로 변경하세요 -->
+                        <div class="news-slide">
+                            <img th:src="@{/images/KakaoTalk_20250617_173507796.jpg}" alt="홀리밤 소식 1">
+                        </div>
+                        <div class="news-slide">
+                            <img th:src="@{/images/newsimg2.png}" alt="홀리밤 소식 2">
+                        </div>
+                        <div class="news-slide">
+                            <img th:src="@{/images/KakaoTalk_20250617_173507796.jpg}" alt="홀리밤 소식 3">
+                        </div>
+                        <!-- 이미지가 없을 때 플레이스홀더 -->
+                        <div class="news-slide">
+                            <div class="news-placeholder">
+                                <h3>홀리밤 소식</h3>
+                                <p>새로운 소식을 준비 중입니다</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 네비게이션 버튼 -->
+                    <button class="news-nav-btn prev" id="newsPrevBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="news-nav-btn next" id="newsNextBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+
+                    <!-- 인디케이터 -->
+                    <div class="news-indicators" id="newsIndicators">
+                        <!-- JavaScript에서 동적으로 생성 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 <!-- 고정 헤더 -->
@@ -907,6 +1470,154 @@
         });
     });
 
+
+    // 홀리밤 소식 이미지 슬라이드
+    document.addEventListener("DOMContentLoaded", function() {
+        const newsSlider = document.getElementById('newsSlider');
+        const newsPrevBtn = document.getElementById('newsPrevBtn');
+        const newsNextBtn = document.getElementById('newsNextBtn');
+        const newsIndicatorsContainer = document.getElementById('newsIndicators');
+
+        if (!newsSlider) return; // 요소가 없으면 실행하지 않음
+
+        let newsCurrentIndex = 0;
+        const newsSlides = newsSlider.querySelectorAll('.news-slide');
+        const totalNewsSlides = newsSlides.length;
+        let newsIsTransitioning = false;
+
+        console.log('총 슬라이드 개수:', totalNewsSlides); // 디버깅용
+
+        // 인디케이터 생성
+        function createNewsIndicators() {
+            newsIndicatorsContainer.innerHTML = '';
+            for (let i = 0; i < totalNewsSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = `news-indicator ${i === 0 ? 'active' : ''}`;
+                indicator.addEventListener('click', () => goToNewsSlide(i));
+                newsIndicatorsContainer.appendChild(indicator);
+            }
+        }
+
+        // 슬라이드 위치 업데이트
+        function updateNewsSliderPosition() {
+            if (newsIsTransitioning) return;
+
+            const translateX = -(newsCurrentIndex * 100);
+            newsSlider.style.transform = `translateX(${translateX}%)`;
+
+            console.log('현재 인덱스:', newsCurrentIndex, 'translateX:', translateX); // 디버깅용
+
+            // 인디케이터 업데이트
+            const indicators = document.querySelectorAll('.news-indicator');
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === newsCurrentIndex);
+            });
+        }
+
+        // 다음 슬라이드
+        function nextNewsSlide() {
+            if (newsIsTransitioning) return;
+
+            newsIsTransitioning = true;
+            newsCurrentIndex = (newsCurrentIndex + 1) % totalNewsSlides;
+            updateNewsSliderPosition();
+
+            setTimeout(() => {
+                newsIsTransitioning = false;
+            }, 800);
+        }
+
+        // 이전 슬라이드
+        function prevNewsSlide() {
+            if (newsIsTransitioning) return;
+
+            newsIsTransitioning = true;
+            newsCurrentIndex = (newsCurrentIndex - 1 + totalNewsSlides) % totalNewsSlides;
+            updateNewsSliderPosition();
+
+            setTimeout(() => {
+                newsIsTransitioning = false;
+            }, 800);
+        }
+
+        // 특정 슬라이드로 이동
+        function goToNewsSlide(index) {
+            if (newsIsTransitioning || index === newsCurrentIndex) return;
+
+            newsIsTransitioning = true;
+            newsCurrentIndex = index;
+            updateNewsSliderPosition();
+
+            setTimeout(() => {
+                newsIsTransitioning = false;
+            }, 800);
+        }
+
+        // 이벤트 리스너
+        if (newsNextBtn) {
+            newsNextBtn.addEventListener('click', nextNewsSlide);
+            console.log('next 버튼 이벤트 등록됨'); // 디버깅용
+        }
+        if (newsPrevBtn) {
+            newsPrevBtn.addEventListener('click', prevNewsSlide);
+            console.log('prev 버튼 이벤트 등록됨'); // 디버깅용
+        }
+
+        // 자동 슬라이드 (5초마다) - 슬라이드가 1개보다 많을 때만
+        let newsAutoSlideInterval;
+        if (totalNewsSlides > 1) {
+            newsAutoSlideInterval = setInterval(nextNewsSlide, 5000);
+
+            // 호버 시 자동 슬라이드 정지
+            const newsSection = document.querySelector('.instagramtoon-section');
+            if (newsSection) {
+                newsSection.addEventListener('mouseenter', () => {
+                    clearInterval(newsAutoSlideInterval);
+                });
+
+                newsSection.addEventListener('mouseleave', () => {
+                    newsAutoSlideInterval = setInterval(nextNewsSlide, 5000);
+                });
+            }
+        }
+
+        // 터치 스와이프 지원 (모바일)
+        let newsTouchStartX = 0;
+        let newsTouchEndX = 0;
+
+        newsSlider.addEventListener('touchstart', (e) => {
+            newsTouchStartX = e.changedTouches[0].screenX;
+        });
+
+        newsSlider.addEventListener('touchend', (e) => {
+            newsTouchEndX = e.changedTouches[0].screenX;
+            handleNewsSwipe();
+        });
+
+        function handleNewsSwipe() {
+            const swipeThreshold = 50;
+            const diff = newsTouchStartX - newsTouchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextNewsSlide(); // 왼쪽 스와이프 - 다음 슬라이드
+                } else {
+                    prevNewsSlide(); // 오른쪽 스와이프 - 이전 슬라이드
+                }
+            }
+        }
+
+        // 초기 설정
+        createNewsIndicators();
+        updateNewsSliderPosition();
+
+        // 컨트롤 표시/숨기기 (슬라이드가 1개일 때는 숨김)
+        if (totalNewsSlides <= 1) {
+            if (newsPrevBtn) newsPrevBtn.style.display = 'none';
+            if (newsNextBtn) newsNextBtn.style.display = 'none';
+            newsIndicatorsContainer.style.display = 'none';
+        }
+    });
 </script>
 
 </body>

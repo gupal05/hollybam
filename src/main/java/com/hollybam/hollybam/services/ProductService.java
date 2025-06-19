@@ -57,6 +57,12 @@ public class ProductService implements IF_ProductService{
 
     @Override
     @Transactional
+    public List<ProductDto> selectNewProducts() {
+        return productDao.selectNewProducts();
+    }
+
+    @Override
+    @Transactional
     public ProductDto getProductDetailInfo_first(String productId) {
         return productDao.getProductDetailInfo_first(productId);
     }
@@ -84,5 +90,18 @@ public class ProductService implements IF_ProductService{
     public List<ProductOptionDto> getProductOptions(int productCode) {
         return productDao.getProductOptions(productCode);
     }
+
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsByCategoryCode(String categoryCode, String sort) {
+        return productDao.selectProductsByCategoryCode(categoryCode, sort);
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsByCategoryAndDetail(String categoryCode, String detailCode, String sort) {
+        return productDao.selectProductsByCategoryAndDetail(categoryCode, detailCode, sort);
+    }
+
 
 }

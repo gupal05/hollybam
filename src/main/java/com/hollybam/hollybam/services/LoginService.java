@@ -33,7 +33,7 @@ public class LoginService implements IF_LoginService{
         if (matches) {
             return true; // 로그인 성공
         } else {
-            return true; // 비밀번호 불일치
+            return false; // 비밀번호 불일치
         }
     }
 

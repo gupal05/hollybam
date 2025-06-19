@@ -118,6 +118,30 @@
         ORDER BY p.product_order_count DESC
     </select>
 
+    <!-- 신제품 리스트 -->
+    <select id="selectNewProducts" resultMap="ProductResultMap">
+        SELECT
+            p.product_code,
+            p.product_id,
+            p.product_name,
+            p.product_description,
+            p.product_order_count,
+            pr.price_original,
+            pr.price_selling,
+            title_img.image_url AS title_image_url,
+            webp_img.image_url AS webp_image_url
+        FROM
+            product p
+                JOIN price pr ON p.product_code = pr.product_code
+                LEFT JOIN image title_img ON p.product_code = title_img.product_code AND title_img.image_type = 'title'
+                LEFT JOIN image webp_img ON p.product_code = webp_img.product_code AND webp_img.image_type = 'webp'
+        WHERE
+            p.product_active = 1
+        ORDER BY
+            p.create_at DESC
+    </select>
+
+
     <!-- 상품 상세페이지 기본 정보 조회 -->
     <select id="getProductDetailInfo_first" resultMap="ProductResultMap" parameterType="String">
         SELECT
@@ -165,4 +189,122 @@
         ORDER BY option_name, option_code
     </select>
 
+
+    <!-- Product ResultMap -->
+    <resultMap id="productMap" type="com.hollybam.hollybam.dto.ProductDto">
+        <id property="productCode" column="product_code"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productDescription" column="product_description"/>
+        <result property="productOrderCount" column="product_order_count"/>
+        <result property="productQuantity" column="product_quantity"/>
+        <result property="productActive" column="product_active"/>
+        <result property="createAt" column="create_at"/>
+        <result property="updateAt" column="update_at"/>
+
+        <collection property="priceDtoList" ofType="com.hollybam.hollybam.dto.PriceDto">
+            <id property="priceCode" column="price_code"/>
+            <result property="priceOriginal" column="price_original"/>
+            <result property="priceCost" column="price_cost"/>
+            <result property="priceSelling" column="price_selling"/>
+            <result property="priceMargin" column="price_margin"/>
+            <result property="createAt" column="price_create_at"/>
+            <result property="updateAt" column="price_update_at"/>
+        </collection>
+
+        <collection property="imageDtoList" ofType="com.hollybam.hollybam.dto.ImageDto">
+            <id property="imageCode" column="image_code"/>
+            <result property="imageUrl" column="image_url"/>
+            <result property="imageType" column="image_type"/>
+            <result property="imageOrder" column="image_order"/>
+            <result property="imageWebp" column="image_webp"/>
+            <result property="createAt" column="image_create_at"/>
+            <result property="updateAt" column="image_update_at"/>
+        </collection>
+    </resultMap>
+
+    <!-- 카테고리 코드로 상품 조회 -->
+    <!-- ProductMapper.xml에 추가 -->
+    <select id="selectProductsByCategoryCode" resultMap="productMap">
+        SELECT
+        p.product_code,
+        p.product_id,
+        p.product_name,
+        p.product_description,
+        p.product_order_count,
+        p.product_quantity,
+        p.product_active,
+        p.create_at,
+        p.update_at,
+        pr.price_code,
+        pr.price_original,
+        pr.price_cost,
+        pr.price_selling,
+        pr.price_margin,
+        pr.create_at as price_create_at,
+        pr.update_at as price_update_at,
+        i.image_code,
+        i.image_url,
+        i.image_type,
+        i.image_order,
+        i.create_at as image_create_at,
+        i.update_at as image_update_at,
+        CASE
+        WHEN i.image_type = 'webp' THEN i.image_url
+        ELSE NULL
+        END as image_webp
+        FROM product p
+        LEFT JOIN price pr ON p.product_code = pr.product_code
+        LEFT JOIN image i ON p.product_code = i.product_code
+        WHERE p.cate_code = #{categoryCode}
+        AND p.product_active = 1
+        AND (i.image_type = 'title' OR i.image_type = 'webp' OR i.image_code IS NULL)
+        ORDER BY
+        <choose>
+            <when test="sort == 'latest'">p.create_at DESC</when>
+            <when test="sort == 'popular'">p.product_order_count DESC, p.create_at DESC</when>
+            <when test="sort == 'highprice'">pr.price_selling DESC</when>
+            <when test="sort == 'lowprice'">pr.price_selling ASC</when>
+            <otherwise>p.product_order_count DESC, p.create_at DESC</otherwise>
+        </choose>
+    </select>
+
+    <!-- 카테고리 코드와 상세 카테고리 코드로 상품 조회 -->
+    <select id="selectProductsByCategoryAndDetail" resultMap="productMap">
+        SELECT
+            p.product_code,
+            p.product_id,
+            p.product_name,
+            p.product_description,
+            p.product_order_count,
+            p.product_quantity,
+            p.product_active,
+            p.create_at,
+            p.update_at,
+            pr.price_code,
+            pr.price_original,
+            pr.price_cost,
+            pr.price_selling,
+            pr.price_margin,
+            pr.create_at as price_create_at,
+            pr.update_at as price_update_at,
+            i.image_code,
+            i.image_url,
+            i.image_type,
+            i.image_order,
+            i.create_at as image_create_at,
+            i.update_at as image_update_at,
+            CASE
+                WHEN i.image_type = 'webp' THEN i.image_url
+                ELSE NULL
+                END as image_webp
+        FROM product p
+                 LEFT JOIN price pr ON p.product_code = pr.product_code
+                 LEFT JOIN image i ON p.product_code = i.product_code
+        WHERE p.cate_code = #{categoryCode}
+          AND p.cd_code = #{detailCode}
+          AND p.product_active = 1
+          AND (i.image_type = 'title' OR i.image_type = 'webp' OR i.image_code IS NULL)
+        ORDER BY p.product_order_count DESC, p.create_at DESC
+    </select>
 </mapper>

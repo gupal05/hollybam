@@ -1,7 +1,9 @@
 package com.hollybam.hollybam.controller;
 
+import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.dto.ProductDto;
 import com.hollybam.hollybam.services.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,14 +24,22 @@ public class HomeController {
     private HttpSession session;
 
     @GetMapping("/")
-    public String introPage(){
+    public String introPage(HttpServletRequest request, Model model) {
+//        System.out.println(request.getServerName());
+//        if(request.getServerName().equals("adult-high.local")){
+//            System.out.println(1);
+//        } else {
+//            System.out.println(2);
+//        }
         return "intro";
     }
 
     @GetMapping("/main")
     public ModelAndView mainPage(ModelAndView mav, RedirectAttributes rttr){
         List<ProductDto> proList = productService.selectBestProducts();
+        List<ProductDto> newProList = productService.selectNewProducts();
         mav.addObject("proList", proList);
+        mav.addObject("newProList", newProList);
         mav.setViewName("main");
         return mav;
     }
@@ -39,5 +49,4 @@ public class HomeController {
 
     @GetMapping("/real")
     public String realPage(){ return "/real"; }
-
 }

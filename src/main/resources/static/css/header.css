@@ -33,6 +33,7 @@
 .nav-group-icon {
     display: flex;
     justify-content: center;
+    align-items: center;  /* 아이콘 수직 정렬 추가 */
     gap: 15px;
     flex-wrap: wrap;
     font-size: 28px;
@@ -175,6 +176,93 @@
     display: none;
 }
 
+/* 사용자 드롭다운 스타일 */
+.user-nav-item {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;  /* 아이콘 중앙 정렬 */
+}
+
+.user-nav-item i {
+    transition: color 0.2s ease;
+    display: flex;  /* 아이콘 내부 정렬 */
+    align-items: center;
+    justify-content: center;
+}
+
+.user-nav-item:hover i {
+    color: #ee386d;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;  /* 중앙 정렬을 위해 변경 */
+    transform: translateX(-50%) translateY(-10px);  /* X축 중앙 정렬 추가 */
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    z-index: 1002;
+    min-width: 180px;
+    overflow: hidden;
+}
+
+.user-nav-item:hover .user-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);  /* 호버 시에도 중앙 유지 */
+}
+
+.user-dropdown-content {
+    padding: 8px 0;
+}
+
+.user-dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333333;
+    font-size: 14px;
+    font-weight: 400;
+    transition: all 0.2s ease;
+}
+
+.user-dropdown-link:hover {
+    background-color: #f8f8f8;
+    color: #ee386d;
+}
+
+.user-dropdown-link i {
+    width: 16px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.user-dropdown-divider {
+    height: 1px;
+    background-color: #f0f0f0;
+    margin: 8px 0;
+}
+
+.user-dropdown-link.logout {
+    color: #666666;
+}
+
+.user-dropdown-link.logout:hover {
+    color: #ff4444;
+}
+
+.user-dropdown-link.login {
+    color: #ee386d;
+    font-weight: 500;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 1200px) {
     .dropdown-content {
@@ -214,6 +302,11 @@
         align-items: center;
     }
 
+    .nav-group-icon {
+        gap: 15px;
+        margin-top: 10px;
+    }
+
     .dropdown {
         position: static;
         transform: none;
@@ -250,11 +343,83 @@
         padding: 6px 0;
         font-size: 13px;
     }
+
+    /* 모바일에서 사용자 드롭다운 */
+    .user-dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+        min-width: auto;
+        width: 100%;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .user-nav-item:hover .user-dropdown {
+        transform: translateY(0);
+    }
+
+    .user-dropdown-content {
+        padding: 20px 0;
+    }
+
+    .user-dropdown-link {
+        padding: 16px 24px;
+        font-size: 16px;
+    }
+
+    .user-dropdown-link i {
+        font-size: 18px;
+    }
+
+    /* 모바일에서 터치를 위한 JavaScript 필요 */
+    .user-nav-item.active .user-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* 모바일 배경 오버레이 */
+    .user-dropdown-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.25s ease;
+        z-index: 1001;
+    }
+
+    .user-nav-item.active .user-dropdown-overlay {
+        opacity: 1;
+        visibility: visible;
+    }
 }
 
 @media (max-width: 480px) {
     .dropdown-content {
         grid-template-columns: 1fr;
         gap: 25px;
+    }
+
+    .nav-group-icon {
+        font-size: 24px;
+    }
+
+    .header-nav img {
+        width: 70px;
+        height: 22.5px;
+    }
+
+    .user-dropdown-link {
+        padding: 14px 20px;
+        font-size: 15px;
     }
 }

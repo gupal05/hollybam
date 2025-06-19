@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>정보 수정 - 홀리밤</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        /* 메인 컨테이너 */
+        .mypage-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 140px 20px 60px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            height: fit-content;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 140px;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 32px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .user-grade {
+            font-size: 14px;
+            color: #EE386D;
+            font-weight: 500;
+        }
+
+        .edit-profile-btn {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .edit-profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.4);
+        }
+
+        .membership-status {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .membership-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .points-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .points-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .points-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #EE386D;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            border-radius: 2px;
+        }
+
+        /* 폼 스타일 */
+        .edit-form {
+            max-width: 600px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #EE386D;
+            box-shadow: 0 0 0 3px rgba(238, 56, 109, 0.1);
+        }
+
+        .form-input:disabled {
+            background: #f8f9fa;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .toggle-password:hover {
+            color: #EE386D;
+        }
+
+        .password-strength {
+            margin-top: 10px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak { background: #dc3545; width: 25%; }
+        .strength-fair { background: #fd7e14; width: 50%; }
+        .strength-good { background: #ffc107; width: 75%; }
+        .strength-strong { background: #28a745; width: 100%; }
+
+        .strength-text {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .text-weak { color: #dc3545; }
+        .text-fair { color: #fd7e14; }
+        .text-good { color: #ffc107; }
+        .text-strong { color: #28a745; }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(238, 56, 109, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            .mypage-container {
+                flex-direction: column;
+                padding: 120px 20px 60px;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mypage-container {
+                padding: 100px 16px 40px;
+                gap: 20px;
+            }
+
+            .sidebar {
+                padding: 25px;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+                margin-bottom: 25px;
+            }
+
+            .form-section {
+                padding: 25px 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 25px 15px;
+            }
+
+            .sidebar {
+                padding: 20px;
+            }
+
+            .form-section {
+                padding: 20px 15px;
+            }
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-input.error {
+            border-color: #dc3545;
+        }
+
+        /* 고정 알림 스타일 추가 */
+        .alert-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .alert {
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border: none;
+            animation: slideInDown 0.3s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<!-- 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 마이페이지 컨테이너 -->
+<div class="mypage-container">
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="profile-image">
+                <span th:text="${#strings.substring(session.member.memberName, 0, 1)}">홍</span>
+            </div>
+            <div class="user-name" th:text="${session.member.memberName}">홍길동</div>
+            <div class="user-grade">guest 회원</div>
+            <button class="edit-profile-btn" onclick="location.href='/mypage/profile/edit'">
+                <i class="fas fa-edit"></i> 정보 수정
+            </button>
+        </div>
+
+        <div class="membership-status">
+            <div class="membership-title">Member Since 2025</div>
+            <div class="points-info">
+                <span class="points-label">🎁 쿠폰 0개</span>
+                <span class="points-label">💎 포인트 0원</span>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="/mypage" class="active"><i class="fas fa-user"></i>계정 정보</a></li>
+            <li><a href="/mypage/profile/edit"><i class="fas fa-user-edit"></i>정보 수정</a></li>
+            <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+            <li><a href="/mypage/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+            <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
+            <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
+            <li><a href="/mypage/reviews"><i class="fas fa-star"></i>리뷰 관리</a></li>
+            <li><a href="/mypage/inquiry"><i class="fas fa-headset"></i>1:1 문의</a></li>
+            <li><a href="/mypage/settings"><i class="fas fa-cog"></i>설정</a></li>
+            <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
+        </ul>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+        <h1 class="page-title">정보 수정 ✏️</h1>
+
+        <form class="edit-form" id="profileEditForm">
+            <!-- 기본 정보 섹션 -->
+            <div class="form-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    기본 정보
+                </div>
+
+                <div class="form-group">
+                    <label for="memberId" class="form-label">아이디</label>
+                    <input type="text" id="memberId" name="memberId" class="form-input" th:value="${session.member.memberId}" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="memberName" class="form-label">이름</label>
+                    <input type="text" id="memberName" name="memberName" class="form-input" th:value="${session.member.memberName}" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="memberPhone" class="form-label">전화번호</label>
+                    <input type="tel" id="memberPhone" name="memberPhone" class="form-input" th:value="${phone}" disabled>
+                </div>
+            </div>
+
+            <!-- 비밀번호 변경 섹션 -->
+            <div class="form-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    비밀번호 변경
+                </div>
+
+                <div class="form-group">
+                    <label for="currentPassword" class="form-label">현재 비밀번호</label>
+                    <div class="password-group">
+                        <input type="password" id="currentPassword" name="currentPassword" class="form-input" placeholder="현재 비밀번호를 입력하세요">
+                        <button type="button" class="toggle-password" data-target="currentPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <!-- 오류 메시지 영역 추가 -->
+                    <div id="currentPasswordError" class="error-message" style="display: none;">
+                        비밀번호가 일치하지 않습니다.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword" class="form-label">새 비밀번호</label>
+                    <div class="password-group">
+                        <input type="password" id="newPassword" name="newPassword" class="form-input" placeholder="새 비밀번호를 입력하세요">
+                        <button type="button" class="toggle-password" data-target="newPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText">비밀번호 강도</div>
+                    </div>
+                    <div class="form-help">영문, 숫자, 특수문자 포함 8자 이상 입력하세요.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">새 비밀번호 확인</label>
+                    <div class="password-group">
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="새 비밀번호를 다시 입력하세요">
+                        <button type="button" class="toggle-password" data-target="confirmPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 버튼 그룹 -->
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i> 취소
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> 변경사항 저장
+                </button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    $(document).ready(function() {
+        // 현재 페이지에 따른 사이드바 메뉴 활성화
+        const currentPath = window.location.pathname;
+        $('.sidebar-menu a').removeClass('active');
+        $(`.sidebar-menu a[href="${currentPath}"]`).addClass('active');
+
+        // 비밀번호 보기/숨기기 토글
+        $('.toggle-password').on('click', function() {
+            const targetId = $(this).data('target');
+            const input = $('#' + targetId);
+            const icon = $(this).find('i');
+
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                input.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+
+        // 비밀번호 강도 체크
+        $('#newPassword').on('input', function() {
+            const password = $(this).val();
+            const strength = checkPasswordStrength(password);
+            updatePasswordStrength(strength);
+        });
+
+        // 비밀번호 확인 체크
+        $('#confirmPassword').on('input', function() {
+            const newPassword = $('#newPassword').val();
+            const confirmPassword = $(this).val();
+
+            if (confirmPassword && newPassword !== confirmPassword) {
+                $(this).css('border-color', '#dc3545');
+            } else {
+                $(this).css('border-color', '#e9ecef');
+            }
+        });
+
+        // 폼 제출 처리
+        $('#profileEditForm').on('submit', function(e) {
+            e.preventDefault();
+
+            if (validateForm()) {
+                // 여기서 실제 서버 요청 처리
+                showAlert('success', '정보가 성공적으로 수정되었습니다.');
+
+                // 실제 구현시에는 아래와 같이 서버로 전송
+                $.ajax({
+                    url: '/mypage/member/update',
+                    method: 'POST',
+                    data: { memberPw: $('#newPassword').val() },
+                    success: function(response) {
+                        if (response.success) {
+                            // 사용자에게 메시지 먼저 보여줌
+                            showAlert('success', '비밀번호가 성공적으로 변경되었습니다. 다시 로그인해 주세요.');
+
+                            // 2초 후에 메인 페이지로 이동
+                            setTimeout(function() {
+                                location.href = "/auth/logout";
+                            }, 2000); // 2000ms = 2초
+                        } else {
+                            showAlert('danger', response.message || '처리 중 오류가 발생했습니다.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        let message = '정보 수정 중 오류가 발생했습니다.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+                        showAlert('danger', message);
+                    }
+                });
+            }
+        });
+    });
+
+    // 비밀번호 강도 체크 함수
+    function checkPasswordStrength(password) {
+        let score = 0;
+
+        if (password.length >= 8) score++;
+        if (password.match(/[a-z]/)) score++;
+        if (password.match(/[A-Z]/)) score++;
+        if (password.match(/[0-9]/)) score++;
+        if (password.match(/[^a-zA-Z0-9]/)) score++;
+
+        return score;
+    }
+
+    // 비밀번호 강도 UI 업데이트
+    function updatePasswordStrength(score) {
+        const strengthFill = $('#strengthFill');
+        const strengthText = $('#strengthText');
+
+        strengthFill.removeClass('strength-weak strength-fair strength-good strength-strong');
+        strengthText.removeClass('text-weak text-fair text-good text-strong');
+
+        if (score <= 2) {
+            strengthFill.addClass('strength-weak');
+            strengthText.addClass('text-weak').text('약함');
+        } else if (score === 3) {
+            strengthFill.addClass('strength-fair');
+            strengthText.addClass('text-fair').text('보통');
+        } else if (score === 4) {
+            strengthFill.addClass('strength-good');
+            strengthText.addClass('text-good').text('좋음');
+        } else if (score === 5) {
+            strengthFill.addClass('strength-strong');
+            strengthText.addClass('text-strong').text('매우 강함');
+        }
+    }
+
+    // 폼 유효성 검사
+    function validateForm() {
+        const newPassword = $('#newPassword').val();
+        const confirmPassword = $('#confirmPassword').val();
+
+        // 비밀번호 변경이 있는 경우에만 검사
+        if (newPassword || confirmPassword) {
+            if (!currentPassword) {
+                showAlert('danger', '현재 비밀번호를 입력해주세요.');
+                $('#currentPassword').focus();
+                return false;
+            }
+
+            // 현재 비밀번호 오류 메시지가 표시되어 있는지 확인
+            if ($('#currentPasswordError').is(':visible')) {
+                showAlert('danger', '현재 비밀번호를 올바르게 입력해주세요.');
+                $('#currentPassword').focus();
+                return false;
+            }
+
+            if (newPassword.length < 8) {
+                showAlert('danger', '새 비밀번호는 8자 이상이어야 합니다.');
+                $('#newPassword').focus();
+                return false;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showAlert('danger', '새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+                $('#confirmPassword').focus();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // 알림 메시지 표시
+    // 알림 메시지 표시 (수정된 버전)
+    function showAlert(type, message) {
+        // 기존 알림 제거
+        $('.alert-container').remove();
+
+        const alertHtml = `
+        <div class="alert-container">
+            <div class="alert alert-${type}">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}" style="margin-right: 10px;"></i>
+                ${message}
+            </div>
+        </div>
+    `;
+
+        // body에 직접 추가하여 화면 중앙에 표시
+        $('body').append(alertHtml);
+
+        // 5초 후 자동 제거 (좀 더 길게)
+        setTimeout(function() {
+            $('.alert-container').fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 5000);
+    }
+
+    document.getElementById('currentPassword').addEventListener('blur', function() {
+        const password = this.value;
+        const errorDiv = document.getElementById('currentPasswordError');
+
+        if (password.trim() === '') {
+            hideError();
+            return;
+        }
+
+        // 서버에 비밀번호 확인 요청
+        $.ajax({
+            url: '/auth/verify-password',
+            type: 'POST',
+            data: { memberPw: password },
+            success: function(data) {
+                if (data.valid === false) {
+                    showError();
+                } else {
+                    hideError();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+
+
+        function showError() {
+            errorDiv.style.display = 'block';
+            document.getElementById('currentPassword').classList.add('error');
+        }
+
+        function hideError() {
+            errorDiv.style.display = 'none';
+            document.getElementById('currentPassword').classList.remove('error');
+        }
+    });
+</script>
+</body>
+</html>

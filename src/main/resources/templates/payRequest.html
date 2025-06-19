@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>결제 요청</title></head>
+<body>
+<form id="payForm" method="post" action="https://api.payster.co.kr/payInit_hash.do">
+  <input type="hidden" name="mid" th:value="${mid}" />
+  <input type="hidden" name="price" th:value="${price}" />
+  <input type="hidden" name="goodsNm" th:value="${goodsNm}" />
+  <input type="hidden" name="ordNo" th:value="${ordNo}" />
+  <input type="hidden" name="ordNm" th:value="${ordNm}" />
+  <input type="hidden" name="ordTel" th:value="${ordTel}" />
+  <input type="hidden" name="ordEmail" th:value="${ordEmail}" />
+  <input type="hidden" name="ediDate" th:value="${ediDate}" />
+  <input type="hidden" name="encData" th:value="${encData}" />
+  <input type="hidden" name="returnUrl" th:value="${returnUrl}" />
+  <input type="hidden" name="notiUrl" th:value="${notiUrl}" />
+  <input type="hidden" name="charset" value="UTF-8" />
+  <input type="hidden" name="payMethod" value="card" />
+</form>
+
+<script>
+  function manualSubmit() {
+    document.getElementById("payForm").submit();
+  }
+</script>
+<button onclick="manualSubmit()">결제창 열기</button>
+
+
+</body>
+</html>

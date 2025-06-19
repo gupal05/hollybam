@@ -15,8 +15,11 @@ public interface IF_ProductService {
     public int insertImage(ProductDto productDto);
     public int insertProductOptions(ProductDto productDto);
     public List<ProductDto> selectBestProducts();
+    public List<ProductDto> selectNewProducts();
     public ProductDto getProductDetailInfo_first(String productId);
     public List<ImageDto> getProductInfoThumbnail(int productCode);
     public List<ImageDto> getProductInfoContent(int productCode);
     public List<ProductOptionDto> getProductOptions(int productCode);
+    List<ProductDto> getProductsByCategoryCode(String categoryCode, String sort);
+    List<ProductDto> getProductsByCategoryAndDetail(String categoryCode, String detailCode, String sort);
 }

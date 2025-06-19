@@ -37,3 +37,4 @@ out/
 .vscode/
 
 src/main/resources/static/mp4/
+.bfg-report/

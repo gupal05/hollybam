@@ -212,31 +212,53 @@
 
         /* 베스트 리뷰 섹션 */
         .best-reviews-section {
-            margin: 60px 0;
-            padding: 80px 0 60px; /* 상단 패딩 증가 */
-            overflow: visible;
+            margin: 60px 0 !important;
+            padding: 40px 0 60px !important;
+            overflow: hidden !important;
+            position: relative;
         }
 
+        /* 기존 리뷰 슬라이더 스타일 수정 */
         .reviews-slider-container {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            padding: 20px 0;
-            max-width: calc(100% - 40px);  /* 추가 - 양쪽 여백 확보 */
+            position: relative !important;
+            overflow: hidden !important;
+            width: 100% !important;
+            padding: 20px 0 !important;
         }
 
         .reviews-slider {
-            display: flex;
-            transition: transform 0.5s ease;
-            gap: 20px;
+            display: flex !important;
+            transition: transform 0.8s ease !important;
+            gap: 20px !important;
+            will-change: transform;
+        }
+
+        /* 슬라이더 컨테이너에 호버 시 네비게이션 표시 */
+        .reviews-slider-container:hover .review-nav {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .review-nav i {
+            font-size: 24px;
+            transition: transform 0.2s ease;
+        }
+
+        .review-nav:hover i {
+            transform: scale(1.2);
+        }
+
+        .reviews-slider {
+            display: flex !important;
+            transition: transform 0.5s ease !important;
+            gap: 20px !important;
+            width: fit-content !important;
         }
 
         .review-card {
-            flex: 0 0 calc(25% - 15px); /* 더 정확한 계산 */
-            width: calc(25% - 15px);
-            height: calc(25vw - 50px); /* 뷰포트 기준 정사각형 */
-            max-height: 295px; /* 최대 높이 */
-            min-height: 250px; /* 최소 높이 */
+            flex: 0 0 305px !important;
+            width: 305px !important;
+            height: 305px !important;
             background: #ffffff;
             border-radius: 16px;
             padding: 20px;
@@ -248,6 +270,27 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+        }
+
+        /* 리뷰 슬라이더 도트 */
+
+
+        .review-dot {
+            width: 8px;
+            height: 8px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .review-dot.active {
+            background-color: #EE386D;
+            transform: scale(1.3);
+        }
+
+        .review-dot:hover {
+            background-color: rgba(238, 56, 109, 0.7);
         }
 
         .review-card:hover {
@@ -740,6 +783,41 @@
         }
 
         /* 반응형 */
+        @media (max-width: 1200px) {
+            .review-card {
+                flex: 0 0 280px !important;
+                width: 280px !important;
+                height: 280px !important;
+            }
+
+            .reviews-slider-container {
+                padding: 20px 50px 60px !important;
+                margin: 0 -50px !important;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .review-card {
+                flex: 0 0 260px !important;
+                width: 260px !important;
+                height: 260px !important;
+            }
+
+            .reviews-slider-container {
+                padding: 20px 40px 60px !important;
+                margin: 0 -40px !important;
+            }
+
+            .review-nav,
+            .review-dots {
+                display: none !important;
+            }
+
+            .review-nav i {
+                font-size: 20px;
+            }
+        }
+
         @media (max-width: 1024px) {
             .category-item {
                 min-width: 80px; /* 조정 */
@@ -910,12 +988,14 @@
                 font-size: 12px;
             }
             .review-card {
-                flex: 0 0 calc(50% - 10px);
-                width: calc(50% - 10px);
-                height: calc(50vw - 30px);
-                max-height: 250px;
-                min-height: 200px;
-                padding: 18px;
+                flex: 0 0 240px !important;
+                width: 240px !important;
+                height: 240px !important;
+            }
+
+            .reviews-slider-container {
+                padding: 20px 30px 60px !important;
+                margin: 0 -30px !important;
             }
 
             .review-product-img {
@@ -1019,15 +1099,125 @@
                 padding: 24px 0;
             }
         }
+
+        /* 네비게이션 화살표 */
+        .slide-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 120px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            color: #ccc;
+            font-size: 32px;
+        }
+
+        .slide-nav:hover {
+            color: #999;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .slide-nav.prev {
+            left: 20px;
+        }
+
+        .slide-nav.next {
+            right: 20px;
+        }
+
+        /* 슬라이드 컨테이너에 호버 시 네비게이션 표시 */
+        .slide:hover .slide-nav {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .slide:hover .slide-nav {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .slide-nav i {
+            font-size: 28px;
+            transition: transform 0.2s ease;
+        }
+
+        .slide-nav:hover i {
+            transform: scale(1.2);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .slide-nav {
+                width: 50px;
+                height: 100px;
+                font-size: 24px;
+            }
+
+            .slide-nav i {
+                font-size: 20px;
+            }
+        }
+
+        /* 리뷰 슬라이더 네비게이션 화살표 */
+        .review-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 100px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            color: #ccc;
+            font-size: 28px;
+        }
+
+        .review-nav:hover {
+            color: #999;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .review-nav.prev {
+            left: 10px; /* 컨테이너 안쪽에 위치 */
+        }
+
+        .review-nav.next {
+            right: 10px; /* 컨테이너 안쪽에 위치 */
+        }
     </style>
 </head>
 <body>
 <!-- 고정 헤더 -->
 <div th:replace="~{layout/header :: header}"></div>
 <!-- 슬라이드 -->
-<div class="slide"> <!-- header style2 = top 80px -->
+<div class="slide">
     <img th:src="@{/images/da1589be137666f771fcb06bd045c8ff.webp}" alt="슬라이드1" class="active"/>
     <img th:src="@{/images/24e86dfad799d3ffad7d032aa0f9fb68.webp}" alt="슬라이드2"/>
+
+    <!-- 네비게이션 화살표 추가 -->
+    <button class="slide-nav prev" id="prevBtn">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="slide-nav next" id="nextBtn">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
     <div class="dots">
         <div class="dot active"></div>
         <div class="dot"></div>
@@ -1142,196 +1332,316 @@
         <div class="best-reviews-section">
             <div class="section-title">베스트 리뷰</div>
             <div class="reviews-slider-container">
-                <div class="reviews-slider" id="reviewsSlider">
-                    <div class="review-card">
-                        <div class="review-header">
-                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
-                            <div class="review-product-info">
-                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
-                                <div class="review-rating">
-                                    <div class="star-rating">
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <div class="reviews-slider-wrapper">
+                    <div class="reviews-slider" id="reviewsSlider">
+                        <!-- 기존 리뷰 카드들 그대로 유지 -->
+                        <div class="review-card">
+                            <div class="review-header">
+                                <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                                <div class="review-product-info">
+                                    <div class="review-product-name">홀 래빗 진동 흡입기1</div>
+                                    <div class="review-rating">
+                                        <div class="star-rating">
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </div>
+                                        <span class="rating-text">4.71 (494)</span>
                                     </div>
-                                    <span class="rating-text">4.71 (494)</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="review-content">
-                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
-                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
-                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
-                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
-                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
-                        </div>
-                        <div class="review-footer">
-                            <div>
-                                <div class="review-author-info">
-                                    <span class="review-author">윤익**</span>
-                                    <span class="review-age">20대 여성</span>
-                                </div>
-                                <div class="review-date">2025년 05월 1일</div>
+                            <div class="review-content">
+                                제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                                저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                                정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                                까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                                답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
                             </div>
-                            <div class="review-likes">
-                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span>506</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
-                            <div class="review-product-info">
-                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
-                                <div class="review-rating">
-                                    <div class="star-rating">
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <div class="review-footer">
+                                <div>
+                                    <div class="review-author-info">
+                                        <span class="review-author">윤익**</span>
+                                        <span class="review-age">20대 여성</span>
                                     </div>
-                                    <span class="rating-text">4.71 (494)</span>
+                                    <div class="review-date">2025년 05월 1일</div>
+                                </div>
+                                <div class="review-likes">
+                                    <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    <span>506</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="review-content">
-                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
-                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
-                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
-                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
-                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
-                        </div>
-                        <div class="review-footer">
-                            <div>
-                                <div class="review-author-info">
-                                    <span class="review-author">윤익**</span>
-                                    <span class="review-age">20대 여성</span>
-                                </div>
-                                <div class="review-date">2025년 05월 1일</div>
-                            </div>
-                            <div class="review-likes">
-                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span>506</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
-                            <div class="review-product-info">
-                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
-                                <div class="review-rating">
-                                    <div class="star-rating">
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                                <div class="review-product-info">
+                                    <div class="review-product-name">홀 래빗 진동 흡입기2</div>
+                                    <div class="review-rating">
+                                        <div class="star-rating">
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </div>
+                                        <span class="rating-text">4.71 (494)</span>
                                     </div>
-                                    <span class="rating-text">4.71 (494)</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="review-content">
-                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
-                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
-                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
-                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
-                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
-                        </div>
-                        <div class="review-footer">
-                            <div>
-                                <div class="review-author-info">
-                                    <span class="review-author">윤익**</span>
-                                    <span class="review-age">20대 여성</span>
-                                </div>
-                                <div class="review-date">2025년 05월 1일</div>
+                            <div class="review-content">
+                                제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                                저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                                정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                                까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                                답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
                             </div>
-                            <div class="review-likes">
-                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span>506</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
-                            <div class="review-product-info">
-                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
-                                <div class="review-rating">
-                                    <div class="star-rating">
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <div class="review-footer">
+                                <div>
+                                    <div class="review-author-info">
+                                        <span class="review-author">윤익**</span>
+                                        <span class="review-age">20대 여성</span>
                                     </div>
-                                    <span class="rating-text">4.71 (494)</span>
+                                    <div class="review-date">2025년 05월 1일</div>
+                                </div>
+                                <div class="review-likes">
+                                    <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    <span>506</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="review-content">
-                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
-                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
-                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
-                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
-                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
-                        </div>
-                        <div class="review-footer">
-                            <div>
-                                <div class="review-author-info">
-                                    <span class="review-author">윤익**</span>
-                                    <span class="review-age">20대 여성</span>
-                                </div>
-                                <div class="review-date">2025년 05월 1일</div>
-                            </div>
-                            <div class="review-likes">
-                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span>506</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
-                            <div class="review-product-info">
-                                <div class="review-product-name">홀 래빗 진동 흡입기</div>
-                                <div class="review-rating">
-                                    <div class="star-rating">
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                                <div class="review-product-info">
+                                    <div class="review-product-name">홀 래빗 진동 흡입기3</div>
+                                    <div class="review-rating">
+                                        <div class="star-rating">
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </div>
+                                        <span class="rating-text">4.71 (494)</span>
                                     </div>
-                                    <span class="rating-text">4.71 (494)</span>
+                                </div>
+                            </div>
+                            <div class="review-content">
+                                제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                                저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                                정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                                까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                                답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                            </div>
+                            <div class="review-footer">
+                                <div>
+                                    <div class="review-author-info">
+                                        <span class="review-author">윤익**</span>
+                                        <span class="review-age">20대 여성</span>
+                                    </div>
+                                    <div class="review-date">2025년 05월 1일</div>
+                                </div>
+                                <div class="review-likes">
+                                    <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    <span>506</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="review-content">
-                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
-                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
-                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
-                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
-                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
-                        </div>
-                        <div class="review-footer">
-                            <div>
-                                <div class="review-author-info">
-                                    <span class="review-author">윤익**</span>
-                                    <span class="review-age">20대 여성</span>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                                <div class="review-product-info">
+                                    <div class="review-product-name">홀 래빗 진동 흡입기4</div>
+                                    <div class="review-rating">
+                                        <div class="star-rating">
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </div>
+                                        <span class="rating-text">4.71 (494)</span>
+                                    </div>
                                 </div>
-                                <div class="review-date">2025년 05월 1일</div>
                             </div>
-                            <div class="review-likes">
-                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span>506</span>
+                            <div class="review-content">
+                                제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                                저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                                정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                                까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                                답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                            </div>
+                            <div class="review-footer">
+                                <div>
+                                    <div class="review-author-info">
+                                        <span class="review-author">윤익**</span>
+                                        <span class="review-age">20대 여성</span>
+                                    </div>
+                                    <div class="review-date">2025년 05월 1일</div>
+                                </div>
+                                <div class="review-likes">
+                                    <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    <span>506</span>
+                                </div>
                             </div>
                         </div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                                <div class="review-product-info">
+                                    <div class="review-product-name">홀 래빗 진동 흡입기5</div>
+                                    <div class="review-rating">
+                                        <div class="star-rating">
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </div>
+                                        <span class="rating-text">4.71 (494)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="review-content">
+                                제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                                저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                                정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                                까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                                답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                            </div>
+                            <div class="review-footer">
+                                <div>
+                                    <div class="review-author-info">
+                                        <span class="review-author">윤익**</span>
+                                        <span class="review-age">20대 여성</span>
+                                    </div>
+                                    <div class="review-date">2025년 05월 1일</div>
+                                </div>
+                                <div class="review-likes">
+                                    <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    <span>506</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                                <div class="review-product-info">
+                                    <div class="review-product-name">홀 래빗 진동 흡입기6</div>
+                                    <div class="review-rating">
+                                        <div class="star-rating">
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </div>
+                                        <span class="rating-text">4.71 (494)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="review-content">
+                                제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                                저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                                정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                                까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                                답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                            </div>
+                            <div class="review-footer">
+                                <div>
+                                    <div class="review-author-info">
+                                        <span class="review-author">윤익**</span>
+                                        <span class="review-age">20대 여성</span>
+                                    </div>
+                                    <div class="review-date">2025년 05월 1일</div>
+                                </div>
+                                <div class="review-likes">
+                                    <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    <span>506</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                                <div class="review-product-info">
+                                    <div class="review-product-name">홀 래빗 진동 흡입기7</div>
+                                    <div class="review-rating">
+                                        <div class="star-rating">
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </div>
+                                        <span class="rating-text">4.71 (494)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="review-content">
+                                제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                                저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                                정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                                까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                                답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                            </div>
+                            <div class="review-footer">
+                                <div>
+                                    <div class="review-author-info">
+                                        <span class="review-author">윤익**</span>
+                                        <span class="review-age">20대 여성</span>
+                                    </div>
+                                    <div class="review-date">2025년 05월 1일</div>
+                                </div>
+                                <div class="review-likes">
+                                    <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    <span>506</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                                <div class="review-product-info">
+                                    <div class="review-product-name">홀 래빗 진동 흡입기8</div>
+                                    <div class="review-rating">
+                                        <div class="star-rating">
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </div>
+                                        <span class="rating-text">4.71 (494)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="review-content">
+                                제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
+                                저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
+                                정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
+                                까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
+                                답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+                            </div>
+                            <div class="review-footer">
+                                <div>
+                                    <div class="review-author-info">
+                                        <span class="review-author">윤익**</span>
+                                        <span class="review-age">20대 여성</span>
+                                    </div>
+                                    <div class="review-date">2025년 05월 1일</div>
+                                </div>
+                                <div class="review-likes">
+                                    <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    <span>506</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 나머지 3개 리뷰 카드들도 동일한 구조로 유지 -->
+                        <!-- ... -->
                     </div>
                 </div>
             </div>
@@ -1427,22 +1737,68 @@
     let current = 0;
     const images = $('.slide img');
     const dots = $('.dot');
+    const totalSlides = images.length;
+    let autoSlideInterval;
+
+    // 슬라이드 변경 함수
     const changeSlide = (index) => {
         images.removeClass('active').eq(index).addClass('active');
         dots.removeClass('active').eq(index).addClass('active');
         current = index;
     };
 
+    // 다음 슬라이드
+    const nextSlide = () => {
+        const next = (current + 1) % totalSlides;
+        changeSlide(next);
+    };
+
+    // 이전 슬라이드
+    const prevSlide = () => {
+        const prev = (current - 1 + totalSlides) % totalSlides;
+        changeSlide(prev);
+    };
+
+    // 자동 슬라이드 시작
+    const startAutoSlide = () => {
+        autoSlideInterval = setInterval(nextSlide, 8000);
+    };
+
+    // 자동 슬라이드 정지
+    const stopAutoSlide = () => {
+        clearInterval(autoSlideInterval);
+    };
+
+    // 이벤트 리스너
+    $('#nextBtn').on('click', (e) => {
+        e.preventDefault();
+        nextSlide();
+        stopAutoSlide();
+        startAutoSlide(); // 재시작
+    });
+
+    $('#prevBtn').on('click', (e) => {
+        e.preventDefault();
+        prevSlide();
+        stopAutoSlide();
+        startAutoSlide(); // 재시작
+    });
+
+    // dots 클릭 이벤트
     dots.each((i, el) => {
         $(el).on('click', () => {
             changeSlide(i);
+            stopAutoSlide();
+            startAutoSlide(); // 재시작
         });
     });
 
-    setInterval(() => {
-        const next = (current + 1) % images.length;
-        changeSlide(next);
-    }, 8000);
+    // 슬라이드 컨테이너에 마우스 호버 시 자동 슬라이드 정지
+    $('.slide').on('mouseenter', stopAutoSlide);
+    $('.slide').on('mouseleave', startAutoSlide);
+
+    // 초기 자동 슬라이드 시작
+    startAutoSlide();
 
     // 카테고리 클릭 이벤트
     $('.category-item').on('click', function() {
@@ -1470,6 +1826,84 @@
         });
     });
 
+    <!-- 리뷰 슬라이드 -->
+    // 베스트 리뷰 슬라이더 기능
+    // 진짜 부드러운 무한 루프 베스트 리뷰 슬라이더
+    $(document).ready(function() {
+        const $slider = $('#reviewsSlider');
+        const originalCards = $('.review-card');
+        const cardCount = originalCards.length;
+        const cardWidth = 305 + 20; // 카드 너비 + gap
+        let currentPosition = 0;
+        let isTransitioning = false;
+
+        // 완전 무한 루프를 위한 복제 설정
+        function setupTrueInfiniteLoop() {
+            // 원본 카드들을 두 번 더 복제해서 끊김 없는 루프 만들기
+            // 총 3세트의 카드가 있게 됨: [카드세트1][카드세트2][카드세트3]
+
+            // 첫 번째 복제 세트 추가
+            originalCards.each(function() {
+                $slider.append($(this).clone());
+            });
+
+            // 두 번째 복제 세트 추가
+            originalCards.each(function() {
+                $slider.append($(this).clone());
+            });
+
+            // 시작 위치를 첫 번째 복제 세트로 설정 (중간 세트)
+            currentPosition = cardCount * cardWidth;
+            $slider.css('transform', 'translateX(' + (-currentPosition) + 'px)');
+
+            console.log('무한 루프 설정 완료 - 총 카드:', cardCount * 3, '개');
+        }
+
+        // 부드러운 무한 이동
+        function moveSlider() {
+            if (isTransitioning) return;
+
+            isTransitioning = true;
+            currentPosition += cardWidth;
+
+            $slider.css({
+                'transition': 'transform 0.8s ease',
+                'transform': 'translateX(' + (-currentPosition) + 'px)'
+            });
+
+            // 애니메이션 완료 후 위치 체크
+            setTimeout(() => {
+                // 두 번째 복제 세트 끝에 도달하면 첫 번째 복제 세트 시작으로 순간이동
+                if (currentPosition >= (cardCount * 2) * cardWidth) {
+                    $slider.css('transition', 'none');
+                    currentPosition = cardCount * cardWidth; // 첫 번째 복제 세트 시작
+                    $slider.css('transform', 'translateX(' + (-currentPosition) + 'px)');
+                }
+                isTransitioning = false;
+            }, 800);
+        }
+
+        // 자동 슬라이드 설정
+        let autoSlideInterval;
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(moveSlider, 3000); // 3초마다 이동
+        }
+
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+
+        // 호버 시 일시정지
+        $('.best-reviews-section').hover(stopAutoSlide, startAutoSlide);
+
+        // 초기화
+        if (cardCount > 0) {
+            setupTrueInfiniteLoop();
+            startAutoSlide();
+            console.log('진짜 무한 루프 슬라이더 시작!');
+        }
+    });
+    <!-- 리뷰 슬라이드 -->
 
     // 홀리밤 소식 이미지 슬라이드
     document.addEventListener("DOMContentLoaded", function() {

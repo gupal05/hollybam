@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'홀리밤 - ' + ${notice.noticeTitle}">홀리밤 - 공지사항</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+    <link th:href="@{/css/header.css}" rel="stylesheet"/>
+    <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 브레드크럼 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .breadcrumb a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #EE386D;
+        }
+
+        .breadcrumb .current {
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* 공지사항 상세 */
+        .notice-detail {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .notice-header {
+            padding: 30px 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .notice-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .important-badge {
+            display: inline-block;
+            background: #EE386D;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+
+        .notice-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .meta-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .meta-icon {
+            color: #EE386D;
+        }
+
+        .notice-content {
+            padding: 40px;
+        }
+
+        .content-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .content-text h1, .content-text h2, .content-text h3 {
+            color: #1a1a1a;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .content-text p {
+            margin-bottom: 15px;
+        }
+
+        .content-text img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        /* 액션 버튼 */
+        .notice-actions {
+            padding: 30px 40px;
+            border-top: 1px solid #e0e0e0;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #EE386D;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d63384;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+
+        /* 이전/다음 공지사항 네비게이션 */
+        .notice-navigation {
+            margin-top: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .nav-header {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .nav-item {
+            padding: 20px 30px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+
+        .nav-item:last-child {
+            border-bottom: none;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .nav-title {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-title:hover {
+            color: #EE386D;
+        }
+
+        .nav-empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .notice-header {
+                padding: 25px 20px;
+            }
+
+            .notice-title {
+                font-size: 24px;
+            }
+
+            .notice-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .meta-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .notice-content {
+                padding: 30px 20px;
+            }
+
+            .notice-actions {
+                padding: 25px 20px;
+            }
+
+            .nav-header,
+            .nav-item {
+                padding: 15px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .notice-title {
+                font-size: 20px;
+            }
+
+            .content-text {
+                font-size: 15px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<div class="container">
+    <!-- 브레드크럼 -->
+    <nav class="breadcrumb">
+        <a th:href="@{/static}">홈</a>
+        <span>></span>
+        <a th:href="@{/notice/list}">공지사항</a>
+        <span>></span>
+        <span class="current">공지사항 상세</span>
+    </nav>
+
+    <!-- 공지사항 상세 -->
+    <article class="notice-detail">
+        <header class="notice-header">
+            <div th:if="${notice.isImportant}" class="important-badge">
+                <i class="fas fa-star"></i> 중요공지
+            </div>
+
+            <h1 class="notice-title" th:text="${notice.noticeTitle}">공지사항 제목</h1>
+
+            <div class="notice-meta">
+                <div class="meta-left">
+                    <div class="meta-item">
+                        <i class="fas fa-user meta-icon"></i>
+                        <span th:text="${notice.adminName}">관리자</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-calendar meta-icon"></i>
+                        <span th:text="${#temporals.format(notice.createdAt, 'yyyy년 MM월 dd일')}">2024년 12월 20일</span>
+                    </div>
+                    <div class="meta-item" th:if="${notice.updatedAt != null and notice.updatedAt != notice.createdAt}">
+                        <i class="fas fa-edit meta-icon"></i>
+                        <span>수정일: </span>
+                        <span th:text="${#temporals.format(notice.updatedAt, 'yyyy.MM.dd')}">2024.12.21</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="notice-content">
+            <div class="content-text" th:text="${notice.noticeContent}">
+                공지사항 내용이 여기에 표시됩니다.
+
+                여러 줄의 내용이 있을 경우 줄바꿈과 함께 표시됩니다.
+
+                이미지나 다른 형식의 콘텐츠도 포함될 수 있습니다.
+            </div>
+        </div>
+
+        <div class="notice-actions">
+            <a th:href="@{/notice/list}" class="btn btn-primary">
+                <i class="fas fa-list"></i> 목록으로
+            </a>
+
+            <!-- 관리자인 경우 수정/삭제 버튼 표시 -->
+            <div th:if="${session.member != null and session.member.memberRole == 'ADMIN'}">
+                <a th:href="@{/notice/admin/edit/{noticeCode}(noticeCode=${notice.noticeCode})}" class="btn btn-secondary">
+                    <i class="fas fa-edit"></i> 수정
+                </a>
+                <button onclick="deleteNotice()" class="btn btn-secondary" style="background: #dc3545;">
+                    <i class="fas fa-trash"></i> 삭제
+                </button>
+            </div>
+        </div>
+    </article>
+
+    <!-- 이전/다음 공지사항 네비게이션 (선택사항) -->
+    <!--
+    <div class="notice-navigation">
+        <div class="nav-header">
+            <i class="fas fa-list"></i> 다른 공지사항
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-label">이전 공지사항</div>
+            <a href="#" class="nav-title">이전 공지사항 제목</a>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-label">다음 공지사항</div>
+            <span class="nav-empty">다음 공지사항이 없습니다.</span>
+        </div>
+    </div>
+    -->
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    // 공지사항 삭제 (관리자용)
+    function deleteNotice() {
+        if (!confirm('정말로 이 공지사항을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        const noticeCode = '[[${notice.noticeCode}]]';
+
+        $.ajax({
+            url: `/notice/admin/delete/${noticeCode}`,
+            type: 'DELETE',
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    window.location.href = '/notice/list';
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(xhr) {
+                console.error('삭제 실패:', xhr);
+                alert('공지사항 삭제 중 오류가 발생했습니다.');
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

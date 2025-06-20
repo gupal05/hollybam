@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홀리밤 - 공지사항</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+    <link th:href="@{/css/header.css}" rel="stylesheet"/>
+    <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 페이지 헤더 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* 중요공지 섹션 */
+        .important-notices {
+            background: linear-gradient(135deg, #EE386D, #ff4081);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .important-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .important-icon {
+            font-size: 24px;
+            color: #FFD700;
+        }
+
+        .important-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .important-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .important-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .important-item a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        .important-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .important-item-date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* 공지사항 목록 */
+        .notice-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 25px 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .notice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .notice-table th {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .notice-table th.title {
+            width: 50%;
+        }
+
+        .notice-table th.author {
+            width: 15%;
+            text-align: center;
+        }
+
+        .notice-table th.date {
+            width: 20%;
+            text-align: center;
+        }
+
+        .notice-table th.status {
+            width: 15%;
+            text-align: center;
+        }
+
+        .notice-table td {
+            padding: 20px 30px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .notice-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .notice-title {
+            font-weight: 500;
+            color: #333;
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .notice-title:hover {
+            color: #EE386D;
+        }
+
+        .important-badge {
+            display: inline-block;
+            background: #EE386D;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-right: 8px;
+        }
+
+        .notice-author,
+        .notice-date {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status-active {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .status-inactive {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        /* 빈 목록 */
+        .empty-notice {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #444;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* 페이지네이션 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .page-btn {
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            background: #EE386D;
+            color: white;
+            border-color: #EE386D;
+        }
+
+        .page-btn.active {
+            background: #EE386D;
+            color: white;
+            border-color: #EE386D;
+        }
+
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-btn.disabled:hover {
+            background: white;
+            color: #666;
+            border-color: #e0e0e0;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .important-notices {
+                padding: 20px;
+            }
+
+            .notice-table th,
+            .notice-table td {
+                padding: 15px 20px;
+            }
+
+            .notice-table th.author,
+            .notice-table th.status {
+                display: none;
+            }
+
+            .notice-table td.author,
+            .notice-table td.status {
+                display: none;
+            }
+
+            .notice-table th.title {
+                width: 70%;
+            }
+
+            .notice-table th.date {
+                width: 30%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-header {
+                padding: 20px;
+            }
+
+            .notice-table th,
+            .notice-table td {
+                padding: 12px 16px;
+            }
+
+            .pagination {
+                gap: 5px;
+            }
+
+            .page-btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<div class="container">
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+        <h1 class="page-title">공지사항</h1>
+        <p class="page-subtitle">홀리밤의 새로운 소식과 중요한 안내사항을 확인하세요</p>
+    </div>
+
+    <!-- 중요공지 섹션 -->
+    <div class="important-notices" th:if="${importantNotices != null and !importantNotices.isEmpty()}">
+        <div class="important-title">
+            <i class="fas fa-star important-icon"></i>
+            <span>중요공지</span>
+        </div>
+        <div class="important-list">
+            <div class="important-item" th:each="notice : ${importantNotices}">
+                <a th:href="@{/notice/detail/{noticeCode}(noticeCode=${notice.noticeCode})}">
+                    <div class="important-item-title" th:text="${notice.noticeTitle}">중요한 공지사항입니다</div>
+                    <div class="important-item-date" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">2024.12.20</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공지사항 목록 섹션 -->
+    <div class="notice-section">
+        <div class="section-header">
+            <h2 class="section-title">전체 공지사항</h2>
+        </div>
+
+        <!-- 공지사항이 있는 경우 -->
+        <div th:if="${noticeList != null and !noticeList.isEmpty()}">
+            <table class="notice-table">
+                <thead>
+                <tr>
+                    <th class="title">제목</th>
+                    <th class="author">작성자</th>
+                    <th class="date">작성일</th>
+                    <th class="status">상태</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="notice : ${noticeList}">
+                    <td class="title">
+                        <a th:href="@{/notice/detail/{noticeCode}(noticeCode=${notice.noticeCode})}" class="notice-title">
+                            <span th:if="${notice.isImportant}" class="important-badge">중요</span>
+                            <span th:text="${notice.noticeTitle}">공지사항 제목</span>
+                        </a>
+                    </td>
+                    <td class="author notice-author" th:text="${notice.adminName}">관리자</td>
+                    <td class="date notice-date" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">2024.12.20</td>
+                    <td class="status">
+                            <span th:class="${notice.isActive} ? 'status-active' : 'status-inactive'"
+                                  th:text="${notice.isActive} ? '활성' : '비활성'">활성</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 공지사항이 없는 경우 -->
+        <div class="empty-notice" th:if="${noticeList == null or noticeList.isEmpty()}">
+            <div class="empty-icon">
+                <i class="fas fa-bullhorn"></i>
+            </div>
+            <div class="empty-title">등록된 공지사항이 없습니다</div>
+            <div class="empty-desc">새로운 공지사항이 등록되면 여기에 표시됩니다.</div>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="pagination" th:if="${totalPages > 1}">
+        <!-- 이전 페이지 -->
+        <a th:href="@{/notice/list(page=${currentPage - 1}, size=${pageSize})}"
+           th:class="${currentPage <= 1} ? 'page-btn disabled' : 'page-btn'"
+           th:if="${currentPage > 1}">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+
+        <!-- 페이지 번호들 -->
+        <a th:each="page : ${#numbers.sequence(T(java.lang.Math).max(1, currentPage - 2), T(java.lang.Math).min(totalPages, currentPage + 2))}"
+           th:href="@{/notice/list(page=${page}, size=${pageSize})}"
+           th:class="${page == currentPage} ? 'page-btn active' : 'page-btn'"
+           th:text="${page}">1</a>
+
+        <!-- 다음 페이지 -->
+        <a th:href="@{/notice/list(page=${currentPage + 1}, size=${pageSize})}"
+           th:class="${currentPage >= totalPages} ? 'page-btn disabled' : 'page-btn'"
+           th:if="${currentPage < totalPages}">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+</body>
+</html>

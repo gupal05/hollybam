@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hollybam.hollybam.dao.IF_NoticeDao">
+
+    <!-- 공지사항 등록 -->
+    <insert id="insertNotice" parameterType="com.hollybam.hollybam.dto.NoticeDto" useGeneratedKeys="true" keyProperty="noticeCode">
+        INSERT INTO notice (
+            admin_code,
+            notice_title,
+            notice_content,
+            is_important,
+            is_active
+        ) VALUES (
+                     #{adminCode},
+                     #{noticeTitle},
+                     #{noticeContent},
+                     #{isImportant},
+                     #{isActive}
+                 )
+    </insert>
+
+    <!-- 공지사항 수정 -->
+    <update id="updateNotice" parameterType="com.hollybam.hollybam.dto.NoticeDto">
+        UPDATE notice
+        SET notice_title = #{noticeTitle},
+            notice_content = #{noticeContent},
+            is_important = #{isImportant},
+            is_active = #{isActive}
+        WHERE notice_code = #{noticeCode}
+    </update>
+
+    <!-- 공지사항 삭제 -->
+    <delete id="deleteNotice" parameterType="int">
+        DELETE FROM notice
+        WHERE notice_code = #{noticeCode}
+    </delete>
+
+    <!-- 공지사항 활성화/비활성화 토글 -->
+    <update id="toggleNoticeActive">
+        UPDATE notice
+        SET is_active = #{isActive}
+        WHERE notice_code = #{noticeCode}
+    </update>
+
+    <!-- 공지사항 상세 조회 -->
+    <select id="selectNoticeDetail" parameterType="int" resultType="com.hollybam.hollybam.dto.NoticeDto">
+        SELECT
+            n.notice_code as noticeCode,
+            n.admin_code as adminCode,
+            n.notice_title as noticeTitle,
+            n.notice_content as noticeContent,
+            n.is_important as isImportant,
+            n.is_active as isActive,
+            n.created_at as createdAt,
+            n.updated_at as updatedAt,
+            m.mem_name as adminName,
+            m.mem_id as adminId
+        FROM notice n
+                 LEFT JOIN member m ON n.admin_code = m.mem_code
+        WHERE n.notice_code = #{noticeCode}
+    </select>
+
+    <!-- 활성화된 공지사항 목록 조회 (사용자용) -->
+    <select id="selectActiveNoticeList" resultType="com.hollybam.hollybam.dto.NoticeDto">
+        SELECT
+            n.notice_code as noticeCode,
+            n.admin_code as adminCode,
+            n.notice_title as noticeTitle,
+            n.notice_content as noticeContent,
+            n.is_important as isImportant,
+            n.is_active as isActive,
+            n.created_at as createdAt,
+            n.updated_at as updatedAt,
+            m.mem_name as adminName,
+            m.mem_id as adminId
+        FROM notice n
+                 LEFT JOIN member m ON n.admin_code = m.mem_code
+        WHERE n.is_active = 1
+        ORDER BY n.is_important DESC, n.created_at DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 모든 공지사항 목록 조회 (관리자용) -->
+    <select id="selectAllNoticeList" resultType="com.hollybam.hollybam.dto.NoticeDto">
+        SELECT
+            n.notice_code as noticeCode,
+            n.admin_code as adminCode,
+            n.notice_title as noticeTitle,
+            n.notice_content as noticeContent,
+            n.is_important as isImportant,
+            n.is_active as isActive,
+            n.created_at as createdAt,
+            n.updated_at as updatedAt,
+            m.mem_name as adminName,
+            m.mem_id as adminId
+        FROM notice n
+                 LEFT JOIN member m ON n.admin_code = m.mem_code
+        ORDER BY n.is_important DESC, n.created_at DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 중요공지 목록 조회 -->
+    <select id="selectImportantNoticeList" resultType="com.hollybam.hollybam.dto.NoticeDto">
+        SELECT
+            n.notice_code as noticeCode,
+            n.admin_code as adminCode,
+            n.notice_title as noticeTitle,
+            n.notice_content as noticeContent,
+            n.is_important as isImportant,
+            n.is_active as isActive,
+            n.created_at as createdAt,
+            n.updated_at as updatedAt,
+            m.mem_name as adminName,
+            m.mem_id as adminId
+        FROM notice n
+                 LEFT JOIN member m ON n.admin_code = m.mem_code
+        WHERE n.is_important = 1 AND n.is_active = 1
+        ORDER BY n.created_at DESC
+        LIMIT 5
+    </select>
+
+    <!-- 활성화된 공지사항 총 개수 조회 (사용자용) -->
+    <select id="selectActiveNoticeCount" resultType="int">
+        SELECT COUNT(*)
+        FROM notice
+        WHERE is_active = 1
+    </select>
+
+    <!-- 모든 공지사항 총 개수 조회 (관리자용) -->
+    <select id="selectAllNoticeCount" resultType="int">
+        SELECT COUNT(*)
+        FROM notice
+    </select>
+
+    <!-- 관리자 권한 확인 -->
+    <select id="isAdmin" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE mem_code = #{memberCode} AND mem_role = 'admin'
+    </select>
+
+</mapper>

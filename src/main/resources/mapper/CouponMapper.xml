@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.IF_CouponDao">
+
+    <!-- ===============================
+         ResultMap 정의
+         =============================== -->
+
+    <!-- 쿠폰 마스터 ResultMap -->
+    <resultMap id="CouponMasterResultMap" type="com.hollybam.hollybam.dto.CouponMasterDto">
+        <id property="couponMasterCode" column="coupon_master_code"/>
+        <result property="adminCode" column="admin_code"/>
+        <result property="couponName" column="coupon_name"/>
+        <result property="couponDescription" column="coupon_description"/>
+        <result property="couponType" column="coupon_type"/>
+        <result property="discountValue" column="discount_value"/>
+        <result property="minOrderAmount" column="min_order_amount"/>
+        <result property="maxDiscountAmount" column="max_discount_amount"/>
+        <result property="applyType" column="apply_type"/>
+        <result property="usageLimitPerUser" column="usage_limit_per_user"/>
+        <result property="totalQuantity" column="total_quantity"/>
+        <result property="issuedQuantity" column="issued_quantity"/>
+        <result property="isActive" column="is_active"/>
+        <result property="issueStartDate" column="issue_start_date"/>
+        <result property="issueEndDate" column="issue_end_date"/>
+        <result property="useStartDate" column="use_start_date"/>
+        <result property="useEndDate" column="use_end_date"/>
+        <result property="createAt" column="create_at"/>
+        <result property="updateAt" column="update_at"/>
+        <result property="adminName" column="admin_name"/>
+    </resultMap>
+
+    <!-- 회원 쿠폰 ResultMap -->
+    <resultMap id="MemberCouponResultMap" type="com.hollybam.hollybam.dto.MemberCouponDto">
+        <id property="memberCouponCode" column="member_coupon_code"/>
+        <result property="couponMasterCode" column="coupon_master_code"/>
+        <result property="memCode" column="mem_code"/>
+        <result property="couponCode" column="coupon_code"/>
+        <result property="couponStatus" column="coupon_status"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="issuedAt" column="issued_at"/>
+        <result property="usedAt" column="used_at"/>
+        <result property="expiredAt" column="expired_at"/>
+        <result property="createAt" column="create_at"/>
+        <result property="updateAt" column="update_at"/>
+        <!-- 조인용 필드 -->
+        <result property="couponName" column="coupon_name"/>
+        <result property="couponDescription" column="coupon_description"/>
+        <result property="couponType" column="coupon_type"/>
+        <result property="discountValue" column="discount_value"/>
+        <result property="minOrderAmount" column="min_order_amount"/>
+        <result property="maxDiscountAmount" column="max_discount_amount"/>
+        <result property="applyType" column="apply_type"/>
+        <result property="useStartDate" column="use_start_date"/>
+        <result property="useEndDate" column="use_end_date"/>
+        <result property="memberName" column="member_name"/>
+        <result property="memberId" column="member_id"/>
+    </resultMap>
+
+    <!-- 쿠폰 적용 상품 ResultMap -->
+    <resultMap id="CouponApplicableProductResultMap" type="com.hollybam.hollybam.dto.CouponApplicableProductDto">
+        <id property="couponProductCode" column="coupon_product_code"/>
+        <result property="couponMasterCode" column="coupon_master_code"/>
+        <result property="productCode" column="product_code"/>
+        <result property="createAt" column="create_at"/>
+        <result property="productName" column="product_name"/>
+        <result property="productId" column="product_id"/>
+    </resultMap>
+
+    <!-- 쿠폰 사용 내역 ResultMap -->
+    <resultMap id="CouponUsageLogResultMap" type="com.hollybam.hollybam.dto.CouponUsageLogDto">
+        <id property="usageLogCode" column="usage_log_code"/>
+        <result property="memberCouponCode" column="member_coupon_code"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="discountAmount" column="discount_amount"/>
+        <result property="originalOrderAmount" column="original_order_amount"/>
+        <result property="finalOrderAmount" column="final_order_amount"/>
+        <result property="usedAt" column="used_at"/>
+        <result property="couponCode" column="coupon_code"/>
+        <result property="couponName" column="coupon_name"/>
+        <result property="memberName" column="member_name"/>
+        <result property="orderId" column="order_id"/>
+    </resultMap>
+
+    <!-- ===============================
+         쿠폰 마스터 관련 쿼리
+         =============================== -->
+
+    <!-- 쿠폰 마스터 등록 -->
+    <insert id="insertCouponMaster" parameterType="com.hollybam.hollybam.dto.CouponMasterDto" useGeneratedKeys="true" keyProperty="couponMasterCode">
+        INSERT INTO coupon_master (
+            admin_code, coupon_name, coupon_description, coupon_type, discount_value,
+            min_order_amount, max_discount_amount, apply_type, usage_limit_per_user,
+            total_quantity, is_active, issue_start_date, issue_end_date,
+            use_start_date, use_end_date
+        ) VALUES (
+                     #{adminCode}, #{couponName}, #{couponDescription}, #{couponType}, #{discountValue},
+                     #{minOrderAmount}, #{maxDiscountAmount}, #{applyType}, #{usageLimitPerUser},
+                     #{totalQuantity}, #{isActive}, #{issueStartDate}, #{issueEndDate},
+                     #{useStartDate}, #{useEndDate}
+                 )
+    </insert>
+
+    <!-- 쿠폰 마스터 수정 -->
+    <update id="updateCouponMaster" parameterType="com.hollybam.hollybam.dto.CouponMasterDto">
+        UPDATE coupon_master SET
+                                 coupon_name = #{couponName},
+                                 coupon_description = #{couponDescription},
+                                 coupon_type = #{couponType},
+                                 discount_value = #{discountValue},
+                                 min_order_amount = #{minOrderAmount},
+                                 max_discount_amount = #{maxDiscountAmount},
+                                 apply_type = #{applyType},
+                                 usage_limit_per_user = #{usageLimitPerUser},
+                                 total_quantity = #{totalQuantity},
+                                 is_active = #{isActive},
+                                 issue_start_date = #{issueStartDate},
+                                 issue_end_date = #{issueEndDate},
+                                 use_start_date = #{useStartDate},
+                                 use_end_date = #{useEndDate},
+                                 update_at = NOW()
+        WHERE coupon_master_code = #{couponMasterCode}
+    </update>
+
+    <!-- 쿠폰 마스터 삭제 -->
+    <delete id="deleteCouponMaster">
+        DELETE FROM coupon_master WHERE coupon_master_code = #{couponMasterCode}
+    </delete>
+
+    <!-- 쿠폰 마스터 상세 조회 -->
+    <select id="selectCouponMasterDetail" resultMap="CouponMasterResultMap">
+        SELECT
+            cm.*,
+            m.mem_name as admin_name
+        FROM coupon_master cm
+                 LEFT JOIN member m ON cm.admin_code = m.mem_code
+        WHERE cm.coupon_master_code = #{couponMasterCode}
+    </select>
+
+    <!-- 활성화된 쿠폰 마스터 목록 조회 -->
+    <select id="selectActiveCouponMasterList" resultMap="CouponMasterResultMap">
+        SELECT
+            cm.*,
+            m.mem_name as admin_name,
+            (cm.total_quantity - cm.issued_quantity) as remaining_quantity
+        FROM coupon_master cm
+                 LEFT JOIN member m ON cm.admin_code = m.mem_code
+        WHERE cm.is_active = 1
+        ORDER BY cm.create_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 모든 쿠폰 마스터 목록 조회 (관리자용) -->
+    <select id="selectAllCouponMasterList" resultMap="CouponMasterResultMap">
+        SELECT
+            cm.*,
+            m.mem_name as admin_name,
+            (cm.total_quantity - cm.issued_quantity) as remaining_quantity
+        FROM coupon_master cm
+                 LEFT JOIN member m ON cm.admin_code = m.mem_code
+        ORDER BY cm.create_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 발급 가능한 쿠폰 마스터 목록 조회 -->
+    <select id="selectIssuableCouponMasterList" resultMap="CouponMasterResultMap">
+        SELECT
+        cm.*,
+        m.mem_name as admin_name,
+        (cm.total_quantity - cm.issued_quantity) as remaining_quantity
+        FROM coupon_master cm
+        LEFT JOIN member m ON cm.admin_code = m.mem_code
+        WHERE cm.is_active = 1
+        AND cm.issue_start_date <= NOW()
+        AND cm.issue_end_date >= NOW()
+        AND cm.issued_quantity < cm.total_quantity
+                                 ORDER BY cm.create_at DESC
+    </select>
+
+    <!-- 쿠폰 마스터 총 개수 조회 -->
+    <select id="selectCouponMasterCount" resultType="int">
+        SELECT COUNT(*) FROM coupon_master
+        <where>
+            <if test="isActive != null">
+                AND is_active = #{isActive}
+            </if>
+        </where>
+    </select>
+
+    <!-- 쿠폰 발급 수량 증가 -->
+    <update id="increaseCouponIssuedQuantity">
+        UPDATE coupon_master
+        SET issued_quantity = issued_quantity + 1,
+            update_at = NOW()
+        WHERE coupon_master_code = #{couponMasterCode}
+    </update>
+
+    <!-- ===============================
+         쿠폰 적용 상품 관련 쿼리
+         =============================== -->
+
+    <!-- 쿠폰 적용 상품 등록 -->
+    <insert id="insertCouponApplicableProducts">
+        INSERT INTO coupon_applicable_product (coupon_master_code, product_code)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.couponMasterCode}, #{item.productCode})
+        </foreach>
+    </insert>
+
+    <!-- 쿠폰 적용 상품 삭제 -->
+    <delete id="deleteCouponApplicableProducts">
+        DELETE FROM coupon_applicable_product
+        WHERE coupon_master_code = #{couponMasterCode}
+    </delete>
+
+    <!-- 쿠폰 적용 상품 목록 조회 -->
+    <select id="selectCouponApplicableProducts" resultMap="CouponApplicableProductResultMap">
+        SELECT
+            cap.*,
+            p.product_name,
+            p.product_id
+        FROM coupon_applicable_product cap
+                 LEFT JOIN product p ON cap.product_code = p.product_code
+        WHERE cap.coupon_master_code = #{couponMasterCode}
+        ORDER BY cap.create_at ASC
+    </select>
+
+    <!-- 특정 상품에 적용 가능한 쿠폰 마스터 목록 조회 -->
+    <select id="selectApplicableCouponMastersForProduct" resultMap="CouponMasterResultMap">
+        SELECT DISTINCT cm.*
+        FROM coupon_master cm
+        WHERE cm.is_active = 1
+        AND cm.issue_start_date <= NOW()
+        AND cm.issue_end_date >= NOW()
+        AND (
+        cm.apply_type = 'ALL'
+        OR (
+        cm.apply_type = 'SPECIFIC_PRODUCT'
+        AND EXISTS (
+        SELECT 1 FROM coupon_applicable_product cap
+        WHERE cap.coupon_master_code = cm.coupon_master_code
+        AND cap.product_code = #{productCode}
+        )
+        )
+        )
+        ORDER BY cm.create_at DESC
+    </select>
+
+    <!-- ===============================
+         회원 쿠폰 관련 쿼리
+         =============================== -->
+
+    <!-- 회원 쿠폰 발급 -->
+    <insert id="insertMemberCoupon" parameterType="com.hollybam.hollybam.dto.MemberCouponDto">
+        INSERT INTO member_coupon (
+            coupon_master_code, mem_code, coupon_code, coupon_status, expired_at
+        ) VALUES (
+                     #{couponMasterCode}, #{memCode}, #{couponCode}, #{couponStatus}, #{expiredAt}
+                 )
+    </insert>
+
+    <!-- 회원 쿠폰 상태 변경 -->
+    <update id="updateMemberCouponStatus">
+        UPDATE member_coupon SET
+        coupon_status = #{status},
+        <if test="status == 'USED'">
+            used_at = NOW(),
+            order_code = #{orderCode},
+        </if>
+        update_at = NOW()
+        WHERE member_coupon_code = #{memberCouponCode}
+    </update>
+
+    <!-- 회원의 사용 가능한 쿠폰 목록 조회 -->
+    <select id="selectUsableMemberCoupons" resultMap="MemberCouponResultMap">
+        SELECT
+        mc.*,
+        cm.coupon_name, cm.coupon_description, cm.coupon_type, cm.discount_value,
+        cm.min_order_amount, cm.max_discount_amount, cm.apply_type,
+        cm.use_start_date, cm.use_end_date
+        FROM member_coupon mc
+        JOIN coupon_master cm ON mc.coupon_master_code = cm.coupon_master_code
+        WHERE mc.mem_code = #{memCode}
+        AND mc.coupon_status = 'ISSUED'
+        AND mc.expired_at > NOW()
+        AND cm.use_start_date <= NOW()
+        AND cm.use_end_date >= NOW()
+        AND cm.is_active = 1
+        ORDER BY mc.expired_at ASC
+    </select>
+
+    <!-- 회원의 모든 쿠폰 목록 조회 (마이페이지용) -->
+    <select id="selectMemberCoupons" resultMap="MemberCouponResultMap">
+        SELECT
+        mc.*,
+        cm.coupon_name, cm.coupon_description, cm.coupon_type, cm.discount_value,
+        cm.min_order_amount, cm.max_discount_amount, cm.apply_type,
+        cm.use_start_date, cm.use_end_date
+        FROM member_coupon mc
+        JOIN coupon_master cm ON mc.coupon_master_code = cm.coupon_master_code
+        WHERE mc.mem_code = #{memCode}
+        <if test="status != null and status != ''">
+            AND mc.coupon_status = #{status}
+        </if>
+        ORDER BY mc.create_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 쿠폰 코드로 회원 쿠폰 조회 -->
+    <select id="selectMemberCouponByCouponCode" resultMap="MemberCouponResultMap">
+        SELECT
+            mc.*,
+            cm.coupon_name, cm.coupon_description, cm.coupon_type, cm.discount_value,
+            cm.min_order_amount, cm.max_discount_amount, cm.apply_type,
+            cm.use_start_date, cm.use_end_date
+        FROM member_coupon mc
+                 JOIN coupon_master cm ON mc.coupon_master_code = cm.coupon_master_code
+        WHERE mc.coupon_code = #{couponCode}
+          AND mc.mem_code = #{memCode}
+    </select>
+
+    <!-- 회원의 쿠폰 개수 조회 -->
+    <select id="selectMemberCouponCount" resultType="int">
+        SELECT COUNT(*)
+        FROM member_coupon mc
+        JOIN coupon_master cm ON mc.coupon_master_code = cm.coupon_master_code
+        WHERE mc.mem_code = #{memCode}
+        <if test="status != null and status != ''">
+            AND mc.coupon_status = #{status}
+        </if>
+    </select>
+
+    <!-- 특정 상품에 사용 가능한 회원 쿠폰 목록 조회 -->
+    <select id="selectUsableMemberCouponsForProduct" resultMap="MemberCouponResultMap">
+        SELECT
+        mc.*,
+        cm.coupon_name, cm.coupon_description, cm.coupon_type, cm.discount_value,
+        cm.min_order_amount, cm.max_discount_amount, cm.apply_type,
+        cm.use_start_date, cm.use_end_date
+        FROM member_coupon mc
+        JOIN coupon_master cm ON mc.coupon_master_code = cm.coupon_master_code
+        WHERE mc.mem_code = #{memCode}
+        AND mc.coupon_status = 'ISSUED'
+        AND mc.expired_at > NOW()
+        AND cm.use_start_date <= NOW()
+        AND cm.use_end_date >= NOW()
+        AND cm.is_active = 1
+        AND (
+        cm.apply_type = 'ALL'
+        OR (
+        cm.apply_type = 'SPECIFIC_PRODUCT'
+        AND EXISTS (
+        SELECT 1 FROM coupon_applicable_product cap
+        WHERE cap.coupon_master_code = cm.coupon_master_code
+        AND cap.product_code = #{productCode}
+        )
+        )
+        )
+        ORDER BY mc.expired_at ASC
+    </select>
+
+    <!-- 장바구니 상품들에 사용 가능한 회원 쿠폰 목록 조회 -->
+    <select id="selectUsableMemberCouponsForCart" resultMap="MemberCouponResultMap">
+        SELECT
+        mc.*,
+        cm.coupon_name, cm.coupon_description, cm.coupon_type, cm.discount_value,
+        cm.min_order_amount, cm.max_discount_amount, cm.apply_type,
+        cm.use_start_date, cm.use_end_date
+        FROM member_coupon mc
+        JOIN coupon_master cm ON mc.coupon_master_code = cm.coupon_master_code
+        WHERE mc.mem_code = #{memCode}
+        AND mc.coupon_status = 'ISSUED'
+        AND mc.expired_at > NOW()
+        AND cm.use_start_date <= NOW()
+        AND cm.use_end_date >= NOW()
+        AND cm.is_active = 1
+        AND (
+        cm.apply_type = 'ALL'
+        OR (
+        cm.apply_type = 'SPECIFIC_PRODUCT'
+        AND EXISTS (
+        SELECT 1 FROM coupon_applicable_product cap
+        WHERE cap.coupon_master_code = cm.coupon_master_code
+        AND cap.product_code IN
+        <foreach collection="productCodes" item="productCode" open="(" separator="," close=")">
+            #{productCode}
+        </foreach>
+        )
+        )
+        )
+        ORDER BY mc.expired_at ASC
+    </select>
+
+    <!-- 회원이 특정 쿠폰을 이미 발급받았는지 확인 -->
+    <select id="checkMemberCouponExists" resultType="int">
+        SELECT COUNT(*)
+        FROM member_coupon
+        WHERE mem_code = #{memCode}
+          AND coupon_master_code = #{couponMasterCode}
+    </select>
+
+    <!-- 만료된 쿠폰 상태 업데이트 (배치용) -->
+    <update id="updateExpiredCoupons">
+        UPDATE member_coupon
+        SET coupon_status = 'EXPIRED',
+        update_at = NOW()
+        WHERE coupon_status = 'ISSUED'
+        AND expired_at <= NOW()
+    </update>
+
+    <!-- ===============================
+         쿠폰 사용 내역 관련 쿼리
+         =============================== -->
+
+    <!-- 쿠폰 사용 내역 등록 -->
+    <insert id="insertCouponUsageLog" parameterType="com.hollybam.hollybam.dto.CouponUsageLogDto">
+        INSERT INTO coupon_usage_log (
+            member_coupon_code, order_code, discount_amount,
+            original_order_amount, final_order_amount
+        ) VALUES (
+                     #{memberCouponCode}, #{orderCode}, #{discountAmount},
+                     #{originalOrderAmount}, #{finalOrderAmount}
+                 )
+    </insert>
+
+    <!-- 회원의 쿠폰 사용 내역 조회 -->
+    <select id="selectMemberCouponUsageLog" resultMap="CouponUsageLogResultMap">
+        SELECT
+            cul.*,
+            mc.coupon_code,
+            cm.coupon_name,
+            m.mem_name as member_name,
+            o.order_id
+        FROM coupon_usage_log cul
+                 JOIN member_coupon mc ON cul.member_coupon_code = mc.member_coupon_code
+                 JOIN coupon_master cm ON mc.coupon_master_code = cm.coupon_master_code
+                 JOIN member m ON mc.mem_code = m.mem_code
+                 LEFT JOIN orders o ON cul.order_code = o.order_code
+        WHERE mc.mem_code = #{memCode}
+        ORDER BY cul.used_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 쿠폰 사용 통계 조회 (관리자용) -->
+    <select id="selectCouponUsageStatistics" resultMap="CouponUsageLogResultMap">
+        SELECT
+            cul.*,
+            mc.coupon_code,
+            cm.coupon_name,
+            m.mem_name as member_name,
+            o.order_id
+        FROM coupon_usage_log cul
+                 JOIN member_coupon mc ON cul.member_coupon_code = mc.member_coupon_code
+                 JOIN coupon_master cm ON mc.coupon_master_code = cm.coupon_master_code
+                 JOIN member m ON mc.mem_code = m.mem_code
+                 LEFT JOIN orders o ON cul.order_code = o.order_code
+        WHERE DATE(cul.used_at) BETWEEN #{startDate} AND #{endDate}
+        ORDER BY cul.used_at DESC
+    </select>
+
+    <!-- ===============================
+         유틸리티 쿼리
+         =============================== -->
+
+    <!-- 쿠폰 코드 중복 체크 -->
+    <select id="checkCouponCodeExists" resultType="int">
+        SELECT COUNT(*) FROM member_coupon WHERE coupon_code = #{couponCode}
+    </select>
+
+    <!-- 관리자 권한 확인 -->
+    <select id="isAdmin" resultType="int">
+        SELECT COUNT(*) FROM member
+        WHERE mem_code = #{memberCode} AND mem_role = 'admin'
+    </select>
+
+</mapper>

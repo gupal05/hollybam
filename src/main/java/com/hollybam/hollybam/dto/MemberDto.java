@@ -22,6 +22,7 @@ public class MemberDto {
     private String memberMail;
     private LocalDate memberBirth;
     private String memberGender;
+    private String memberRole;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
 

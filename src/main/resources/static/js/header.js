@@ -31,17 +31,15 @@ function goLogin() {
 }
 
 // 사용자 드롭다운 기능
-$(document).ready(function() {
+$(document).ready(function () {
     const $userNavItem = $('.user-nav-item');
     const $userIcon = $userNavItem.find('i');
     const $body = $('body');
 
-    // 모바일 체크
     function isMobile() {
         return window.innerWidth <= 768;
     }
 
-    // 오버레이 생성
     function createOverlay() {
         if ($userNavItem.find('.user-dropdown-overlay').length === 0) {
             const $overlay = $('<div class="user-dropdown-overlay"></div>');
@@ -49,7 +47,6 @@ $(document).ready(function() {
         }
     }
 
-    // 드롭다운 토글
     function toggleDropdown() {
         if (isMobile()) {
             $userNavItem.toggleClass('active');
@@ -57,48 +54,39 @@ $(document).ready(function() {
         }
     }
 
-    // 드롭다운 닫기
     function closeDropdown() {
         $userNavItem.removeClass('active');
         $body.css('overflow', '');
     }
 
-    // 모바일 환경 설정
     if (isMobile()) {
         createOverlay();
 
-        // 아이콘 클릭 이벤트
-        $userIcon.on('click', function(e) {
+        $userIcon.on('click', function (e) {
             e.stopPropagation();
             toggleDropdown();
         });
 
-        // 오버레이 클릭 시 닫기
-        $userNavItem.on('click', '.user-dropdown-overlay', function() {
+        $userNavItem.on('click', '.user-dropdown-overlay', function () {
             closeDropdown();
         });
 
-        // 드롭다운 내부 클릭 시 이벤트 전파 중지
-        $userNavItem.find('.user-dropdown').on('click', function(e) {
+        $userNavItem.find('.user-dropdown').on('click', function (e) {
             e.stopPropagation();
         });
     }
 
-    // 윈도우 리사이즈 시 상태 초기화
     let resizeTimer;
-    $(window).on('resize', function() {
+    $(window).on('resize', function () {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
+        resizeTimer = setTimeout(function () {
             if (!isMobile()) {
                 closeDropdown();
-                // 데스크톱으로 전환 시 오버레이 제거
                 $userNavItem.find('.user-dropdown-overlay').remove();
             } else {
-                // 모바일로 전환 시 오버레이 추가
                 createOverlay();
 
-                // 모바일 이벤트 다시 바인딩
-                $userIcon.off('click').on('click', function(e) {
+                $userIcon.off('click').on('click', function (e) {
                     e.stopPropagation();
                     toggleDropdown();
                 });
@@ -106,23 +94,55 @@ $(document).ready(function() {
         }, 250);
     });
 
-    // ESC 키로 닫기
-    $(document).on('keydown', function(e) {
+    $(document).on('keydown', function (e) {
         if (e.key === 'Escape' && $userNavItem.hasClass('active')) {
             closeDropdown();
         }
     });
 
-    // 모바일에서 링크 클릭 시 드롭다운 닫기
-    $userNavItem.find('.user-dropdown-link').on('click', function() {
+    $userNavItem.find('.user-dropdown-link').on('click', function () {
         if (isMobile()) {
             closeDropdown();
         }
     });
+
+    // ✅ 모바일 카테고리 드롭다운 토글 기능 추가
+    function bindMobileCategoryDropdown() {
+        if (isMobile()) {
+            $('.nav-item').each(function () {
+                const $item = $(this);
+                $item.off('click').on('click', function (e) {
+                    e.stopPropagation();
+                    // 다른 메뉴 닫기
+                    $('.nav-item').not($item).removeClass('active');
+                    // 현재 메뉴 toggle
+                    $item.toggleClass('active');
+                });
+            });
+
+            // 외부 클릭 시 모두 닫기
+            $(document).on('click.mobileDropdown', function () {
+                $('.nav-item').removeClass('active');
+            });
+        } else {
+            // 데스크톱에서는 이벤트 제거
+            $('.nav-item').off('click');
+            $(document).off('click.mobileDropdown');
+            $('.nav-item').removeClass('active');
+        }
+    }
+
+    // 처음 로딩 시
+    bindMobileCategoryDropdown();
+
+    // 리사이즈 시 다시 바인딩
+    $(window).on('resize', function () {
+        bindMobileCategoryDropdown();
+    });
 });
 
-function logout(){
-    if(confirm('로그아웃 하시겠습니까?')){
+function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
         location.href = "/auth/logout";
     }
 }

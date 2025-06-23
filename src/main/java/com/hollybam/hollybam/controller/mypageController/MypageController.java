@@ -107,4 +107,9 @@ public class MypageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
         }
     }
+
+    @GetMapping("/coupons")
+    public String couponPage(HttpSession session){
+        return "mypage/coupons";
+    }
 }

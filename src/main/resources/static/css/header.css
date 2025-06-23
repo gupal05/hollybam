@@ -1,4 +1,4 @@
-/* header.css - z-index 문제 해결 */
+/* ======= 기본 헤더 스타일 ======= */
 .header {
     position: fixed;
     top: 0;
@@ -9,7 +9,7 @@
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
     transition: height 0.3s ease;
-    z-index: 1000; /* 헤더가 가장 위에 보이도록 */
+    z-index: 1000;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -33,7 +33,7 @@
 .nav-group-icon {
     display: flex;
     justify-content: center;
-    align-items: center;  /* 아이콘 수직 정렬 추가 */
+    align-items: center;
     gap: 15px;
     flex-wrap: wrap;
     font-size: 28px;
@@ -45,7 +45,7 @@
     cursor: pointer;
 }
 
-/* 배경 블러 오버레이 - 헤더 아래 영역만 (덜 어둡게 수정) */
+/* ======= 드롭다운 백그라운드 (PC only) ======= */
 .dropdown-backdrop {
     position: fixed;
     top: 105.8px;
@@ -58,11 +58,10 @@
     opacity: 0;
     visibility: hidden;
     transition: all 0.25s ease;
-    z-index: 998; /* 드롭다운보다 아래 */
+    z-index: 998;
     pointer-events: none;
 }
 
-/* 스크롤 시 헤더 높이가 줄어들 때 */
 .header-scrolled .dropdown-backdrop {
     top: 58.5px;
     height: calc(100vh - 58.5px);
@@ -73,13 +72,12 @@
     visibility: visible;
 }
 
-/* 로마 스타일 드롭다운 - 헤더 아래에 위치하도록 수정 */
+/* ======= 드롭다운 메뉴 스타일 (PC) ======= */
 .nav-item {
     position: relative;
     display: inline-block;
 }
 
-/* 호버 영역을 확장하기 위한 가상 요소 */
 .nav-item::after {
     content: '';
     position: absolute;
@@ -88,24 +86,21 @@
     right: -20px;
     height: 15px;
     background: transparent;
-    z-index: 1001; /* 헤더보다 약간 높게 설정하여 호버 감지 */
+    z-index: 1001;
 }
 
 .dropdown {
     position: fixed;
-    top: 105.8px; /* 헤더 바로 아래 */
+    top: 105.8px;
     left: 0;
     background: #ffffff;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     opacity: 0;
     visibility: hidden;
     transition: all 0.25s ease;
-    z-index: 999; /* 헤더보다 아래 */
+    z-index: 999;
     width: 100%;
-    padding-top: 40px; /* 헤더 아래 여백만 */
-    padding-left: 60px;
-    padding-right: 60px;
-    padding-bottom: 40px;
+    padding: 40px 60px;
     border: none;
 }
 
@@ -122,11 +117,11 @@
 
 .dropdown-content {
     display: flex;
-    justify-content: center;  /* 가운데 정렬 */
+    justify-content: center;
     gap: 60px;
     margin: 0 auto;
-    overflow-x: auto;         /* 가로 스크롤 허용 */
-    white-space: nowrap;      /* 줄 바꿈 방지 */
+    overflow-x: auto;
+    white-space: nowrap;
     max-width: 100%;
     scroll-behavior: smooth;
 }
@@ -148,7 +143,7 @@
 .dropdown-column-title-link {
     text-decoration: none;
     color: inherit;
-    display: block; /* div처럼 동작하게 함 */
+    display: block;
 }
 
 .dropdown-item {
@@ -171,22 +166,17 @@
     color: #ee386d;
 }
 
-/* 드롭다운 화살표 제거 (로마 스타일에는 없음) */
-.dropdown::before {
-    display: none;
-}
-
-/* 사용자 드롭다운 스타일 */
+/* ======= 사용자 아이콘 드롭다운 ======= */
 .user-nav-item {
     position: relative;
     cursor: pointer;
     display: flex;
-    align-items: center;  /* 아이콘 중앙 정렬 */
+    align-items: center;
 }
 
 .user-nav-item i {
     transition: color 0.2s ease;
-    display: flex;  /* 아이콘 내부 정렬 */
+    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -198,8 +188,8 @@
 .user-dropdown {
     position: absolute;
     top: calc(100% + 10px);
-    left: 50%;  /* 중앙 정렬을 위해 변경 */
-    transform: translateX(-50%) translateY(-10px);  /* X축 중앙 정렬 추가 */
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
     background: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -214,7 +204,7 @@
 .user-nav-item:hover .user-dropdown {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0);  /* 호버 시에도 중앙 유지 */
+    transform: translateX(-50%) translateY(0);
 }
 
 .user-dropdown-content {
@@ -263,25 +253,7 @@
     font-weight: 500;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 1200px) {
-    .dropdown-content {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 40px;
-    }
-}
-
-@media (max-width: 900px) {
-    .dropdown-content {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
-    }
-
-    .dropdown {
-        padding: 30px 40px;
-    }
-}
-
+/* ======= 반응형: 태블릿 ~ 모바일 ======= */
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
@@ -307,60 +279,64 @@
         margin-top: 10px;
     }
 
+    /* 드롭다운은 기본 숨김 */
     .dropdown {
-        position: static;
-        transform: none;
-        width: 100%;
-        max-width: none;
-        padding: 20px;
-        opacity: 1;
-        visibility: visible;
-        box-shadow: none;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 8px;
-        margin-top: 10px;
-    }
-
-    .dropdown-backdrop {
         display: none;
+        position: static;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: none;
+        border-radius: 8px;
+        padding: 20px;
+        width: 100%;
     }
 
+    /* nav-item에 active 클래스가 있을 때만 표시 */
+    .nav-item.active .dropdown {
+        display: block;
+    }
+
+    .dropdown-backdrop,
     .nav-item::after {
         display: none;
     }
 
     .dropdown-content {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .dropdown-column {
+        margin-bottom: 10px;
     }
 
     .dropdown-column-title {
         font-size: 15px;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
     }
 
     .category-link {
-        padding: 6px 0;
-        font-size: 13px;
+        font-size: 14px;
+        padding: 4px 0;
     }
 
-    /* 모바일에서 사용자 드롭다운 */
+    /* 모바일 - 사용자 드롭다운 */
     .user-dropdown {
         position: fixed;
-        top: auto;
         bottom: 0;
         left: 0;
         right: 0;
-        border-radius: 16px 16px 0 0;
         transform: translateY(100%);
-        min-width: auto;
         width: 100%;
+        border-radius: 16px 16px 0 0;
         max-height: 70vh;
         overflow-y: auto;
     }
 
-    .user-nav-item:hover .user-dropdown {
+    .user-nav-item:hover .user-dropdown,
+    .user-nav-item.active .user-dropdown {
         transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
     }
 
     .user-dropdown-content {
@@ -376,14 +352,6 @@
         font-size: 18px;
     }
 
-    /* 모바일에서 터치를 위한 JavaScript 필요 */
-    .user-nav-item.active .user-dropdown {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
-
-    /* 모바일 배경 오버레이 */
     .user-dropdown-overlay {
         position: fixed;
         top: 0;
@@ -403,10 +371,10 @@
     }
 }
 
+/* ======= 작은 화면 대응 ======= */
 @media (max-width: 480px) {
     .dropdown-content {
-        grid-template-columns: 1fr;
-        gap: 25px;
+        flex-direction: column;
     }
 
     .nav-group-icon {

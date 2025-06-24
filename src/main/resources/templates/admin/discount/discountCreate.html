@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>쿠폰 및 할인코드 생성</title>
+    <link rel="stylesheet" href="/css/style.css"/>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .form-box {
+            width: 48%;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .form-box h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 6px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 쿠폰 생성 폼 -->
+    <div class="form-box">
+        <h2>쿠폰 생성</h2>
+        <form th:action="@{/admin/coupon/create}" th:object="${coupon}" method="post">
+
+            <div class="form-group">
+                <label for="couponId">쿠폰 아이디 (xxxx-xxxx-xxxx)</label>
+                <input type="text" id="couponId" name="couponId"
+                       pattern="[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}"
+                       title="4자-4자-4자의 영문 또는 숫자 조합" required>
+            </div>
+
+            <label>쿠폰 이름:</label>
+            <input type="text" th:field="*{couponName}" required/>
+
+            <label>쿠폰 설명:</label>
+            <textarea th:field="*{couponDiscription}" required></textarea>
+
+            <label>할인 유형:</label>
+            <select th:field="*{discountType}" required>
+                <option value="per">퍼센트 (%) 할인</option>
+                <option value="amount">정액 할인</option>
+            </select>
+
+            <label>할인 값:</label>
+            <input type="number" th:field="*{discountValue}" min="0" required/>
+
+            <label>최소 주문 금액:</label>
+            <input type="number" th:field="*{minOrderPrice}" min="0" value="0"/>
+
+            <label>최대 할인 금액:</label>
+            <input type="number" th:field="*{maxDiscount}" min="0"/>
+
+            <label>발급 시작일:</label>
+            <input type="date" th:field="*{issuedAt}"/>
+
+            <label>만료일:</label>
+            <input type="date" th:field="*{expiredAt}"/>
+
+            <label>자동 발급 여부:</label>
+            <input type="checkbox" th:field="*{isAutoIssue}"/>
+
+            <button type="submit">쿠폰 생성</button>
+        </form>
+    </div>
+
+    <!-- 할인코드 생성 폼 -->
+    <div class="form-box">
+        <h2>할인 코드 생성</h2>
+        <form th:action="@{/admin/discount/create}" th:object="${discount}" method="post">
+            <label>할인 코드 (ex: WELCOME10):</label>
+            <input type="text" th:field="*{discountId}" maxlength="20" required/>
+
+            <label>할인 설명:</label>
+            <textarea th:field="*{discountDescription}" required></textarea>
+
+            <label>할인 유형:</label>
+            <select th:field="*{discountType}" required>
+                <option value="per">퍼센트 (%) 할인</option>
+                <option value="amount">정액 할인</option>
+            </select>
+
+            <label>할인 값:</label>
+            <input type="number" th:field="*{discountValue}" min="0" required/>
+
+            <label>최소 주문 금액:</label>
+            <input type="number" th:field="*{minOrderPrice}" min="0" value="0"/>
+
+            <label>만료일:</label>
+            <input type="date" th:field="*{expiredAt}"/>
+
+            <button type="submit">할인 코드 생성</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 쿠폰 아이디 자동 포맷팅
+    document.getElementById('couponId')?.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+        if (value.length > 12) value = value.slice(0, 12);
+        let formatted = value.match(/.{1,4}/g)?.join('-') || '';
+        e.target.value = formatted;
+    });
+    document.getElementById('discountId').addEventListener('input', function (e) {
+        e.target.value = e.target.value.toUpperCase();
+    });
+</script>
+
+</body>
+</html>

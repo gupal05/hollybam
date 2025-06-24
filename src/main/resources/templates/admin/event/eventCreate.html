@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>이벤트 등록</title>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<h1>이벤트 등록</h1>
+
+<!-- 성공 메시지 -->
+<div th:if="${success}" style="color: green;">
+    <p th:text="${success}">이벤트가 등록되었습니다.</p>
+</div>
+
+<!-- 에러 메시지 -->
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">오류가 발생했습니다.</p>
+</div>
+
+<form th:action="@{/admin/event/create}" method="post" enctype="multipart/form-data" th:object="${event}">
+    <label>이벤트 제목</label>
+    <input type="text" th:field="*{eventTitle}" required><br>
+
+    <label>간략 설명</label>
+    <textarea th:field="*{eventDescription}" required></textarea><br>
+
+    <label>시작일</label>
+    <input type="date" th:field="*{eventStart}" required><br>
+
+    <label>종료일</label>
+    <input type="date" th:field="*{eventEnd}"><br>
+
+    <label>썸네일 이미지</label>
+    <input type="file" name="thumbnailFile" accept="image/*" required><br>
+
+    <label>이벤트 상세 이미지</label>
+    <input type="file" name="imageFile" accept="image/*" required><br>
+
+    <label>이동 URL (선택)</label>
+    <input type="text" name="eventDetailActionUrl"><br>
+
+    <button type="submit">이벤트 등록</button>
+</form>
+
+
+</body>
+</html>

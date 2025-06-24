@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${event.eventTitle} + ' - 홀리밤'">이벤트 상세 - 홀리밤</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            line-height: 1.6;
+        }
+
+        /* 메인 콘텐츠 */
+        .content {
+            min-height: 800px;
+            padding: 120px 20px 60px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 이벤트 라벨 */
+        .event-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #666666;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        /* 구분선 */
+        .divider {
+            width: 60px;
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 0 auto 40px;
+        }
+
+        /* 이벤트 제목 */
+        .event-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-align: center;
+            margin-bottom: 48px;
+            line-height: 1.3;
+        }
+
+        /* 이벤트 상세 콘텐츠 */
+        .event-detail-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 이벤트 상세 이미지 */
+        .event-detail-img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* 클릭 가능한 이미지 */
+        .event-detail-img.clickable {
+            cursor: pointer;
+        }
+
+        .event-detail-img.clickable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .content {
+                padding: 100px 16px 40px;
+            }
+
+            .event-title {
+                font-size: 24px;
+                margin-bottom: 32px;
+            }
+
+            .event-detail-content {
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .event-title {
+                font-size: 20px;
+                margin-bottom: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 메인 콘텐츠 -->
+<div class="content">
+    <div class="container">
+        <!-- 이벤트 라벨 -->
+        <div class="event-label">이벤트</div>
+
+        <!-- 구분선 -->
+        <div class="divider"></div>
+
+        <!-- 이벤트 제목 -->
+        <h1 class="event-title" th:text="${event.eventTitle}">이벤트 제목</h1>
+
+        <!-- 이벤트 상세 콘텐츠 -->
+        <div class="event-detail-content">
+            <img th:src="${detail.eventDetailContentImg}"
+                 th:alt="${event.eventTitle}"
+                 th:class="${detail.eventDetailActionUrl != null ? 'event-detail-img clickable' : 'event-detail-img'}"
+                 th:attr="data-action-url=${detail.eventDetailActionUrl}"
+                 onclick="handleImageClick(this)"
+                 th:if="${detail.eventDetailActionUrl != null}"
+                 onerror="this.style.display='none'">
+
+            <img th:src="${detail.eventDetailContentImg}"
+                 th:alt="${event.eventTitle}"
+                 class="event-detail-img"
+                 th:if="${detail.eventDetailActionUrl == null}"
+                 onerror="this.style.display='none'">
+        </div>
+    </div>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    $(document).ready(function() {
+        // 추가 JavaScript 코드가 필요한 경우 여기에 작성
+    });
+
+    // 이미지 클릭 핸들러
+    function handleImageClick(img) {
+        const url = img.getAttribute('data-action-url');
+        if (url) {
+            window.open(url, '_blank');
+        }
+    }
+</script>
+
+</body>
+</html>

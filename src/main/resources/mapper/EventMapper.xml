@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.IF_EventDao">
+
+    <!-- 이벤트 등록 -->
+    <insert id="insertEvent" parameterType="com.hollybam.hollybam.dto.EventDto"
+            useGeneratedKeys="true" keyProperty="eventCode">
+        INSERT INTO event (
+            event_title,
+            event_description,
+            event_start,
+            event_end,
+            thumbnail_url,
+            event_status
+        ) VALUES (
+                     #{eventTitle},
+                     #{eventDescription},
+                     #{eventStart},
+                     #{eventEnd},
+                     #{thumbnailUrl},
+                    #{eventStatus}
+                 )
+    </insert>
+
+    <!-- 이벤트 상세 등록 -->
+    <insert id="insertEventDetail" parameterType="com.hollybam.hollybam.dto.EventDetailDto"
+            useGeneratedKeys="true" keyProperty="eventDetailCode">
+        INSERT INTO event_detail (
+            event_code,
+            event_detail_content_img,
+            event_detail_action_url
+        ) VALUES (
+                     #{eventCode},
+                     #{eventDetailContentImg},
+                     #{eventDetailActionUrl}
+                 )
+    </insert>
+
+    <select id="selectVisibleEvents" resultType="com.hollybam.hollybam.dto.EventDto">
+        SELECT
+            event_code,
+            event_title,
+            event_description,
+            event_start,
+            event_end,
+            event_status,
+            thumbnail_url
+        FROM event
+        ORDER BY
+            CASE event_status
+                WHEN 'before' THEN 1
+                WHEN 'ing' THEN 2
+                WHEN 'end' THEN 3
+                ELSE 4
+                END,
+            event_start ASC
+    </select>
+
+
+
+    <update id="updateEventStatuses">
+        UPDATE event
+        SET event_status =
+                CASE
+                    WHEN CURDATE() &lt; event_start THEN 'before'
+                    WHEN CURDATE() BETWEEN event_start AND event_end THEN 'ing'
+                    WHEN CURDATE() &gt; event_end THEN 'end'
+                    ELSE event_status
+                    END
+    </update>
+
+    <!-- 이벤트 기본 정보 조회 -->
+    <select id="selectEventByCode" resultType="com.hollybam.hollybam.dto.EventDto">
+        SELECT
+            event_code,
+            event_title,
+            event_description,
+            event_start,
+            event_end,
+            event_status,
+            thumbnail_url,
+            created_at,
+            updated_at
+        FROM event
+        WHERE event_code = #{eventCode}
+    </select>
+
+    <!-- 이벤트 상세 정보 조회 -->
+    <select id="selectEventDetailByEventCode" resultType="com.hollybam.hollybam.dto.EventDetailDto">
+        SELECT
+            event_detail_code,
+            event_code,
+            event_detail_content_img,
+            event_detail_action_url,
+            created_at
+        FROM event_detail
+        WHERE event_code = #{eventCode}
+    </select>
+
+</mapper>

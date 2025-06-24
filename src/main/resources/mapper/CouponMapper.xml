@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.IF_CouponDao">
+
+    <insert id="insertCoupon" parameterType="com.hollybam.hollybam.dto.CouponDto" useGeneratedKeys="true" keyProperty="couponCode">
+        INSERT INTO coupon (
+            coupon_id,
+            coupon_name,
+            coupon_discription,
+            discount_type,
+            discount_value,
+            min_order_price,
+            max_discount,
+            issued_at,
+            expired_at,
+            is_auto_issue
+        ) VALUES (
+                     #{couponId},
+                     #{couponName},
+                     #{couponDiscription},
+                     #{discountType},
+                     #{discountValue},
+                     #{minOrderPrice},
+                     #{maxDiscount},
+                     #{issuedAt},
+                     #{expiredAt},
+                     #{isAutoIssue}
+                 )
+    </insert>
+
+    <select id="getUsePossibleCoupon" parameterType="int" resultType="com.hollybam.hollybam.dto.CouponDto">
+        SELECT
+            c.coupon_id as couponId,
+            c.discount_type as discountType,
+            c.discount_value as discountValue,
+            c.min_order_price as minOrderPrice,
+            c.coupon_name as couponName
+        FROM
+            coupon_member cm
+                JOIN
+            coupon c ON cm.coupon_code = c.coupon_code
+        WHERE
+            cm.mem_code = #{memberCode}
+          AND cm.used = 0
+          AND (c.expired_at IS NULL OR c.expired_at >= CURDATE())
+    </select>
+    
+</mapper>

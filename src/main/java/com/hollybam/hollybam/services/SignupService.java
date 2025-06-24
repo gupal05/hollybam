@@ -51,4 +51,20 @@ public class SignupService implements IF_SignupService{
     public void deleteGuestByUuid(String uuid){
         signupDao.deleteGuestByUuid(uuid);
     }
+
+    @Override
+    public int getMemberCode(String memberId){
+        return signupDao.getMemberCode(memberId);
+    }
+
+    @Override
+    public int getSignupCouponCode() {
+        return signupDao.getSignupCouponCode();
+    }
+
+    @Override
+    @Transactional
+    public void insertSignupCoupon(int memberCode, int signupCouponCode){
+        signupDao.insertSignupCoupon(memberCode, signupCouponCode);
+    }
 }

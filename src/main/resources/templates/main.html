@@ -395,6 +395,81 @@
             fill: #EE386D;
         }
 
+        /* 홀리밤 소식 섹션 - 원본 그대로 유지하고 반응형만 추가 */
+        .hollybam-news-section {
+            margin: 80px 0 60px 0;
+            position: relative;
+        }
+
+        .hollybam-news-section-title {
+            margin-bottom: 32px;
+            font-size: 26px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-align: left;
+            position: relative;
+            padding-left: 0;
+            letter-spacing: -0.4px;
+            line-height: 1.3;
+        }
+
+        .hollybam-news-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: #EE386D;
+            border-radius: 1px;
+        }
+
+        /* 기본 CSS는 JavaScript와 HTML에서 처리하므로 반응형만 추가 */
+
+        /* 비디오 모달 */
+        .video-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .video-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .video-close:hover {
+            opacity: 0.8;
+        }
+
+        #modalVideo {
+            width: 100%;
+            height: auto;
+        }
+
         /* 상품 카드 */
         .product-row {
             display: grid;
@@ -564,162 +639,1057 @@
             transition: opacity 0.4s ease-in-out;
         }
 
-        /* 반응형 */
+        /* 태블릿 (1200px 이하) */
         @media (max-width: 1200px) {
+            .content {
+                padding: 50px 24px 0;
+            }
+
+            .section-title {
+                font-size: 24px;
+                margin-bottom: 28px;
+            }
+
+            .product-row {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 18px;
+            }
+
             .review-card {
                 flex: 0 0 280px !important;
                 width: 280px !important;
                 height: 280px !important;
+                padding: 18px;
             }
-        }
 
-        @media (max-width: 1024px) {
+            .reviews-slider {
+                gap: 18px !important;
+            }
+
+            .category-section {
+                padding: 35px 24px;
+            }
+
+            .category-grid {
+                gap: 18px;
+                padding: 0 15px;
+            }
+
             .category-item {
-                min-width: 80px;
+                min-width: 85px;
             }
+
             .category-icon {
-                width: 65px;
-                height: 65px;
+                width: 70px;
+                height: 70px;
             }
+
             .category-icon i {
-                font-size: 26px;
+                font-size: 28px;
             }
+
             .category-label {
                 font-size: 13px;
             }
-            .category-grid {
-                gap: 15px;
+
+            .slide {
+                height: 400px;
             }
-            .product-row {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 15px;
+
+            .slide-nav {
+                width: 55px;
+                height: 110px;
+                font-size: 28px;
             }
-            .section-title {
+
+            .slide-nav i {
                 font-size: 24px;
-                margin-bottom: 24px;
+            }
+
+            /* 홀리밤 소식 반응형 - 모바일에서만 제목 중앙 정렬 */
+            .hollybam-news-section-title {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .hollybam-news-section-title::after {
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
 
-        @media (max-width: 900px) {
+        /* 태블릿 (1024px 이하) */
+        @media (max-width: 1024px) {
+            .content {
+                padding: 45px 20px 0;
+            }
+
+            .section-title {
+                font-size: 22px;
+                margin-bottom: 24px;
+            }
+
+            .best-reviews-section {
+                margin: 50px 0 !important;
+                padding: 35px 0 50px !important;
+            }
+
             .review-card {
                 flex: 0 0 260px !important;
                 width: 260px !important;
                 height: 260px !important;
+                padding: 16px;
             }
-        }
 
-        @media (max-width: 768px) {
-            .category-section {
-                padding: 30px 16px;
-                margin-top: 480px;
-            }
-            .category-grid {
-                gap: 12px;
-                padding: 0 5px;
-            }
-            .category-item {
-                min-width: 70px;
-            }
-            .category-icon {
+            .review-product-img {
                 width: 55px;
                 height: 55px;
             }
-            .category-icon img {
-                width: 28px;
-                height: 28px;
+
+            .review-product-name {
+                font-size: 13px;
             }
+
+            .review-content {
+                font-size: 12px;
+                -webkit-line-clamp: 4;
+            }
+
+            .category-section {
+                padding: 32px 20px;
+            }
+
+            .category-grid {
+                gap: 16px;
+                padding: 0 12px;
+            }
+
+            .category-item {
+                min-width: 80px;
+            }
+
+            .category-icon {
+                width: 65px;
+                height: 65px;
+            }
+
             .category-icon i {
-                font-size: 22px;
+                font-size: 26px;
             }
+
             .category-label {
                 font-size: 12px;
             }
-            .content {
-                padding: 40px 16px 0;
+
+            .slide {
+                height: 350px;
             }
-            .product-row {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
+
+            .dots {
+                bottom: 15px;
+                gap: 8px;
             }
-            .section-title {
+
+            .dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .dot.active {
+                width: 25px;
+            }
+
+            .hollybam-news-section-title {
                 font-size: 22px;
+            }
+        }
+
+        /* 모바일 가로 (900px 이하) */
+        @media (max-width: 900px) {
+            .content {
+                padding: 40px 18px 0;
+            }
+
+            .section-title {
+                font-size: 20px;
                 margin-bottom: 20px;
             }
+
+            .product-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .card-product-title {
+                font-size: 13px;
+                min-height: 34px;
+            }
+
+            .sale_price {
+                font-size: 15px;
+            }
+
+            .card-product-description {
+                font-size: 11px;
+            }
+
+            .product_review_container {
+                font-size: 10px;
+            }
+
+            .review-card {
+                flex: 0 0 240px !important;
+                width: 240px !important;
+                height: 240px !important;
+                padding: 14px;
+            }
+
+            .category-section {
+                padding: 28px 18px;
+                margin-top: 50px;
+            }
+
+            .category-grid {
+                gap: 14px;
+                padding: 0 8px;
+            }
+
+            .category-item {
+                min-width: 75px;
+            }
+
+            .category-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .category-icon i {
+                font-size: 24px;
+            }
+
+            .category-label {
+                font-size: 11px;
+            }
+
+            .slide {
+                height: 320px;
+            }
+
             .slide-nav {
                 width: 50px;
                 height: 100px;
                 font-size: 24px;
             }
+
             .slide-nav i {
                 font-size: 20px;
             }
-            .review-card {
-                flex: 0 0 240px !important;
-                width: 240px !important;
-                height: 240px !important;
+
+            .hollybam-news-section-title {
+                font-size: 20px;
+                text-align: center;
             }
-            .review-product-img {
-                width: 50px;
-                height: 50px;
-            }
-            .best-reviews-section {
-                margin: 80px 0;
-                padding: 30px 0;
+
+            .hollybam-news-section-title::after {
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
 
-        @media (max-width: 480px) {
-            .category-grid {
-                gap: 8px;
-                padding: 0;
-            }
-            .category-item {
-                min-width: 60px;
-            }
-            .category-icon {
-                width: 48px;
-                height: 48px;
-            }
-            .category-icon img {
-                width: 25px;
-                height: 25px;
-            }
-            .category-icon i {
-                font-size: 20px;
-            }
-            .category-label {
-                font-size: 11px;
-            }
-            .category-badge {
-                font-size: 9px;
-                padding: 1px 4px;
-            }
-            .product-row {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
+        /* 모바일 세로 (768px 이하) */
+        @media (max-width: 768px) {
             .content {
-                padding: 30px 12px 0;
+                padding: 35px 16px 0;
             }
+
             .section-title {
-                font-size: 20px;
-                margin-bottom: 16px;
+                font-size: 19px;
+                margin-bottom: 18px;
+                text-align: center;
             }
+
+            .section-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+                width: 35px;
+            }
+
+            .best-reviews-section {
+                margin: 45px 0 !important;
+                padding: 30px 0 45px !important;
+            }
+
             .review-card {
-                flex: 0 0 calc(50% - 10px);
-                width: calc(50% - 10px);
-                height: calc(50vw - 25px);
-                max-height: 280px;
-                min-height: 220px;
-                padding: 16px;
+                flex: 0 0 calc(50% - 10px) !important;
+                width: calc(50% - 10px) !important;
+                height: 240px !important;
+                padding: 12px;
+                box-sizing: border-box;
             }
+
+            .reviews-slider {
+                gap: 12px !important;
+            }
+
             .review-product-img {
                 width: 45px;
                 height: 45px;
             }
+
+            .review-product-name {
+                font-size: 12px;
+            }
+
+            .review-content {
+                font-size: 11px;
+                -webkit-line-clamp: 3;
+            }
+
+            .review-author {
+                font-size: 11px;
+            }
+
+            .review-age,
+            .review-date {
+                font-size: 10px;
+            }
+
+            .category-section {
+                padding: 25px 16px;
+                margin-top: 45px;
+            }
+
+            .category-grid {
+                gap: 12px;
+                padding: 0 5px;
+                justify-content: flex-start;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            .category-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            .category-item {
+                min-width: 70px;
+                scroll-snap-align: start;
+            }
+
+            .category-icon {
+                width: 55px;
+                height: 55px;
+            }
+
+            .category-icon img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .category-icon i {
+                font-size: 22px;
+            }
+
+            .category-label {
+                font-size: 11px;
+                white-space: nowrap;
+            }
+
+            .category-badge {
+                font-size: 9px;
+                padding: 1px 4px;
+            }
+
+            .slide {
+                height: 280px;
+            }
+
+            .slide-nav {
+                display: none;
+            }
+
+            .dots {
+                bottom: 12px;
+                gap: 6px;
+            }
+
+            .dot {
+                width: 8px;
+                height: 8px;
+            }
+
+            .dot.active {
+                width: 20px;
+            }
+
+            .card-product-title {
+                font-size: 12px;
+                min-height: 32px;
+            }
+
+            .sale_price {
+                font-size: 14px;
+            }
+
+            .card-product-price {
+                gap: 6px;
+            }
+
+            .sale-perc {
+                font-size: 11px;
+                padding: 2px 5px;
+            }
+
+            .regular_price {
+                font-size: 11px;
+            }
+
+            .card-product-description {
+                font-size: 10px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .card-product-img {
+                border-radius: 16px;
+            }
+
+            .card-product-top-text {
+                font-size: 11px;
+                padding: 4px 8px;
+                border-radius: 12px;
+            }
+
+            .wishlist-wrap {
+                top: 8px;
+                right: 8px;
+            }
+
+            .wishlist-button {
+                padding: 6px;
+            }
+
+            .heart-empty {
+                width: 18px;
+                height: 18px;
+            }
+
+            /* 홀리밤 소식 - 모바일 세로 */
+            .hollybam-news-section {
+                margin: 45px 0 45px 0;
+            }
+
+            .hollybam-news-section-title {
+                font-size: 19px;
+                margin-bottom: 18px;
+                text-align: center;
+            }
+
+            .hollybam-news-section-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+                width: 35px;
+            }
+        }
+
+        /* 모바일 세로 소형 (600px 이하) */
+        @media (max-width: 600px) {
+            .content {
+                padding: 30px 14px 0;
+            }
+
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 16px;
+            }
+
+            .section-title::after {
+                width: 30px;
+            }
+
+            .product-row {
+                gap: 14px;
+            }
+
+            .review-card {
+                flex: 0 0 calc(50% - 8px) !important;
+                width: calc(50% - 8px) !important;
+                height: 220px !important;
+                padding: 10px;
+            }
+
+            .reviews-slider {
+                gap: 10px !important;
+            }
+
+            .review-product-img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .review-header {
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .review-product-name {
+                font-size: 11px;
+            }
+
+            .review-content {
+                font-size: 10px;
+                margin-bottom: 12px;
+                -webkit-line-clamp: 3;
+            }
+
+            .review-footer {
+                padding-top: 12px;
+            }
+
+            .review-author {
+                font-size: 10px;
+            }
+
+            .review-age,
+            .review-date {
+                font-size: 9px;
+            }
+
+            .review-likes {
+                font-size: 10px;
+            }
+
+            .like-icon {
+                width: 12px;
+                height: 12px;
+            }
+
+            .category-section {
+                padding: 22px 14px;
+                margin-top: 40px;
+            }
+
+            .category-grid {
+                gap: 10px;
+                padding: 0 3px;
+            }
+
+            .category-item {
+                min-width: 65px;
+            }
+
+            .category-icon {
+                width: 50px;
+                height: 50px;
+            }
+
+            .category-icon img {
+                width: 25px;
+                height: 25px;
+            }
+
+            .category-icon i {
+                font-size: 20px;
+            }
+
+            .category-label {
+                font-size: 10px;
+            }
+
+            .slide {
+                height: 250px;
+            }
+
+            .card-product-title {
+                font-size: 11px;
+                min-height: 30px;
+            }
+
+            .sale_price {
+                font-size: 13px;
+            }
+
+            .card-product-description {
+                font-size: 9px;
+                -webkit-line-clamp: 1;
+            }
+
+            .product_review_container {
+                font-size: 9px;
+            }
+
+            .heart-icon, .star-icon {
+                width: 10px;
+                height: 10px;
+            }
+
+            /* 홀리밤 소식 - 모바일 소형 */
+            .hollybam-news-section-title {
+                font-size: 18px;
+                margin-bottom: 16px;
+            }
+
+            .hollybam-news-section-title::after {
+                width: 30px;
+            }
+        }
+
+        /* 모바일 세로 극소형 (480px 이하) */
+        @media (max-width: 480px) {
+            .content {
+                padding: 25px 12px 0;
+            }
+
+            .section-title {
+                font-size: 17px;
+                margin-bottom: 14px;
+            }
+
+            .section-title::after {
+                width: 25px;
+                height: 2px;
+            }
+
             .best-reviews-section {
-                margin: 60px 0;
-                padding: 24px 0;
+                margin: 35px 0 !important;
+                padding: 25px 0 35px !important;
+            }
+
+            .review-card {
+                flex: 0 0 calc(50% - 6px) !important;
+                width: calc(50% - 6px) !important;
+                height: 200px !important;
+                padding: 8px;
+                border-radius: 12px;
+            }
+
+            .reviews-slider {
+                gap: 8px !important;
+            }
+
+            .review-product-img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .review-header {
+                gap: 8px;
+                margin-bottom: 10px;
+            }
+
+            .review-product-name {
+                font-size: 10px;
+                margin-bottom: 2px;
+            }
+
+            .review-rating {
+                gap: 3px;
+            }
+
+            .star {
+                width: 12px;
+                height: 12px;
+            }
+
+            .rating-text {
+                font-size: 10px;
+                margin-left: 2px;
+            }
+
+            .review-content {
+                font-size: 9px;
+                margin-bottom: 10px;
+                line-height: 1.4;
+                -webkit-line-clamp: 2;
+            }
+
+            .review-footer {
+                padding-top: 10px;
+            }
+
+            .review-author-info {
+                gap: 6px;
+            }
+
+            .review-author {
+                font-size: 9px;
+            }
+
+            .review-age,
+            .review-date {
+                font-size: 8px;
+            }
+
+            .review-likes {
+                font-size: 9px;
+                gap: 3px;
+            }
+
+            .like-icon {
+                width: 11px;
+                height: 11px;
+            }
+
+            .category-section {
+                padding: 20px 12px;
+                margin-top: 35px;
+            }
+
+            .category-grid {
+                gap: 8px;
+                padding: 0;
+            }
+
+            .category-item {
+                min-width: 60px;
+            }
+
+            .category-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .category-icon img {
+                width: 24px;
+                height: 24px;
+            }
+
+            .category-icon i {
+                font-size: 18px;
+            }
+
+            .category-label {
+                font-size: 9px;
+            }
+
+            .category-badge {
+                font-size: 8px;
+                padding: 1px 3px;
+            }
+
+            .slide {
+                height: 220px;
+            }
+
+            .product-row {
+                gap: 12px;
+            }
+
+            .card-product-title {
+                font-size: 10px;
+                min-height: 28px;
+                font-weight: 500;
+            }
+
+            .sale_price {
+                font-size: 12px;
+            }
+
+            .regular_price {
+                font-size: 10px;
+            }
+
+            .card-product-price {
+                gap: 4px;
+                margin-bottom: 3px;
+            }
+
+            .sale-perc {
+                font-size: 10px;
+                padding: 1px 4px;
+            }
+
+            .card-product-description {
+                font-size: 8px;
+                margin-bottom: 4px;
+                -webkit-line-clamp: 1;
+            }
+
+            .product_review_container {
+                font-size: 8px;
+                gap: 3px;
+            }
+
+            .heart-icon, .star-icon {
+                width: 9px;
+                height: 9px;
+            }
+
+            .card-product-img {
+                border-radius: 14px;
+                margin-bottom: 8px;
+            }
+
+            .card-product-top-text {
+                font-size: 9px;
+                padding: 3px 6px;
+                border-radius: 10px;
+                top: 6px;
+                left: 6px;
+            }
+
+            .wishlist-wrap {
+                top: 6px;
+                right: 6px;
+            }
+
+            .wishlist-button {
+                padding: 4px;
+            }
+
+            .heart-empty {
+                width: 16px;
+                height: 16px;
+            }
+
+            .dots {
+                bottom: 10px;
+                gap: 5px;
+            }
+
+            .dot {
+                width: 6px;
+                height: 6px;
+            }
+
+            .dot.active {
+                width: 18px;
+            }
+
+            /* 홀리밤 소식 - 모바일 극소형 */
+            .hollybam-news-section {
+                margin: 35px 0 35px 0;
+            }
+
+            .hollybam-news-section-title {
+                font-size: 17px;
+                margin-bottom: 14px;
+            }
+
+            .hollybam-news-section-title::after {
+                width: 25px;
+            }
+
+            /* 비디오 모달 - 모바일 극소형 */
+            .video-modal-content {
+                width: 95%;
+                max-width: none;
+            }
+
+            .video-close {
+                top: 5px;
+                right: 10px;
+                font-size: 24px;
+            }
+        }
+
+        /* 모바일 세로 초소형 (360px 이하) */
+        @media (max-width: 360px) {
+            .content {
+                padding: 20px 10px 0;
+            }
+
+            .section-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+
+            .section-title::after {
+                width: 22px;
+            }
+
+            .product-row {
+                gap: 10px;
+            }
+
+            .card-product-title {
+                font-size: 9px;
+                min-height: 26px;
+            }
+
+            .sale_price {
+                font-size: 11px;
+            }
+
+            .regular_price {
+                font-size: 9px;
+            }
+
+            .card-product-description {
+                font-size: 7px;
+            }
+
+            .product_review_container {
+                font-size: 7px;
+            }
+
+            .heart-icon, .star-icon {
+                width: 8px;
+                height: 8px;
+            }
+
+            .category-section {
+                padding: 18px 10px;
+                margin-top: 30px;
+            }
+
+            .category-grid {
+                gap: 6px;
+            }
+
+            .category-item {
+                min-width: 55px;
+            }
+
+            .category-icon {
+                width: 45px;
+                height: 45px;
+            }
+
+            .category-icon img {
+                width: 22px;
+                height: 22px;
+            }
+
+            .category-icon i {
+                font-size: 16px;
+            }
+
+            .category-label {
+                font-size: 8px;
+            }
+
+            .slide {
+                height: 200px;
+            }
+
+            .review-card {
+                flex: 0 0 calc(50% - 5px) !important;
+                width: calc(50% - 5px) !important;
+                height: 180px !important;
+                padding: 6px;
+                border-radius: 10px;
+            }
+
+            .reviews-slider {
+                gap: 6px !important;
+            }
+
+            .review-product-img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .review-header {
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+
+            .review-product-name {
+                font-size: 9px;
+                margin-bottom: 1px;
+            }
+
+            .review-rating {
+                gap: 2px;
+            }
+
+            .star {
+                width: 10px;
+                height: 10px;
+            }
+
+            .rating-text {
+                font-size: 8px;
+                margin-left: 1px;
+            }
+
+            .review-content {
+                font-size: 8px;
+                margin-bottom: 8px;
+                line-height: 1.3;
+                -webkit-line-clamp: 2;
+            }
+
+            .review-footer {
+                padding-top: 8px;
+            }
+
+            .review-author-info {
+                gap: 4px;
+            }
+
+            .review-author {
+                font-size: 8px;
+            }
+
+            .review-age,
+            .review-date {
+                font-size: 7px;
+            }
+
+            .review-likes {
+                font-size: 8px;
+                gap: 2px;
+            }
+
+            .like-icon {
+                width: 10px;
+                height: 10px;
+            }
+
+            .best-reviews-section {
+                margin: 30px 0 !important;
+                padding: 20px 0 30px !important;
+            }
+
+            /* 홀리밤 소식 - 모바일 초소형 */
+            .hollybam-news-section {
+                margin: 30px 0 30px 0;
+            }
+
+            .hollybam-news-section-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+
+            .hollybam-news-section-title::after {
+                width: 22px;
+            }
+        }
+
+        /* iPhone 14 Pro (393px) 특별 최적화 */
+        @media (max-width: 393px) and (min-width: 375px) {
+            .review-card {
+                flex: 0 0 calc(50% - 6px) !important;
+                width: calc(50% - 6px) !important;
+                height: 190px !important;
+                padding: 7px;
+            }
+
+            .review-product-img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .review-product-name {
+                font-size: 9px;
+            }
+
+            .review-content {
+                font-size: 8px;
+                -webkit-line-clamp: 2;
+            }
+
+            /* 홀리밤 소식 - iPhone 14 Pro */
+            .hollybam-news-section-title {
+                font-size: 16px;
             }
         }
     </style>
@@ -1035,7 +2005,7 @@
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 룩북</h3>
-                            <p class="news-description">홀리밤 모델 코스프레 룩북 활영</p>
+                            <p class="news-description">모델 코스프레 룩북 활영</p>
                         </div>
                     </div>
                     <div class="news-card" th:data-video="@{/mp4/ttt.mp4}">
@@ -1044,7 +2014,7 @@
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 행사</h3>
-                            <p class="news-description">홀리밤 강남 클럽 레이스 스폰서 참여</p>
+                            <p class="news-description">강남 클럽 레이스 스폰서 참여</p>
                         </div>
                     </div>
                     <div class="news-card" th:data-video="@{/mp4/에리2 1부 SV1.mp4}">
@@ -1053,7 +2023,7 @@
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 with MIB</h3>
-                            <p class="news-description">MIB(배우 에리) 10종 딜도 협찬</p>
+                            <p class="news-description">MIB(에리편 촬영) 10종 딜도 협찬</p>
                         </div>
                     </div>
                     <div class="news-card">
@@ -1062,7 +2032,7 @@
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 행사</h3>
-                            <p class="news-description">홀리밤 이태원 하이브 클럽 스폰서 참여</p>
+                            <p class="news-description">이태원 하이브 클럽 스폰서 참여</p>
                         </div>
                     </div>
                 </div>
@@ -1154,8 +2124,23 @@
 
     // 카테고리 클릭 이벤트
     $('.category-item').on('click', function() {
-        const categoryName = $(this).find('.category-label').text();
+        const categoryName = $(this).find('.category-label').text().trim();
         console.log('카테고리 클릭:', categoryName);
+
+        // 홀리밤 소식 클릭 시에만 스크롤
+        if (categoryName === '홀리밤 소식') {
+            const targetElement = document.querySelector('.hollybam-news-section');
+            if (targetElement) {
+                const headerOffset = 100; // 헤더 높이 고려
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
     });
 
     // 상품 이미지 호버 효과

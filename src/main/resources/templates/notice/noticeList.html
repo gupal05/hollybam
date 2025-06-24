@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>홀리밤 - 공지사항</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>공지사항 - 홀리밤</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
-    <link th:href="@{/css/header.css}" rel="stylesheet"/>
-    <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/footer.css}"/>
     <script type="text/javascript" th:src="@{/js/header.js}"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         * { box-sizing: border-box; }
 
@@ -18,13 +21,20 @@
             font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #ffffff;
             line-height: 1.6;
-            padding-top: 80px;
         }
 
-        .container {
+        /* 메인 콘텐츠 */
+        .content {
+            min-height: 800px;
+            display: flex;
+            justify-content: center;
+            padding: 120px 20px 60px;
+        }
+        .inner-box {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
             max-width: 1280px;
-            margin: 0 auto;
-            padding: 40px 20px;
         }
 
         /* 페이지 헤더 */
@@ -34,409 +44,660 @@
         }
 
         .page-title {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 700;
             color: #1a1a1a;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
         .page-subtitle {
             font-size: 16px;
-            color: #666;
+            color: #666666;
+            font-weight: 400;
         }
 
-        /* 중요공지 섹션 */
-        .important-notices {
-            background: linear-gradient(135deg, #EE386D, #ff4081);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 40px;
-            color: white;
+        /* 검색 및 필터 */
+        .notice-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
         }
 
-        .important-title {
+        .notice-search {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
+            gap: 12px;
+            flex: 1;
+            max-width: 400px;
         }
 
-        .important-icon {
-            font-size: 24px;
-            color: #FFD700;
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
         }
 
-        .important-list {
+        .search-input:focus {
+            outline: none;
+            border-color: #EE386D;
+        }
+
+        .search-btn {
+            background: #EE386D;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
         }
 
-        .important-item {
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 15px 20px;
-            backdrop-filter: blur(10px);
+        .search-btn:hover {
+            background: #d63056;
+        }
+
+        .notice-filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666666;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .important-item:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-        }
-
-        .important-item a {
+        .filter-btn:hover, .filter-btn.active {
+            background: #EE386D;
+            border-color: #EE386D;
             color: white;
-            text-decoration: none;
-            display: block;
         }
 
-        .important-item-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .important-item-date {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        /* 공지사항 목록 */
-        .notice-section {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        /* 공지사항 리스트 */
+        .notice-list {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             overflow: hidden;
+            margin-bottom: 40px;
         }
 
-        .section-header {
-            background: #f8f9fa;
-            padding: 25px 30px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin: 0;
-        }
-
-        .notice-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .notice-table th {
-            background: #f8f9fa;
-            padding: 20px 30px;
-            text-align: left;
-            font-weight: 600;
-            color: #333;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .notice-table th.title {
-            width: 50%;
-        }
-
-        .notice-table th.author {
-            width: 15%;
-            text-align: center;
-        }
-
-        .notice-table th.date {
-            width: 20%;
-            text-align: center;
-        }
-
-        .notice-table th.status {
-            width: 15%;
-            text-align: center;
-        }
-
-        .notice-table td {
-            padding: 20px 30px;
+        .notice-item {
+            padding: 24px;
             border-bottom: 1px solid #f0f0f0;
-            vertical-align: middle;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            position: relative;
         }
 
-        .notice-table tbody tr:hover {
-            background: #f8f9fa;
+        .notice-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(4px);
+        }
+
+        .notice-item:last-child {
+            border-bottom: none;
+        }
+
+        .notice-badge {
+            background: #EE386D;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .notice-badge.important {
+            background: #ff4757;
+            animation: pulse 2s infinite;
+        }
+
+        .notice-badge.event {
+            background: #5f27cd;
+        }
+
+        .notice-badge.update {
+            background: #00d2d3;
+        }
+
+        .notice-badge.general {
+            background: #EE386D;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .notice-content {
+            flex: 1;
+            min-width: 0;
         }
 
         .notice-title {
-            font-weight: 500;
-            color: #333;
-            text-decoration: none;
-            display: block;
-            transition: color 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            word-break: break-word;
         }
 
-        .notice-title:hover {
-            color: #EE386D;
+        .notice-preview {
+            font-size: 14px;
+            color: #666666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .important-badge {
-            display: inline-block;
-            background: #EE386D;
-            color: white;
+        .notice-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
             font-size: 12px;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: 6px;
-            margin-right: 8px;
+            color: #888888;
         }
 
-        .notice-author,
         .notice-date {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        .status-active {
-            color: #28a745;
-            font-weight: 600;
+        .notice-views {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        .status-inactive {
-            color: #dc3545;
-            font-weight: 600;
+        .notice-icon {
+            color: #EE386D;
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
         }
 
-        /* 빈 목록 */
-        .empty-notice {
-            text-align: center;
-            padding: 80px 20px;
-            color: #666;
+        /* 고정 공지사항 */
+        .pinned-notices {
+            margin-bottom: 30px;
         }
 
-        .empty-icon {
-            font-size: 64px;
-            color: #ddd;
-            margin-bottom: 20px;
+        .pinned-notice {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            padding: 20px 24px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
 
-        .empty-title {
+        .pinned-notice:hover {
+            transform: translateY(-2px);
+        }
+
+        .pinned-notice::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .pinned-notice-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pinned-icon {
             font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #444;
+            animation: bounce 2s infinite;
         }
 
-        .empty-desc {
-            font-size: 14px;
-            color: #888;
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-4px); }
+            60% { transform: translateY(-2px); }
+        }
+
+        .pinned-title {
+            font-size: 16px;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .pinned-date {
+            font-size: 12px;
+            opacity: 0.9;
         }
 
         /* 페이지네이션 */
-        .pagination {
+        .pagination-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 10px;
             margin-top: 40px;
         }
 
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .page-btn {
-            padding: 10px 15px;
-            border: 1px solid #e0e0e0;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e0e0e0;
             background: white;
-            color: #666;
-            text-decoration: none;
-            border-radius: 8px;
+            color: #666666;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
 
-        .page-btn:hover {
+        .page-btn:hover, .page-btn.active {
+            border-color: #EE386D;
             background: #EE386D;
             color: white;
-            border-color: #EE386D;
         }
 
-        .page-btn.active {
-            background: #EE386D;
-            color: white;
-            border-color: #EE386D;
-        }
-
-        .page-btn.disabled {
-            opacity: 0.5;
+        .page-btn:disabled {
+            background: #f8f9fa;
+            color: #cccccc;
+            border-color: #e9ecef;
             cursor: not-allowed;
         }
 
-        .page-btn.disabled:hover {
-            background: white;
-            color: #666;
-            border-color: #e0e0e0;
+        /* 상단 이동 버튼 */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #EE386D;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(238, 56, 109, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .scroll-top:hover {
+            background: #d63056;
+            transform: translateY(-2px);
+        }
+
+        .scroll-top.visible {
+            display: flex;
         }
 
         /* 반응형 */
+        @media (max-width: 1024px) {
+            .notice-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .notice-search {
+                max-width: none;
+            }
+
+            .notice-filters {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
         @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
+            .content {
+                padding: 100px 16px 40px;
             }
 
             .page-title {
                 font-size: 28px;
             }
 
-            .important-notices {
-                padding: 20px;
+            .notice-item {
+                padding: 20px 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
             }
 
-            .notice-table th,
-            .notice-table td {
-                padding: 15px 20px;
+            .notice-badge {
+                align-self: flex-start;
             }
 
-            .notice-table th.author,
-            .notice-table th.status {
-                display: none;
+            .notice-meta {
+                flex-wrap: wrap;
             }
 
-            .notice-table td.author,
-            .notice-table td.status {
-                display: none;
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 13px;
             }
 
-            .notice-table th.title {
-                width: 70%;
-            }
-
-            .notice-table th.date {
-                width: 30%;
+            .scroll-top {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
             }
         }
 
         @media (max-width: 480px) {
-            .section-header {
-                padding: 20px;
+            .notice-search {
+                flex-direction: column;
+                gap: 8px;
             }
 
-            .notice-table th,
-            .notice-table td {
-                padding: 12px 16px;
+            .search-input, .search-btn {
+                width: 100%;
+                border-radius: 8px;
             }
 
-            .pagination {
-                gap: 5px;
+            .pinned-notice {
+                padding: 16px;
             }
 
-            .page-btn {
-                padding: 8px 12px;
-                font-size: 14px;
+            .notice-item {
+                padding: 16px 12px;
+            }
+
+            .page-title {
+                font-size: 24px;
             }
         }
 
-        .notice-table td.status {
+        /* 빈 목록 스타일 */
+        .empty-notice {
             text-align: center;
+            padding: 60px 20px;
+            color: #888888;
+        }
+
+        .empty-notice i {
+            font-size: 48px;
+            color: #cccccc;
+            margin-bottom: 16px;
+        }
+
+        .empty-notice h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #666666;
+        }
+
+        .empty-notice p {
+            font-size: 14px;
+            color: #888888;
         }
     </style>
 </head>
 <body>
-
-<!-- 헤더 -->
+<!-- 고정 헤더 -->
 <div th:replace="~{layout/header :: header}"></div>
 
-<div class="container">
-    <!-- 페이지 헤더 -->
-    <div class="page-header">
-        <h1 class="page-title">공지사항</h1>
-        <p class="page-subtitle">홀리밤의 새로운 소식과 중요한 안내사항을 확인하세요</p>
-    </div>
-
-    <!-- 중요공지 섹션 -->
-    <div class="important-notices" th:if="${importantNotices != null and !importantNotices.isEmpty()}">
-        <div class="important-title">
-            <i class="fas fa-star important-icon"></i>
-            <span>중요공지</span>
+<!-- 메인 콘텐츠 -->
+<div class="content">
+    <div class="inner-box">
+        <!-- 페이지 헤더 -->
+        <div class="page-header">
+            <h1 class="page-title">공지사항</h1>
+            <p class="page-subtitle">홀리밤의 새로운 소식과 중요한 안내사항을 확인하세요</p>
         </div>
-        <div class="important-list">
-            <div class="important-item" th:each="notice : ${importantNotices}">
-                <a th:href="@{/notice/detail/{noticeCode}(noticeCode=${notice.noticeCode})}">
-                    <div class="important-item-title" th:text="${notice.noticeTitle}">중요한 공지사항입니다</div>
-                    <div class="important-item-date" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">2024.12.20</div>
-                </a>
+
+        <!-- 검색 및 필터 -->
+        <div class="notice-controls">
+            <div class="notice-search">
+                <input type="text" class="search-input" placeholder="공지사항 검색..." th:value="${param.search}">
+                <button class="search-btn">
+                    <i class="fas fa-search"></i>
+                    검색
+                </button>
+            </div>
+            <div class="notice-filters">
+                <button class="filter-btn active" data-filter="all">전체</button>
+                <button class="filter-btn" data-filter="important">중요</button>
+                <button class="filter-btn" data-filter="general">일반</button>
             </div>
         </div>
-    </div>
 
-    <!-- 공지사항 목록 섹션 -->
-    <div class="notice-section">
-        <div class="section-header">
-            <h2 class="section-title">전체 공지사항</h2>
+        <!-- 고정 공지사항 (중요 공지만 표시) -->
+        <div class="pinned-notices" th:if="${importantNotices != null and !importantNotices.isEmpty()}">
+            <div class="pinned-notice" th:each="notice : ${importantNotices}"
+                 th:onclick="|location.href='/notice/detail/' + ${notice.noticeCode}|">
+                <div class="pinned-notice-content">
+                    <i class="fas fa-thumbtack pinned-icon"></i>
+                    <div class="pinned-title" th:text="${notice.noticeTitle}">중요 공지 제목</div>
+                    <div class="pinned-date" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">2025.06.20</div>
+                </div>
+            </div>
         </div>
 
-        <!-- 공지사항이 있는 경우 -->
-        <div th:if="${noticeList != null and !noticeList.isEmpty()}">
-            <table class="notice-table">
-                <thead>
-                <tr>
-                    <th class="title">제목</th>
-                    <th class="author">작성자</th>
-                    <th class="date">작성일</th>
-                    <th class="status">상태</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="notice : ${noticeList}">
-                    <td class="title">
-                        <a th:href="@{/notice/detail/{noticeCode}(noticeCode=${notice.noticeCode})}" class="notice-title">
-                            <span th:if="${notice.isImportant}" class="important-badge">중요</span>
-                            <span th:text="${notice.noticeTitle}">공지사항 제목</span>
-                        </a>
-                    </td>
-                    <td class="author notice-author" th:text="${notice.adminName}">관리자</td>
-                    <td class="date notice-date" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">2024.12.20</td>
-                    <td class="status">
-                            <span th:class="${notice.isActive} ? 'status-active' : 'status-inactive'"
-                                  th:text="${notice.isActive} ? '활성' : '비활성'">활성</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <!-- 공지사항 리스트 -->
+        <div class="notice-list" th:if="${noticeList != null and !noticeList.isEmpty()}">
+            <div class="notice-item" th:each="notice : ${noticeList}"
+                 th:data-category="${notice.isImportant ? 'important' : 'general'}"
+                 th:onclick="|location.href='/notice/detail/' + ${notice.noticeCode}|">
+
+                <!-- 카테고리 배지 -->
+                <div class="notice-badge"
+                     th:classappend="${notice.isImportant ? 'important' : 'general'}"
+                     th:text="${notice.isImportant ? '중요' : '공지'}">공지</div>
+
+                <div class="notice-content">
+                    <div class="notice-title" th:text="${notice.noticeTitle}">공지사항 제목</div>
+                    <div class="notice-preview" th:text="${notice.noticeContent != null ? (notice.noticeContent.length() > 100 ? notice.noticeContent.substring(0, 100) + '...' : notice.noticeContent) : ''}">
+                        공지사항 미리보기 내용입니다.
+                    </div>
+                    <div class="notice-meta">
+                        <div class="notice-date">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">2025.06.20</span>
+                        </div>
+                        <div class="notice-views">
+                            <i class="fas fa-user"></i>
+                            <span th:text="${notice.adminName}">작성자</span>
+                        </div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right notice-icon"></i>
+            </div>
         </div>
 
-        <!-- 공지사항이 없는 경우 -->
+        <!-- 빈 목록 메시지 -->
         <div class="empty-notice" th:if="${noticeList == null or noticeList.isEmpty()}">
-            <div class="empty-icon">
-                <i class="fas fa-bullhorn"></i>
-            </div>
-            <div class="empty-title">등록된 공지사항이 없습니다</div>
-            <div class="empty-desc">새로운 공지사항이 등록되면 여기에 표시됩니다.</div>
+            <i class="fas fa-clipboard-list"></i>
+            <h3>등록된 공지사항이 없습니다</h3>
+            <p>새로운 공지사항이 등록되면 이곳에 표시됩니다.</p>
         </div>
-    </div>
 
-    <!-- 페이지네이션 -->
-    <div class="pagination" th:if="${totalPages > 1}">
-        <!-- 이전 페이지 -->
-        <a th:href="@{/notice/list(page=${currentPage - 1}, size=${pageSize})}"
-           th:class="${currentPage <= 1} ? 'page-btn disabled' : 'page-btn'"
-           th:if="${currentPage > 1}">
-            <i class="fas fa-chevron-left"></i>
-        </a>
+        <!-- 페이지네이션 -->
+        <div class="pagination-container" th:if="${totalPages > 1}">
+            <div class="pagination">
+                <!-- 이전 페이지 -->
+                <a class="page-btn" th:if="${currentPage > 1}"
+                   th:href="@{/notice/list(page=${currentPage - 1}, size=${pageSize})}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <span class="page-btn" th:if="${currentPage == 1}" style="cursor: not-allowed; opacity: 0.5;">
+                    <i class="fas fa-chevron-left"></i>
+                </span>
 
-        <!-- 페이지 번호들 -->
-        <a th:each="page : ${#numbers.sequence(T(java.lang.Math).max(1, currentPage - 2), T(java.lang.Math).min(totalPages, currentPage + 2))}"
-           th:href="@{/notice/list(page=${page}, size=${pageSize})}"
-           th:class="${page == currentPage} ? 'page-btn active' : 'page-btn'"
-           th:text="${page}">1</a>
+                <!-- 페이지 번호들 -->
+                <th:block th:with="startPage=${currentPage - 2 < 1 ? 1 : currentPage - 2},
+                                  endPage=${currentPage + 2 > totalPages ? totalPages : currentPage + 2}">
+                    <a class="page-btn"
+                       th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                       th:href="@{/notice/list(page=${page}, size=${pageSize})}"
+                       th:text="${page}"
+                       th:classappend="${page == currentPage ? 'active' : ''}">1</a>
+                </th:block>
 
-        <!-- 다음 페이지 -->
-        <a th:href="@{/notice/list(page=${currentPage + 1}, size=${pageSize})}"
-           th:class="${currentPage >= totalPages} ? 'page-btn disabled' : 'page-btn'"
-           th:if="${currentPage < totalPages}">
-            <i class="fas fa-chevron-right"></i>
-        </a>
+                <!-- 다음 페이지 -->
+                <a class="page-btn" th:if="${currentPage < totalPages}"
+                   th:href="@{/notice/list(page=${currentPage + 1}, size=${pageSize})}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <span class="page-btn" th:if="${currentPage == totalPages}" style="cursor: not-allowed; opacity: 0.5;">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- 상단 이동 버튼 -->
+<button class="scroll-top" id="scrollTop">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
 <!-- 푸터 -->
 <div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    $(document).ready(function() {
+        // 필터 기능
+        $('.filter-btn').on('click', function() {
+            const filter = $(this).data('filter');
+
+            // 필터 버튼 활성화 상태 변경
+            $('.filter-btn').removeClass('active');
+            $(this).addClass('active');
+
+            // 공지사항 아이템 필터링
+            if (filter === 'all') {
+                $('.notice-item').show();
+            } else {
+                $('.notice-item').hide();
+                $(`.notice-item[data-category="${filter}"]`).show();
+            }
+        });
+
+        // 검색 기능
+        $('.search-btn').on('click', function() {
+            performSearch();
+        });
+
+        // 엔터 키로 검색
+        $('.search-input').on('keypress', function(e) {
+            if (e.which === 13) {
+                performSearch();
+            }
+        });
+
+        // 검색 수행 함수
+        function performSearch() {
+            const searchTerm = $('.search-input').val().toLowerCase().trim();
+
+            if (searchTerm === '') {
+                $('.notice-item').show();
+                return;
+            }
+
+            $('.notice-item').each(function() {
+                const title = $(this).find('.notice-title').text().toLowerCase();
+                const preview = $(this).find('.notice-preview').text().toLowerCase();
+
+                if (title.includes(searchTerm) || preview.includes(searchTerm)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        // 상단 이동 버튼
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 300) {
+                $('#scrollTop').addClass('visible');
+            } else {
+                $('#scrollTop').removeClass('visible');
+            }
+        });
+
+        $('#scrollTop').on('click', function() {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500);
+        });
+
+        // 부드러운 스크롤 효과
+        $('a[href^="#"]').on('click', function(e) {
+            e.preventDefault();
+            const target = $(this.getAttribute('href'));
+            if (target.length) {
+                $('html, body').animate({
+                    scrollTop: target.offset().top - 100
+                }, 500);
+            }
+        });
+
+        // 공지사항 호버 효과 개선
+        $('.notice-item').hover(
+            function() {
+                $(this).find('.notice-icon').css('transform', 'translateX(4px)');
+            },
+            function() {
+                $(this).find('.notice-icon').css('transform', 'translateX(0)');
+            }
+        );
+
+        // 페이지 로드 시 URL 파라미터 기반 필터 설정
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('category');
+        if (categoryParam) {
+            $(`.filter-btn[data-filter="${categoryParam}"]`).click();
+        }
+    });
+</script>
 
 </body>
 </html>

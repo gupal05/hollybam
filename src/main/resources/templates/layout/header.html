@@ -1,24 +1,24 @@
-<!-- header.html -->
+<!-- header.html - 기존 구조 100% 유지, 모바일 메뉴만 개선 -->
 <div th:fragment="header" class="header">
-    <!-- 로고 영역 -->
+    <!-- 로고 영역 (기존 유지) -->
     <div class="header-nav" onclick="window.location.href='/main'" style="cursor: pointer;">
         <img th:src="@{/images/KakaoTalk_20250611_143159216.png}" width="150px" height="150px">
     </div>
 
-    <!-- 네비게이션 메뉴 -->
+    <!-- 네비게이션 메뉴 (기존 유지) -->
     <div class="header-nav nav-group">
-        <!-- 카테고리 (드롭다운) -->
+        <!-- 카테고리 (드롭다운) (기존 유지) -->
         <div class="nav-item category-nav-item">
             <div>카테고리</div>
             <div class="dropdown-backdrop"></div>
             <div class="dropdown">
                 <div class="dropdown-content">
-                    <!-- 대분류 -->
+                    <!-- 대분류 (기존 유지) -->
                     <div th:each="category : ${categories}" class="dropdown-column">
                         <a th:href="@{/product/list(categoryCode=${category.categoryCode})}" class="dropdown-column-title-link">
                             <div class="dropdown-column-title" th:text="${category.categoryName}">카테고리 이름</div>
                         </a>
-                        <!-- 소분류 -->
+                        <!-- 소분류 (기존 유지) -->
                         <div th:each="detail : ${category.categoryDetailDto}" class="dropdown-item">
                             <a th:href="@{/product/list(categoryCode=${category.categoryCode}, detailCode=${detail.cateDetailCode})}"
                                class="category-link"
@@ -29,22 +29,22 @@
             </div>
         </div>
 
-        <!-- 기본 메뉴 -->
+        <!-- 기본 메뉴 (기존 유지) -->
         <div class="nav-item" onclick="window.location.href='/brand'">브랜드</div>
         <div class="nav-item" onclick="window.location.href='/review'">리뷰</div>
-        <div class="nav-item" onclick="window.location.href='/event'">이벤트</div>
-        <div class="nav-item" onclick="window.location.href='/customer/center'">고객센터</div>
+        <div class="nav-item" onclick="window.location.href='/customer-service?tab=event'">이벤트</div>
+        <div class="nav-item" onclick="window.location.href='/customer-service'">고객센터</div>
         <div class="nav-item" onclick="window.location.href='/notice/list'">공지사항</div>
     </div>
 
-    <!-- 아이콘 메뉴 -->
+    <!-- 아이콘 메뉴 (기존 유지) -->
     <div class="header-nav nav-group-icon">
-        <!-- 사용자 메뉴 (로그인 여부에 따라 다름) -->
+        <!-- 사용자 메뉴 (로그인 여부에 따라 다름) (기존 유지) -->
         <div class="nav-item user-nav-item">
             <i class="fa-regular fa-circle-user"></i>
 
             <div class="user-dropdown">
-                <!-- 로그인한 사용자 -->
+                <!-- 로그인한 사용자 (기존 유지) -->
                 <div th:if="${session.member != null}" class="user-dropdown-content">
                     <a href="/mypage" class="user-dropdown-link">
                         <i class="fa-regular fa-user"></i><span>마이페이지</span>
@@ -58,7 +58,7 @@
                     <a href="https://www.cjlogistics.com/ko/tool/parcel/tracking" target="_blank" class="user-dropdown-link">
                         <i class="fa-solid fa-truck"></i><span>배송조회</span>
                     </a>
-                    <a href="/customer/center" class="user-dropdown-link">
+                    <a href="/customer-service" class="user-dropdown-link">
                         <i class="fa-solid fa-headset"></i><span>고객센터</span>
                     </a>
                     <div class="user-dropdown-divider"></div>
@@ -67,7 +67,7 @@
                     </a>
                 </div>
 
-                <!-- 비회원 사용자 -->
+                <!-- 비회원 사용자 (기존 유지) -->
                 <div th:if="${session.member == null}" class="user-dropdown-content">
                     <a href="/order/guest" class="user-dropdown-link">
                         <i class="fa-solid fa-box"></i><span>주문조회</span>
@@ -75,7 +75,7 @@
                     <a href="/delivery/guest" class="user-dropdown-link">
                         <i class="fa-solid fa-truck"></i><span>배송조회</span>
                     </a>
-                    <a href="/customer/center" class="user-dropdown-link">
+                    <a href="/customer-service" class="user-dropdown-link">
                         <i class="fa-solid fa-headset"></i><span>고객센터</span>
                     </a>
                     <div class="user-dropdown-divider"></div>
@@ -86,8 +86,143 @@
             </div>
         </div>
 
-        <!-- 검색/장바구니 -->
+        <!-- 검색/장바구니 (기존 유지) -->
         <i class="fa-solid fa-magnifying-glass"></i>
         <i class="fa-solid fa-bag-shopping" style="cursor:pointer;" onclick="window.location.href='/cart'"></i>
+    </div>
+
+    <!-- === 여기서부터 모바일 전용 요소들 (개선) === -->
+
+    <!-- 모바일 메뉴 버튼 -->
+    <div class="mobile-menu-btn" id="mobileMenuBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- 모바일 오버레이 -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- 모바일 메뉴 (개선) -->
+    <div class="mobile-menu" id="mobileMenu">
+        <!-- 모바일 메뉴 헤더 -->
+        <div class="mobile-menu-header">
+            <!-- 회원 정보 -->
+            <div th:if="${session.member != null}" class="mobile-user-info">
+                <div class="mobile-user-avatar">
+                    <i class="fa-regular fa-circle-user"></i>
+                </div>
+                <div class="mobile-user-details">
+                    <div class="mobile-user-name" th:text="${session.member.memberName}">사용자명</div>
+                    <div class="mobile-user-status">로그인됨</div>
+                </div>
+            </div>
+
+            <!-- 비회원 -->
+            <div th:if="${session.member == null}" class="mobile-guest-info">
+                <div class="mobile-guest-avatar">
+                    <i class="fa-regular fa-circle-user"></i>
+                </div>
+                <div class="mobile-guest-details">
+                    <div class="mobile-guest-text">로그인이 필요합니다</div>
+                    <button class="mobile-login-btn" onclick="goLogin()">로그인/회원가입</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 모바일 네비게이션 -->
+        <div class="mobile-nav">
+            <!-- 카테고리 (개선) -->
+            <div class="mobile-nav-item mobile-category-toggle" onclick="toggleMobileCategory()">
+                <i class="fa-solid fa-bars"></i>
+                <span>카테고리</span>
+                <i class="fa-solid fa-chevron-down mobile-arrow"></i>
+            </div>
+
+            <!-- 모바일 카테고리 아이템들 (개선) -->
+            <div class="mobile-category-container" id="mobileCategoryContainer">
+                <div class="mobile-category-items" id="mobileCategoryItems">
+                    <div th:each="category : ${categories}" class="mobile-category-group">
+                        <div class="mobile-category-title" th:text="${category.categoryName}">카테고리</div>
+                        <div class="mobile-category-subcategories">
+                            <div th:each="detail : ${category.categoryDetailDto}" class="mobile-subcategory-item">
+                                <a th:href="@{/product/list(categoryCode=${category.categoryCode}, detailCode=${detail.cateDetailCode})}"
+                                   class="mobile-category-link"
+                                   th:text="${detail.cateDetailName}">상세카테고리</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 기본 메뉴 -->
+            <div class="mobile-nav-item" onclick="window.location.href='/brand'">
+                <i class="fa-solid fa-tags"></i>
+                <span>브랜드</span>
+            </div>
+            <div class="mobile-nav-item" onclick="window.location.href='/review'">
+                <i class="fa-solid fa-star"></i>
+                <span>리뷰</span>
+            </div>
+            <div class="mobile-nav-item" onclick="window.location.href='/customer-service?tab=event'">
+                <i class="fa-solid fa-gift"></i>
+                <span>이벤트</span>
+            </div>
+            <div class="mobile-nav-item" onclick="window.location.href='/customer-service'">
+                <i class="fa-solid fa-headset"></i>
+                <span>고객센터</span>
+            </div>
+            <div class="mobile-nav-item" onclick="window.location.href='/notice/list'">
+                <i class="fa-solid fa-bell"></i>
+                <span>공지사항</span>
+            </div>
+        </div>
+
+        <!-- 모바일 하단 메뉴 -->
+        <div class="mobile-bottom-menu">
+            <!-- 회원 메뉴 -->
+            <div th:if="${session.member != null}">
+                <a href="/mypage" class="mobile-menu-link">
+                    <i class="fa-regular fa-user"></i>
+                    <span>마이페이지</span>
+                </a>
+                <a href="/wishlist" class="mobile-menu-link">
+                    <i class="fa-regular fa-heart"></i>
+                    <span>위시리스트</span>
+                </a>
+                <a href="/mypage/orders" class="mobile-menu-link">
+                    <i class="fa-solid fa-box"></i>
+                    <span>주문조회</span>
+                </a>
+                <a href="https://www.cjlogistics.com/ko/tool/parcel/tracking" target="_blank" class="mobile-menu-link">
+                    <i class="fa-solid fa-truck"></i>
+                    <span>배송조회</span>
+                </a>
+                <a href="/cart" class="mobile-menu-link">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>장바구니</span>
+                </a>
+                <button class="mobile-logout-btn" onclick="logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>로그아웃</span>
+                </button>
+            </div>
+
+            <!-- 비회원 메뉴 -->
+            <div th:if="${session.member == null}">
+                <a href="/order/guest" class="mobile-menu-link">
+                    <i class="fa-solid fa-box"></i>
+                    <span>주문조회</span>
+                </a>
+                <a href="/delivery/guest" class="mobile-menu-link">
+                    <i class="fa-solid fa-truck"></i>
+                    <span>배송조회</span>
+                </a>
+                <a href="/cart" class="mobile-menu-link">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>장바구니</span>
+                </a>
+            </div>
+        </div>
     </div>
 </div>

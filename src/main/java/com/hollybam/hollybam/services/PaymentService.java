@@ -249,8 +249,6 @@ public class PaymentService implements IF_PaymentService {
 
     @Override
     public boolean verifyAdultCertification(Integer memCode, String guestUuid) {
-        System.out.println(memCode);
-        System.out.println(paymentDao.isAdultVerifiedMember(memCode));
         if (memCode != null) {
             return paymentDao.isAdultVerifiedMember(memCode);
         } else if (guestUuid != null) {

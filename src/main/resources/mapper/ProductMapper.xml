@@ -118,7 +118,33 @@
         WHERE
             p.product_active = 1
         ORDER BY p.product_order_count DESC
+        LIMIT 8
     </select>
+
+
+    <!-- 베스트 상품 리스트 -->
+    <select id="selectBestProductsForMobile" resultMap="ProductResultMap">
+        SELECT
+            p.product_code,
+            p.product_id,
+            p.product_name,
+            p.product_description,
+            p.product_order_count,
+            pr.price_original,
+            pr.price_selling,
+            title_img.image_url AS title_image_url,
+            webp_img.image_url AS webp_image_url
+        FROM
+            product p
+                JOIN price pr ON p.product_code = pr.product_code
+                LEFT JOIN image title_img ON p.product_code = title_img.product_code AND title_img.image_type = 'title'
+                LEFT JOIN image webp_img ON p.product_code = webp_img.product_code AND webp_img.image_type = 'webp'
+        WHERE
+            p.product_active = 1
+        ORDER BY p.product_order_count DESC
+        LIMIT 4
+    </select>
+
 
     <!-- 신제품 리스트 -->
     <select id="selectNewProducts" resultMap="ProductResultMap">

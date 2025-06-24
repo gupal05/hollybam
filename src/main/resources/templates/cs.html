@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>고객센터 - 홀리밤</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" th:href="@{/css/header.css}"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <script type="text/javascript" th:src="@{/js/header.js}"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      line-height: 1.6;
+    }
+
+    /* 메인 콘텐츠 */
+    .content {
+      min-height: 800px;
+      display: flex;
+      justify-content: center;
+      padding: 120px 20px 60px;
+    }
+    .inner-box {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 1280px;
+    }
+
+    /* 페이지 헤더 */
+    .page-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: #666666;
+      font-weight: 400;
+    }
+
+    /* 탭 네비게이션 */
+    .tab-navigation {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 40px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .tab-item {
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #888888;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      margin: 0 8px;
+    }
+
+    .tab-item:hover {
+      color: #EE386D;
+    }
+
+    .tab-item.active {
+      color: #EE386D;
+    }
+
+    .tab-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #EE386D;
+      border-radius: 2px 2px 0 0;
+    }
+
+    /* 탭 콘텐츠 */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 공지사항 스타일 */
+    .notice-list {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .notice-item {
+      padding: 20px 24px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .notice-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .notice-item:last-child {
+      border-bottom: none;
+    }
+
+    .notice-badge {
+      background: #EE386D;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .notice-badge.important {
+      background: #ff4757;
+    }
+
+    .notice-content {
+      flex: 1;
+    }
+
+    .notice-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333333;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .notice-date {
+      font-size: 13px;
+      color: #888888;
+    }
+
+    .notice-icon {
+      color: #EE386D;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    /* 1:1 문의 스타일 */
+    .inquiry-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    .inquiry-form {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .form-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333333;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333333;
+      margin-bottom: 8px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+      font-family: inherit;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #EE386D;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #EE386D;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background: #d63056;
+    }
+
+    /* 문의 내역 */
+    .inquiry-history {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .inquiry-item {
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .inquiry-item:last-child {
+      border-bottom: none;
+    }
+
+    .inquiry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .inquiry-subject {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333333;
+    }
+
+    .inquiry-status {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .inquiry-status.pending {
+      background: #ffeaa7;
+      color: #fdcb6e;
+    }
+
+    .inquiry-status.completed {
+      background: #d1f2eb;
+      color: #00b894;
+    }
+
+    .inquiry-meta {
+      font-size: 13px;
+      color: #888888;
+    }
+
+    /* FAQ 카테고리 필터 */
+    .faq-categories {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .faq-category-btn {
+      padding: 8px 16px;
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #666666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .faq-category-btn:hover, .faq-category-btn.active {
+      background: #EE386D;
+      border-color: #EE386D;
+      color: white;
+    }
+
+    /* FAQ 섹션 */
+    .faq-section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333333;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .faq-list {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-question {
+      padding: 20px 24px;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 600;
+      color: #333333;
+      transition: background-color 0.2s ease;
+    }
+
+    .faq-question:hover {
+      background-color: #f8f9fa;
+    }
+
+    .faq-icon {
+      color: #EE386D;
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      padding: 0 24px;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 200px;
+      padding: 20px 24px;
+    }
+
+    .faq-answer-content {
+      font-size: 14px;
+      color: #666666;
+      line-height: 1.6;
+    }
+
+    /* ========== 새로운 이벤트 썸네일 스타일 ========== */
+
+    /* 메인 이벤트 배너 - 기존 유지 */
+    .main-event-banner {
+      background: linear-gradient(135deg, #EE386D 0%, #d63056 100%);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 40px;
+      color: white;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-event-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .main-event-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .main-event-subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    .main-event-btn {
+      background: white;
+      color: #EE386D;
+      padding: 12px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .main-event-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    /* 이벤트 그리드 */
+    .event-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+
+    /* 개별 이벤트 아이템 */
+    .event-item {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .event-item:hover {
+      transform: translateY(-8px);
+    }
+
+    /* 이벤트 썸네일 */
+    .event-thumbnail {
+      width: 100%;
+      height: 240px;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      transition: all 0.3s ease;
+    }
+
+    .event-thumbnail-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 20px;
+    }
+
+    .event-item:hover .event-thumbnail {
+      box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+    }
+
+    /* 썸네일 오버레이 (이미지 위에 살짝 어둡게) */
+    .event-thumbnail::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.1);
+      z-index: 1;
+    }
+
+    /* 상태 배지 */
+    .event-status-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 3;
+      backdrop-filter: blur(10px);
+    }
+
+    /* 10% 쿠폰 배지 */
+    .coupon-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(238, 56, 109, 0.95);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 900;
+      text-align: center;
+      z-index: 3;
+      backdrop-filter: blur(10px);
+    }
+
+    /* 이벤트 정보 영역 */
+    .event-info {
+      text-align: left;
+    }
+
+    .event-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .event-period {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .event-description {
+      font-size: 14px;
+      color: #9ca3af;
+      line-height: 1.4;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 1024px) {
+      .event-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+      }
+
+      .event-thumbnail {
+        height: 220px;
+      }
+
+      .event-thumbnail-title {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .event-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;
+      }
+
+      .event-thumbnail {
+        height: 200px;
+      }
+
+      .event-thumbnail-content {
+        padding: 20px;
+      }
+
+      .event-thumbnail-title {
+        font-size: 18px;
+      }
+
+      .event-thumbnail-benefit {
+        font-size: 14px;
+      }
+
+      .event-thumbnail.love-wins .event-thumbnail-content::before {
+        font-size: 24px;
+        right: -5px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .event-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .event-thumbnail {
+        height: 180px;
+      }
+    }
+
+    /* 기존 반응형 코드 */
+    @media (max-width: 1024px) {
+      .inquiry-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .tab-item {
+        padding: 14px 24px;
+        font-size: 15px;
+        margin: 0 4px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 100px 16px 40px;
+      }
+
+      .page-title {
+        font-size: 28px;
+      }
+
+      .tab-navigation {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .tab-item {
+        padding: 12px 20px;
+        font-size: 14px;
+        margin: 4px;
+      }
+
+      .inquiry-form, .inquiry-history {
+        padding: 20px;
+      }
+
+      .board-item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .board-meta {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .tab-item {
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+
+      .notice-item, .board-item {
+        padding: 16px 16px;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+    }
+
+    /* 애니메이션 효과 */
+    .event-item {
+      animation: fadeInUp 0.6s ease;
+      animation-fill-mode: both;
+    }
+
+    .event-item:nth-child(1) { animation-delay: 0.1s; }
+    .event-item:nth-child(2) { animation-delay: 0.2s; }
+    .event-item:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 이벤트 탭 스타일 */
+    .event-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 32px;
+      padding: 8px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .event-tab {
+      flex: 1;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #666666;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .event-tab:hover {
+      color: #EE386D;
+      background: rgba(238, 56, 109, 0.05);
+    }
+
+    .event-tab.active {
+      color: white;
+      background: #EE386D;
+      box-shadow: 0 2px 8px rgba(238, 56, 109, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .event-tab.active::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(135deg, #EE386D, #d63056);
+      border-radius: 10px;
+      z-index: -1;
+      opacity: 0.1;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      .event-tabs {
+        gap: 4px;
+        padding: 6px;
+        margin-bottom: 24px;
+        max-width: 100%;
+      }
+
+      .event-tab {
+        padding: 10px 16px;
+        font-size: 13px;
+        min-width: 70px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .event-tabs {
+        gap: 2px;
+        padding: 4px;
+      }
+
+      .event-tab {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 60px;
+      }
+    }
+
+    .event-empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin: 20px 0;
+      min-height: 400px;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      color: #e0e0e0;
+      margin-bottom: 24px;
+      opacity: 0.7;
+    }
+
+    .empty-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #666666;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .empty-description {
+      font-size: 16px;
+      color: #999999;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .empty-btn {
+      background: #EE386D;
+      color: white;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .empty-btn:hover {
+      background: #d63056;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(238, 56, 109, 0.3);
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      .event-empty-state {
+        padding: 60px 20px;
+        min-height: 320px;
+      }
+
+      .empty-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+      }
+
+      .empty-title {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+
+      .empty-description {
+        font-size: 14px;
+        margin-bottom: 24px;
+      }
+
+      .empty-btn {
+        padding: 12px 24px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .event-empty-state {
+        padding: 40px 16px;
+        min-height: 280px;
+      }
+
+      .empty-icon {
+        font-size: 40px;
+        margin-bottom: 16px;
+      }
+
+      .empty-title {
+        font-size: 18px;
+      }
+
+      .empty-description {
+        font-size: 13px;
+      }
+    }
+
+    /* 문의 내역 전용 스타일 - 기존 CSS와 충돌 방지 */
+    .inquiry-history-container {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .inquiry-history-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333333;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .inquiry-history-title i {
+      color: #EE386D;
+    }
+
+    .inquiry-history-item {
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .inquiry-history-item:last-child {
+      border-bottom: none;
+    }
+
+    .inquiry-history-item:hover {
+      background-color: rgba(238, 56, 109, 0.02);
+      border-radius: 8px;
+      padding: 16px 12px;
+      margin: 0 -12px;
+      transition: all 0.2s ease;
+    }
+
+    .inquiry-history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .inquiry-history-subject {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333333;
+      flex: 1;
+    }
+
+    .inquiry-history-status {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .inquiry-history-status.pending {
+      background: #ffeaa7;
+      color: #e17055;
+    }
+
+    .inquiry-history-status.completed {
+      background: #d1f2eb;
+      color: #00b894;
+    }
+
+    .inquiry-history-meta {
+      font-size: 13px;
+      color: #888888;
+    }
+
+    .inquiry-no-data {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .inquiry-no-data-message {
+      color: #888888;
+    }
+
+    .inquiry-no-data-message i {
+      font-size: 64px;
+      margin-bottom: 20px;
+      color: #e0e0e0;
+      opacity: 0.7;
+    }
+
+    .inquiry-no-data-message p {
+      font-size: 16px;
+      font-weight: 500;
+      margin: 0;
+      color: #666666;
+    }
+
+    .inquiry-no-data-description {
+      font-size: 14px;
+      color: #999999;
+      margin-top: 8px;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      .inquiry-history-container {
+        padding: 20px;
+      }
+
+      .inquiry-history-title {
+        font-size: 18px;
+      }
+
+      .inquiry-no-data {
+        padding: 40px 16px;
+      }
+
+      .inquiry-no-data-message i {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+
+      .inquiry-no-data-message p {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .inquiry-history-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .inquiry-history-status {
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 메인 콘텐츠 -->
+<div class="content">
+  <div class="inner-box">
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <h1 class="page-title">고객센터</h1>
+      <p class="page-subtitle">궁금한 사항이나 문의사항을 언제든 남겨주세요</p>
+    </div>
+
+    <!-- 탭 네비게이션 -->
+    <div class="tab-navigation">
+      <button class="tab-item active" data-tab="faq">
+        <i class="fas fa-question-circle"></i> 자주 묻는 질문
+      </button>
+      <button class="tab-item" data-tab="event">
+        <i class="fas fa-gift"></i> 이벤트
+      </button>
+      <button class="tab-item" data-tab="inquiry">
+        <i class="fas fa-headset"></i> 1:1 문의
+      </button>
+    </div>
+
+    <!-- 자주 묻는 질문 탭 -->
+    <div class="tab-content active" id="faq-tab">
+      <!-- FAQ 카테고리 -->
+      <div class="faq-categories">
+        <button class="faq-category-btn active" data-category="all">전체</button>
+        <button class="faq-category-btn" data-category="delivery">배송</button>
+        <button class="faq-category-btn" data-category="return">교환/환불</button>
+        <button class="faq-category-btn" data-category="product">상품</button>
+        <button class="faq-category-btn" data-category="payment">결제</button>
+        <button class="faq-category-btn" data-category="membership">회원</button>
+      </div>
+
+      <!-- FAQ 리스트 -->
+      <div class="faq-list">
+        <div class="faq-item" data-category="delivery">
+          <button class="faq-question">
+            <span>배송은 얼마나 걸리나요?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              일반적으로 주문 후 1-2일 내에 발송되며, 배송까지는 2-3일 정도 소요됩니다. 제주도 및 도서산간 지역은 추가 1-2일이 더 소요될 수 있습니다. 주말 및 공휴일에는 배송이 지연될 수 있으니 참고해 주세요.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="return">
+          <button class="faq-question">
+            <span>교환/환불은 어떻게 하나요?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              위생상 개봉 후에는 교환/환불이 불가능합니다. 단, 제품 하자나 배송 오류가 있는 경우 7일 이내에 고객센터로 연락주시면 처리해드립니다. 미개봉 상태에서만 교환/환불이 가능하며, 배송비는 고객 부담입니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="delivery">
+          <button class="faq-question">
+            <span>포장은 어떻게 되나요?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              모든 상품은 내용물을 알 수 없는 무지 박스로 안전하게 포장되어 발송됩니다. 택배 송장에도 상품명이 노출되지 않도록 '생활용품' 등으로 표기하여 개인정보를 보호합니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="payment">
+          <button class="faq-question">
+            <span>어떤 결제 방법을 사용할 수 있나요?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              신용카드, 계좌이체, 무통장입금, 카카오페이, 네이버페이, 페이코 등 다양한 결제 방법을 지원합니다. 모든 결제는 SSL 보안 시스템으로 안전하게 처리됩니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="product">
+          <button class="faq-question">
+            <span>상품 사용법을 알고 싶어요</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              각 상품별 상세 페이지에서 사용법을 확인하실 수 있습니다. 또한 제품과 함께 사용 설명서가 동봉되어 있으니 참고해 주세요. 추가 문의사항은 1:1 문의를 통해 연락주시면 상세히 안내해드립니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="membership">
+          <button class="faq-question">
+            <span>회원가입 혜택이 있나요?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              회원가입 시 즉시 5천원 할인 쿠폰을 드리며, 구매 시마다 적립금이 쌓입니다. 또한 회원 등급에 따라 추가 할인 혜택과 무료배송 혜택을 받으실 수 있습니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="delivery">
+          <button class="faq-question">
+            <span>무료배송 조건이 어떻게 되나요?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              5만원 이상 구매 시 무료배송이 제공됩니다. 5만원 미만 주문 시에는 배송비 3,000원이 부과됩니다. 제주도 및 도서산간 지역은 추가 배송비가 발생할 수 있습니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="product">
+          <button class="faq-question">
+            <span>상품 보관 방법은 어떻게 되나요?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              직사광선을 피하고 건조한 곳에 보관해주세요. 대부분의 제품은 실온에서 보관 가능하며, 일부 제품은 냉장 보관이 필요할 수 있습니다. 각 제품의 보관 방법은 포장지에 표기되어 있습니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="membership">
+          <button class="faq-question">
+            <span>회원 탈퇴는 어떻게 하나요?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              마이페이지 > 회원정보 수정에서 회원 탈퇴를 신청하실 수 있습니다. 탈퇴 시 적립금과 쿠폰은 모두 소멸되며, 주문 이력은 5년간 보관됩니다. 탈퇴 후 재가입은 언제든 가능합니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="payment">
+          <button class="faq-question">
+            <span>할부 결제가 가능한가요?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              신용카드로 결제 시 2~12개월 할부가 가능합니다. 5만원 이상 결제 시 무이자 할부 혜택도 제공됩니다. 할부 가능 개월 수는 카드사별로 다를 수 있으니 결제 시 확인해 주세요.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 이벤트 탭 -->
+    <div class="tab-content" id="event-tab">
+      <!-- 메인 이벤트 배너 -->
+      <div class="main-event-banner" th:if="${session.member == null}">
+        <div class="main-event-content">
+          <div class="main-event-title">🎉 신규회원 특가 이벤트</div>
+          <div class="main-event-subtitle">회원가입 시 즉시 5천원 쿠폰 증정!</div>
+          <button class="main-event-btn">
+            지금 참여하기
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 이벤트 그리드 -->
+      <div class="event-tabs">
+        <button class="event-tab active" data-filter="all">전체</button>
+        <button class="event-tab" data-filter="before">예정</button>
+        <button class="event-tab" data-filter="ing">진행중</button>
+        <button class="event-tab" data-filter="end">종료</button>
+      </div>
+      <!-- 이벤트가 있을 때 -->
+      <div class="event-grid" th:if="${eventList != null and #lists.size(eventList) > 0}">
+        <div th:each="event : ${eventList}"
+             class="event-item"
+             th:attr="data-status=${event.eventStatus}"
+             th:onclick="|window.location.href='/customer-service/event/detail/${event.eventCode}'|"
+             style="cursor: pointer;">
+
+          <div class="event-thumbnail">
+            <img th:src="${event.thumbnailUrl}"
+                 th:alt="${event.eventTitle}"
+                 class="event-thumbnail-image">
+            <div class="event-status-badge"
+                 th:text="${event.eventStatus == 'ing' ? '진행중' : (event.eventStatus == 'before' ? '예정' : '종료')}">
+            </div>
+          </div>
+
+          <div class="event-info">
+            <div class="event-name" th:text="${event.eventTitle}"></div>
+            <div class="event-period">
+              <i class="fas fa-calendar-alt"></i>
+              <span th:if="${event.eventEnd != null}">
+              <span th:if="${event.eventEnd.isBefore(T(java.time.LocalDate).now())}">
+                종료
+              </span>
+                <span th:unless="${event.eventEnd.isBefore(T(java.time.LocalDate).now())}">
+                  <span th:switch="${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDate).now(), event.eventEnd)}">
+                    <span th:case="0">오늘</span>
+                    <span th:case="*" th:text="'D-' + ${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDate).now(), event.eventEnd)}"></span>
+                  </span>
+                  <span th:text="' ' + ${#temporals.format(event.eventStart, 'yyyy.MM.dd')} + ' ~ ' + ${#temporals.format(event.eventEnd, 'MM.dd')}"></span>
+                </span>
+              </span>
+                <span th:if="${event.eventEnd == null}">
+                    진행 중 <span th:text="${#temporals.format(event.eventStart, 'yyyy.MM.dd')} + ' ~'"></span>
+                </span>
+            </div>
+            <div class="event-description" th:text="${event.eventDescription}"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 이벤트가 없을 때 빈 상태 -->
+      <div class="event-empty-state" th:if="${eventList == null or #lists.isEmpty(eventList)}">
+        <div class="empty-icon">
+          <i class="fas fa-calendar-times"></i>
+        </div>
+        <div class="empty-title">진행중인 이벤트가 없습니다</div>
+        <div class="empty-description">새로운 이벤트가 준비되면 알려드릴게요!</div>
+        <button class="empty-btn" onclick="location.href='/main'">
+          <i class="fas fa-shopping-bag"></i>
+          상품 둘러보기
+        </button>
+      </div>
+
+      <!-- 필터링 후 빈 상태 (JavaScript로 제어) -->
+      <div class="event-empty-state filter-empty" style="display: none;">
+        <div class="empty-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <div class="empty-title filter-empty-title">해당하는 이벤트가 없습니다</div>
+        <div class="empty-description">다른 카테고리를 확인해보세요</div>
+      </div>
+    </div>
+
+    <!-- 1:1 문의 탭 -->
+    <div class="tab-content" id="inquiry-tab">
+      <div class="inquiry-container">
+        <!-- 문의 작성 폼 -->
+        <div class="inquiry-form">
+          <div class="form-title">
+            <i class="fas fa-edit"></i>
+            문의하기
+          </div>
+          <form action="/customer-service/inquiry" method="post">
+            <div class="form-group">
+              <label class="form-label" for="inquiryCategory">문의 유형</label>
+              <select class="form-select" id="inquiryCategory" name="inquiryCategory" required>
+                <option value="">선택해주세요</option>
+                <option value="product">상품 문의</option>
+                <option value="delivery">배송 문의</option>
+                <option value="return">교환/환불</option>
+                <option value="payment">결제 문의</option>
+                <option value="etc">기타</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inquiryTitle">제목</label>
+              <input type="text" class="form-input" id="inquiryTitle" name="inquiryTitle" placeholder="문의 제목을 입력해주세요" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inquiryContent">내용</label>
+              <textarea class="form-textarea" id="inquiryContent" name="inquiryContent" placeholder="문의 내용을 자세히 입력해주세요" required></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inquiryEmail">답변 받을 이메일</label>
+              <input type="email" class="form-input" id="inquiryEmail" name="inquiryEmail" placeholder="example@email.com" required>
+            </div>
+            <button type="button" class="submit-btn" onclick="inquiryBtn()">
+              <i class="fas fa-paper-plane"></i>
+              문의 등록
+            </button>
+          </form>
+        </div>
+
+        <!-- 문의 내역 -->
+        <div class="inquiry-history-container">
+          <div class="inquiry-history-title">
+            <i class="fas fa-history"></i>
+            나의 문의 내역
+          </div>
+
+          <!-- 문의 내역이 있을 때 -->
+          <div th:if="${inquiryList != null and !inquiryList.isEmpty()}">
+            <div class="inquiry-history-item" th:each="inquiry : ${inquiryList}">
+              <div class="inquiry-history-header">
+                <div class="inquiry-history-subject" th:text="${inquiry.inquiryTitle}">문의 제목</div>
+                <div class="inquiry-history-status"
+                     th:classappend="${inquiry.inquiryStatus == 1} ? 'completed' : 'pending'"
+                     th:text="${inquiry.inquiryStatus == 1} ? '답변완료' : '답변대기'">
+                  답변상태
+                </div>
+              </div>
+              <div class="inquiry-history-meta">
+                <span th:switch="${inquiry.inquiryCategory}">
+                  <span th:case="'product'">상품 문의</span>
+                  <span th:case="'delivery'">배송 문의</span>
+                  <span th:case="'return'">교환/환불</span>
+                  <span th:case="'payment'">결제 문의</span>
+                  <span th:case="'etc'">기타</span>
+                  <span th:case="*">알 수 없음</span>
+                </span> ·
+                <span th:text="${#temporals.format(inquiry.createAt, 'yyyy.MM.dd')}">작성일</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 문의 내역이 없을 때 -->
+          <div th:if="${inquiryList == null or inquiryList.isEmpty()}" class="inquiry-no-data">
+            <div class="inquiry-no-data-message">
+              <i class="fas fa-comment-slash"></i>
+              <p>남긴 문의가 없습니다.</p>
+              <div class="inquiry-no-data-description">새로운 문의를 작성해보세요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+  $(document).ready(function() {
+    // URL 파라미터로 탭 활성화 처리
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTab = urlParams.get('tab');
+
+    if (activeTab) {
+      // 모든 탭 비활성화
+      $('.tab-item').removeClass('active');
+      $('.tab-content').removeClass('active');
+
+      // 해당 탭 활성화
+      $(`.tab-item[data-tab="${activeTab}"]`).addClass('active');
+      $(`#${activeTab}-tab`).addClass('active');
+    }
+
+    // 탭 전환 기능
+    $('.tab-item').on('click', function() {
+      const targetTab = $(this).data('tab');
+
+      // 탭 버튼 활성화 상태 변경
+      $('.tab-item').removeClass('active');
+      $(this).addClass('active');
+
+      // 탭 콘텐츠 표시/숨김
+      $('.tab-content').removeClass('active');
+      $('#' + targetTab + '-tab').addClass('active');
+    });
+
+    // FAQ 아코디언 기능
+    $('.faq-question').on('click', function() {
+      const faqItem = $(this).parent();
+      const isActive = faqItem.hasClass('active');
+
+      // 모든 FAQ 아이템 닫기
+      $('.faq-item').removeClass('active');
+
+      // 클릭한 아이템이 닫혀있었다면 열기
+      if (!isActive) {
+        faqItem.addClass('active');
+      }
+    });
+
+    // FAQ 카테고리 필터 기능
+    $('.faq-category-btn').on('click', function() {
+      const category = $(this).data('category');
+
+      // 카테고리 버튼 활성화 상태 변경
+      $('.faq-category-btn').removeClass('active');
+      $(this).addClass('active');
+
+      // FAQ 아이템 필터링
+      if (category === 'all') {
+        $('.faq-item').show();
+      } else {
+        $('.faq-item').hide();
+        $(`.faq-item[data-category="${category}"]`).show();
+      }
+    });
+
+    // 메인 이벤트 배너 버튼 클릭
+    $('.main-event-btn').on('click', function() {
+      alert('신규회원 이벤트 페이지로 이동합니다!');
+    });
+
+    // 공지사항 클릭 이벤트
+    $('.notice-item').on('click', function() {
+      console.log('공지사항 클릭');
+      // 여기에 공지사항 상세 페이지로 이동하는 로직 추가
+    });
+
+    // 게시판 아이템 클릭 이벤트
+    $('.board-item').on('click', function() {
+      console.log('게시글 클릭');
+      // 여기에 게시글 상세 페이지로 이동하는 로직 추가
+    });
+
+    // 문의 내역 클릭 이벤트
+    $('.inquiry-item').on('click', function() {
+      console.log('문의 내역 클릭');
+      // 여기에 문의 상세 페이지로 이동하는 로직 추가
+    });
+
+    // 폼 제출 이벤트
+    $('form').on('submit', function(e) {
+      e.preventDefault();
+
+      // 폼 데이터 유효성 검사
+      const inquiryType = $('#inquiryType').val();
+      const subject = $('#subject').val().trim();
+      const content = $('#content').val().trim();
+      const email = $('#email').val().trim();
+
+      if (!inquiryType) {
+        alert('문의 유형을 선택해주세요.');
+        $('#inquiryType').focus();
+        return;
+      }
+
+      if (!subject) {
+        alert('제목을 입력해주세요.');
+        $('#subject').focus();
+        return;
+      }
+
+      if (!content) {
+        alert('문의 내용을 입력해주세요.');
+        $('#content').focus();
+        return;
+      }
+
+      if (!email) {
+        alert('이메일을 입력해주세요.');
+        $('#email').focus();
+        return;
+      }
+
+      // 이메일 형식 검사
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('올바른 이메일 형식을 입력해주세요.');
+        $('#email').focus();
+        return;
+      }
+
+      // 실제 서버 전송 로직
+      alert('문의가 등록되었습니다. 빠른 시일 내에 답변드리겠습니다.');
+
+      // 폼 초기화
+      this.reset();
+    });
+
+    // 부드러운 스크롤 효과
+    $('a[href^="#"]').on('click', function(e) {
+      e.preventDefault();
+      const target = $(this.getAttribute('href'));
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top - 100
+        }, 500);
+      }
+    });
+  });
+
+  // document.querySelectorAll('.event-tab').forEach(tab => {
+  //   tab.addEventListener('click', function () {
+  //     document.querySelectorAll('.event-tab').forEach(t => t.classList.remove('active'));
+  //     this.classList.add('active');
+  //
+  //     const filter = this.getAttribute('data-filter');
+  //     document.querySelectorAll('.event-item').forEach(item => {
+  //       const status = item.getAttribute('data-status');
+  //       if (filter === 'all' || status === filter) {
+  //         item.style.display = 'block';
+  //       } else {
+  //         item.style.display = 'none';
+  //       }
+  //     });
+  //   });
+  // });
+
+  document.querySelectorAll('.event-tab').forEach(tab => {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.event-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+
+      const filter = this.getAttribute('data-filter');
+      const eventItems = document.querySelectorAll('.event-item');
+      const filterEmpty = document.querySelector('.filter-empty');
+      const filterEmptyTitle = document.querySelector('.filter-empty-title');
+
+      let visibleCount = 0;
+
+      eventItems.forEach(item => {
+        const status = item.getAttribute('data-status');
+        if (filter === 'all' || status === filter) {
+          item.style.display = 'block';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      // 필터링 결과에 따른 빈 상태 처리
+      if (eventItems.length > 0 && visibleCount === 0) {
+        filterEmpty.style.display = 'flex';
+
+        // 필터별 메시지 변경
+        switch(filter) {
+          case 'before':
+            filterEmptyTitle.textContent = '예정된 이벤트가 없습니다';
+            break;
+          case 'ing':
+            filterEmptyTitle.textContent = '진행중인 이벤트가 없습니다';
+            break;
+          case 'end':
+            filterEmptyTitle.textContent = '종료된 이벤트가 없습니다';
+            break;
+          default:
+            filterEmptyTitle.textContent = '해당하는 이벤트가 없습니다';
+        }
+      } else {
+        filterEmpty.style.display = 'none';
+      }
+    });
+  });
+
+  function inquiryBtn() {
+    // form 데이터 수집
+    const inquiryCategory = document.getElementById("inquiryCategory").value.trim();
+    const inquiryTitle = document.getElementById("inquiryTitle").value.trim();
+    const inquiryContent = document.getElementById("inquiryContent").value.trim();
+    const inquiryEmail = document.getElementById("inquiryEmail").value.trim();
+
+    // 간단한 유효성 검사
+    if (!inquiryCategory || !inquiryTitle || !inquiryContent || !inquiryEmail) {
+      alert("모든 항목을 입력해주세요.");
+      return;
+    }
+
+    // 서버에 전송
+    $.ajax({
+      url: "/customer-service/inquiry",  // form의 action과 동일
+      method: "POST",
+      contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+      data: {
+        inquiryCategory: inquiryCategory,
+        inquiryTitle: inquiryTitle,
+        inquiryContent: inquiryContent,
+        inquiryEmail: inquiryEmail
+      },
+      success: function(response) {
+        alert("문의가 정상적으로 등록되었습니다.");
+        window.location.href='/customer-service?tab=inquiry';  // 성공 시 이동할 페이지
+      },
+      error: function(xhr, status, error) {
+        console.error("오류 발생:", error);
+        alert("오류가 발생했습니다. 다시 시도해주세요.");
+        window.location.href='/customer-service?tab=inquiry';
+      }
+    });
+  }
+
+</script>
+
+</body>
+</html>

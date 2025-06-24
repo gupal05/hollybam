@@ -19,6 +19,7 @@ public interface IF_ProductDao {
     public int insertProductOptions(ProductDto productDto);
     public List<ProductDto> getProductList();
     public List<ProductDto> selectBestProducts();
+    public List<ProductDto> selectBestProductsForMobile();
     public List<ProductDto> selectNewProducts();
     public ProductDto getProductDetailInfo_first(String productId);
     public List<ImageDto> getProductInfoThumbnail(int productCode);

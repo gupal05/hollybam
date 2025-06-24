@@ -1,4 +1,4 @@
-// 홀리밤 소식 슬라이더
+// 홀리밤 소식 슬라이더 - 완전 수정된 반응형 버전
 $(document).ready(function() {
     const $newsSlider = $('#newsSlider');
     const $newsCards = $('.news-card');
@@ -7,28 +7,37 @@ $(document).ready(function() {
 
     if (newsCardCount > 0) {
         let newsCurrentIndex = 0;
-        let newsSlideDistance = 448; // 고정된 슬라이드 거리 448px
+        let newsSlideDistance = 448; // 기본 슬라이드 거리
         let newsCurrentPosition = 0;
         let newsIsTransitioning = false;
         let newsVisibleCards = 3;
+        let isDesktop = true;
 
-        // 반응형 처리
+        // 반응형 처리 - 더 정확한 breakpoint 체크
         function updateNewsSliderSettings() {
             const windowWidth = $(window).width();
+            const wasDesktop = isDesktop;
 
-            if (windowWidth <= 480) {
+            if (windowWidth <= 1024) {
+                // 태블릿 및 모바일: 한 장씩 표시
                 newsVisibleCards = 1;
-                newsSlideDistance = 320; // 모바일에서는 320px
-            } else if (windowWidth <= 768) {
-                newsVisibleCards = 1;
-                newsSlideDistance = 360; // 태블릿에서는 360px
-            } else if (windowWidth <= 1024) {
-                newsVisibleCards = 2;
-                newsSlideDistance = 400; // 중간 화면에서는 400px
+                isDesktop = false;
+
+                // 실제 컨테이너 너비 사용 (패딩 없이 전체 너비)
+                const containerWidth = $newsSlider.parent().outerWidth();
+                newsSlideDistance = containerWidth;
             } else {
+                // 데스크톱: 3장씩 표시 (기존 유지)
                 newsVisibleCards = 3;
-                newsSlideDistance = 448; // 데스크톱에서는 448px
+                newsSlideDistance = 448; // 원본 값 유지
+                isDesktop = true;
             }
+
+            // 데스크톱 ↔ 모바일 전환 시 슬라이더 재설정
+            if (wasDesktop !== isDesktop) {
+                return true; // 재설정 필요
+            }
+            return false; // 재설정 불필요
         }
 
         function setupNewsInfiniteLoop() {
@@ -82,31 +91,23 @@ $(document).ready(function() {
             setTimeout(() => {
                 // 끝에 도달했을 때 처리
                 if (newsCurrentPosition >= (newsCardCount * 2) * newsSlideDistance) {
-                    // transition 없이 시작 위치로 이동
                     $newsSlider.css('transition', 'none');
                     newsCurrentPosition = newsCardCount * newsSlideDistance;
                     $newsSlider.css('transform', 'translateX(' + (-newsCurrentPosition) + 'px)');
-
-                    // 다음 프레임에서 transition 재활성화
-                    requestAnimationFrame(() => {
-                        $newsSlider.css('transition', 'transform 0.8s ease');
-                    });
                 }
                 // 시작에 도달했을 때 처리
                 else if (newsCurrentPosition < newsCardCount * newsSlideDistance) {
-                    // transition 없이 끝 위치로 이동
                     $newsSlider.css('transition', 'none');
                     newsCurrentPosition = (newsCardCount * 2 - 1) * newsSlideDistance;
                     $newsSlider.css('transform', 'translateX(' + (-newsCurrentPosition) + 'px)');
-
-                    // 다음 프레임에서 transition 재활성화
-                    requestAnimationFrame(() => {
-                        $newsSlider.css('transition', 'transform 0.8s ease');
-                    });
                 }
 
-                newsIsTransitioning = false;
-            }, 800); // transition 시간과 동일하게 설정
+                // 다음 프레임에서 transition 재활성화
+                requestAnimationFrame(() => {
+                    $newsSlider.css('transition', 'transform 0.8s ease');
+                    newsIsTransitioning = false;
+                });
+            }, 800);
         }
 
         function goToNewsSlide(index) {
@@ -131,6 +132,52 @@ $(document).ready(function() {
             }, 800);
         }
 
+        // 터치/스와이프 이벤트
+        let startX = 0;
+        let isDragging = false;
+        let hasTouchEvents = false;
+
+        function addTouchEvents() {
+            if (hasTouchEvents) return;
+            hasTouchEvents = true;
+
+            $newsSlider.on('touchstart.newsSlider', function(e) {
+                if (newsIsTransitioning) return;
+                isDragging = true;
+                startX = e.originalEvent.touches[0].clientX;
+                e.preventDefault();
+            });
+
+            $newsSlider.on('touchmove.newsSlider', function(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+            });
+
+            $newsSlider.on('touchend.newsSlider', function(e) {
+                if (!isDragging) return;
+                isDragging = false;
+
+                const endX = e.originalEvent.changedTouches[0].clientX;
+                const diffX = startX - endX;
+
+                // 50px 이상 움직였을 때만 슬라이드 변경
+                if (Math.abs(diffX) > 50) {
+                    stopNewsAutoSlide();
+                    if (diffX > 0) {
+                        moveNewsSlider('next');
+                    } else {
+                        moveNewsSlider('prev');
+                    }
+                    setTimeout(startNewsAutoSlide, 1000);
+                }
+            });
+        }
+
+        function removeTouchEvents() {
+            $newsSlider.off('.newsSlider');
+            hasTouchEvents = false;
+        }
+
         let newsAutoSlideInterval;
         function startNewsAutoSlide() {
             newsAutoSlideInterval = setInterval(() => moveNewsSlider('next'), 4000);
@@ -144,46 +191,80 @@ $(document).ready(function() {
         $('#newsNextBtn').on('click', () => {
             moveNewsSlider('next');
             stopNewsAutoSlide();
-            startNewsAutoSlide();
+            setTimeout(startNewsAutoSlide, 1000);
         });
 
         $('#newsPrevBtn').on('click', () => {
             moveNewsSlider('prev');
             stopNewsAutoSlide();
-            startNewsAutoSlide();
+            setTimeout(startNewsAutoSlide, 1000);
         });
 
         $newsDots.on('click', function() {
             const slideIndex = parseInt($(this).data('slide'));
             goToNewsSlide(slideIndex);
             stopNewsAutoSlide();
-            startNewsAutoSlide();
+            setTimeout(startNewsAutoSlide, 1000);
         });
 
         $('.hollybam-news-section').hover(stopNewsAutoSlide, startNewsAutoSlide);
 
-        // 리사이즈 이벤트
+        // 리사이즈 이벤트 - 디바운스 추가
+        let resizeTimer;
         $(window).on('resize', function() {
-            updateNewsSliderSettings();
-            stopNewsAutoSlide();
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                const needsReset = updateNewsSliderSettings();
 
-            // 슬라이더 재설정
-            setupNewsInfiniteLoop();
-            newsCurrentIndex = 0;
-            updateNewsDots();
+                if (needsReset) {
+                    stopNewsAutoSlide();
 
-            startNewsAutoSlide();
+                    // 슬라이더 재설정
+                    setupNewsInfiniteLoop();
+                    newsCurrentIndex = 0;
+                    updateNewsDots();
+
+                    // 터치 이벤트 재설정
+                    removeTouchEvents();
+                    if (!isDesktop) {
+                        addTouchEvents();
+                    }
+
+                    setTimeout(startNewsAutoSlide, 500);
+                } else {
+                    // 같은 모드 내에서의 크기 변경은 슬라이드 거리만 업데이트
+                    if (!isDesktop) {
+                        const containerWidth = $newsSlider.parent().outerWidth();
+                        const newDistance = containerWidth; // 패딩 없이 전체 너비 사용
+
+                        if (Math.abs(newDistance - newsSlideDistance) > 10) {
+                            newsSlideDistance = newDistance;
+                            newsCurrentPosition = (newsCardCount + newsCurrentIndex) * newsSlideDistance;
+                            $newsSlider.css({
+                                'transition': 'none',
+                                'transform': 'translateX(' + (-newsCurrentPosition) + 'px)'
+                            });
+                        }
+                    }
+                }
+            }, 250);
         });
 
         // 초기 설정
         updateNewsSliderSettings();
         setupNewsInfiniteLoop();
         updateNewsDots();
+
+        // 모바일/태블릿에서만 터치 이벤트 추가
+        if (!isDesktop) {
+            addTouchEvents();
+        }
+
         startNewsAutoSlide();
     }
 });
 
-// 비디오 팝업 기능
+// 비디오 팝업 기능 (기존 유지)
 $(document).ready(function() {
     const $videoModal = $('#videoModal');
     const $modalVideo = $('#modalVideo');

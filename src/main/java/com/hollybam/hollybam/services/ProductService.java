@@ -57,6 +57,13 @@ public class ProductService implements IF_ProductService{
 
     @Override
     @Transactional
+    public List<ProductDto>selectBestProductsForMobile(){
+        List<ProductDto> productList = productDao.selectBestProductsForMobile();
+        return productDao.selectBestProductsForMobile();
+    }
+
+    @Override
+    @Transactional
     public List<ProductDto> selectNewProducts() {
         return productDao.selectNewProducts();
     }

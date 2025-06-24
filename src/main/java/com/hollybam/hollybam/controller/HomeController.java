@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.http.HttpRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -35,8 +37,17 @@ public class HomeController {
     }
 
     @GetMapping("/main")
-    public ModelAndView mainPage(ModelAndView mav, RedirectAttributes rttr){
-        List<ProductDto> proList = productService.selectBestProducts();
+    public ModelAndView mainPage(ModelAndView mav, HttpServletRequest request){
+        List<ProductDto> proList = new ArrayList<>();
+        String userAgent = request.getHeader("User-Agent");
+        String deviceType = detectDevice(userAgent);
+        if(deviceType.equals("pc")){
+            proList = productService.selectBestProducts();
+            System.out.println("pc 8");
+        } else {
+            proList = productService.selectBestProductsForMobile();
+            System.out.println("mo 4"+proList.size());
+        }
         List<ProductDto> newProList = productService.selectNewProducts();
         mav.addObject("proList", proList);
         mav.addObject("newProList", newProList);
@@ -49,4 +60,21 @@ public class HomeController {
 
     @GetMapping("/real")
     public String realPage(){ return "/real"; }
+
+
+    private String detectDevice(String userAgent) {
+        userAgent = userAgent.toLowerCase();
+
+        // 모바일
+        if (userAgent.contains("mobi")) {
+            // 태블릿은 대부분 "tablet" 또는 "ipad" 포함
+            if (userAgent.contains("tablet") || userAgent.contains("ipad")) {
+                return "tablet";
+            }
+            return "mobile";
+        }
+
+        // PC
+        return "pc";
+    }
 }

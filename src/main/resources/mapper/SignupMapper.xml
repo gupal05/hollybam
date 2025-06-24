@@ -39,5 +39,21 @@
         DELETE FROM guest_user WHERE guest_uuid = #{uuid}
     </delete>
 
+    <select id="getMemberCode" resultType="int" parameterType="String">
+        select mem_code
+        from member
+        where mem_id = #{memberId}
+    </select>
+
+    <select id="getSignupCouponCode" resultType="int">
+        select coupon.coupon_code
+        from coupon
+        where coupon_name = '회원가입 쿠폰'
+    </select>
+
+    <insert id="insertSignupCoupon" parameterType="int">
+        insert into coupon_member(coupon_code, mem_code, issued_at, used)
+        values(#{signupCouponCode}, #{memberCode}, NOW(), 0)
+    </insert>
 
 </mapper>

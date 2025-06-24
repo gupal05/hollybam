@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.IF_InquiryDao">
+
+    <select id="selectInquiryList" parameterType="int" resultType="com.hollybam.hollybam.dto.InquiryDto">
+        select inquiry_code as inquiryCode,
+               inquiry_title as inquiryTitle,
+               inquiry_content as inquiryContent,
+               inquiry_category as inquiryCategory,
+               inquiry_status as inquiryStatus,
+               inquiry_email as inquiryEmail,
+               create_at as createAt,
+               update_at as updateAt
+        from inquiry
+        where mem_code = #{memberCode}
+    </select>
+
+    <insert id="insertInquiry" parameterType="com.hollybam.hollybam.dto.InquiryDto">
+        insert into inquiry(mem_code, inquiry_title, inquiry_content, inquiry_category, inquiry_status, inquiry_email)
+        values(#{inquiryCode}, #{inquiryTitle}, #{inquiryContent}, #{inquiryCategory}, default, #{inquiryEmail})
+    </insert>
+
+</mapper>

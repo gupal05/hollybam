@@ -88,9 +88,6 @@ public class CartController {
         } else if (guestUuid != null) {
             cartItems = cartService.getCartItemsByGuest(guestUuid);
         }
-        for(CartDto cartDto : cartItems) {
-            System.out.println(cartDto);
-        }
         mav.addObject("cartItems", cartItems);
         mav.setViewName("/cart");
         return mav;

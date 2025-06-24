@@ -7,4 +7,7 @@ public interface IF_SignupService {
     public int signup(MemberDto memberDto);
     public MemberDto getGuestInfo(String uuId);
     public void deleteGuestByUuid(String uuid);
+    public int getMemberCode(String memberId);
+    public void insertSignupCoupon(int memberCode, int signupCouponCode);
+    public int getSignupCouponCode();
 }

@@ -118,7 +118,7 @@
             margin-left: 4px;
         }
 
-        .form-input {
+        .form-input, .form-select {
             width: 100%;
             padding: 14px 16px;
             border: 1px solid #e0e0e0;
@@ -128,15 +128,40 @@
             background: #fff;
         }
 
-        .form-input:focus {
+        .form-input:focus, .form-select:focus {
             outline: none;
             border-color: #EE386D;
             box-shadow: 0 0 0 3px rgba(238, 56, 109, 0.1);
         }
 
-        .form-input.error {
+        .form-input.error, .form-select.error {
             border-color: #dc3545;
             box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .form-input:disabled, .form-select:disabled {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+            border-color: #e9ecef;
+        }
+
+        .form-input.readonly-field {
+            background-color: #f8f9fa;
+            color: #495057;
+            border-color: #ced4da;
+            cursor: default;
+        }
+
+        .btn-search.disabled-button {
+            background-color: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-search.disabled-button:hover {
+            background-color: #6c757d;
+            transform: none;
         }
 
         .form-input::placeholder {
@@ -152,7 +177,7 @@
             flex: 1;
         }
 
-        .btn-search {
+        .btn-search, .btn-apply {
             background: #EE386D;
             color: white;
             border: none;
@@ -165,9 +190,144 @@
             white-space: nowrap;
         }
 
-        .btn-search:hover {
+        .btn-search:hover, .btn-apply:hover {
             background: #d63060;
             transform: translateY(-1px);
+        }
+
+        .btn-apply:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-select.disabled-coupon {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+            border-color: #e9ecef;
+        }
+
+        .form-input.disabled-input {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+            border-color: #e9ecef;
+        }
+
+        .btn-apply.disabled-button {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-apply.disabled-button:hover {
+            background: #6c757d;
+            transform: none;
+        }
+
+        /* 로딩 상태 버튼 스타일 */
+        .btn-apply.loading {
+            background: #6c757d !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            pointer-events: none;
+        }
+
+        .btn-apply.loading .btn-text {
+            display: none;
+        }
+
+        .btn-apply.loading .btn-loading {
+            display: inline-block;
+        }
+
+        .btn-loading {
+            display: none;
+        }
+
+        /* 쿠폰 및 할인 코드 섹션 */
+        .discount-section {
+            border: 2px dashed #EE386D;
+            border-radius: 16px;
+            padding: 24px;
+            background: linear-gradient(135deg, #fff8fa 0%, #fff 100%);
+            margin-bottom: 20px;
+        }
+
+        .discount-section .section-title {
+            border-bottom: none;
+            margin-bottom: 20px;
+            color: #EE386D;
+        }
+
+        .discount-section .section-title::before {
+            display: none;
+        }
+
+        .discount-section .section-title::after {
+            content: '💸';
+            margin-left: 8px;
+        }
+
+        .discount-notice {
+            font-size: 12px;
+            color: #666;
+            background: rgba(238, 56, 109, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(238, 56, 109, 0.2);
+            white-space: nowrap;
+        }
+
+        .coupon-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .coupon-info.active {
+            color: #EE386D;
+            font-weight: 500;
+        }
+
+        .discount-code-group {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .discount-code-group .form-input {
+            flex: 1;
+        }
+
+        .discount-applied {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            color: #0369a1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .discount-applied .remove-discount {
+            background: none;
+            border: none;
+            color: #0369a1;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .discount-applied .remove-discount:hover {
+            background: rgba(3, 105, 161, 0.1);
         }
 
         /* 에러 메시지 스타일 */
@@ -374,6 +534,10 @@
             color: #333;
         }
 
+        .price-value.discount {
+            color: #EE386D;
+        }
+
         .total-row {
             margin-top: 20px;
             padding-top: 20px;
@@ -491,6 +655,29 @@
                 font-size: 24px;
                 margin-bottom: 30px;
             }
+
+            .discount-code-group {
+                flex-direction: column;
+            }
+
+            .discount-code-group .btn-apply {
+                width: 100%;
+            }
+
+            .discount-notice {
+                font-size: 11px;
+                padding: 3px 6px;
+            }
+
+            .discount-section > div:first-child {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 8px;
+            }
+
+            .discount-section .section-title {
+                width: 100%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -550,6 +737,68 @@
                 </div>
             </div>
 
+            <!-- 쿠폰 및 할인 코드 섹션 -->
+            <div class="form-section">
+                <div class="discount-section">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                        <h2 class="section-title" style="margin-bottom: 0;">쿠폰 & 할인코드</h2>
+                        <span class="discount-notice">쿠폰과 할인코드는 중복 사용 불가</span>
+                    </div>
+
+                    <!-- 쿠폰 선택 -->
+                    <div class="form-group">
+                        <label class="form-label">보유 쿠폰</label>
+                        <select id="couponSelect" class="form-select" th:disabled="${#lists.isEmpty(couponList)}">
+                            <option value="" th:if="${!#lists.isEmpty(couponList)}">쿠폰을 선택해주세요</option>
+                            <option value="" th:if="${#lists.isEmpty(couponList)}" disabled>사용 가능한 쿠폰이 없습니다</option>
+
+                            <!-- DB에서 가져온 쿠폰 리스트 표시 -->
+                            <option th:each="coupon : ${couponList}"
+                                    th:value="${coupon.couponId}"
+                                    th:data-type="${coupon.discountType}"
+                                    th:data-value="${coupon.discountValue}"
+                                    th:data-min-amount="${coupon.minOrderPrice}"
+                                    th:text="${coupon.couponName} + ' (' + ${#numbers.formatInteger(coupon.minOrderPrice, 0, 'COMMA')} + '원 이상)'">
+                            </option>
+                        </select>
+                        <div class="coupon-info" id="couponInfo">
+                            <i class="fas fa-info-circle"></i>
+                            <span th:if="${!#lists.isEmpty(couponList)}">사용 가능한 쿠폰을 선택하면 할인이 적용됩니다</span>
+                            <span th:if="${#lists.isEmpty(couponList)}" style="color: #999;">현재 사용 가능한 쿠폰이 없습니다</span>
+                        </div>
+                    </div>
+
+                    <!-- 할인 코드 입력 -->
+                    <div class="form-group">
+                        <label class="form-label">할인코드</label>
+                        <div class="discount-code-group">
+                            <input type="text" id="discountCode" class="form-input" placeholder="할인코드를 입력해주세요" maxlength="20">
+                            <button type="button" class="btn-apply" id="applyDiscountCode">
+                                <span class="btn-text">적용</span>
+                                <span class="btn-loading">
+                                    <i class="fas fa-spinner fa-spin"></i> 확인중
+                                </span>
+                            </button>
+                        </div>
+                        <div class="coupon-info">
+                            <i class="fas fa-gift"></i>
+                            <span>할인코드는 대소문자를 구분합니다</span>
+                        </div>
+                    </div>
+
+                    <!-- 적용된 할인 표시 -->
+                    <div id="appliedDiscount" class="discount-applied" style="display: none;">
+                        <div>
+                            <i class="fas fa-check-circle"></i>
+                            <span id="discountText">할인이 적용되었습니다</span>
+                        </div>
+                        <button type="button" class="remove-discount" onclick="removeDiscount()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- 배송 정보 -->
             <div class="form-section">
                 <h2 class="section-title">배송 정보</h2>
@@ -570,22 +819,30 @@
                            th:value="${member != null} ? ${member.memberPhone} : ''" required>
                     <div class="field-error" id="receiverPhone-error"></div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label required">주소</label>
-                    <div class="input-group">
-                        <input type="text" id="receiverZip" class="form-input" placeholder="우편번호"
-                               th:value="${member != null} ? ${member.memberZip} : ''" required readonly>
-                        <button type="button" class="btn-search" onclick="execDaumPostcode()">주소 검색</button>
+
+                <!-- 주소 입력 필드들 -->
+                <div class="address-fields" id="addressFields">
+                    <div class="form-group">
+                        <label class="form-label required">주소</label>
+                        <div class="input-group">
+                            <input type="text" id="receiverZip" class="form-input" placeholder="우편번호"
+                                   th:value="${member != null} ? ${member.memberZip} : ''"
+                                   th:data-member-zip="${member != null} ? ${member.memberZip} : ''"
+                                   required readonly>
+                            <button type="button" class="btn-search" onclick="execDaumPostcode()">주소 검색</button>
+                        </div>
+                        <input type="text" id="receiverAddr" class="form-input" placeholder="기본 주소"
+                               th:value="${member != null} ? ${member.memberAddr} : ''"
+                               th:data-member-addr="${member != null} ? ${member.memberAddr} : ''"
+                               style="margin-top: 10px;" required readonly>
+                        <input type="text" id="receiverAddrDetail" class="form-input" placeholder="상세 주소를 입력해주세요"
+                               style="margin-top: 10px;" required>
+                        <div class="field-error" id="receiverAddr-error"></div>
                     </div>
-                    <input type="text" id="receiverAddr" class="form-input" placeholder="기본 주소"
-                           th:value="${member != null} ? ${member.memberAddr} : ''" style="margin-top: 10px;" required readonly>
-                    <input type="text" id="receiverAddrDetail" class="form-input" placeholder="상세 주소를 입력해주세요"
-                           style="margin-top: 10px;" required>
-                    <div class="field-error" id="receiverAddr-error"></div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">배송 요청사항</label>
-                    <input type="text" id="deliveryRequest" class="form-input" placeholder="배송 시 요청사항을 입력해주세요 (선택)">
+                    <div class="form-group">
+                        <label class="form-label">배송 요청사항</label>
+                        <input type="text" id="deliveryRequest" class="form-input" placeholder="배송 시 요청사항을 입력해주세요 (선택)">
+                    </div>
                 </div>
             </div>
 
@@ -672,10 +929,14 @@
             <div class="price-breakdown">
                 <div class="price-row">
                     <span class="price-label">상품 금액</span>
-                    <span class="price-value" th:text="'₩' + ${#numbers.formatInteger(paymentInfo.totalAmount, 0, 'COMMA')}">₩0</span>
+                    <span class="price-value" id="originalAmount" th:text="'₩' + ${#numbers.formatInteger(paymentInfo.totalAmount, 0, 'COMMA')}">₩0</span>
+                </div>
+                <div class="price-row" id="discountRow" style="display: none;">
+                    <span class="price-label" id="discountLabel">할인</span>
+                    <span class="price-value discount" id="discountAmount">-₩0</span>
                 </div>
                 <div class="price-row">
-                    <span class="price-label">할인 금액</span>
+                    <span class="price-label">기본 할인</span>
                     <span class="price-value" th:text="'-₩' + ${#numbers.formatInteger(paymentInfo.discountAmount, 0, 'COMMA')}">₩0</span>
                 </div>
                 <div class="price-row">
@@ -684,13 +945,13 @@
                 </div>
                 <div class="price-row total-row">
                     <span class="price-label">총 결제 금액</span>
-                    <span class="price-value" th:text="'₩' + ${#numbers.formatInteger(paymentInfo.finalAmount, 0, 'COMMA')}">₩0</span>
+                    <span class="price-value" id="finalAmount" th:text="'₩' + ${#numbers.formatInteger(paymentInfo.finalAmount, 0, 'COMMA')}">₩0</span>
                 </div>
             </div>
 
             <button type="button" class="checkout-button" id="paymentButton">
                 <i class="fas fa-lock" style="margin-right: 8px;"></i>
-                <span th:text="'₩' + ${#numbers.formatInteger(paymentInfo.finalAmount, 0, 'COMMA')} + ' 결제하기'">₩0 결제하기</span>
+                <span id="paymentButtonText" th:text="'₩' + ${#numbers.formatInteger(paymentInfo.finalAmount, 0, 'COMMA')} + ' 결제하기'">₩0 결제하기</span>
             </button>
         </div>
     </div>
@@ -707,6 +968,17 @@
     const paymentInfo = /*[[${paymentInfo}]]*/ {};
     const cartCodes = /*[[${cartCodes}]]*/ [];
     const cartItems = /*[[${cartItems}]]*/ [];
+
+    // 회원 정보 (Thymeleaf에서 안전하게 추출)
+    const memberInfo = {
+        memberZip: /*[[${member != null ? member.memberZip : ''}]]*/ '',
+        memberAddr: /*[[${member != null ? member.memberAddr : ''}]]*/ ''
+    };
+
+    // 할인 관련 변수 (단독 사용)
+    let activeDiscount = null; // 현재 활성화된 할인 (쿠폰 또는 할인코드)
+    let originalAmount = paymentInfo.totalAmount || 0;
+    let currentTotalAmount = paymentInfo.finalAmount || 0;
 
     // 아임포트 초기화
     window.IMP.init("imp03183375");
@@ -731,6 +1003,9 @@
         // 초기 유효성 검사
         validateAllFields();
 
+        // 초기 주소 필드 상태 설정
+        updateAddressFields();
+
         console.log("Payment Info:", paymentInfo);
         console.log("Cart Items:", cartItems);
     });
@@ -745,6 +1020,7 @@
 
         // 주문자 정보와 동일 체크박스
         $('#same-info').change(function() {
+            updateAddressFields();
             if ($(this).is(':checked')) {
                 $('#receiverName').val($('#ordererName').val());
                 $('#receiverPhone').val($('#ordererPhone').val());
@@ -753,12 +1029,49 @@
             } else {
                 $('#receiverName').val('');
                 $('#receiverPhone').val('');
+                $('#receiverZip').val('');
+                $('#receiverAddr').val('');
+                $('#receiverAddrDetail').val('');
+                $('#deliveryRequest').val('');
                 clearFieldError('receiverName');
                 clearFieldError('receiverPhone');
+                clearFieldError('receiverAddr');
                 validationState.receiverName = false;
                 validationState.receiverPhone = false;
+                validationState.receiverAddr = false;
             }
             updatePaymentButton();
+        });
+
+        // 쿠폰 선택
+        $('#couponSelect').change(function() {
+            if ($(this).prop('disabled')) {
+                return;
+            }
+
+            const selectedOption = $(this).find('option:selected');
+            applyCoupon(selectedOption);
+        });
+
+        // 할인코드 적용
+        $('#applyDiscountCode').click(function() {
+            if ($(this).prop('disabled') || $(this).hasClass('loading')) {
+                return;
+            }
+
+            const code = $('#discountCode').val().trim();
+            if (code) {
+                applyDiscountCode(code);
+            } else {
+                showUserMessage('할인코드를 입력해주세요.', 'error');
+            }
+        });
+
+        // 할인코드 입력 시 엔터키 처리
+        $('#discountCode').keypress(function(e) {
+            if (e.which === 13 && !$(this).prop('disabled') && !$('#applyDiscountCode').hasClass('loading')) {
+                $('#applyDiscountCode').click();
+            }
         });
 
         // 전체 동의 체크박스
@@ -808,13 +1121,318 @@
             if (isFormValid()) {
                 processPayment();
             } else {
-                // 첫 번째 오류 필드로 포커스
                 const firstErrorField = Object.keys(validationState).find(key => !validationState[key]);
                 if (firstErrorField && firstErrorField !== 'agreeTerms' && firstErrorField !== 'agreePrivacy' && firstErrorField !== 'agreeAdult') {
                     $('#' + firstErrorField).focus();
                 }
             }
         });
+    }
+
+    // 할인코드 적용 (백엔드 검증)
+    function applyDiscountCode(code) {
+        // 쿠폰이 이미 적용된 경우 경고
+        if (activeDiscount && activeDiscount.type === 'coupon') {
+            showUserMessage('쿠폰이 이미 적용되어 있습니다. 쿠폰을 해제하고 할인코드를 적용하시겠습니까?', 'warning');
+            if (confirm('쿠폰이 이미 적용되어 있습니다. 쿠폰을 해제하고 할인코드를 적용하시겠습니까?')) {
+                removeActiveDiscount();
+            } else {
+                $('#discountCode').val('');
+                return;
+            }
+        }
+
+        // 입력값 검증
+        if (!code || code.trim().length === 0) {
+            showUserMessage('할인코드를 입력해주세요.', 'error');
+            return;
+        }
+
+        // 할인코드 길이 제한
+        if (code.trim().length > 20) {
+            showUserMessage('할인코드는 20자 이하로 입력해주세요.', 'error');
+            return;
+        }
+
+        // 버튼 로딩 상태로 변경
+        setDiscountButtonLoading(true);
+
+        // 백엔드로 할인코드 검증 요청
+        $.ajax({
+            url: '/order/discount/validate',              // ← 여기를 변경
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                discountId: code.trim(),
+                orderAmount: originalAmount
+            }),
+            success: function(response) {
+                setDiscountButtonLoading(false);
+
+                if (response.success) {
+                    // 할인코드 적용 성공
+                    const discountInfo = response.data;
+
+                    activeDiscount = {
+                        type: 'code',
+                        code: discountInfo.discountId,
+                        discountType: discountInfo.discountType,
+                        value: discountInfo.discountValue,
+                        amount: response.discountAmount,
+                        name: discountInfo.discountDescription || discountInfo.discountId,
+                        serverData: discountInfo
+                    };
+
+                    // 쿠폰 섹션 비활성화
+                    disableCouponSection();
+
+                    updatePriceDisplay();
+                    showAppliedDiscount();
+
+                    const discountTypeText = discountInfo.discountType === 'per'
+                        ? `${discountInfo.discountValue}% 할인`
+                        : `${response.discountAmount.toLocaleString()}원 할인`;
+
+                    showUserMessage(`할인코드가 적용되었습니다. ${discountTypeText}!`, 'success');
+
+                    // 입력 필드 비우기
+                    $('#discountCode').val('');
+
+                    console.log('할인코드 적용 성공:', activeDiscount);
+                } else {
+                    // 할인코드 검증 실패
+                    showUserMessage(response.message || '유효하지 않은 할인코드입니다.', 'error');
+                    $('#discountCode').focus();
+                }
+            },
+            error: function(xhr, status, error) {
+                setDiscountButtonLoading(false);
+
+                let errorMessage = '할인코드 확인 중 오류가 발생했습니다.';
+
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.status === 404) {
+                    errorMessage = '유효하지 않은 할인코드입니다.';
+                } else if (xhr.status === 400) {
+                    errorMessage = '잘못된 요청입니다. 할인코드를 다시 확인해주세요.';
+                } else if (xhr.status === 500) {
+                    errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                }
+
+                console.error('할인코드 검증 오류:', {
+                    status: xhr.status,
+                    response: xhr.responseText,
+                    error: error
+                });
+
+                showUserMessage(errorMessage, 'error');
+                $('#discountCode').focus();
+            }
+        });
+    }
+
+    // 할인코드 버튼 로딩 상태 관리
+    function setDiscountButtonLoading(isLoading) {
+        const $button = $('#applyDiscountCode');
+        const $input = $('#discountCode');
+
+        if (isLoading) {
+            $button.addClass('loading').prop('disabled', true);
+            $input.prop('disabled', true);
+        } else {
+            $button.removeClass('loading').prop('disabled', false);
+            $input.prop('disabled', false);
+        }
+    }
+
+    // 쿠폰 적용 (단독 사용)
+    function applyCoupon(selectedOption) {
+        if ($('#couponSelect').prop('disabled')) {
+            showUserMessage('사용 가능한 쿠폰이 없습니다.', 'info');
+            return;
+        }
+
+        if (selectedOption.val() === '' || selectedOption.prop('disabled')) {
+            removeActiveDiscount();
+            return;
+        }
+
+        // 할인코드가 이미 적용된 경우 경고
+        if (activeDiscount && activeDiscount.type === 'code') {
+            showUserMessage('할인코드가 이미 적용되어 있습니다. 할인코드를 해제하고 쿠폰을 적용하시겠습니까?', 'warning');
+            if (confirm('할인코드가 이미 적용되어 있습니다. 할인코드를 해제하고 쿠폰을 적용하시겠습니까?')) {
+                removeActiveDiscount();
+            } else {
+                $('#couponSelect').val('');
+                return;
+            }
+        }
+
+        const couponCode = selectedOption.val();
+        const discountType = selectedOption.data('type');
+        const discountValue = selectedOption.data('value');
+        const minAmount = selectedOption.data('min-amount');
+
+        // 최소 주문금액 확인
+        if (originalAmount < minAmount) {
+            showUserMessage(`이 쿠폰은 ${minAmount.toLocaleString()}원 이상 주문 시 사용 가능합니다.`, 'error');
+            $('#couponSelect').val('');
+            return;
+        }
+
+        // 할인 금액 계산
+        let discountAmount = 0;
+        if (discountType === 'per') {
+            discountAmount = Math.floor(originalAmount * discountValue / 100);
+        } else if (discountType === 'amount') {
+            discountAmount = discountValue;
+        } else {
+            discountAmount = discountValue;
+            console.warn('알 수 없는 할인 타입:', discountType, '- 고정 금액으로 처리합니다.');
+        }
+
+        // 쿠폰 적용
+        activeDiscount = {
+            type: 'coupon',
+            code: couponCode,
+            discountType: discountType,
+            value: discountValue,
+            amount: discountAmount,
+            name: selectedOption.text()
+        };
+
+        // 할인코드 섹션 비활성화
+        disableDiscountCodeSection();
+
+        updatePriceDisplay();
+        updateCouponInfo(selectedOption.text());
+
+        const discountTypeText = discountType === 'per' ? `${discountValue}% 할인` : `${discountAmount.toLocaleString()}원 할인`;
+        showUserMessage(`쿠폰이 적용되었습니다. ${discountTypeText}!`, 'success');
+    }
+
+    // 활성화된 할인 제거
+    function removeActiveDiscount() {
+        if (!activeDiscount) return;
+
+        const wasCode = activeDiscount.type === 'code';
+
+        activeDiscount = null;
+        updatePriceDisplay();
+
+        if (wasCode) {
+            hideAppliedDiscount();
+            enableCouponSection();
+            showUserMessage('할인코드가 제거되었습니다.', 'info');
+        } else {
+            $('#couponSelect').val('');
+            $('#couponInfo').removeClass('active').html('<i class="fas fa-info-circle"></i><span>사용 가능한 쿠폰을 선택하면 할인이 적용됩니다</span>');
+            enableDiscountCodeSection();
+            showUserMessage('쿠폰이 제거되었습니다.', 'info');
+        }
+
+        console.log('할인이 제거되었습니다. 가격이 원래대로 복원됩니다.');
+    }
+
+    // 가격 표시 업데이트 (단일 할인만 표시)
+    function updatePriceDisplay() {
+        if (activeDiscount) {
+            $('#discountRow').show();
+            $('#discountLabel').text(activeDiscount.type === 'coupon' ? '쿠폰 할인' : '할인코드');
+            $('#discountAmount').text(`-₩${activeDiscount.amount.toLocaleString()}`);
+        } else {
+            $('#discountRow').hide();
+        }
+
+        // 최종 금액 계산
+        const originalFinalAmount = paymentInfo.finalAmount || 0;
+        const totalDiscount = activeDiscount ? activeDiscount.amount : 0;
+        currentTotalAmount = Math.max(0, originalFinalAmount - totalDiscount);
+
+        // 최종 금액 표시 업데이트
+        $('#finalAmount').text(`₩${currentTotalAmount.toLocaleString()}`);
+        $('#paymentButtonText').text(`₩${currentTotalAmount.toLocaleString()} 결제하기`);
+    }
+
+    // 쿠폰 정보 업데이트
+    function updateCouponInfo(couponName) {
+        $('#couponInfo').addClass('active').html(`<i class="fas fa-check-circle"></i><span>${couponName}이 적용되었습니다</span>`);
+    }
+
+    // 적용된 할인 표시
+    function showAppliedDiscount() {
+        const discountText = `${activeDiscount.name} (${activeDiscount.amount.toLocaleString()}원 할인)`;
+        $('#discountText').text(discountText);
+        $('#appliedDiscount').show();
+    }
+
+    // 적용된 할인 숨김
+    function hideAppliedDiscount() {
+        $('#appliedDiscount').hide();
+    }
+
+    // 쿠폰 섹션 비활성화
+    function disableCouponSection() {
+        $('#couponSelect').prop('disabled', true).addClass('disabled-coupon');
+        $('.coupon-info').first().html('<i class="fas fa-info-circle"></i><span style="color: #999;">할인코드가 적용된 상태에서는 쿠폰을 사용할 수 없습니다</span>');
+    }
+
+    // 쿠폰 섹션 활성화
+    function enableCouponSection() {
+        const hasValidCoupons = $('#couponSelect option[value!=""]').length > 0;
+
+        if (hasValidCoupons) {
+            $('#couponSelect').prop('disabled', false).removeClass('disabled-coupon');
+            $('.coupon-info').first().html('<i class="fas fa-info-circle"></i><span>사용 가능한 쿠폰을 선택하면 할인이 적용됩니다</span>');
+        }
+    }
+
+    // 할인코드 섹션 비활성화
+    function disableDiscountCodeSection() {
+        $('#discountCode').prop('disabled', true).addClass('disabled-input');
+        $('#applyDiscountCode').prop('disabled', true).addClass('disabled-button');
+        $('.coupon-info').last().html('<i class="fas fa-gift"></i><span style="color: #999;">쿠폰이 적용된 상태에서는 할인코드를 사용할 수 없습니다</span>');
+    }
+
+    // 할인코드 섹션 활성화
+    function enableDiscountCodeSection() {
+        $('#discountCode').prop('disabled', false).removeClass('disabled-input');
+        $('#applyDiscountCode').prop('disabled', false).removeClass('disabled-button');
+        $('.coupon-info').last().html('<i class="fas fa-gift"></i><span>할인코드는 대소문자를 구분합니다</span>');
+    }
+
+    // 할인 제거 함수 (전역 함수로 노출)
+    function removeDiscount() {
+        removeActiveDiscount();
+    }
+
+    // 주소 필드 표시/숨김 관리
+    function updateAddressFields() {
+        const isSameInfo = $('#same-info').is(':checked');
+        const addressFields = $('#addressFields');
+
+        if (isSameInfo) {
+            // 회원 정보가 있는 경우 주소 필드 자동 채움
+            /*[# th:if="${member != null}" #]*/
+            $('#receiverZip').val(/*[[${member?.memberZip}]]*/ '');
+            $('#receiverAddr').val(/*[[${member?.memberAddr}]]*/ '');
+            /*[/]*/
+
+            // 주소 필드 숨김
+            addressFields.addClass('hidden');
+
+            // 주소 관련 유효성 검사 무시
+            validationState.receiverAddr = true;
+        } else {
+            // 주소 필드 표시
+            addressFields.removeClass('hidden');
+
+            // 주소 유효성 검사 다시 적용
+            validateField('receiverAddr');
+        }
+
+        updatePaymentButton();
     }
 
     function validateField(fieldId) {
@@ -842,21 +1460,23 @@
                 break;
 
             case 'receiverAddr':
-                const zip = $('#receiverZip').val().trim();
-                const addr = $('#receiverAddr').val().trim();
-                const addrDetail = $('#receiverAddrDetail').val().trim();
-                isValid = zip.length > 0 && addr.length > 0 && addrDetail.length > 0;
-                errorMessage = isValid ? '' : '주소를 모두 입력해주세요.';
+                if ($('#same-info').is(':checked')) {
+                    isValid = true;
+                } else {
+                    const zip = $('#receiverZip').val().trim();
+                    const addr = $('#receiverAddr').val().trim();
+                    const addrDetail = $('#receiverAddrDetail').val().trim();
+                    isValid = zip.length > 0 && addr.length > 0 && addrDetail.length > 0;
+                    errorMessage = isValid ? '' : '주소를 모두 입력해주세요.';
+                }
                 break;
         }
 
-        // 유효성 상태 업데이트
         validationState[fieldId] = isValid;
 
-        // UI 업데이트
         if (isValid) {
             clearFieldError(fieldId);
-        } else if (value.length > 0) { // 값이 있을 때만 에러 표시
+        } else if (value.length > 0) {
             showFieldError(fieldId, errorMessage);
         } else {
             clearFieldError(fieldId);
@@ -915,53 +1535,38 @@
     }
 
     function processPayment() {
-        // 최종 유효성 검사
         if (!isFormValid()) {
             showUserMessage('모든 필수 항목을 올바르게 입력해주세요.', 'error');
             return;
         }
 
-        // 결제 진행 상태 설정
         isPaymentProcessing = true;
 
-        // 결제 준비 데이터 구성
         const paymentData = {
-            // 주문자 정보
             ordererName: $('#ordererName').val(),
             ordererPhone: $('#ordererPhone').val(),
             ordererEmail: $('#ordererEmail').val(),
-
-            // 배송 정보
             receiverName: $('#receiverName').val(),
             receiverPhone: $('#receiverPhone').val(),
             receiverZip: $('#receiverZip').val(),
             receiverAddr: $('#receiverAddr').val(),
-            receiverAddrDetail: $('#receiverAddrDetail').val(),
+            receiverAddrDetail: $('#same-info').is(':checked') ? '' : $('#receiverAddrDetail').val(),
             deliveryRequest: $('#deliveryRequest').val(),
-
-            // 결제 정보
             paymentMethod: $('input[name="payment"]:checked').val(),
-            totalAmount: paymentInfo.totalAmount,
-            discountAmount: paymentInfo.discountAmount,
-            deliveryFee: paymentInfo.deliveryFee,
-            finalAmount: paymentInfo.finalAmount,
-
-            // 장바구니 정보
+            totalAmount: originalAmount,
+            discountAmount: paymentInfo.discountAmount || 0,
+            deliveryFee: paymentInfo.deliveryFee || 0,
+            appliedDiscount: activeDiscount,
+            finalAmount: currentTotalAmount,
             cartCodes: cartCodes,
-
-            // 약관 동의
             agreeTerms: $('#agree-terms').is(':checked'),
             agreePrivacy: $('#agree-privacy').is(':checked'),
             agreeMarketing: $('#agree-marketing').is(':checked'),
-
-            // 성인인증 (서버에서 확인됨)
             adultVerified: true
         };
 
-        // 로딩 상태 설정
         setPaymentButtonLoading(true);
 
-        // 결제 준비 요청
         $.ajax({
             url: '/order/payment/prepare',
             method: 'POST',
@@ -969,7 +1574,6 @@
             data: JSON.stringify(paymentData),
             success: function(response) {
                 if (response.success) {
-                    // 아임포트 결제 요청
                     requestPayment(response.orderId, paymentData);
                 } else {
                     showUserMessage('결제 준비 실패: ' + response.message, 'error');
@@ -986,7 +1590,6 @@
         });
     }
 
-    // 결제 버튼 로딩 상태 설정
     function setPaymentButtonLoading(isLoading) {
         const $button = $('#paymentButton');
 
@@ -1013,31 +1616,11 @@
                     'color': 'white'
                 });
 
-            // 원래 텍스트 복원
-            if (paymentInfo && paymentInfo.finalAmount) {
-                $button.html('<i class="fas fa-lock" style="margin-right: 8px;"></i>₩' + paymentInfo.finalAmount.toLocaleString() + ' 결제하기');
-            } else {
-                $button.html('<i class="fas fa-lock" style="margin-right: 8px;"></i>결제하기');
-            }
+            $('#paymentButtonText').text(`₩${currentTotalAmount.toLocaleString()} 결제하기`);
         }
     }
 
-    // 사용자 메시지 애니메이션 CSS 추가
-    $('<style>').text(`
-        @keyframes slideDown {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-    `).appendTo('head');
-
     function requestPayment(orderId, paymentData) {
-        // 상품명을 동적으로 생성
         let productName = "홀리밤 상품";
         if (cartItems && cartItems.length > 0) {
             if (cartItems.length === 1) {
@@ -1052,27 +1635,25 @@
             pay_method: paymentData.paymentMethod,
             merchant_uid: orderId,
             name: productName,
-            amount: paymentData.finalAmount,
+            amount: currentTotalAmount,
             buyer_email: paymentData.ordererEmail,
             buyer_name: paymentData.ordererName,
             buyer_tel: paymentData.ordererPhone,
             buyer_addr: paymentData.receiverAddr + ' ' + (paymentData.receiverAddrDetail || ''),
             buyer_postcode: paymentData.receiverZip,
             m_redirect_url: window.location.origin + "/order/payment/mobile-callback",
-            // 성인용품 관련 추가 정보
             custom_data: {
                 adult_verified: true,
                 product_type: "adult_products",
-                cart_codes: cartCodes
+                cart_codes: cartCodes,
+                applied_discount: activeDiscount
             }
         };
 
         IMP.request_pay(paymentRequest, function(response) {
-            // 결제 진행 상태 해제
             isPaymentProcessing = false;
 
             if (response.success) {
-                // 결제 성공 - 서버 검증 요청
                 $.ajax({
                     url: '/order/payment/complete',
                     method: 'POST',
@@ -1082,7 +1663,6 @@
                     },
                     success: function(serverResponse) {
                         if (serverResponse.success) {
-                            // 결제 완료 페이지로 이동
                             window.location.href = '/order/payment/success?orderId=' + orderId;
                         } else {
                             alert('결제 검증 실패: ' + serverResponse.message);
@@ -1095,21 +1675,14 @@
                     }
                 });
             } else {
-                // 결제 실패 또는 취소
                 const errorMsg = response.error_msg || '결제가 취소되었습니다.';
 
-                // 사용자에게 메시지 표시 (페이지 이동 없이)
                 if (response.error_msg && response.error_msg.includes('취소')) {
-                    // 사용자가 결제를 취소한 경우
                     showUserMessage('결제가 취소되었습니다.', 'info');
-
-                    // 버튼 완전 복원
                     forceResetPaymentButton();
                 } else {
-                    // 실제 결제 오류인 경우
                     showUserMessage('결제 실패: ' + errorMsg, 'error');
 
-                    // 결제 실패 로그 전송 (서버에 실패 내역 기록)
                     $.ajax({
                         url: '/order/payment/fail',
                         method: 'POST',
@@ -1126,22 +1699,23 @@
         });
     }
 
-    // 사용자 친화적 메시지 표시 함수
     function showUserMessage(message, type) {
-        // 기존 메시지 제거
         $('.user-message').remove();
 
-        const messageClass = type === 'error' ? 'error-message' : 'info-message';
-        const iconClass = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-info-circle';
+        const messageClass = type === 'error' ? 'error-message' : (type === 'success' ? 'success-message' : 'info-message');
+        const iconClass = type === 'error' ? 'fas fa-exclamation-circle' : (type === 'success' ? 'fas fa-check-circle' : 'fas fa-info-circle');
+        const bgColor = type === 'error' ? '#fff2f2' : (type === 'success' ? '#f0f9ff' : '#f0f9ff');
+        const borderColor = type === 'error' ? '#ffcccc' : (type === 'success' ? '#b3e5fc' : '#b3e5fc');
+        const textColor = type === 'error' ? '#d63060' : (type === 'success' ? '#0277bd' : '#0277bd');
 
         const messageHtml = `
             <div class="user-message ${messageClass}" style="
                 display: flex;
                 align-items: center;
                 gap: 8px;
-                background: ${type === 'error' ? '#fff2f2' : '#f0f9ff'};
-                border: 1px solid ${type === 'error' ? '#ffcccc' : '#b3e5fc'};
-                color: ${type === 'error' ? '#d63060' : '#0277bd'};
+                background: ${bgColor};
+                border: 1px solid ${borderColor};
+                color: ${textColor};
                 padding: 16px;
                 border-radius: 12px;
                 margin-bottom: 20px;
@@ -1156,7 +1730,7 @@
                     margin-left: auto;
                     background: none;
                     border: none;
-                    color: ${type === 'error' ? '#d63060' : '#0277bd'};
+                    color: ${textColor};
                     cursor: pointer;
                     font-size: 16px;
                     padding: 0;
@@ -1171,35 +1745,81 @@
 
         $('.page-title').after(messageHtml);
 
-        // 자동으로 메시지 제거 (5초 후)
         setTimeout(() => {
             $('.user-message').fadeOut();
         }, 5000);
     }
 
-    function resetPaymentButton() {
+    function forceResetPaymentButton() {
+        console.log('forceResetPaymentButton 함수 호출됨');
+
         const $button = $('#paymentButton');
 
-        // 버튼 활성화
-        $button.prop('disabled', false);
+        $button.removeClass('processing disabled force-active')
+            .prop('disabled', false)
+            .removeAttr('style')
+            .off('click mouseenter mouseleave');
 
-        // 원래 텍스트로 복원
-        if (paymentInfo && paymentInfo.finalAmount) {
-            $button.html('<i class="fas fa-lock" style="margin-right: 8px;"></i>₩' + paymentInfo.finalAmount.toLocaleString() + ' 결제하기');
-        } else {
-            $button.html('<i class="fas fa-lock" style="margin-right: 8px;"></i>결제하기');
-        }
+        $button.attr('style', `
+            background: linear-gradient(135deg, #EE386D 0%, #d63060 100%) !important;
+            color: white !important;
+            cursor: pointer !important;
+            transform: none !important;
+            box-shadow: 0 4px 12px rgba(238, 56, 109, 0.3) !important;
+            pointer-events: auto !important;
+            border: none !important;
+            width: 100% !important;
+            padding: 18px !important;
+            border-radius: 12px !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            margin-top: 20px !important;
+        `);
 
-        // 스타일 클래스 정리
-        $button.removeClass('disabled');
+        $('#paymentButtonText').text(`₩${currentTotalAmount.toLocaleString()} 결제하기`);
 
-        // 유효성 검사 재실행하여 버튼 상태 적절히 설정
-        updatePaymentButton();
+        $button.on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-        console.log('결제 버튼이 초기화되었습니다.');
+            if (isFormValid()) {
+                processPayment();
+            } else {
+                const firstErrorField = Object.keys(validationState).find(key => !validationState[key]);
+                if (firstErrorField && firstErrorField !== 'agreeTerms' && firstErrorField !== 'agreePrivacy' && firstErrorField !== 'agreeAdult') {
+                    $('#' + firstErrorField).focus();
+                } else {
+                    showUserMessage('모든 필수 항목을 입력하고 약관에 동의해주세요.', 'error');
+                }
+            }
+        });
+
+        $button.on({
+            mouseenter: function() {
+                if (!$(this).prop('disabled') && !$(this).hasClass('processing')) {
+                    $(this).css({
+                        'transform': 'translateY(-2px)',
+                        'box-shadow': '0 6px 20px rgba(238, 56, 109, 0.4)'
+                    });
+                }
+            },
+            mouseleave: function() {
+                if (!$(this).prop('disabled') && !$(this).hasClass('processing')) {
+                    $(this).css({
+                        'transform': 'none',
+                        'box-shadow': '0 4px 12px rgba(238, 56, 109, 0.3)'
+                    });
+                }
+            }
+        });
+
+        setTimeout(() => {
+            validateAllFields();
+        }, 50);
+
+        console.log('결제 버튼이 강제로 초기화되었습니다.');
     }
 
-    // 다음 우편번호 서비스
     function execDaumPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
@@ -1229,13 +1849,11 @@
                 $('#receiverAddr').val(addr);
                 $('#receiverAddrDetail').focus();
 
-                // 주소 입력 후 유효성 검사
                 validateField('receiverAddr');
             }
         }).open();
     }
 
-    // 폼 유효성 검사 함수들
     function validateEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
@@ -1247,7 +1865,6 @@
         return re.test(cleanPhone);
     }
 
-    // 페이지 이탈 방지 (결제 진행 중)
     let isPaymentProcessing = false;
 
     window.addEventListener('beforeunload', function(e) {
@@ -1257,165 +1874,17 @@
         }
     });
 
-    // 결제 진행 시 플래그 설정
     $('#paymentButton').click(function() {
         if (isFormValid()) {
             isPaymentProcessing = true;
         }
     });
 
-    // ===== 버튼 관리 함수들 (먼저 정의) =====
-
-    function resetPaymentButton() {
-        const $button = $('#paymentButton');
-
-        // 모든 상태 클래스와 인라인 스타일 제거
-        $button.removeClass('disabled processing')
-            .prop('disabled', false)
-            .removeAttr('style');
-
-        // 원래 스타일 강제 적용
-        $button.css({
-            'background': 'linear-gradient(135deg, #EE386D 0%, #d63060 100%)',
-            'color': 'white',
-            'cursor': 'pointer',
-            'transform': 'none',
-            'box-shadow': '0 4px 12px rgba(238, 56, 109, 0.3)',
-            'pointer-events': 'auto'
-        });
-
-        // 원래 텍스트로 복원
-        if (paymentInfo && paymentInfo.finalAmount) {
-            $button.html('<i class="fas fa-lock" style="margin-right: 8px;"></i>₩' + paymentInfo.finalAmount.toLocaleString() + ' 결제하기');
-        } else {
-            $button.html('<i class="fas fa-lock" style="margin-right: 8px;"></i>결제하기');
-        }
-
-        // 유효성 검사 재실행하여 버튼 상태 적절히 설정
-        setTimeout(() => {
-            updatePaymentButton();
-        }, 100);
-
-        console.log('결제 버튼이 초기화되었습니다.');
-    }
-
-    // 강제로 버튼을 완전히 복원하는 함수
-    function forceResetPaymentButton() {
-        console.log('forceResetPaymentButton 함수 호출됨');
-
-        const $button = $('#paymentButton');
-
-        // 즉시 모든 속성 제거 및 초기화
-        $button.removeClass('processing disabled force-active')
-            .prop('disabled', false)
-            .removeAttr('style')
-            .off('click mouseenter mouseleave');  // 모든 이벤트 제거
-
-        // 강제로 원래 스타일 적용 (인라인 스타일로 최우선 적용)
-        $button.attr('style', `
-            background: linear-gradient(135deg, #EE386D 0%, #d63060 100%) !important;
-            color: white !important;
-            cursor: pointer !important;
-            transform: none !important;
-            box-shadow: 0 4px 12px rgba(238, 56, 109, 0.3) !important;
-            pointer-events: auto !important;
-            border: none !important;
-            width: 100% !important;
-            padding: 18px !important;
-            border-radius: 12px !important;
-            font-size: 16px !important;
-            font-weight: 600 !important;
-            margin-top: 20px !important;
-        `);
-
-        // 텍스트 복원
-        if (paymentInfo && paymentInfo.finalAmount) {
-            $button.html('<i class="fas fa-lock" style="margin-right: 8px;"></i>₩' + paymentInfo.finalAmount.toLocaleString() + ' 결제하기');
-        } else {
-            $button.html('<i class="fas fa-lock" style="margin-right: 8px;"></i>결제하기');
-        }
-
-        // 클릭 이벤트 재등록
-        $button.on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (isFormValid()) {
-                processPayment();
-            } else {
-                const firstErrorField = Object.keys(validationState).find(key => !validationState[key]);
-                if (firstErrorField && firstErrorField !== 'agreeTerms' && firstErrorField !== 'agreePrivacy' && firstErrorField !== 'agreeAdult') {
-                    $('#' + firstErrorField).focus();
-                } else {
-                    showUserMessage('모든 필수 항목을 입력하고 약관에 동의해주세요.', 'error');
-                }
-            }
-        });
-
-        // 호버 이벤트 재등록
-        $button.on({
-            mouseenter: function() {
-                if (!$(this).prop('disabled') && !$(this).hasClass('processing')) {
-                    $(this).css({
-                        'transform': 'translateY(-2px)',
-                        'box-shadow': '0 6px 20px rgba(238, 56, 109, 0.4)'
-                    });
-                }
-            },
-            mouseleave: function() {
-                if (!$(this).prop('disabled') && !$(this).hasClass('processing')) {
-                    $(this).css({
-                        'transform': 'none',
-                        'box-shadow': '0 4px 12px rgba(238, 56, 109, 0.3)'
-                    });
-                }
-            }
-        });
-
-        // 유효성 검사 실행
-        setTimeout(() => {
-            validateAllFields();
-        }, 50);
-
-        console.log('결제 버튼이 강제로 초기화되었습니다.');
-    }
-
-    function updatePaymentButton() {
-        const isValid = isFormValid();
-        const $button = $('#paymentButton');
-
-        if (isValid) {
-            $button.prop('disabled', false)
-                .removeClass('disabled processing')
-                .css({
-                    'background': 'linear-gradient(135deg, #EE386D 0%, #d63060 100%)',
-                    'color': 'white',
-                    'cursor': 'pointer',
-                    'transform': 'none',
-                    'box-shadow': '0 4px 12px rgba(238, 56, 109, 0.3)',
-                    'pointer-events': 'auto'
-                });
-        } else {
-            $button.prop('disabled', true)
-                .addClass('disabled')
-                .removeClass('processing')
-                .css({
-                    'background': '#ccc',
-                    'color': 'white',
-                    'cursor': 'not-allowed',
-                    'transform': 'none',
-                    'box-shadow': 'none',
-                    'pointer-events': 'auto'
-                });
-        }
-    }
-
-    // 글로벌로 함수 노출 (즉시 사용 가능하도록)
+    // 글로벌 함수 노출
     window.forceResetPaymentButton = forceResetPaymentButton;
-    window.resetPaymentButton = resetPaymentButton;
-    window.updatePaymentButton = updatePaymentButton;
+    window.removeDiscount = removeDiscount;
 
-    // 테스트용 함수들 (개발자 도구에서 사용 가능)
+    // 테스트 함수들 (개발자 도구에서 사용 가능)
     window.testResetButton = function() {
         console.log('테스트: 버튼 강제 복원 실행');
         if (typeof window.forceResetPaymentButton === 'function') {
@@ -1426,37 +1895,29 @@
         }
     };
 
-    window.testSetLoading = function() {
-        console.log('테스트: 로딩 상태 설정');
-        setPaymentButtonLoading(true);
-        console.log('테스트 완료: 로딩 상태가 적용되었습니다');
+    window.testBackendDiscountCode = function(code = 'SAVE2024') {
+        console.log('테스트: 백엔드 할인코드 적용');
+        $('#discountCode').val(code);
+        $('#applyDiscountCode').click();
+        console.log('테스트 완료: 백엔드로 할인코드 검증 요청을 보냈습니다');
     };
 
-    window.checkButtonState = function() {
-        const $button = $('#paymentButton');
-        const state = {
-            disabled: $button.prop('disabled'),
-            classes: $button.attr('class'),
-            style: $button.attr('style'),
-            text: $button.text(),
-            cursor: $button.css('cursor'),
-            background: $button.css('background')
-        };
-        console.log('현재 버튼 상태:', state);
-        return state;
+    window.testCouponSelect = function() {
+        console.log('테스트: 첫 번째 쿠폰 선택');
+        const firstOption = $('#couponSelect option[value!=""]:first');
+        if (firstOption.length > 0) {
+            $('#couponSelect').val(firstOption.val()).trigger('change');
+            console.log('테스트 완료: 첫 번째 쿠폰이 선택되었습니다');
+        } else {
+            console.log('테스트 실패: 사용 가능한 쿠폰이 없습니다');
+        }
     };
 
-    window.simulateCancel = function() {
-        console.log('테스트: 결제 취소 시뮬레이션');
-        showUserMessage('결제가 취소되었습니다.', 'info');
-        setTimeout(() => {
-            if (typeof window.forceResetPaymentButton === 'function') {
-                window.forceResetPaymentButton();
-            } else {
-                console.error('forceResetPaymentButton 함수를 찾을 수 없습니다');
-            }
-        }, 100);
-        console.log('테스트 완료: 취소 처리가 실행되었습니다');
+    window.resetAllDiscounts = function() {
+        console.log('테스트: 모든 할인 초기화');
+        removeActiveDiscount();
+        $('#discountCode').val('');
+        console.log('테스트 완료: 모든 할인이 초기화되었습니다');
     };
 
     window.debugPayment = function() {
@@ -1464,24 +1925,39 @@
         console.log('Payment Info:', paymentInfo);
         console.log('Cart Codes:', cartCodes);
         console.log('Cart Items:', cartItems);
+        console.log('Active Discount:', activeDiscount);
+        console.log('Original Amount:', originalAmount.toLocaleString());
+        console.log('Current Total Amount:', currentTotalAmount.toLocaleString());
         console.log('Validation State:', validationState);
         console.log('Form Valid:', isFormValid());
         console.log('Payment Processing:', isPaymentProcessing);
-        console.log('Functions Available:', {
-            forceResetPaymentButton: typeof window.forceResetPaymentButton,
-            resetPaymentButton: typeof window.resetPaymentButton,
-            updatePaymentButton: typeof window.updatePaymentButton
-        });
-        checkButtonState();
+
+        console.log('--- 가격 세부 정보 ---');
+        console.log('상품 금액:', originalAmount.toLocaleString());
+        console.log('기본 할인:', (paymentInfo.discountAmount || 0).toLocaleString());
+        console.log('배송비:', (paymentInfo.deliveryFee || 0).toLocaleString());
+        console.log('서버 최종 금액:', (paymentInfo.finalAmount || 0).toLocaleString());
+        if (activeDiscount) {
+            console.log('적용된 할인:', activeDiscount.type, '-', activeDiscount.amount.toLocaleString());
+        }
+        console.log('최종 결제 금액:', currentTotalAmount.toLocaleString());
         console.log('=====================');
     };
 
     // 초기화 확인
     $(document).ready(function() {
-        console.log('페이지 로드 완료 - 함수 정의 상태 확인:');
-        console.log('forceResetPaymentButton:', typeof window.forceResetPaymentButton);
-        console.log('resetPaymentButton:', typeof window.resetPaymentButton);
-        console.log('updatePaymentButton:', typeof window.updatePaymentButton);
+        console.log('페이지 로드 완료 - 할인코드 백엔드 검증 시스템 활성화됨');
+        console.log('사용 가능한 테스트 함수:');
+        console.log('- window.testBackendDiscountCode(): 백엔드 할인코드 검증 테스트');
+        console.log('- window.testCouponSelect(): 쿠폰 선택 테스트');
+        console.log('- window.resetAllDiscounts(): 모든 할인 초기화');
+        console.log('- window.debugPayment(): 디버그 정보 출력');
+        console.log('백엔드 API 엔드포인트: POST /api/discount/validate');
+    });
+
+    // 할인코드 입력 시 대문자 변환
+    document.getElementById('discountCode').addEventListener('input', function (e) {
+        e.target.value = e.target.value.toUpperCase();
     });
 </script>
 </body>

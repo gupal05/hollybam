@@ -47,6 +47,10 @@ public class SignupController {
     @ResponseBody
     public Map<String, Object> signupResult(@ModelAttribute MemberDto memberDto, HttpSession session) {
         int result = signupService.signup(memberDto);
+        int memberCode = signupService.getMemberCode(memberDto.getMemberId());
+        int couponCode = signupService.getSignupCouponCode();
+        signupService.insertSignupCoupon(memberCode, couponCode);
+
         // get memberCode
         // get order Info
         // if uuid로 주문한 orderInfo 있으면 order 테이블 memberCode update

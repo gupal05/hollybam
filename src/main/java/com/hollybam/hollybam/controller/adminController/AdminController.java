@@ -3,6 +3,8 @@ package com.hollybam.hollybam.controller.adminController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hollybam.hollybam.dto.*;
+import com.hollybam.hollybam.services.CouponService;
+import com.hollybam.hollybam.services.DiscountService;
 import com.hollybam.hollybam.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,8 +26,12 @@ import java.util.Map;
 public class AdminController {
     @Autowired
     private ProductService productService;
+    @Autowired
+    private CouponService couponService;
+    @Autowired
+    private DiscountService discountService;
 
-    @GetMapping("/addProduct")
+    @GetMapping("/add/product")
     public String addProduct(Model model) {
         ProductDto productDto = new ProductDto();
         model.addAttribute("productDto", productDto);
@@ -239,5 +245,27 @@ public class AdminController {
         response.put("status", status);
         response.put("message", message);
         return response;
+    }
+
+    // 쿠폰/할인코드 생성 페이지 진입
+    @GetMapping("/discount/create")
+    public String showCreateForm(Model model) {
+        model.addAttribute("coupon", new CouponDto());
+        model.addAttribute("discount", new DiscountDto()); // 할인코드 폼에 바인딩
+        return "admin/discount/discountCreate"; // ← 여기서 쿠폰/할인코드 둘 다 있는 폼
+    }
+
+    // 쿠폰 생성 처리
+    @PostMapping("/coupon/create")
+    public String createCoupon(@ModelAttribute CouponDto couponDto) {
+        couponService.insertCoupon(couponDto);
+        return "redirect:/admin/discount/create?success";
+    }
+
+    // 할인코드 생성 처리
+    @PostMapping("/discount/create")
+    public String createDiscount(@ModelAttribute DiscountDto discountDto) {
+        discountService.insertDiscount(discountDto);
+        return "redirect:/admin/discount/create?discountSuccess";
     }
 }

@@ -364,77 +364,6 @@
       color: white;
     }
 
-    /* 반응형 */
-    @media (max-width: 1024px) {
-      .mypage-container {
-        flex-direction: column;
-        padding: 120px 20px 60px;
-      }
-
-      .sidebar {
-        width: 100%;
-        position: static;
-      }
-
-      .order-summary {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .mypage-container {
-        padding: 100px 16px 40px;
-        gap: 20px;
-      }
-
-      .sidebar {
-        padding: 25px;
-      }
-
-      .main-content {
-        padding: 30px 20px;
-      }
-
-      .page-title {
-        font-size: 24px;
-        margin-bottom: 25px;
-      }
-
-      .order-summary {
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-
-      .order-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-
-      .order-products {
-        flex-direction: column;
-      }
-
-      .wishlist-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .main-content {
-        padding: 25px 15px;
-      }
-
-      .sidebar {
-        padding: 20px;
-      }
-
-      .wishlist-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     .edit-profile-btn {
       background: linear-gradient(135deg, #EE386D, #ff6b9d);
       color: white;
@@ -583,8 +512,153 @@
       padding: 4px;
     }
 
-    /* 반응형 */
+    .clickable {
+      cursor: pointer;
+    }
+
+    /* 반응형 - 태블릿 */
+    @media (max-width: 1024px) {
+      .mypage-container {
+        flex-direction: column;
+        padding: 120px 20px 60px;
+      }
+
+      .sidebar {
+        width: 100%;
+        position: static;
+      }
+
+      .order-summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* 반응형 - 모바일 */
+    @media (max-width: 768px) {
+      .mypage-container {
+        padding: 100px 16px 40px;
+        gap: 20px;
+      }
+
+      .sidebar {
+        padding: 25px;
+      }
+
+      .main-content {
+        padding: 30px 20px;
+      }
+
+      .page-title {
+        font-size: 24px;
+        margin-bottom: 25px;
+      }
+
+      /* 모바일 주문 카드 스타일 */
+      .order-summary {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+
+      .order-card {
+        padding: 15px 10px;
+        border-radius: 12px;
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .order-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(238, 56, 109, 0.1);
+      }
+
+      /* 모바일에서 아이콘 숨기기 */
+      .order-icon {
+        display: none;
+      }
+
+      .order-count {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+        line-height: 1;
+      }
+
+      .order-label {
+        font-size: 11px;
+        color: #333;
+        font-weight: 600;
+        line-height: 1.2;
+        margin: 0;
+      }
+
+      /* 1:1 문의, 작성한 리뷰 카드 특별 처리 */
+      .order-card:nth-child(5) .order-label,
+      .order-card:nth-child(6) .order-label {
+        font-size: 11px !important;
+        margin-top: 0 !important;
+        line-height: 1.2;
+      }
+
+      .order-card:nth-child(5) .order-count,
+      .order-card:nth-child(6) .order-count {
+        display: none !important;
+      }
+
+      .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .order-products {
+        flex-direction: column;
+      }
+
+      .wishlist-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+    }
+
+    /* 작은 모바일 */
     @media (max-width: 480px) {
+      .main-content {
+        padding: 25px 15px;
+      }
+
+      .sidebar {
+        padding: 20px;
+      }
+
+      .wishlist-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* 모바일 주문 카드 더 작게 */
+      .order-summary {
+        gap: 8px;
+      }
+
+      .order-card {
+        padding: 12px 8px;
+        min-height: 70px;
+      }
+
+      .order-count {
+        font-size: 16px;
+        color: #1a1a1a;
+      }
+
+      .order-label {
+        font-size: 10px;
+      }
+
+      /* 모달 반응형 */
       .modal-content {
         margin: 20% auto;
         width: 95%;
@@ -596,8 +670,26 @@
       }
     }
 
-    .clickable {
-      cursor: pointer;
+    /* 아주 작은 모바일 */
+    @media (max-width: 360px) {
+      .order-summary {
+        gap: 6px;
+      }
+
+      .order-card {
+        padding: 10px 6px;
+        min-height: 65px;
+        border-radius: 10px;
+      }
+
+      .order-count {
+        font-size: 14px;
+        color: #1a1a1a;
+      }
+
+      .order-label {
+        font-size: 9px;
+      }
     }
   </style>
 </head>
@@ -623,7 +715,7 @@
     <div class="membership-status">
       <div class="membership-title">Member Since 2025</div>
       <div class="points-info">
-        <span class="points-label">🎁 쿠폰 0개</span>
+        <span class="points-label" th:text="'🎁 쿠폰 ' + ${couponCount} + '개'">🎁 쿠폰 0개</span>
         <span class="points-label">💎 포인트 0원</span>
       </div>
     </div>
@@ -640,7 +732,7 @@
 
   <!-- 메인 콘텐츠 -->
   <main class="main-content">
-    <h1 class="page-title">안녕하세요, guest님! 👋</h1>
+    <h1 class="page-title" th:text="'안녕하세요, '+${session.member.memberName}+'님! 👋'">안녕하세요, guest님! 👋</h1>
 
     <!-- 주문 현황 요약 -->
     <div class="order-summary">
@@ -649,7 +741,7 @@
           <i class="fas fa-clock"></i>
         </div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">결제완료</div>
-        <div class="order-count" style="font-weight: bold;">2건</div>
+        <div class="order-count" style="font-weight: bold;">2</div>
       </div>
       <div class="order-card">
         <div class="order-icon">
@@ -672,7 +764,7 @@
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">취소/반품</div>
         <div class="order-count" style="font-weight: bold; color: #1a1a1a;">0</div>
       </div>
-      <div class="order-card">
+      <div class="order-card" onclick="window.location.href='/customer-service/inquiry'">
         <div class="order-icon">
           <i class="fas fa-headset"></i>
         </div>

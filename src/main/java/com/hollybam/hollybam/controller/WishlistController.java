@@ -2,10 +2,12 @@ package com.hollybam.hollybam.controller;
 
 import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.dto.WishlistDto;
+import com.hollybam.hollybam.services.CouponService;
 import com.hollybam.hollybam.services.IF_WishlistService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +24,8 @@ import java.util.Map;
 public class WishlistController {
 
     private final IF_WishlistService wishlistService;
+    @Autowired
+    private CouponService couponService;
 
     /**
      * 위시리스트 페이지
@@ -40,10 +44,12 @@ public class WishlistController {
 
             List<WishlistDto> wishlistItems;
             int totalCount;
+            int couponCount = 0;
 
             if (memCode != null) {
                 // 회원
                 log.info("회원 위시리스트 조회 - memCode: {}", memCode);
+                couponCount = couponService.selectCouponCount(memCode);
                 wishlistItems = wishlistService.getMemberWishlist(memCode);
                 totalCount = wishlistService.getMemberWishlistCount(memCode);
             } else if (guestUuid != null) {
@@ -72,6 +78,7 @@ public class WishlistController {
             }
             model.addAttribute("wishlistItems", wishlistItems);
             model.addAttribute("totalCount", totalCount);
+            model.addAttribute("couponCount", couponCount);
             model.addAttribute("isLoggedIn", memCode != null);
 
             return "mypage/wishlist";

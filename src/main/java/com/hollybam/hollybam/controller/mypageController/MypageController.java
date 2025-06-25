@@ -2,6 +2,7 @@ package com.hollybam.hollybam.controller.mypageController;
 
 import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.dto.WishlistDto;
+import com.hollybam.hollybam.services.CouponService;
 import com.hollybam.hollybam.services.MypageService;
 import com.hollybam.hollybam.services.IF_WishlistService;
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,9 @@ public class MypageController {
     @Autowired
     private IF_WishlistService wishlistService;
 
+    @Autowired
+    private CouponService couponService;
+
     @GetMapping("")
     public String mypage(HttpSession session, Model model) {
         try {
@@ -41,12 +46,13 @@ public class MypageController {
             // 위시리스트 데이터 가져오기 (최신 3개만)
             List<WishlistDto> recentWishlist;
             int totalWishlistCount = 0;
-
+            int couponCount = 0;
             if (memCode != null) {
                 // 회원
                 List<WishlistDto> allWishlist = wishlistService.getMemberWishlist(memCode);
                 recentWishlist = allWishlist.stream().limit(3).toList();
                 totalWishlistCount = wishlistService.getMemberWishlistCount(memCode);
+                couponCount = couponService.selectCouponCount(memCode);
             } else if (guestUuid != null) {
                 // 비회원
                 Integer guestCode = wishlistService.getGuestCodeByUuid(guestUuid);
@@ -62,6 +68,7 @@ public class MypageController {
             }
 
             // 모델에 데이터 추가
+            model.addAttribute("couponCount", couponCount);
             model.addAttribute("recentWishlist", recentWishlist);
             model.addAttribute("totalWishlistCount", totalWishlistCount);
             model.addAttribute("isLoggedIn", memCode != null);
@@ -78,12 +85,23 @@ public class MypageController {
     }
 
     @GetMapping("/orders")
-    public String orders(){ return "mypage/orderList"; }
+    public String orders(Model model, HttpSession session) {
+        int couponCount = 0;
+        if(session.getAttribute("member") != null) {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            couponCount = couponService.selectCouponCount(member.getMemberCode());
+            model.addAttribute("couponCount", couponCount);
+        }
+        return "mypage/orderList";
+    }
 
     @GetMapping("/profile/edit")
     public ModelAndView profileEdit(ModelAndView mav, HttpSession session){
+        int couponCount = 0;
         MemberDto member = (MemberDto)session.getAttribute("member");
         String phone = member.getMemberPhone().replaceFirst("(\\d{3})(\\d{4})(\\d{4})", "$1-$2-$3");
+        couponCount = couponService.selectCouponCount(member.getMemberCode());
+        mav.addObject("couponCount", couponCount);
         mav.addObject("phone", phone);
         mav.setViewName("mypage/change-info");
         return mav;
@@ -109,7 +127,109 @@ public class MypageController {
     }
 
     @GetMapping("/coupons")
-    public String couponPage(HttpSession session){
+    public String couponPage(HttpSession session, Model model) {
+        int couponPossibleCount = 0;
+        int couponCount = 0;
+        int useCouponCount = 0;
+        int expirationCouponCount = 0;
+        List<Map<String, Object>> couponList = new ArrayList<>();
+
+        if(session.getAttribute("member") != null) {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            int memCode = member.getMemberCode();
+
+            // 쿠폰 통계 조회
+            couponCount = couponService.selectTotalCouponCount(memCode);
+            couponPossibleCount = couponService.selectCouponCount(memCode);
+            useCouponCount = couponService.selectUsedCouponCount(memCode);
+            expirationCouponCount = couponService.expirationCouponCount(memCode);
+
+            // 전체 쿠폰 목록 조회
+            couponList = couponService.selectMemberCouponList(memCode, "all");
+
+            // 디버깅: 실제 Map 키 확인
+            if (!couponList.isEmpty()) {
+                System.out.println("=== 쿠폰 데이터 키 확인 ===");
+                Map<String, Object> firstCoupon = couponList.get(0);
+                System.out.println("Available keys: " + firstCoupon.keySet());
+                System.out.println("Sample data: " + firstCoupon);
+            }
+
+            model.addAttribute("couponCount", couponCount);
+            model.addAttribute("couponPossibleCount", couponPossibleCount);
+            model.addAttribute("useCouponCount", useCouponCount);
+            model.addAttribute("expirationCouponCount", expirationCouponCount);
+            model.addAttribute("couponList", couponList);
+
+            System.out.println("Total coupons: " + couponCount);
+            System.out.println("Used coupons: " + useCouponCount);
+            System.out.println("Coupon list size: " + couponList.size());
+            for (int i=0; i<couponList.size(); i++) {
+                System.out.println(couponList.get(i));
+            }
+        }
+
         return "mypage/coupons";
+    }
+
+    /**
+     * AJAX로 필터별 쿠폰 목록 조회
+     */
+    @GetMapping("/coupons/filter")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getCouponsByFilter(
+            HttpSession session,
+            @RequestParam(value = "status", defaultValue = "all") String status) {
+
+        if(session.getAttribute("member") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        MemberDto member = (MemberDto) session.getAttribute("member");
+        List<Map<String, Object>> couponList = couponService.selectMemberCouponList(member.getMemberCode(), status);
+
+        return ResponseEntity.ok(couponList);
+    }
+
+    /**
+     * 쿠폰 사용 처리 (장바구니에서 사용할 때)
+     */
+    @PostMapping("/coupons/use")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> useCoupon(
+            HttpSession session,
+            @RequestParam("couponMemberCode") int couponMemberCode,
+            @RequestParam(value = "orderCode", required = false) Integer orderCode) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if(session.getAttribute("member") == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+        }
+
+        try {
+            // 주문 코드가 없으면 임시로 0 설정 (장바구니에서 선택만 하는 경우)
+            if(orderCode == null) {
+                orderCode = 0;
+            }
+
+            boolean success = couponService.useCoupon(couponMemberCode, orderCode);
+
+            if(success) {
+                result.put("success", true);
+                result.put("message", "쿠폰이 선택되었습니다.");
+            } else {
+                result.put("success", false);
+                result.put("message", "쿠폰 사용에 실패했습니다.");
+            }
+
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
     }
 }

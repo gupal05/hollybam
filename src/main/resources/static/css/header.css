@@ -417,39 +417,62 @@
     transform: rotate(180deg);
 }
 
+.mobile-category-container {
+    overflow: hidden;
+}
+
 .mobile-category-items {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.5s ease-out;
     background: #f8f8f8;
 }
 
 .mobile-category-items.active {
-    max-height: 800px; /* 증가 */
+    max-height: 2000px; /* 훨씬 더 큰 값으로 설정 */
 }
 
 .mobile-category-group {
-    padding: 10px 0;
+    padding: 12px 0;
     border-bottom: 1px solid #e0e0e0;
+}
+
+.mobile-category-group:last-child {
+    border-bottom: none;
+    padding-bottom: 20px; /* 마지막 항목에 여백 추가 */
 }
 
 .mobile-category-title {
     font-weight: bold;
     color: #333;
-    padding: 8px 20px 8px 40px;
+    padding: 10px 20px 8px 40px;
     font-size: 14px;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 8px;
+    cursor: pointer; /* 클릭 가능하다는 표시 */
+}
+
+.mobile-category-subcategories {
+    padding: 0 20px 0 40px;
+}
+
+.mobile-subcategory-item {
+    margin-bottom: 4px;
 }
 
 .mobile-category-link {
     display: block;
-    padding: 6px 20px 6px 60px;
+    padding: 8px 20px;
     color: #666;
     text-decoration: none;
     font-size: 13px;
-    transition: color 0.2s ease;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    margin: 2px 0; /* 항목 간 여백 추가 */
 }
 
 .mobile-category-link:hover {
+    background: rgba(238, 56, 109, 0.1);
     color: #ee386d;
 }
 
@@ -499,9 +522,9 @@
     color: #ff4444;
 }
 
-/* ======= 반응형 브레이크포인트 완전 수정 ======= */
+/* ======= 반응형 브레이크포인트 (깔끔하게 정리) ======= */
 
-/* 큰 데스크톱 (1200px+) - 기본 스타일 유지 */
+/* 1200px 이상 - 기본 PC 스타일 (100% 유지) */
 @media (min-width: 1200px) {
     .header {
         padding: 0 30px;
@@ -524,11 +547,11 @@
     }
 }
 
-/* 작은 데스크톱/큰 태블릿 (901px - 1199px) - 중요: 반응형 적용! */
+/* 901px - 1199px - 작은 데스크톱 (PC 기능 유지하되 크기만 축소) */
 @media (max-width: 1199px) and (min-width: 901px) {
     .header {
         padding: 0 20px;
-        height: 90px; /* 기본보다 축소 */
+        height: 90px;
     }
 
     .header-nav img {
@@ -537,21 +560,21 @@
     }
 
     .nav-group {
-        gap: 20px; /* 40px에서 20px로 축소 */
+        gap: 20px;
     }
 
     .nav-group div {
-        font-size: 13px; /* 16px에서 13px로 축소 */
+        font-size: 13px;
         padding: 6px 8px;
     }
 
     .nav-group-icon {
-        font-size: 22px; /* 28px에서 22px로 축소 */
-        gap: 8px; /* 15px에서 8px로 축소 */
+        font-size: 22px;
+        gap: 8px;
     }
 
     .dropdown {
-        padding: 25px 35px; /* 패딩 축소 */
+        padding: 25px 35px;
         top: 90px;
     }
 
@@ -570,22 +593,22 @@
     }
 
     .dropdown-content {
-        gap: 30px; /* 60px에서 30px로 축소 */
+        gap: 30px;
         flex-wrap: wrap;
     }
 
     .dropdown-column {
-        min-width: 140px; /* 축소 */
+        min-width: 140px;
         flex: 1;
     }
 
     .dropdown-column-title {
-        font-size: 13px; /* 16px에서 13px로 축소 */
+        font-size: 13px;
         margin-bottom: 12px;
     }
 
     .category-link {
-        font-size: 11px; /* 14px에서 11px로 축소 */
+        font-size: 11px;
         padding: 5px 0;
     }
 
@@ -603,7 +626,7 @@
     }
 }
 
-/* 태블릿 (600px - 900px) - 햄버거 메뉴 시작 */
+/* 600px - 900px - 태블릿 (모바일 메뉴 시작) */
 @media (max-width: 900px) and (min-width: 600px) {
     .header {
         height: 80px !important;
@@ -623,7 +646,7 @@
 
     .header-nav:first-child img {
         width: 90px !important;
-        height: 28px !important;
+        height: 90px !important;
     }
 
     /* 기존 네비게이션 숨김 */
@@ -640,13 +663,12 @@
     /* 드롭다운 숨김 */
     .dropdown,
     .dropdown-backdrop,
-    .user-dropdown,
-    .user-dropdown-overlay {
+    .user-dropdown {
         display: none !important;
     }
 }
 
-/* 모바일 (600px 이하) */
+/* 320px - 599px - 모바일 */
 @media (max-width: 599px) {
     .header {
         height: 70px !important;
@@ -666,7 +688,7 @@
 
     .header-nav:first-child img {
         width: 70px !important;
-        height: 22.5px !important;
+        height: 70px !important;
     }
 
     /* 기존 네비게이션 숨김 */
@@ -683,8 +705,7 @@
     /* 드롭다운 숨김 */
     .dropdown,
     .dropdown-backdrop,
-    .user-dropdown,
-    .user-dropdown-overlay {
+    .user-dropdown {
         display: none !important;
     }
 
@@ -704,8 +725,8 @@
     }
 }
 
-/* 초소형 모바일 (400px 이하) */
-@media (max-width: 400px) {
+/* 320px 이하 - 초소형 모바일 */
+@media (max-width: 320px) {
     .header {
         padding: 0 10px;
     }
@@ -720,6 +741,12 @@
 
     .header-nav:first-child img {
         width: 60px !important;
-        height: 19px !important;
+        height: 60px !important;
+    }
+
+    .mobile-nav-item,
+    .mobile-menu-link {
+        padding: 10px 12px;
+        font-size: 12px;
     }
 }

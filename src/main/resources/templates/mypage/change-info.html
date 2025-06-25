@@ -503,21 +503,17 @@
         <div class="membership-status">
             <div class="membership-title">Member Since 2025</div>
             <div class="points-info">
-                <span class="points-label">🎁 쿠폰 0개</span>
+                <span class="points-label" th:text="'🎁 쿠폰 ' + ${couponCount} + '개'">🎁 쿠폰 0개</span>
                 <span class="points-label">💎 포인트 0원</span>
             </div>
         </div>
 
         <ul class="sidebar-menu">
             <li><a href="/mypage" class="active"><i class="fas fa-user"></i>계정 정보</a></li>
-            <li><a href="/mypage/profile/edit"><i class="fas fa-user-edit"></i>정보 수정</a></li>
             <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
-            <li><a href="/mypage/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+            <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
             <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
             <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
-            <li><a href="/mypage/reviews"><i class="fas fa-star"></i>리뷰 관리</a></li>
-            <li><a href="/mypage/inquiry"><i class="fas fa-headset"></i>1:1 문의</a></li>
-            <li><a href="/mypage/settings"><i class="fas fa-cog"></i>설정</a></li>
             <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
         </ul>
     </aside>

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>적립금 - 홀리밤</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        /* 메인 컨테이너 */
+        .mypage-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 140px 20px 60px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            height: fit-content;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 140px;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 32px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .user-grade {
+            font-size: 14px;
+            color: #EE386D;
+            font-weight: 500;
+        }
+
+        .membership-status {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .membership-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .points-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .points-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .points-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #EE386D;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        .edit-profile-btn {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .edit-profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.4);
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            border-radius: 2px;
+        }
+
+        /* 적립금 요약 카드 */
+        .points-summary {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(238, 56, 109, 0.3);
+        }
+
+        .total-points {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .points-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .points-amount {
+            text-align: right;
+        }
+
+        .points-amount-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .points-amount-value {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .points-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .points-detail-item {
+            text-align: center;
+        }
+
+        .points-detail-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .points-detail-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* 필터와 검색 */
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            white-space: nowrap;
+        }
+
+        .filter-select, .filter-input {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: #EE386D;
+            box-shadow: 0 0 0 3px rgba(238, 56, 109, 0.1);
+        }
+
+        .search-btn {
+            background: #EE386D;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #d63065;
+            transform: translateY(-1px);
+        }
+
+        /* 적립금 내역 리스트 */
+        .points-history {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .points-item {
+            background: white;
+            border: 1px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .points-item:hover {
+            border-color: #EE386D;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(238, 56, 109, 0.15);
+        }
+
+        .points-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .points-item-date {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .points-item-amount {
+            font-size: 18px;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .points-earned {
+            border-left: 4px solid #28a745;
+        }
+
+        .points-earned .points-item-amount {
+            background: #e8f5e8;
+            color: #28a745;
+        }
+
+        .points-used {
+            border-left: 4px solid #dc3545;
+        }
+
+        .points-used .points-item-amount {
+            background: #ffe8e8;
+            color: #dc3545;
+        }
+
+        .points-expired {
+            border-left: 4px solid #6c757d;
+        }
+
+        .points-expired .points-item-amount {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .points-item-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .points-item-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .points-earned .points-item-icon {
+            background: #28a745;
+        }
+
+        .points-used .points-item-icon {
+            background: #dc3545;
+        }
+
+        .points-expired .points-item-icon {
+            background: #6c757d;
+        }
+
+        .points-item-info {
+            flex: 1;
+        }
+
+        .points-item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .points-item-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .points-item-balance {
+            text-align: right;
+            font-size: 13px;
+            color: #999;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f8f9fa;
+            border-radius: 16px;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 25px;
+        }
+
+        .empty-state .btn {
+            background: #EE386D;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .empty-state .btn:hover {
+            background: #d63065;
+            transform: translateY(-2px);
+        }
+
+        /* 페이지네이션 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .pagination a, .pagination span {
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .pagination a {
+            background: white;
+            color: #666;
+            border: 2px solid #e9ecef;
+        }
+
+        .pagination a:hover {
+            border-color: #EE386D;
+            color: #EE386D;
+        }
+
+        .pagination .current {
+            background: #EE386D;
+            color: white;
+            border: 2px solid #EE386D;
+        }
+
+        .pagination .disabled {
+            background: #f8f9fa;
+            color: #ccc;
+            border: 2px solid #e9ecef;
+            cursor: not-allowed;
+        }
+
+        /* 반응형 - 태블릿 */
+        @media (max-width: 1024px) {
+            .mypage-container {
+                flex-direction: column;
+                padding: 120px 20px 60px;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .points-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 반응형 - 모바일 */
+        @media (max-width: 768px) {
+            .mypage-container {
+                padding: 100px 16px 40px;
+                gap: 20px;
+            }
+
+            .sidebar {
+                padding: 25px;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+                margin-bottom: 25px;
+            }
+
+            .points-summary {
+                padding: 25px 20px;
+            }
+
+            .total-points {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .points-amount {
+                text-align: center;
+            }
+
+            .points-details {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .filter-section {
+                padding: 20px;
+            }
+
+            .points-item {
+                padding: 20px;
+            }
+
+            .points-item-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .points-item-balance {
+                text-align: center;
+            }
+
+            .pagination {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .pagination a, .pagination span {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+
+        /* 작은 모바일 */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 25px 15px;
+            }
+
+            .sidebar {
+                padding: 20px;
+            }
+
+            .points-summary {
+                padding: 20px 15px;
+            }
+
+            .points-amount-value {
+                font-size: 28px;
+            }
+
+            .filter-section {
+                padding: 15px;
+            }
+
+            .points-item {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 마이페이지 컨테이너 -->
+<div class="mypage-container">
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="profile-image">
+                <span th:text="${#strings.substring(session.member.memberName, 0, 1)}">홍</span>
+            </div>
+            <div class="user-name" th:text="${session.member.memberName}">홍길동</div>
+            <div class="user-grade">guest 회원</div>
+            <button class="edit-profile-btn" onclick="changePage()">
+                <i class="fas fa-edit"></i> 정보 수정
+            </button>
+        </div>
+
+        <div class="membership-status">
+            <div class="membership-title">Member Since 2025</div>
+            <div class="points-info">
+                <span class="points-label" th:text="'🎁 쿠폰 ' + ${couponCount} + '개'">🎁 쿠폰 0개</span>
+                <span class="points-label" th:text="'💎 적립금 '+ ${totalPoint} +'원'">💎 포인트 0원</span>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="/mypage"><i class="fas fa-user"></i>계정 정보</a></li>
+            <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+            <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+            <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
+            <li><a href="/mypage/points" class="active"><i class="fas fa-coins"></i>적립금</a></li>
+            <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
+        </ul>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+        <h1 class="page-title">적립금 💎</h1>
+
+        <!-- 적립금 요약 -->
+        <div class="points-summary">
+            <div class="total-points">
+                <div class="points-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="points-amount">
+                    <div class="points-amount-label">보유 적립금</div>
+                    <div class="points-amount-value" th:text="${totalPoint}+'원'">0원</div>
+                </div>
+            </div>
+
+            <div class="points-details">
+                <div class="points-detail-item">
+                    <div class="points-detail-label">이번 달 적립</div>
+                    <div class="points-detail-value" th:text="'+'+${addPoint}+'원'">+0원</div>
+                </div>
+                <div class="points-detail-item">
+                    <div class="points-detail-label">이번 달 사용</div>
+                    <div class="points-detail-value" th:text="'-'+${usePoint}+'원'">-0원</div>
+                </div>
+                <div class="points-detail-item">
+                    <div class="points-detail-label">소멸 예정</div>
+                    <div class="points-detail-value">5,000원</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <span class="filter-label">기간</span>
+                    <select class="filter-select" id="periodFilter">
+                        <option value="all">전체</option>
+                        <option value="1month">최근 1개월</option>
+                        <option value="3months">최근 3개월</option>
+                        <option value="6months">최근 6개월</option>
+                        <option value="1year">최근 1년</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">구분</span>
+                    <select class="filter-select" id="typeFilter">
+                        <option value="all">전체</option>
+                        <option value="earned">적립</option>
+                        <option value="used">사용</option>
+                        <option value="expired">소멸</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">검색</span>
+                    <input type="text" class="filter-input" placeholder="내역 검색..." id="searchInput">
+                </div>
+
+                <button class="search-btn" onclick="filterPoints()">
+                    <i class="fas fa-search"></i> 검색
+                </button>
+            </div>
+        </div>
+
+        <!-- 적립금 내역 -->
+        <section class="points-history">
+            <div class="section-title">
+                적립금 내역
+                <span style="font-size: 14px; color: #666; font-weight: normal;">총 23건</span>
+            </div>
+
+            <!-- 적립금 내역 리스트 -->
+            <div class="points-list">
+                <!-- 적립 내역 -->
+                <div class="points-item points-earned">
+                    <div class="points-item-header">
+                        <span class="points-item-date">2025.06.20</span>
+                        <span class="points-item-amount">+5,000원</span>
+                    </div>
+                    <div class="points-item-content">
+                        <div class="points-item-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="points-item-info">
+                            <div class="points-item-title">상품 구매 적립</div>
+                            <div class="points-item-description">홀리밤 프리미엄 세트 구매 (주문번호: ORD20250620001)</div>
+                        </div>
+                    </div>
+                    <div class="points-item-balance">잔액: 25,000원</div>
+                </div>
+
+                <!-- 사용 내역 -->
+                <div class="points-item points-used">
+                    <div class="points-item-header">
+                        <span class="points-item-date">2025.06.18</span>
+                        <span class="points-item-amount">-3,000원</span>
+                    </div>
+                    <div class="points-item-content">
+                        <div class="points-item-icon">
+                            <i class="fas fa-minus"></i>
+                        </div>
+                        <div class="points-item-info">
+                            <div class="points-item-title">상품 구매 시 사용</div>
+                            <div class="points-item-description">홀리밤 스페셜 에디션 구매 (주문번호: ORD20250618001)</div>
+                        </div>
+                    </div>
+                    <div class="points-item-balance">잔액: 20,000원</div>
+                </div>
+
+                <!-- 적립 내역 -->
+                <div class="points-item points-earned">
+                    <div class="points-item-header">
+                        <span class="points-item-date">2025.06.15</span>
+                        <span class="points-item-amount">+2,500원</span>
+                    </div>
+                    <div class="points-item-content">
+                        <div class="points-item-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="points-item-info">
+                            <div class="points-item-title">리뷰 작성 적립</div>
+                            <div class="points-item-description">홀리밤 베이직 라인 리뷰 작성</div>
+                        </div>
+                    </div>
+                    <div class="points-item-balance">잔액: 23,000원</div>
+                </div>
+
+                <!-- 적립 내역 -->
+                <div class="points-item points-earned">
+                    <div class="points-item-header">
+                        <span class="points-item-date">2025.06.10</span>
+                        <span class="points-item-amount">+1,000원</span>
+                    </div>
+                    <div class="points-item-content">
+                        <div class="points-item-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="points-item-info">
+                            <div class="points-item-title">회원가입 축하 적립금</div>
+                            <div class="points-item-description">홀리밤 회원가입을 축하합니다!</div>
+                        </div>
+                    </div>
+                    <div class="points-item-balance">잔액: 20,500원</div>
+                </div>
+
+                <!-- 소멸 내역 -->
+                <div class="points-item points-expired">
+                    <div class="points-item-header">
+                        <span class="points-item-date">2025.06.01</span>
+                        <span class="points-item-amount">-1,500원</span>
+                    </div>
+                    <div class="points-item-content">
+                        <div class="points-item-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="points-item-info">
+                            <div class="points-item-title">적립금 소멸</div>
+                            <div class="points-item-description">2024.06.01 적립된 적립금 유효기간 만료</div>
+                        </div>
+                    </div>
+                    <div class="points-item-balance">잔액: 19,500원</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+            <a href="#" class="disabled">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <span class="current">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </main>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    // 현재 페이지에 따른 사이드바 메뉴 활성화
+    $(document).ready(function() {
+        const currentPath = window.location.pathname;
+        $('.sidebar-menu a').removeClass('active');
+        $(`.sidebar-menu a[href="${currentPath}"]`).addClass('active');
+    });
+
+    // 적립금 필터링
+    function filterPoints() {
+        const period = document.getElementById('periodFilter').value;
+        const type = document.getElementById('typeFilter').value;
+        const search = document.getElementById('searchInput').value;
+
+        console.log('필터 조건:', { period, type, search });
+
+        // 실제 구현 시에는 서버에 필터 조건을 전송하여 결과를 받아옴
+        // 현재는 UI 시연용
+
+        // 예시: AJAX 요청
+        /*
+        $.ajax({
+          url: '/mypage/points/filter',
+          method: 'GET',
+          data: {
+            period: period,
+            type: type,
+            search: search
+          },
+          success: function(response) {
+            // 결과로 페이지 업데이트
+            $('.points-list').html(response.pointsList);
+            $('.section-title span').text('총 ' + response.totalCount + '건');
+          },
+          error: function() {
+            alert('검색 중 오류가 발생했습니다.');
+          }
+        });
+        */
+    }
+
+    // Enter 키로 검색
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            filterPoints();
+        }
+    });
+
+    // 필터 변경 시 자동 검색
+    document.getElementById('periodFilter').addEventListener('change', filterPoints);
+    document.getElementById('typeFilter').addEventListener('change', filterPoints);
+
+    // 정보 수정 페이지로 이동
+    function changePage() {
+        // 비밀번호 확인 후 정보 수정 페이지로 이동하는 로직
+        // 마이페이지와 동일한 비밀번호 확인 모달 사용
+        window.location.href = '/mypage/profile/edit';
+    }
+
+    // 로그아웃
+    function logout() {
+        if (confirm('정말 로그아웃 하시겠습니까?')) {
+            window.location.href = '/auth/logout';
+        }
+    }
+
+    // 적립금 상세 정보 토글 (선택사항)
+    $('.points-item').on('click', function() {
+        // 클릭 시 상세 정보 표시/숨김 기능 추가 가능
+        $(this).toggleClass('expanded');
+    });
+
+    // 페이지네이션 클릭 이벤트
+    $('.pagination a:not(.disabled)').on('click', function(e) {
+        e.preventDefault();
+        const page = $(this).text() || $(this).find('i').length > 0 ? 'nav' : $(this).text();
+        console.log('페이지 이동:', page);
+
+        // 실제 구현 시 페이지 이동 로직
+        /*
+        window.location.href = '/mypage/points?page=' + page;
+        */
+    });
+
+    // 적립금 안내 툴팁 (선택사항)
+    function showPointsInfo() {
+        alert('적립금은 상품 구매, 리뷰 작성 등을 통해 적립되며, 적립일로부터 1년간 사용 가능합니다.');
+    }
+
+    // 소멸 예정 적립금 알림
+    $(document).ready(function() {
+        const expiringPoints = 5000; // 서버에서 받아올 데이터
+        if (expiringPoints > 0) {
+            // 30일 이내 소멸 예정 적립금이 있을 때 알림 표시
+            console.log('소멸 예정 적립금:', expiringPoints + '원');
+        }
+    });
+</script>
+</body>
+</html>

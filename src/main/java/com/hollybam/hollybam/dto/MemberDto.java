@@ -25,6 +25,7 @@ public class MemberDto {
     private String memberRole;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
+    private String di;
 
     private boolean isAdultVerified;
     private LocalDateTime adultVerifiedAt;

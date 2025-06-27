@@ -36,9 +36,8 @@ public class CategoryController {
         CategoryDto cate = categoryService.selectCategoryWithDetails(categoryCode);
 
         Map<String, Object> active = new HashMap<>();
-        if (detailCode != null) {
-            active.put("detailCode", detailCode);
-        }
+        // detailCode가 null이어도 항상 키를 추가
+        active.put("detailCode", detailCode);  // null일 수도 있지만 키는 존재
 
         // 상품 리스트 조회
         List<ProductDto> productList;

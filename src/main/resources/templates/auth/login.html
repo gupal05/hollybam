@@ -397,6 +397,11 @@
             $('#memberId').val(savedId);
             $('#rememberMe').prop('checked', true);
         }
+
+        const dupMessage = /*[[${dupMessage}]]*/ null;
+        if (dupMessage) {
+            alert(dupMessage);
+        }
     });
 
     // 로그인 폼 제출

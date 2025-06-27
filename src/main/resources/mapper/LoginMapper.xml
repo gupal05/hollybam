@@ -11,7 +11,7 @@
 
     <!-- session에 담기 위한 사용자 정보 sel -->
     <select id="getMemberInfo" parameterType="String" resultType="com.hollybam.hollybam.dto.MemberDto">
-        select mem_code as memberCode, mem_name as memberName, mem_id as memberId, mem_pw as memberPw, mem_addr as memberAddr, mem_zip as memberZip, mem_phone as memberPhone, mem_mail as memberMail, mem_birth as memberBirth, mem_gender as memberGender, create_at as createAt, update_at as updateAt
+        select mem_code as memberCode, mem_name as memberName, mem_id as memberId, mem_pw as memberPw, mem_addr as memberAddr, mem_zip as memberZip, mem_phone as memberPhone, mem_mail as memberMail, mem_birth as memberBirth, mem_gender as memberGender, create_at as createAt, update_at as updateAt, mem_role as memberRole
         from member
         where mem_id = #{memberId}
     </select>

@@ -108,40 +108,6 @@ $(document).ready(function () {
             closeDropdown();
         }
     });
-
-    // ✅ 모바일 카테고리 드롭다운 토글 기능 (기존 유지하되 모바일 기준 수정)
-    function bindMobileCategoryDropdown() {
-        if (isMobile()) {
-            $('.nav-item').each(function () {
-                const $item = $(this);
-                $item.off('click').on('click', function (e) {
-                    e.stopPropagation();
-                    // 다른 메뉴 닫기
-                    $('.nav-item').not($item).removeClass('active');
-                    // 현재 메뉴 toggle
-                    $item.toggleClass('active');
-                });
-            });
-
-            // 외부 클릭 시 모두 닫기
-            $(document).on('click.mobileDropdown', function () {
-                $('.nav-item').removeClass('active');
-            });
-        } else {
-            // 데스크톱에서는 이벤트 제거
-            $('.nav-item').off('click');
-            $(document).off('click.mobileDropdown');
-            $('.nav-item').removeClass('active');
-        }
-    }
-
-    // 처음 로딩 시
-    bindMobileCategoryDropdown();
-
-    // 리사이즈 시 다시 바인딩
-    $(window).on('resize', function () {
-        bindMobileCategoryDropdown();
-    });
 });
 
 function logout() {
@@ -302,54 +268,53 @@ $(window).on('resize', function() {
     }, 100);
 });
 
-// 카테고리 드롭다운 개선 (데스크톱)
+// ===== 🔥 드롭다운 문제 해결: CSS 호버와 충돌하는 JavaScript 코드 제거 =====
+// 기존의 복잡한 카테고리 드롭다운 JavaScript를 제거하고 CSS 호버만 사용
+
 $(document).ready(function() {
-    // 데스크톱에서 카테고리 호버 시 전체 카테고리 표시
-    $('.category-nav-item').on('mouseenter', function() {
+    // 데스크톱에서는 CSS :hover만 사용하고 JavaScript 간섭 없애기
+    function initDesktopDropdown() {
         if (window.innerWidth > 900) {
-            const $dropdown = $(this).find('.dropdown');
-            const $backdrop = $(this).find('.dropdown-backdrop');
+            // 모든 기존 JavaScript 이벤트 제거
+            $('.category-nav-item, .nav-item').off('mouseenter mouseleave click');
+            $('.dropdown').off('mouseenter mouseleave');
 
-            $backdrop.css('pointer-events', 'all');
-            $dropdown.css({
-                'opacity': '1',
-                'visibility': 'visible'
-            });
+            // CSS 호버만으로 동작하도록 클래스 초기화
+            $('.nav-item').removeClass('active');
         }
+    }
+
+    // 초기 실행
+    initDesktopDropdown();
+
+    // 리사이즈 시에도 실행
+    $(window).on('resize', function() {
+        initDesktopDropdown();
     });
 
-    $('.category-nav-item').on('mouseleave', function() {
-        if (window.innerWidth > 900) {
-            const $dropdown = $(this).find('.dropdown');
-            const $backdrop = $(this).find('.dropdown-backdrop');
+    // 모바일에서의 카테고리 클릭 처리 (900px 이하에서만)
+    $('.category-nav-item').on('click', function(e) {
+        if (window.innerWidth <= 900) {
+            e.preventDefault();
+            e.stopPropagation();
 
-            setTimeout(() => {
-                if (!$dropdown.is(':hover') && !$(this).is(':hover')) {
-                    $backdrop.css('pointer-events', 'none');
-                    $dropdown.css({
-                        'opacity': '0',
-                        'visibility': 'hidden'
-                    });
-                }
-            }, 100);
-        }
-    });
-
-    // 드롭다운 자체에서 마우스가 나갔을 때도 처리
-    $('.dropdown').on('mouseleave', function() {
-        if (window.innerWidth > 900) {
             const $this = $(this);
-            const $backdrop = $('.dropdown-backdrop');
+            const isActive = $this.hasClass('active');
 
-            setTimeout(() => {
-                if (!$('.category-nav-item').is(':hover')) {
-                    $backdrop.css('pointer-events', 'none');
-                    $this.css({
-                        'opacity': '0',
-                        'visibility': 'hidden'
-                    });
-                }
-            }, 100);
+            // 다른 모든 카테고리 닫기
+            $('.category-nav-item').not($this).removeClass('active');
+
+            // 현재 카테고리 토글
+            $this.toggleClass('active', !isActive);
+        }
+    });
+
+    // 모바일에서 외부 클릭 시 카테고리 닫기
+    $(document).on('click', function(e) {
+        if (window.innerWidth <= 900) {
+            if (!$(e.target).closest('.category-nav-item').length) {
+                $('.category-nav-item').removeClass('active');
+            }
         }
     });
 });

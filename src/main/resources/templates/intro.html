@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Hollybam</title>
+  <link rel="icon" href="data:,">
+
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
@@ -113,6 +115,11 @@
     .certify input[type="button"]:hover {
       background-color: #ddd;
     }
+    .certify input[type="button"]:disabled {
+      background-color: #ccc;
+      color: #999;
+      cursor: not-allowed;
+    }
     .certify p {
       font-size: 13px;
       color: #666;
@@ -121,6 +128,38 @@
       text-align: left;
     }
 
+    /* NICE 인증용 추가 스타일 (기존 디자인과 완전히 동일) */
+    .message {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 14px;
+      display: none;
+    }
+    .message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .message.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .message.info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 10px;
+      font-style: italic;
+      color: #666;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -136,6 +175,9 @@
 </script>
 
 <div class="container">
+  <!-- 메시지 표시 영역 -->
+  <div id="messageDiv" class="message"></div>
+  <div id="loadingDiv" class="loading">본인인증을 진행중입니다...</div>
 
   <!-- 경고 안내 영역 -->
   <div class="section">
@@ -171,61 +213,87 @@
   <!-- 구분선 -->
   <div class="divider"></div>
 
+  <form name="form_chk" method="post">
+    <input type="hidden" name="m" value="service"/>
+    <input type="hidden" name="token_version_id" th:value="${token.token_version_id}"/>
+    <input type="hidden" name="enc_data" th:value="${token.enc_data}"/>
+    <input type="hidden" name="integrity_value" th:value="${token.integrity_value}"/>
+    <input type="hidden" name="auth_type" value="S"/>
+  </form>
+
   <!-- 비회원 성인인증 -->
   <div class="section certify">
     <h3>비회원 성인인증</h3>
-    <input type="button" value="휴대폰 인증">
-    <input type="button" value="간편 인증" onclick="requestCertification()">
+    <input type="button" value="휴대폰 인증 (NICE)" id="phoneAuthBtn" onclick="fnPopup()">
     <p>
       본인 명의의 휴대폰 또는 간편 인증 수단으로 본인인증을 진행합니다.<br>
       명의자의 나이 정보로 19세 미만 여부를 확인합니다.
     </p>
   </div>
 </div>
-<script th:inline="javascript">
-  // 콘솔에 IMP 객체 확인
-  IMP.init("imp70328114");
 
-  function requestCertification() {
-    IMP.certification(
-            {
-              channelKey: "channel-key-fc3f00c8-38e1-4a2b-a3e3-35b444cacab8",
-              merchant_uid: "mid_" + new Date().getTime(),
-              m_redirect_url: "[리디렉션 될 URL]", // 실제 URL로 변경하세요
-              popup: false
-            },
-            function (rsp) {
-              if (rsp.success) {
-                $.ajax({
-                  url: "/verify-cert",
-                  method: "POST",
-                  contentType: "application/json",
-                  data: JSON.stringify({ imp_uid: rsp.imp_uid }),
-                  success: function (res) {
-                    alert(res.message);
-                    if (res.adult === true) {
-                      const form = document.createElement("form");
-                      form.method = "get";
-                      form.action = "/main";
-                      document.body.appendChild(form);
-                      form.submit();
-                    } else {
-                      alert("19세 미만은 접근할 수 없습니다.");
-                    }
-                  },
-                  error: function (xhr, status, error) {
-                    console.error("서버 오류:", xhr.responseText);
-                    alert("서버 오류가 발생했습니다.");
-                  }
-                });
-              } else {
-                alert("인증 실패: " + rsp.error_msg);
-              }
-            }
-    );
+<script th:inline="javascript">
+  let authPopup = null;
+
+  window.addEventListener("message", function (event) {
+    if (event.data === "authSuccess") {
+      //alert("성인인증이 완료되었습니다.");
+      window.location.href = "/loading";
+    } else if (event.data === "authFail") {
+      alert("성인이 아닙니다. 인증이 제한됩니다.");
+      window.location.href = "/";
+    }
+
+    // 팝업 닫기 시도
+    if (authPopup && !authPopup.closed) {
+      authPopup.close();
+    }
+  });
+
+  function fnPopup() {
+    const tokenVersionId = document.querySelector('input[name="token_version_id"]').value;
+    const encData = document.querySelector('input[name="enc_data"]').value;
+    const integrityValue = document.querySelector('input[name="integrity_value"]').value;
+
+    if (!tokenVersionId || !encData || !integrityValue) {
+      alert('인증에 필요한 토큰 정보가 부족합니다.');
+      return false;
+    }
+
+    if (authPopup && !authPopup.closed) {
+      authPopup.close();
+    }
+
+    authPopup = window.open('', 'popupChk',
+            'width=480,height=812,top=100,left=' + (screen.width / 2 - 240) +
+            ',fullscreen=no,menubar=no,status=no,toolbar=no,titlebar=yes,location=no,scrollbars=no');
+
+    if (!authPopup) {
+      alert('팝업 차단됨');
+      return false;
+    }
+
+    document.form_chk.action = "https://nice.checkplus.co.kr/CheckPlusSafeModel/service.cb";
+    document.form_chk.target = "popupChk";
+    document.form_chk.submit();
   }
 
+
+  /**
+   * 기존 로그인 폼 처리 (완전히 유지)
+   */
   $(document).ready(function () {
+    // Thymeleaf 메시지 처리
+    const errorMsg = /*[[${session.error}]]*/ null;
+    const successMsg = /*[[${session.success}]]*/ null;
+
+    if (errorMsg) {
+      showMessage(errorMsg, 'error');
+    }
+    if (successMsg) {
+      showMessage(successMsg, 'success');
+    }
+
     $("#loginForm").submit(function (event) {
       event.preventDefault();
 
@@ -258,6 +326,13 @@
         }
       });
     });
+  });
+
+  /**
+   * 페이지 이탈 시 정리
+   */
+  window.addEventListener('beforeunload', function() {
+    resetAuthState();
   });
 </script>
 

@@ -10,4 +10,30 @@
         WHERE mem_code = #{memberCode}
     </update>
 
+    <select id="selectMemberPoint" parameterType="int" resultType="int">
+        SELECT IFNULL(SUM(point_change), 0)
+        FROM point
+        WHERE mem_code = #{memberCode}
+    </select>
+
+
+    <select id="selectMemberAddPoint" parameterType="int" resultType="int">
+        SELECT IFNULL(SUM(point_change), 0) AS total_saved_points
+        FROM point
+        WHERE mem_code = #{memCode}
+          AND point_change &gt; 0
+          AND created_at &gt;= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+          AND created_at &lt; DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+    </select>
+
+    <select id="selectMemberUsePoint" parameterType="int" resultType="int">
+        SELECT IFNULL(SUM(ABS(point_change)), 0) AS total_used_points
+        FROM point
+        WHERE mem_code = #{memCode}
+          AND point_change &lt; 0
+          AND created_at &gt;= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+          AND created_at &lt; DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+    </select>
+
+
 </mapper>

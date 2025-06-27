@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 로그인 - Hollybam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 60px 50px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .logo {
+            margin-bottom: 50px;
+        }
+
+        .logo h1 {
+            color: #212529;
+            font-size: 32px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .logo p {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-form {
+            margin-top: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #495057;
+            font-weight: 400;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 18px 0;
+            border: none;
+            border-bottom: 1px solid #dee2e6;
+            background: transparent;
+            font-size: 16px;
+            color: #212529;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-bottom-color: #495057;
+        }
+
+        .form-control::placeholder {
+            color: #adb5bd;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+        }
+
+        .password-toggle:hover {
+            color: #212529;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 40px;
+            font-size: 13px;
+        }
+
+        .forgot-password {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 300;
+        }
+
+        .forgot-password:hover {
+            color: #212529;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: #fff;
+            color: #212529;
+            border: 1px solid #212529;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-btn:hover {
+            background: #212529;
+            color: #fff;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #fff;
+            color: #212529;
+        }
+
+        .error-message {
+            background: #f8f9fa;
+            color: #dc3545;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-left: 3px solid #dc3545;
+            text-align: left;
+            font-size: 13px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            color: #6c757d;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #dee2e6;
+            border-top: 1px solid #495057;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #e9ecef;
+            color: #adb5bd;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 30px;
+                margin: 10px;
+            }
+
+            .logo h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="logo">
+        <h1>HOLLYBAM</h1>
+        <p>Administrator</p>
+    </div>
+
+    <div class="error-message" id="errorMessage">
+        아이디 또는 비밀번호가 올바르지 않습니다.
+    </div>
+
+    <form class="login-form" id="loginForm">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    class="form-control"
+                    placeholder="Enter admin username"
+                    required
+                    autocomplete="username"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-wrapper">
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control"
+                        placeholder="Enter password"
+                        required
+                        autocomplete="current-password"
+                >
+                <button type="button" class="password-toggle" id="passwordToggle">
+                    ◦
+                </button>
+            </div>
+        </div>
+
+        <div class="remember-forgot">
+            <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+            Sign In
+        </button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <span>Signing in...</span>
+        </div>
+    </form>
+
+    <div class="footer">
+        © 2025 Hollybam. All rights reserved.
+    </div>
+</div>
+
+<script>
+    // 비밀번호 표시/숨김 토글
+    const passwordToggle = document.getElementById('passwordToggle');
+    const passwordInput = document.getElementById('password');
+
+    passwordToggle.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        passwordToggle.textContent = type === 'password' ? '◦' : '●';
+    });
+
+    // 폼 제출 처리
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const loading = document.getElementById('loading');
+    const errorMessage = document.getElementById('errorMessage');
+
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // 에러 메시지 숨김
+        errorMessage.style.display = 'none';
+
+        // 로딩 상태 표시
+        loginBtn.style.display = 'none';
+        loading.style.display = 'flex';
+
+        // 폼 데이터 수집 (form-data 방식)
+        const formData = new FormData(loginForm);
+
+        // memberId, memberPw로 이름 변경
+        const loginData = new FormData();
+        loginData.append('memberId', formData.get('username'));
+        loginData.append('memberPw', formData.get('password'));
+
+        try {
+            // 실제 로그인 API 호출 (form-data 방식)
+            const response = await fetch('/admin/auth/login', {
+                method: 'POST',
+                body: loginData  // Content-Type 헤더 제거 (자동으로 설정됨)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+
+                // 백엔드 응답 구조에 맞춰 처리
+                if (result.loginResult === true) {
+                    // 성공 시 관리자 대시보드로 리다이렉트
+                    window.location.href = '/admin/dashboard';
+                } else {
+                    // 로그인 실패 또는 권한 없음
+                    throw new Error(result.message || '로그인에 실패했습니다.');
+                }
+            } else {
+                throw new Error('서버 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            // 에러 처리
+            errorMessage.textContent = error.message;
+            errorMessage.style.display = 'block';
+
+            // 로딩 상태 해제
+            loginBtn.style.display = 'block';
+            loading.style.display = 'none';
+
+            // 비밀번호 필드 초기화
+            const passwordInput = document.getElementById('password'); // passwordInput 변수가 정의되지 않았으므로 추가
+            passwordInput.value = '';
+            passwordInput.focus();
+        }
+    });
+
+    // 엔터 키 처리
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            loginForm.dispatchEvent(new Event('submit'));
+        }
+    });
+
+    // 페이지 로드 시 아이디 필드에 포커스
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('username').focus();
+    });
+</script>
+</body>
+</html>

@@ -14,7 +14,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
         HttpSession session = request.getSession();
-        Object guest = session.getAttribute("guest_uuid");
+        Object guest = session.getAttribute("guest");
         Object member = session.getAttribute("member");
         Object temp = session.getAttribute("temp");
 

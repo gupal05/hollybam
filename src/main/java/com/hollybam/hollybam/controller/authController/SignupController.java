@@ -1,5 +1,6 @@
 package com.hollybam.hollybam.controller.authController;
 
+import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.services.IF_SignupService;
 import com.hollybam.hollybam.services.SignupService;
@@ -21,11 +22,21 @@ public class SignupController {
     //회원가입 페이지 이동 메서드
     @GetMapping("/signup")
     public String signup(Model model, HttpSession session) {
-        MemberDto guestInfo = new MemberDto();
-        guestInfo = signupService.getGuestInfo((String) session.getAttribute("guest_uuid"));
-        model.addAttribute("guestInfo", guestInfo);
-        model.addAttribute("memberDto", new MemberDto());
-        return "/auth/signup";
+        GuestDto guestDto = (GuestDto) session.getAttribute("guest");
+        if(signupService.isRecodeSignup(guestDto.getGuestDi()) > 0) {
+            model.addAttribute("recodeMessage", "가입하신 이력이 존재합니다.");
+            return "redirect:/auth/login";
+        } else {
+            MemberDto guestInfo = new MemberDto();
+            guestInfo.setMemberName(guestDto.getGuestName());
+            guestInfo.setMemberPhone(guestDto.getGuestPhone());
+            guestInfo.setMemberBirth(guestDto.getGuestBirth());
+            guestInfo.setMemberGender(guestDto.getGuestGender());
+            guestInfo.setAdultVerifiedAt(guestDto.getAdultVerifiedAt());
+            model.addAttribute("guestInfo", guestInfo);
+            model.addAttribute("memberDto", new MemberDto());
+            return "/auth/signup";
+        }
     }
 
     @PostMapping("/dupCheckId")
@@ -54,8 +65,9 @@ public class SignupController {
         // get memberCode
         // get order Info
         // if uuid로 주문한 orderInfo 있으면 order 테이블 memberCode update
-        signupService.deleteGuestByUuid((String) session.getAttribute("guest_uuid"));
-        session.removeAttribute("guest_uuid");
+        GuestDto guestInfo = (GuestDto) session.getAttribute("guest");
+        signupService.deleteGuestByDi(guestInfo.getGuestDi());
+        session.removeAttribute("guest");
         session.setAttribute("temp", "temp");
         Map<String, Object> signupResult = new HashMap<>();
         signupResult.put("signupResult", result > 0);

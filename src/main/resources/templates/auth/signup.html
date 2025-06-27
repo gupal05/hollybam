@@ -425,6 +425,23 @@
             margin-top: 4px;
             display: none;
         }
+
+        /* readonly/disabled 필드 스타일 */
+        input[readonly],
+        select:disabled,
+        input:disabled {
+            background-color: #f8f9fa !important;
+            cursor: not-allowed !important;
+            opacity: 0.8;
+            border-color: #dee2e6;
+        }
+
+        /* 라디오 버튼 disabled 스타일 */
+        input[type="radio"]:disabled + label {
+            color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -874,23 +891,41 @@
     let guestInfo = /*[[${guestInfo}]]*/ {};
 
     if (guestInfo) {
+        if(guestInfo.memberName) {
+            document.getElementById('memberName').value = guestInfo.memberName;
+            document.getElementById('memberName').setAttribute('readonly', true);
+        }
         // 전화번호 분리: 010-2349-1054
         if (guestInfo.memberPhone) {
             let phone = guestInfo.memberPhone;
             let first = phone.substring(0, 3);
             let second = phone.substring(3, 7);
             let third = phone.substring(7);
+
             document.getElementById('firstPhone').value = first;
             document.getElementById('secPhone').value = second;
             document.getElementById('trdPhone').value = third;
+
+            // readonly 설정
+            document.getElementById('firstPhone').disabled = true;
+            document.getElementById('secPhone').setAttribute('readonly', true);
+            document.getElementById('trdPhone').setAttribute('readonly', true);
         }
 
         // 생년월일: 1998-10-26
         if (guestInfo.memberBirth) {
             const birth = guestInfo.memberBirth.split('-');
+
             document.getElementById('year').value = birth[0];
             document.getElementById('month').value = birth[1];
             document.getElementById('day').value = birth[2];
+
+            // readonly 설정
+            document.getElementById('year').setAttribute('readonly', true);
+            document.getElementById('month').disabled = true;
+            document.getElementById('day').setAttribute('readonly', true);
+
+            document.getElementById('memberBirth').value = guestInfo.memberBirth;
         }
 
         // 성별
@@ -901,6 +936,10 @@
             } else if (gender === '여자') {
                 document.getElementById('female').checked = true;
             }
+
+            // readonly 설정
+            document.getElementById('male').disabled = true;
+            document.getElementById('female').disabled = true;
         }
 
         if (guestInfo && guestInfo.adultVerifiedAt) {
@@ -910,16 +949,6 @@
 </script>
 
 <script>
-    function isValidDate(year, month, day) {
-        const dateStr = `${year}-${month}-${day}`;
-        const date = new Date(dateStr);
-        return (
-            date.getFullYear() == year &&
-            date.getMonth() + 1 == parseInt(month) &&
-            date.getDate() == parseInt(day)
-        );
-    }
-
     // 폼 제출
     $('#signupForm').on('submit', function(e) {
         e.preventDefault();
@@ -930,13 +959,6 @@
 
         // memberBirth 필드에 형식 지정해서 설정
         const fullDate = `${year}-${month}-${day}`;
-        $('#memberBirth').val(fullDate);
-
-        // 날짜 유효성 검사
-        if (!isValidDate(year, month, day)) {
-            alert('올바른 생년월일을 입력해주세요.');
-            return;
-        }
 
         if (validateForm()) {
             // member 가져오기

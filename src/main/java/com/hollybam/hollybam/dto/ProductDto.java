@@ -21,6 +21,11 @@ public class ProductDto {
     private LocalDateTime createAt;     // 등록 일자
     private LocalDateTime updateAt;     // 수정 일자
 
+    // 목록 조회용 임시 필드들 추가
+    private String titleImageUrl;    // title 이미지 URL로 변경
+    private Integer sellingPrice;    // 판매가
+    private Integer originalPrice;   // 정가
+
     private List<PriceDto> priceDtoList;
     private List<ImageDto> imageDtoList;
     private List<MovementDto> movementDtoList;

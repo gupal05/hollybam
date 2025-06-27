@@ -48,8 +48,8 @@ public class SignupService implements IF_SignupService{
 
     @Override
     @Transactional
-    public void deleteGuestByUuid(String uuid){
-        signupDao.deleteGuestByUuid(uuid);
+    public void deleteGuestByDi(String uuid){
+        signupDao.deleteGuestByDi(uuid);
     }
 
     @Override
@@ -66,5 +66,10 @@ public class SignupService implements IF_SignupService{
     @Transactional
     public void insertSignupCoupon(int memberCode, int signupCouponCode){
         signupDao.insertSignupCoupon(memberCode, signupCouponCode);
+    }
+
+    @Override
+    public int isRecodeSignup(String di){
+        return signupDao.isRecodeSignup(di);
     }
 }

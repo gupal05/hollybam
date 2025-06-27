@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.admin.IF_AdminProductDao">
+
+    <!-- 상품 목록 조회용 ResultMap -->
+    <resultMap id="AdminProductResultMap" type="com.hollybam.hollybam.dto.ProductDto">
+        <id property="productCode" column="product_code"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productDescription" column="product_description"/>
+        <result property="productOrderCount" column="product_order_count"/>
+        <result property="productQuantity" column="product_quantity"/>
+        <result property="productActive" column="product_active"/>
+        <result property="createAt" column="create_at"/>
+        <result property="updateAt" column="update_at"/>
+
+        <!-- 가격 정보 -->
+        <collection property="priceDtoList" ofType="com.hollybam.hollybam.dto.PriceDto">
+            <id property="priceCode" column="price_code"/>
+            <result property="priceOriginal" column="price_original"/>
+            <result property="priceCost" column="price_cost"/>
+            <result property="priceSelling" column="price_selling"/>
+            <result property="priceMargin" column="price_margin"/>
+            <result property="createAt" column="price_create_at"/>
+            <result property="updateAt" column="price_update_at"/>
+        </collection>
+
+        <!-- 이미지 정보 -->
+        <collection property="imageDtoList" ofType="com.hollybam.hollybam.dto.ImageDto">
+            <id property="imageCode" column="image_code"/>
+            <result property="imageUrl" column="image_url"/>
+            <result property="imageType" column="image_type"/>
+            <result property="imageOrder" column="image_order"/>
+            <result property="createAt" column="image_create_at"/>
+            <result property="updateAt" column="image_update_at"/>
+        </collection>
+
+        <!-- 옵션 정보 -->
+        <collection property="productOptionDtoList" ofType="com.hollybam.hollybam.dto.ProductOptionDto">
+            <id property="optionCode" column="option_code"/>
+            <result property="optionName" column="option_name"/>
+            <result property="optionValue" column="option_value"/>
+            <result property="optionPrice" column="option_price"/>
+            <result property="optionQuantity" column="option_quantity"/>
+        </collection>
+    </resultMap>
+
+    <!-- 카테고리 ResultMap -->
+    <resultMap id="AdminCategoryResultMap" type="com.hollybam.hollybam.dto.CategoryDto">
+        <id property="categoryCode" column="cate_code"/>
+        <result property="categoryName" column="cate_name"/>
+
+        <collection property="categoryDetailDto" ofType="com.hollybam.hollybam.dto.CategoryDetailDto">
+            <id property="cateDetailCode" column="cd_code"/>
+            <result property="cateDetailName" column="cd_name"/>
+        </collection>
+    </resultMap>
+
+    <!-- 관리자 상품 목록 조회 -->
+    <select id="adminSelectProductList" resultType="com.hollybam.hollybam.dto.ProductDto">
+        SELECT
+        p.product_code as productCode,
+        p.product_id as productId,
+        p.product_name as productName,
+        p.product_description as productDescription,
+        p.product_order_count as productOrderCount,
+        p.product_quantity as productQuantity,
+        p.product_active as productActive,
+        p.create_at as createAt,
+        p.update_at as updateAt,
+
+        -- 첫 번째 title 이미지 URL만 별도 컬럼으로
+        (SELECT image_url
+        FROM image
+        WHERE product_code = p.product_code
+        AND image_type = 'title'
+        ORDER BY image_order ASC
+        LIMIT 1) as titleImageUrl,
+
+        -- 가격 정보도 서브쿼리로
+        (SELECT price_selling
+        FROM price
+        WHERE product_code = p.product_code
+        LIMIT 1) as sellingPrice,
+
+        (SELECT price_original
+        FROM price
+        WHERE product_code = p.product_code
+        LIMIT 1) as originalPrice
+
+        FROM product p
+
+        <where>
+            p.product_active != -1
+
+            <if test="search.categoryCode != null and search.categoryCode != ''">
+                AND p.cate_code = #{search.categoryCode}
+            </if>
+
+            <if test="search.status != null and search.status != ''">
+                <choose>
+                    <when test="search.status == 'active'">
+                        AND p.product_active = 1
+                    </when>
+                    <when test="search.status == 'inactive'">
+                        AND p.product_active = 0
+                    </when>
+                </choose>
+            </if>
+
+            <if test="search.searchKeyword != null and search.searchKeyword != ''">
+                <choose>
+                    <when test="search.searchType == 'productId'">
+                        AND p.product_id LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    </when>
+                    <when test="search.searchType == 'productName'">
+                        AND p.product_name LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    </when>
+                    <when test="search.searchType == 'description'">
+                        AND p.product_description LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (p.product_id LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                        OR p.product_name LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                        OR p.product_description LIKE CONCAT('%', #{search.searchKeyword}, '%'))
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+
+        ORDER BY
+        <choose>
+            <when test="search.sortBy == 'productId'">
+                p.product_id
+            </when>
+            <when test="search.sortBy == 'productName'">
+                p.product_name
+            </when>
+            <when test="search.sortBy == 'orderCount'">
+                p.product_order_count
+            </when>
+            <when test="search.sortBy == 'quantity'">
+                p.product_quantity
+            </when>
+            <when test="search.sortBy == 'updateAt'">
+                p.update_at
+            </when>
+            <otherwise>
+                p.create_at
+            </otherwise>
+        </choose>
+
+        <choose>
+            <when test="search.sortOrder == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+
+        LIMIT #{search.size} OFFSET #{offset}
+    </select>
+
+    <!-- 관리자 상품 총 개수 조회 -->
+    <select id="adminSelectProductCount" resultType="long">
+        SELECT COUNT(DISTINCT p.product_code)
+        FROM product p
+
+        <where>
+            p.product_active != -1  <!-- 삭제된 상품 제외 -->
+
+            <!-- 카테고리 필터 -->
+            <if test="search.categoryCode != null and search.categoryCode != ''">
+                AND p.cate_code = #{search.categoryCode}
+            </if>
+
+            <!-- 상태 필터 -->
+            <if test="search.status != null and search.status != ''">
+                <choose>
+                    <when test="search.status == 'active'">
+                        AND p.product_active = 1
+                    </when>
+                    <when test="search.status == 'inactive'">
+                        AND p.product_active = 0
+                    </when>
+                </choose>
+            </if>
+
+            <!-- 검색 키워드 -->
+            <if test="search.searchKeyword != null and search.searchKeyword != ''">
+                <choose>
+                    <when test="search.searchType == 'productId'">
+                        AND p.product_id LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    </when>
+                    <when test="search.searchType == 'productName'">
+                        AND p.product_name LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    </when>
+                    <when test="search.searchType == 'description'">
+                        AND p.product_description LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (p.product_id LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                        OR p.product_name LIKE CONCAT('%', #{search.searchKeyword}, '%')
+                        OR p.product_description LIKE CONCAT('%', #{search.searchKeyword}, '%'))
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+    <!-- 관리자 모든 카테고리 조회 -->
+    <select id="adminSelectAllCategories" resultMap="AdminCategoryResultMap">
+        SELECT
+            c.cate_code,
+            c.cate_name,
+            cd.cd_code,
+            cd.cd_name
+        FROM category c
+                 LEFT JOIN category_detail cd ON c.cate_code = cd.cate_code
+        ORDER BY c.cate_code, cd.cd_code
+    </select>
+
+    <!-- 관리자 상품 상세 조회 -->
+    <select id="adminSelectProductDetail" resultMap="AdminProductResultMap">
+        SELECT
+            p.product_code,
+            p.product_id,
+            p.product_name,
+            p.product_description,
+            p.product_order_count,
+            p.product_quantity,
+            p.product_active,
+            p.create_at,
+            p.update_at,
+
+            pr.price_code,
+            pr.price_original,
+            pr.price_cost,
+            pr.price_selling,
+            pr.price_margin,
+            pr.create_at as price_create_at,
+            pr.update_at as price_update_at,
+
+            img.image_code,
+            img.image_url,
+            img.image_type,
+            img.image_order,
+            img.create_at as image_create_at,
+            img.update_at as image_update_at,
+
+            opt.option_code,
+            opt.option_name,
+            opt.option_value,
+            opt.option_price,
+            opt.option_quantity
+
+        FROM product p
+                 LEFT JOIN price pr ON p.product_code = pr.product_code
+                 LEFT JOIN image img ON p.product_code = img.product_code
+                 LEFT JOIN product_option opt ON p.product_code = opt.product_code
+
+        WHERE p.product_code = #{productCode}
+          AND p.product_active != -1
+    </select>
+
+    <!-- 관리자 상품 상태 업데이트 -->
+    <update id="adminUpdateProductStatus">
+        UPDATE product
+        SET
+            product_active = #{status},
+            update_at = CURRENT_TIMESTAMP
+        WHERE product_code = #{productCode}
+    </update>
+
+    <!-- 관리자 상품 일괄 상태 업데이트 -->
+    <update id="adminBulkUpdateProductStatus">
+        UPDATE product
+        SET
+        product_active = #{status},
+        update_at = CURRENT_TIMESTAMP
+        WHERE product_code IN
+        <foreach collection="productCodes" item="productCode" open="(" close=")" separator=",">
+            #{productCode}
+        </foreach>
+    </update>
+
+</mapper>

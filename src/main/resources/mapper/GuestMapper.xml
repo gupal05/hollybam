@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hollybam.hollybam.dao.IF_GuestDao">
+
+    <select id="isGuest" parameterType="String" resultType="int">
+        select count(*)
+        from guest
+        where guest_di = #{guestDi}
+    </select>
+
+    <select id="getGuestByDi" parameterType="String" resultType="com.hollybam.hollybam.dto.GuestDto">
+        select guest_code as guestCode,
+               guest_di as guestDi,
+               guest_name as guestName,
+               guest_birth as guestBirth,
+               guest_gender as guestGender,
+               guest_phone as guestPhone,
+               is_adult_verified as isAdultVerified,
+               adult_verified_at as adultVerifiedAt,
+               create_at as createAt
+        from guest
+        where guest_di = #{guestDi}
+    </select>
+    
+    <insert id="insertGuest" parameterType="com.hollybam.hollybam.dto.GuestDto">
+        insert into guest(guest_di, guest_name, guest_birth, guest_gender, guest_phone, is_adult_verified, adult_verified_at)
+        values (#{guestDi}, #{guestName}, #{guestBirth}, #{guestGender}, #{guestPhone}, 1, NOW())
+    </insert>
+
+</mapper>

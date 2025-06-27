@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="icon" href="data:,">
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Sticky Header with Slide</title>
@@ -1951,12 +1952,12 @@
                     <div class="card-product-img">
                         <img class="product-img"
                              th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
-                             th:if="${product.imageDtoList[0].imageWebp != null}"
+                             th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
                              th:attr="data-hover=@{/testImage/{hover}(hover=${product.imageDtoList[0].imageWebp})}"
                              alt="상품 이미지" />
                         <img class="product-img"
                              th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
-                             th:unless="${product.imageDtoList[0].imageWebp != null}"
+                             th:unless="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
                              alt="상품 이미지" />
                     </div>
                     <div class="card-product-info">
@@ -1978,7 +1979,7 @@
                     </div>
                 </a>
                 <div class="wishlist-wrap">
-                    <<button class="wishlist-btn"
+                    <button class="wishlist-btn"
                              th:data-product-code="${product.productCode}"
                              title="위시리스트에 추가">
                     <i class="far fa-heart heart-icon"></i>
@@ -2125,7 +2126,9 @@
     // 카테고리 클릭 이벤트
     $('.category-item').on('click', function() {
         const categoryName = $(this).find('.category-label').text().trim();
-        console.log('카테고리 클릭:', categoryName);
+        if (categoryName === '리얼돌') {
+            window.location.href = `/product/list?categoryCode=06`;
+        }
 
         // 홀리밤 소식 클릭 시에만 스크롤
         if (categoryName === '홀리밤 소식') {
@@ -2151,7 +2154,8 @@
             const originalSrc = img.getAttribute("src");
             const hoverSrc = img.getAttribute("data-hover");
 
-            if (hoverSrc) {
+            // hoverSrc가 유효한 경우에만 이벤트 리스너 추가
+            if (hoverSrc && hoverSrc !== 'blob' && hoverSrc.trim() !== '') {
                 img.addEventListener("mouseenter", () => {
                     img.setAttribute("src", hoverSrc);
                 });
@@ -2160,6 +2164,7 @@
                     img.setAttribute("src", originalSrc);
                 });
             }
+            // webp가 없거나 유효하지 않은 경우는 CSS의 scale 효과만 적용됨
         });
     });
 

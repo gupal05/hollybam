@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>인증 중...</title>
+</head>
+<body>
+<form id="niceForm" method="post" action="https://nice.checkplus.co.kr/CheckPlusSafeModel/service.cb" target="_self">
+  <input type="hidden" name="m" value="service"/>
+  <input type="hidden" name="token_version_id" value="{{token_version_id}}"/>
+  <input type="hidden" name="enc_data" value="{{enc_data}}"/>
+  <input type="hidden" name="integrity_value" value="{{integrity_value}}"/>
+  <input type="hidden" name="auth_type" value="S"/>
+</form>
+
+<script>
+  document.getElementById('niceForm').submit();
+</script>
+</body>
+</html>

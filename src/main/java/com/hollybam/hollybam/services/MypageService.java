@@ -17,4 +17,13 @@ public class MypageService implements IF_MypageService {
     public void updateMember(MemberDto memberDto) {
         mypageDao.updateMember(memberDto);
     }
+
+    @Override
+    public int selectMemberPoint(int memberCode) { return mypageDao.selectMemberPoint(memberCode); }
+
+    @Override
+    public int selectMemberAddPoint(int memberCode){ return mypageDao.selectMemberAddPoint(memberCode); }
+
+    @Override
+    public int selectMemberUsePoint(int memberCode){ return mypageDao.selectMemberUsePoint(memberCode); }
 }

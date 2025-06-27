@@ -6,7 +6,10 @@ import com.hollybam.hollybam.dto.*;
 import com.hollybam.hollybam.services.CouponService;
 import com.hollybam.hollybam.services.DiscountService;
 import com.hollybam.hollybam.services.ProductService;
+import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -30,6 +34,37 @@ public class AdminController {
     private CouponService couponService;
     @Autowired
     private DiscountService discountService;
+    @Autowired
+    private HttpSession session;
+
+    @GetMapping
+    public String admin(Model model) {
+        if(session.getAttribute("member") != null) {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            if(member.getMemberRole().equals("admin")) {
+                return  "admin/dashboard";
+            } else {
+                return "redirect:/";
+            }
+        } else {
+            return "admin/main";
+        }
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        if(session.getAttribute("member") != null) {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            if(!member.getMemberRole().equals("admin")) {
+                return "redirect:/";
+            } else  {
+                model.addAttribute("member", member);
+                return "admin/dashboard";
+            }
+        } else  {
+            return "redirect:/";
+        }
+    }
 
     @GetMapping("/add/product")
     public String addProduct(Model model) {

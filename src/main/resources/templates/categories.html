@@ -390,8 +390,8 @@
                 <a th:href="@{/}">홈</a>
                 <span class="breadcrumb-sep">›</span>
                 <a th:href="@{/product/list(categoryCode=${cate.categoryCode})}" th:text="${cate.categoryName}">카테고리명</a>
-                <span th:if="${active != null and not #strings.isEmpty(active.detailCode)}" class="breadcrumb-sep">›</span>
-                <span th:if="${not #strings.isEmpty(active.detailCode)}" class="current">
+                <span th:if="${active != null and active.detailCode != null and not #strings.isEmpty(active.detailCode)}" class="breadcrumb-sep">›</span>
+                <span th:if="${active != null and active.detailCode != null and not #strings.isEmpty(active.detailCode)}" class="current">
                     <span th:each="detail : ${cate.categoryDetailDto}"
                           th:if="${detail.cateDetailCode == active.detailCode}"
                           th:text="${detail.cateDetailName}">상세카테고리명</span>

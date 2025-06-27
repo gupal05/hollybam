@@ -1,5 +1,6 @@
 package com.hollybam.hollybam.controller;
 
+import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.dto.WishlistDto;
 import com.hollybam.hollybam.services.CouponService;
@@ -38,9 +39,9 @@ public class WishlistController {
             // 세션에서 사용자 정보 가져오기
             MemberDto member = (MemberDto) session.getAttribute("member");
             Integer memCode = member != null ? member.getMemberCode() : null;
-            String guestUuid = (String) session.getAttribute("guest_uuid");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
 
-            log.info("세션 정보 - memCode: {}, guestUuid: {}", memCode, guestUuid);
+            log.info("세션 정보 - memCode: {}, guest: {}", memCode, guest);
 
             List<WishlistDto> wishlistItems;
             int totalCount;
@@ -52,10 +53,10 @@ public class WishlistController {
                 couponCount = couponService.selectCouponCount(memCode);
                 wishlistItems = wishlistService.getMemberWishlist(memCode);
                 totalCount = wishlistService.getMemberWishlistCount(memCode);
-            } else if (guestUuid != null) {
+            } else if (guest != null) {
                 // 비회원
-                log.info("비회원 위시리스트 조회 - guestUuid: {}", guestUuid);
-                Integer guestCode = wishlistService.getGuestCodeByUuid(guestUuid);
+                log.info("비회원 위시리스트 조회 - guest: {}", guest);
+                Integer guestCode = guest.getGuestCode();
                 log.info("guestCode 조회 결과: {}", guestCode);
 
                 if (guestCode != null) {
@@ -165,18 +166,18 @@ public class WishlistController {
 
             MemberDto member = (MemberDto) session.getAttribute("member");
             Integer memCode = member != null ? member.getMemberCode() : null;
-            String guestUuid = (String) session.getAttribute("guest_uuid");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
 
-            log.info("세션 정보 - memCode: {}, guestUuid: {}", memCode, guestUuid);
+            log.info("세션 정보 - memCode: {}, guestUuid: {}", memCode, guest);
 
             List<Integer> wishlistProductCodes;
 
             if (memCode != null) {
                 log.info("회원 위시리스트 상태 조회");
                 wishlistProductCodes = wishlistService.getWishlistProductCodes(memCode, null, productCodes);
-            } else if (guestUuid != null) {
+            } else if (guest != null) {
                 log.info("비회원 위시리스트 상태 조회");
-                Integer guestCode = wishlistService.getGuestCodeByUuid(guestUuid);
+                Integer guestCode = guest.getGuestCode();
                 log.info("guestCode: {}", guestCode);
 
                 if (guestCode != null) {

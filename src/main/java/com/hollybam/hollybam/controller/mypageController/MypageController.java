@@ -15,10 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.NumberFormat;
+import java.util.*;
 
 @Controller
 @RequestMapping("/mypage")
@@ -53,6 +51,9 @@ public class MypageController {
                 recentWishlist = allWishlist.stream().limit(3).toList();
                 totalWishlistCount = wishlistService.getMemberWishlistCount(memCode);
                 couponCount = couponService.selectCouponCount(memCode);
+                int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
+                String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
+                model.addAttribute("totalPoint", totalPoint);
             } else if (guestUuid != null) {
                 // 비회원
                 Integer guestCode = wishlistService.getGuestCodeByUuid(guestUuid);
@@ -90,6 +91,9 @@ public class MypageController {
         if(session.getAttribute("member") != null) {
             MemberDto member = (MemberDto) session.getAttribute("member");
             couponCount = couponService.selectCouponCount(member.getMemberCode());
+            int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
+            String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
+            model.addAttribute("totalPoint", totalPoint);
             model.addAttribute("couponCount", couponCount);
         }
         return "mypage/orderList";
@@ -101,6 +105,9 @@ public class MypageController {
         MemberDto member = (MemberDto)session.getAttribute("member");
         String phone = member.getMemberPhone().replaceFirst("(\\d{3})(\\d{4})(\\d{4})", "$1-$2-$3");
         couponCount = couponService.selectCouponCount(member.getMemberCode());
+        int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
+        String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
+        mav.addObject("totalPoint", totalPoint);
         mav.addObject("couponCount", couponCount);
         mav.addObject("phone", phone);
         mav.setViewName("mypage/change-info");
@@ -155,6 +162,10 @@ public class MypageController {
                 System.out.println("Sample data: " + firstCoupon);
             }
 
+            int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
+            String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
+
+            model.addAttribute("totalPoint", totalPoint);
             model.addAttribute("couponCount", couponCount);
             model.addAttribute("couponPossibleCount", couponPossibleCount);
             model.addAttribute("useCouponCount", useCouponCount);
@@ -231,5 +242,24 @@ public class MypageController {
         }
 
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/points")
+    public String pointsPage(HttpSession session, Model model) {
+        MemberDto member = (MemberDto) session.getAttribute("member");
+        int couponPossibleCount = 0;
+        couponPossibleCount = couponService.selectCouponCount(member.getMemberCode());
+        int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
+        int addPoints = mypageService.selectMemberAddPoint(member.getMemberCode());
+        int usePoints = mypageService.selectMemberUsePoint(member.getMemberCode());
+        String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
+        String addPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(addPoints);
+        String usePoint = NumberFormat.getNumberInstance(Locale.KOREA).format(usePoints);
+
+        model.addAttribute("couponCount",  couponPossibleCount);
+        model.addAttribute("totalPoint", totalPoint);
+        model.addAttribute("addPoint", addPoint);
+        model.addAttribute("usePoint", usePoint);
+        return "mypage/points";
     }
 }

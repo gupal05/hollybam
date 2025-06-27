@@ -35,8 +35,8 @@
         where guest_uuid = #{uuid}
     </select>
 
-    <delete id="deleteGuestByUuid">
-        DELETE FROM guest_user WHERE guest_uuid = #{uuid}
+    <delete id="deleteGuestByDi" parameterType="String">
+        DELETE FROM guest WHERE guest_di = #{di}
     </delete>
 
     <select id="getMemberCode" resultType="int" parameterType="String">
@@ -48,12 +48,18 @@
     <select id="getSignupCouponCode" resultType="int">
         select coupon.coupon_code
         from coupon
-        where coupon_name = '회원가입 쿠폰'
+        where coupon_id = 'welcome'
     </select>
 
     <insert id="insertSignupCoupon" parameterType="int">
         insert into coupon_member(coupon_code, mem_code, issued_at, used)
         values(#{signupCouponCode}, #{memberCode}, NOW(), 0)
     </insert>
+
+    <select id="isRecodeSignup" parameterType="String" resultType="int">
+        select count(*)
+        from member
+        where di=#{di}
+    </select>
 
 </mapper>

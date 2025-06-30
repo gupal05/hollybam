@@ -8,6 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+  <meta name="google-signin-client_id" content="92346439771-d4b0tga52c1klh9f0qnrc31h51i8vfqm.apps.googleusercontent.com">
+  <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 
   <style>
     * { box-sizing: border-box; }
@@ -172,6 +174,24 @@
   if (msg) {
     alert(msg);
   }
+
+  function onSuccess(googleUser) {
+    console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+  }
+  function onFailure(error) {
+    console.log(error);
+  }
+  function renderButton() {
+    gapi.signin2.render('my-signin2', {
+      'scope': 'profile email',
+      'width': 320,
+      'height': 40,
+      'longtitle': true,
+      'theme': 'dark',
+      'onsuccess': onSuccess,
+      'onfailure': onFailure
+    });
+  }
 </script>
 
 <div class="container">
@@ -206,7 +226,9 @@
       <div style="cursor: pointer;" onclick="window.location.href='/auth/login/naver'">
         <img th:src="@{/images/kakao_login_clean_320x40.png}" alt="카카오 로그인" style="margin: 0; width: 100%; height: 100%;">
       </div>
-      <button>구글 로그인</button>
+      <div>
+        <div id="my-signin2"></div>
+      </div>
     </div>
   </div>
 
@@ -272,7 +294,12 @@
     } else if (event.data === "naverAuthFail") {
       console.log("네이버 본인인증 실패");
       alert("성인이 아닙니다. 인증이 제한됩니다.");
+    }// 네이버 기존 회원 로그인 완료 처리 (새로 추가)
+    else if (event.data === "naverLoginComplete") {
+      console.log("네이버 기존 회원 로그인 완료 - /loading으로 이동");
+      window.location.href = "/loading";
     }
+
 
     // 팝업 닫기 시도
     if (authPopup && !authPopup.closed) {

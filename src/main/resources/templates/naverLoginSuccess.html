@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인 완료</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+        }
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #c3e6cb;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            try {
+                // 부모 창(intro.html)에게 로그인 완료 메시지 전송
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage("naverLoginComplete", "*");
+                }
+            } catch (e) {
+                console.error("postMessage 실패:", e);
+            }
+
+            // 팝업 닫기
+            setTimeout(() => {
+                window.close();
+                setTimeout(() => {
+                    window.open('', '_self');
+                    window.close();
+                }, 500);
+            }, 1000); // 1초 후 닫기 (사용자가 메시지를 볼 수 있도록)
+        };
+    </script>
+</head>
+<body>
+<div class="success-message">
+    <h3>네이버 로그인 완료</h3>
+    <p>기존 계정으로 로그인되었습니다.</p>
+    <p>잠시 후 페이지가 이동됩니다...</p>
+</div>
+</body>
+</html>

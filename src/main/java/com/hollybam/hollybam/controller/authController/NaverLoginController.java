@@ -133,7 +133,7 @@ public class NaverLoginController {
             if(loginService.isNaverMember(tempMember.getMemberId()) > 0){
                 MemberDto member = loginService.getMemberInfo(tempMember.getMemberId());
                 session.setAttribute("member", member);
-                return  "redirect:/loading";
+                return  "naverLoginSuccess";
             } else {
                 // 5. 세션에 임시 회원 정보 저장 (휴대폰 인증 완료 후 실제 DB 저장 예정)
                 tempMember.setMemberLoginType("naver");

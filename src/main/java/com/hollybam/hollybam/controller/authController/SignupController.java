@@ -32,7 +32,12 @@ public class SignupController {
             guestInfo.setMemberPhone(guestDto.getGuestPhone());
             guestInfo.setMemberBirth(guestDto.getGuestBirth());
             guestInfo.setMemberGender(guestDto.getGuestGender());
+            guestInfo.setDi(guestDto.getGuestDi());
             guestInfo.setAdultVerifiedAt(guestDto.getAdultVerifiedAt());
+            guestInfo.setAdultVerified(guestDto.isAdultVerified());
+            guestInfo.setMemberLoginType("web");
+            System.out.println("session : "+guestDto);
+            System.out.println("info : "+guestInfo);
             model.addAttribute("guestInfo", guestInfo);
             model.addAttribute("memberDto", new MemberDto());
             return "/auth/signup";
@@ -57,6 +62,7 @@ public class SignupController {
     @PostMapping("/signupResult")
     @ResponseBody
     public Map<String, Object> signupResult(@ModelAttribute MemberDto memberDto, HttpSession session) {
+        System.out.println("db : "+memberDto);
         int result = signupService.signup(memberDto);
         int memberCode = signupService.getMemberCode(memberDto.getMemberId());
         int couponCode = signupService.getSignupCouponCode();

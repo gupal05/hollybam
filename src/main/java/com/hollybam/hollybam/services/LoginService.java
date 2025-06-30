@@ -37,5 +37,8 @@ public class LoginService implements IF_LoginService{
         }
     }
 
+    public int isNaverMember(String naverId) {
+        return loginDao.isNaverMember(naverId);
+    }
 
 }

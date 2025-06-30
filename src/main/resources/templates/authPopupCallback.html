@@ -12,9 +12,12 @@
                 var isAdult = /*[[${isAdult}]]*/ false;
                 const message = isAdult ? "authSuccess" : "authFail";
 
+                // 직접 부모(naverPhoneVerification.html)에게만 메시지 전송
                 if (window.opener && !window.opener.closed) {
+                    console.log("authPopupCallback에서 메시지 전송:", message);
                     window.opener.postMessage(message, "*");
                 }
+
             } catch (e) {
                 console.error("postMessage 실패:", e);
             }

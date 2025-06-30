@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/", "/css/**", "/js/**", "/images/**", "/favicon.ico",
                         "/verify-cert", "/auth/loginResult", "/order", "/cart", "/admin/**",
                         "/test/auth/**", "/auth/nice/**", "/test/**", "/nice/**", "/authResult",
-                        "/error", "/authPopupCallbackView", "/authError", "/authPopupCallback"); // 예외 처리
+                        "/error", "/authPopupCallbackView", "/authError", "/authPopupCallback", "/auth/login/naver", "/login/naver/callback", "/naver/nice/result", "/naver/complete-registration", "/naver/phone-verification"); // 예외 처리
     }
 
     @Override

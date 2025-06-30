@@ -40,7 +40,28 @@ public class NiceCryptoTokenService {
     @Value("${nice.return-url}")
     private String returnUrl;
 
+    @Value("${nice.naver-return-url:#{null}}")
+    private String naverReturnUrl;
+
+    /**
+     * 기본 본인인증용 토큰 요청
+     */
     public Map<String, String> requestCryptoToken() throws Exception {
+        return requestCryptoToken(returnUrl);
+    }
+
+    /**
+     * 네이버 로그인용 본인인증 토큰 요청
+     */
+    public Map<String, String> requestCryptoTokenForNaver() throws Exception {
+        String useReturnUrl = naverReturnUrl != null ? naverReturnUrl : returnUrl.replace("/nice/result", "/naver/nice/result");
+        return requestCryptoToken(useReturnUrl);
+    }
+
+    /**
+     * 공통 토큰 요청 메서드
+     */
+    private Map<String, String> requestCryptoToken(String customReturnUrl) throws Exception {
         // [1] 날짜 및 요청번호 생성
         String req_dtim = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         String req_no = "REQ" + req_dtim + ((int)(Math.random() * 9000) + 1000);
@@ -125,7 +146,7 @@ public class NiceCryptoTokenService {
         String plainJson = String.format(
                 "{\"requestno\":\"%s\",\"returnurl\":\"%s\",\"sitecode\":\"%s\", \"auth_type\":\"S\"}",
                 req_no,
-                returnUrl, // 설정파일에서 가져온 URL 사용
+                customReturnUrl, // 파라미터로 받은 URL 사용
                 siteCode
         );
 
@@ -138,6 +159,8 @@ public class NiceCryptoTokenService {
         // [13] 결과에 enc_data, integrity_value 추가
         result.put("enc_data", encData);
         result.put("integrity_value", integrityValue);
+
+        log.info("NICE 토큰 생성 완료 - returnUrl: {}", customReturnUrl);
 
         return result;
     }

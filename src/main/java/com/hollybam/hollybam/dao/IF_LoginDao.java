@@ -6,4 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface IF_LoginDao {
     public MemberDto getMemberInfo(String memberId);
+    public int isNaverMember(String naverId);
 }

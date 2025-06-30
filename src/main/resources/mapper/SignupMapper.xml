@@ -11,8 +11,8 @@
 
     <!-- 회원 정보 ins -->
     <insert id="signup" parameterType="com.hollybam.hollybam.dto.MemberDto">
-        INSERT INTO member (mem_id, mem_pw, mem_name, mem_addr, mem_zip, mem_phone, mem_mail, mem_birth, mem_gender)
-        VALUES (#{memberId}, #{memberPw}, #{memberName}, #{memberAddr}, #{memberZip}, #{memberPhone}, #{memberMail}, #{memberBirth}, #{memberGender})
+        INSERT INTO member (mem_id, mem_pw, mem_name, mem_addr, mem_zip, mem_phone, mem_mail, mem_birth, mem_gender, mem_login_type, di, is_adult_verified, adult_verified_at)
+        VALUES (#{memberId}, #{memberPw}, #{memberName}, #{memberAddr}, #{memberZip}, #{memberPhone}, #{memberMail}, #{memberBirth}, #{memberGender}, #{memberLoginType}, #{di}, 1, #{adultVerifiedAt})
     </insert>
 
     <select id="login" parameterType="com.hollybam.hollybam.dto.MemberDto" resultType="int">

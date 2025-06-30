@@ -496,6 +496,7 @@
             <div class="form-section">
                 <h3 class="section-title">기본정보 <span style="color: #e74c3c; font-size: 12px;">* 필수입력사항</span></h3>
 
+
                 <div class="form-group">
                     <label class="form-label" for="memberName">이름 <span class="required">*</span></label>
                     <input type="text" id="memberName" name="memberName" th:field="*{memberName}" class="form-input" required>
@@ -883,6 +884,9 @@
     </div>
 </div>
 <input type="hidden" id="adultVerifiedAt" name="adultVerifiedAt">
+<input type="hidden" name="isAdultVerified" id="isAdultVerified">
+<input type="hidden" name="di" id="di">
+<input type="hidden" name="memberLoginType" id="memberLoginType">
 
 <div style="display: none">
     <form th:action="@{/auth/login}" method="get" id="move-page-form"></form>
@@ -945,6 +949,18 @@
         if (guestInfo && guestInfo.adultVerifiedAt) {
             document.getElementById('adultVerifiedAt').value = guestInfo.adultVerifiedAt;
         }
+
+        if (guestInfo && guestInfo.isAdultVerified) {
+            document.getElementById('isAdultVerified').value = guestInfo.isAdultVerified;
+        }
+
+        if (guestInfo && guestInfo.di) {
+            document.getElementById('di').value = guestInfo.di;
+        }
+
+        if (guestInfo && guestInfo.memberLoginType) {
+            document.getElementById('memberLoginType').value = guestInfo.memberLoginType;
+        }
     }
 </script>
 
@@ -971,7 +987,10 @@
                 memberPhone: $('#firstPhone').val() + $('#secPhone').val() + $('#trdPhone').val(),
                 memberBirth: fullDate,  // 여기도 명시적으로 보냄
                 memberGender: $('input[name="memberGender"]:checked').val(),
-                adultVerifiedAt: $('#adultVerifiedAt').val()
+                adultVerifiedAt: $('#adultVerifiedAt').val(),
+                isAdultVerified: $('#isAdultVerified').val(),
+                di: $('#di').val(),
+                memberLoginType: $('#memberLoginType').val()
             };
 
             // AJAX 요청 보내기 (예: POST 방식)

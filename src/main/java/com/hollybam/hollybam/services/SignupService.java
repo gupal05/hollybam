@@ -32,8 +32,10 @@ public class SignupService implements IF_SignupService{
     @Transactional
     public int signup(MemberDto memberDto) {
         try {
-            String encodedPw = passwordEncoder.encode(memberDto.getMemberPw());
-            memberDto.setMemberPw(encodedPw);
+            if(memberDto.getMemberLoginType().equals("web")){
+                String encodedPw = passwordEncoder.encode(memberDto.getMemberPw());
+                memberDto.setMemberPw(encodedPw);
+            }
             return signupDao.signup(memberDto);
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hollybam - 본인인증</title>
+    <link rel="icon" href="data:,">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: white;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            max-width: 360px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .naver-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #03c75a;
+        }
+        .naver-info h3 {
+            margin: 0 0 10px 0;
+            color: #03c75a;
+            font-size: 16px;
+        }
+        .naver-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        .section {
+            margin-bottom: 48px;
+            text-align: center;
+        }
+        .section img {
+            width: 100px;
+            margin-bottom: 16px;
+        }
+        .section p {
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0 0 12px;
+        }
+        .section b {
+            color: #e74c3c;
+        }
+        h3 {
+            text-align: left;
+            font-size: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #888;
+            padding-left: 10px;
+        }
+        .certify input[type="button"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #03c75a;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .certify input[type="button"]:hover {
+            background-color: #02b351;
+        }
+        .certify input[type="button"]:disabled {
+            background-color: #ccc;
+            color: #999;
+            cursor: not-allowed;
+        }
+        .certify p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-top: 12px;
+            text-align: left;
+        }
+        .cancel-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #6c757d;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .cancel-btn:hover {
+            background-color: #5a6268;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            font-style: italic;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 메시지 표시 영역 -->
+    <div id="messageDiv" class="message"></div>
+    <div id="loadingDiv" class="loading">본인인증을 진행중입니다...</div>
+
+    <!-- 헤더 -->
+    <div class="header">
+        <h2>네이버 로그인 완료</h2>
+        <p>성인 인증을 위해 본인확인이 필요합니다.</p>
+    </div>
+
+    <!-- 네이버 계정 정보 표시 -->
+    <div class="naver-info">
+        <h3>✓ 네이버 계정 연동 완료</h3>
+        <p><strong>이름:</strong> <span th:text="${memberName}">사용자명</span></p>
+        <p>본인인증 완료 후 회원가입이 최종 완료됩니다.</p>
+    </div>
+
+    <!-- 경고 안내 영역 -->
+    <div class="section">
+        <img th:src="@{/images/intro_he01.gif}" alt="19세 이상">
+        <p>
+            이 정보내용은 청소년 유해매체물로서 정보통신망 이용촉진법 및<br>
+            정보보호 등에 관한 법률 및 청소년 보호법의 규정에 의하여<br>
+            <b>19세 미만의 청소년</b>은 사용할 수 없습니다.
+        </p>
+    </div>
+
+    <form name="form_chk" method="post">
+        <input type="hidden" name="m" value="service"/>
+        <input type="hidden" name="token_version_id" th:value="${token.token_version_id}"/>
+        <input type="hidden" name="enc_data" th:value="${token.enc_data}"/>
+        <input type="hidden" name="integrity_value" th:value="${token.integrity_value}"/>
+        <input type="hidden" name="auth_type" value="S"/>
+    </form>
+
+    <!-- 휴대폰 본인인증 -->
+    <div class="section certify">
+        <h3>휴대폰 본인인증 (필수)</h3>
+        <input type="button" value="휴대폰 인증하기" id="phoneAuthBtn" onclick="fnPopup()">
+        <p>
+            본인 명의의 휴대폰으로 본인인증을 진행합니다.<br>
+            명의자의 나이 정보로 19세 미만 여부를 확인합니다.<br>
+            <strong>인증 완료 후 회원가입이 완료됩니다.</strong>
+        </p>
+    </div>
+
+    <!-- 취소 버튼 -->
+    <a href="/" class="cancel-btn">취소하고 메인으로</a>
+</div>
+
+<script th:inline="javascript">
+    let authPopup = null;
+
+    window.addEventListener("message", function (event) {
+        console.log("naverPhoneVerification에서 메시지 수신:", event.data);
+
+        if (event.data === "authSuccess") {
+            // 본인인증 성공 시 회원 정보 저장 요청
+            $.ajax({
+                url: "/naver/complete-registration",
+                method: "POST",
+                success: function(response) {
+                    if (response.success) {
+                        alert("회원가입이 완료되었습니다.");
+
+                        // NICE 팝업 닫기
+                        if (authPopup && !authPopup.closed) {
+                            authPopup.close();
+                        }
+
+                        // 최상위 부모 창(intro.html)에게 회원가입 완료 메시지 전송
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.postMessage("naverRegistrationComplete", "*");
+                        }
+
+                        // 현재 창(네이버 본인인증 팝업) 닫기 - window.location.href 완전 제거!
+                        window.close();
+                    } else {
+                        if(response.isDuplicate) {
+                            alert("기존에 가입하신 계정이 존재합니다.")
+                        } else {
+                            alert("회원가입 처리 중 오류가 발생했습니다: " + response.message);
+                        }
+                        // NICE 팝업 닫기
+                        if (authPopup && !authPopup.closed) {
+                            authPopup.close();
+                        }
+
+                        // 실패 메시지 전송
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.postMessage("naverRegistrationFailed", "*");
+                        }
+
+                        // 현재 창 닫기
+                        window.close();
+                    }
+                },
+                error: function() {
+                    alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+                    // NICE 팝업 닫기
+                    if (authPopup && !authPopup.closed) {
+                        authPopup.close();
+                    }
+
+                    // 실패 메시지 전송
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.postMessage("naverRegistrationFailed", "*");
+                    }
+
+                    // 현재 창 닫기
+                    window.close();
+                }
+            });
+        } else if (event.data === "authFail") {
+            alert("성인이 아닙니다. 인증이 제한됩니다.");
+
+            // NICE 팝업 닫기
+            if (authPopup && !authPopup.closed) {
+                authPopup.close();
+            }
+
+            // 최상위 부모 창(intro.html)에게 실패 메시지 전송
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage("naverRegistrationFailed", "*");
+            }
+
+            // 현재 창(네이버 본인인증 팝업) 닫기 - window.location.href 완전 제거!
+            window.close();
+        }
+
+        // NICE 팝업 닫기 시도 (안전장치)
+        if (authPopup && !authPopup.closed) {
+            authPopup.close();
+        }
+    });
+
+    function fnPopup() {
+        const tokenVersionId = document.querySelector('input[name="token_version_id"]').value;
+        const encData = document.querySelector('input[name="enc_data"]').value;
+        const integrityValue = document.querySelector('input[name="integrity_value"]').value;
+
+        if (!tokenVersionId || !encData || !integrityValue) {
+            alert('인증에 필요한 토큰 정보가 부족합니다.');
+            return false;
+        }
+
+        if (authPopup && !authPopup.closed) {
+            authPopup.close();
+        }
+
+        authPopup = window.open('', 'popupChk',
+            'width=480,height=812,top=100,left=' + (screen.width / 2 - 240) +
+            ',fullscreen=no,menubar=no,status=no,toolbar=no,titlebar=yes,location=no,scrollbars=no');
+
+        if (!authPopup) {
+            alert('팝업 차단됨');
+            return false;
+        }
+
+        document.form_chk.action = "https://nice.checkplus.co.kr/CheckPlusSafeModel/service.cb";
+        document.form_chk.target = "popupChk";
+        document.form_chk.submit();
+    }
+
+    /**
+     * 페이지 이탈 시 정리
+     */
+    window.addEventListener('beforeunload', function() {
+        if (authPopup && !authPopup.closed) {
+            authPopup.close();
+        }
+    });
+</script>
+
+</body>
+</html>

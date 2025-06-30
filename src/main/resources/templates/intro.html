@@ -200,7 +200,7 @@
     </form>
 
     <div class="social-buttons">
-      <div style="cursor: pointer;" onclick="window.location.href='/auth/login/naver'">
+      <div style="cursor: pointer;" onclick="openNaverLogin()">
         <img th:src="@{/images/btnG_padded_320x40.png}" alt="네이버 로그인" style="margin: 0; width: 100%; height: 100%;">
       </div>
       <div style="cursor: pointer;" onclick="window.location.href='/auth/login/naver'">
@@ -231,7 +231,20 @@
     </p>
   </div>
 </div>
+<script>
+  function openNaverLogin() {
+    const width = 500;
+    const height = 600;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
 
+    window.open(
+            '/auth/login/naver',
+            'naverLoginPopup',
+            `width=${width},height=${height},left=${left},top=${top}`
+    );
+  }
+</script>
 <script th:inline="javascript">
   let authPopup = null;
 
@@ -242,6 +255,23 @@
     } else if (event.data === "authFail") {
       alert("성인이 아닙니다. 인증이 제한됩니다.");
       window.location.href = "/";
+    }
+
+    // 네이버 회원가입 관련 메시지 처리 (기존)
+    else if (event.data === "naverRegistrationComplete") {
+      console.log("네이버 회원가입 완료 - /loading으로 이동");
+      window.location.href = "/loading";
+    } else if (event.data === "naverRegistrationFailed") {
+      console.log("네이버 회원가입 실패");
+      // 현재 페이지 유지 (인트로 페이지)
+    }
+    // authPopupCallback에서 직접 온 메시지 처리 (새로 추가)
+    else if (event.data === "naverAuthSuccess") {
+      console.log("네이버 본인인증 성공 - 최종 처리 대기");
+      // naverPhoneVerification에서 처리하도록 함
+    } else if (event.data === "naverAuthFail") {
+      console.log("네이버 본인인증 실패");
+      alert("성인이 아닙니다. 인증이 제한됩니다.");
     }
 
     // 팝업 닫기 시도

@@ -22,4 +22,11 @@
         where mem_id = #{naverId}
     </select>
 
+    <!-- 구글 회원 존재 여부 확인 -->
+    <select id="isGoogleMember" parameterType="String" resultType="int">
+        select count(*)
+        from member
+        where mem_id = #{googleId}
+    </select>
+
 </mapper>

@@ -1702,7 +1702,7 @@
 <!-- 슬라이드 -->
 <div class="slide">
     <img th:src="@{/images/da1589be137666f771fcb06bd045c8ff.webp}" alt="슬라이드1" class="active"/>
-    <img th:src="@{/images/24e86dfad799d3ffad7d032aa0f9fb68.webp}" alt="슬라이드2"/>
+<!--    <img th:src="@{/images/24e86dfad799d3ffad7d032aa0f9fb68.webp}" alt="슬라이드2"/>-->
 
     <!-- 네비게이션 화살표 -->
     <button class="slide-nav prev" id="prevBtn">
@@ -2000,7 +2000,7 @@
                 </button>
 
                 <div class="news-slider" id="newsSlider">
-                    <div class="news-card">
+                    <div class="news-card" th:data-video="@{/mp4/lookbook.mp4}">
                         <div class="news-image">
                             <img th:src="@{/images/룩북.png}" alt="홀리밤 소식 4">
                         </div>
@@ -2009,7 +2009,7 @@
                             <p class="news-description">모델 코스프레 룩북 활영</p>
                         </div>
                     </div>
-                    <div class="news-card">
+                    <div class="news-card" th:data-video="@{/mp4/race.mp4}">
                         <div class="news-image">
                             <img th:src="@{/images/KakaoTalk_20250617_173507796.jpg}" alt="홀리밤 소식 1">
                         </div>
@@ -2027,13 +2027,22 @@
                             <p class="news-description">MIB(에리편 촬영) 10종 딜도 협찬</p>
                         </div>
                     </div>
-                    <div class="news-card" th:data-video="@{/mp4/KakaoTalk_20250701_144703134.mp4}">
+                    <div class="news-card" th:data-video="@{/mp4/mwoong.mp4}">
                         <div class="news-image">
                             <img th:src="@{/images/이태원.jpg}" alt="홀리밤 소식 2">
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 행사</h3>
                             <p class="news-description">이태원 하이브 클럽 스폰서 참여</p>
+                        </div>
+                    </div>
+                    <div class="news-card" th:data-video="@{/mp4/harin.mp4}">
+                        <div class="news-image">
+                            <img th:src="@{/images/harin.png}" alt="홀리밤 소식 2">
+                        </div>
+                        <div class="news-content">
+                            <h3 class="news-title">홀리밤 X 하린</h3>
+                            <p class="news-description">배우 하린 인체모형 몰드작업</p>
                         </div>
                     </div>
                 </div>

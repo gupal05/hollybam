@@ -202,9 +202,16 @@ public class NaverLoginController {
             // 2. DI로 기존 가입 여부 확인
             String di = phoneAuthData.get("di");
             if (signupService.isRecodeSignup(di) > 0) {
+                String type = signupService.getMemberType(di);
+                type = switch (type) {
+                    case "google" -> "구글";
+                    case "naver" -> "네이버";
+                    case "web" -> "홀리밤 사이트";
+                    default -> type;
+                };
                 // 기존 회원 존재
                 response.put("success", false);
-                response.put("message", "기존에 가입하신 계정이 존재합니다.");
+                response.put("dupMessage", "기존에 "+type+"로 가입하신 계정이 존재합니다.");
                 response.put("isDuplicate", true); // 중복 가입 플래그 추가
 
                 // 세션 정리
@@ -327,6 +334,7 @@ public class NaverLoginController {
             }
 
             model.addAttribute("isAdult", isAdult);
+            model.addAttribute("authType", "naver");
             return "authPopupCallback";
 
         } catch (Exception e) {

@@ -74,4 +74,9 @@ public class SignupService implements IF_SignupService{
     public int isRecodeSignup(String di){
         return signupDao.isRecodeSignup(di);
     }
+
+    @Override
+    public String getMemberType(String di){
+        return signupDao.getMemberType(di);
+    }
 }

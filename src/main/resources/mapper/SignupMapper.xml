@@ -62,4 +62,10 @@
         where di=#{di}
     </select>
 
+    <select id="getMemberType" parameterType="String" resultType="String">
+        select mem_login_type
+        from member
+        where di = #{di}
+    </select>
+
 </mapper>

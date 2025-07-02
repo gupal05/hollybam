@@ -41,4 +41,12 @@ public class LoginService implements IF_LoginService{
         return loginDao.isNaverMember(naverId);
     }
 
+    /**
+     * 구글 회원 존재 여부 확인
+     * @param googleId 구글 회원 ID (google_ prefix 포함)
+     * @return 존재하면 1 이상, 없으면 0
+     */
+    public int isGoogleMember(String googleId) {
+        return loginDao.isGoogleMember(googleId);
+    }
 }

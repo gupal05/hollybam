@@ -211,7 +211,7 @@
     window.addEventListener("message", function (event) {
         console.log("naverPhoneVerification에서 메시지 수신:", event.data);
 
-        if (event.data === "authSuccess") {
+        if (event.data === "naverAuthSuccess") {
             // 본인인증 성공 시 회원 정보 저장 요청
             $.ajax({
                 url: "/naver/complete-registration",
@@ -234,7 +234,7 @@
                         window.close();
                     } else {
                         if(response.isDuplicate) {
-                            alert("기존에 가입하신 계정이 존재합니다.")
+                            alert(response.dupMessage);
                         } else {
                             alert("회원가입 처리 중 오류가 발생했습니다: " + response.message);
                         }
@@ -268,7 +268,7 @@
                     window.close();
                 }
             });
-        } else if (event.data === "authFail") {
+        } else if (event.data === "naverAuthFail") {
             alert("성인이 아닙니다. 인증이 제한됩니다.");
 
             // NICE 팝업 닫기

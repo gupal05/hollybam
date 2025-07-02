@@ -43,6 +43,9 @@ public class NiceCryptoTokenService {
     @Value("${nice.naver-return-url:#{null}}")
     private String naverReturnUrl;
 
+    @Value("${nice.google-return-url:#{null}}")
+    private String googleReturnUrl;
+
     /**
      * 기본 본인인증용 토큰 요청
      */
@@ -54,7 +57,17 @@ public class NiceCryptoTokenService {
      * 네이버 로그인용 본인인증 토큰 요청
      */
     public Map<String, String> requestCryptoTokenForNaver() throws Exception {
-        String useReturnUrl = naverReturnUrl != null ? naverReturnUrl : returnUrl.replace("/nice/result", "/naver/nice/result");
+        String useReturnUrl = naverReturnUrl != null ?
+                naverReturnUrl : returnUrl.replace("/nice/result", "/naver/nice/result");
+        return requestCryptoToken(useReturnUrl);
+    }
+
+    /**
+     * 구글 로그인용 본인인증 토큰 요청
+     */
+    public Map<String, String> requestCryptoTokenForGoogle() throws Exception {
+        String useReturnUrl = googleReturnUrl != null ?
+                googleReturnUrl : returnUrl.replace("/nice/result", "/google/nice/result");
         return requestCryptoToken(useReturnUrl);
     }
 

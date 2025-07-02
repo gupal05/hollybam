@@ -10,18 +10,40 @@
         window.onload = function () {
             try {
                 var isAdult = /*[[${isAdult}]]*/ false;
+                var authType = /*[[${authType}]]*/ 'default'; // 인증 타입 구분
+
                 const message = isAdult ? "authSuccess" : "authFail";
 
-                // 1. 직접 부모(naverPhoneVerification.html)에게 메시지 전송
+                // 1. 직접 부모에게 메시지 전송 (네이버/구글 본인인증 페이지)
                 if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage(message, "*");
+                    if (authType === 'naver') {
+                        // 네이버 인증인 경우
+                        const naverMessage = isAdult ? "naverAuthSuccess" : "naverAuthFail";
+                        window.opener.postMessage(naverMessage, "*");
+                    } else if (authType === 'google') {
+                        // 구글 인증인 경우
+                        const googleMessage = isAdult ? "googleAuthSuccess" : "googleAuthFail";
+                        window.opener.postMessage(googleMessage, "*");
+                    } else {
+                        // 일반 비회원 인증인 경우
+                        window.opener.postMessage(message, "*");
+                    }
                 }
 
                 // 2. 최상위 부모(intro.html)에게도 메시지 전송
                 if (window.opener && window.opener.opener && !window.opener.opener.closed) {
-                    // 네이버 관련 메시지로 구분하여 전송
-                    const naverMessage = isAdult ? "naverAuthSuccess" : "naverAuthFail";
-                    window.opener.opener.postMessage(naverMessage, "*");
+                    if (authType === 'naver') {
+                        // 네이버 관련 메시지로 구분하여 전송
+                        const naverMessage = isAdult ? "naverAuthSuccess" : "naverAuthFail";
+                        window.opener.opener.postMessage(naverMessage, "*");
+                    } else if (authType === 'google') {
+                        // 구글 관련 메시지로 구분하여 전송
+                        const googleMessage = isAdult ? "googleAuthSuccess" : "googleAuthFail";
+                        window.opener.opener.postMessage(googleMessage, "*");
+                    } else {
+                        // 일반 인증
+                        window.opener.opener.postMessage(message, "*");
+                    }
                 }
 
             } catch (e) {

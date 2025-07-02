@@ -11,4 +11,5 @@ public interface IF_SignupService {
     public void insertSignupCoupon(int memberCode, int signupCouponCode);
     public int getSignupCouponCode();
     public int isRecodeSignup(String di);
+    public String getMemberType(String di);
 }

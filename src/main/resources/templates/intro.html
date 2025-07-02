@@ -260,43 +260,61 @@
 <script>
   window.onload = function () {
     google.accounts.id.initialize({
-      client_id: "92346439771-d4b0tga52c1klh9f0qnrc31h51i8vfqm.apps.googleusercontent.com", // 본인 클라이언트 ID
+      client_id: "92346439771-d4b0tga52c1klh9f0qnrc31h51i8vfqm.apps.googleusercontent.com",
       callback: handleCredentialResponse,
     });
 
     google.accounts.id.renderButton(
             document.getElementById("g_id_signin"),
             {
-              theme: "outline",       // 버튼 테마: "outline", "filled_blue", "filled_black"
-              size: "large",          // "small", "medium", "large" 중 선택 (large가 320x40에 가깝습니다)
-              width: 320,             // 버튼 너비
-              height: 40              // 버튼 높이
+              theme: "outline",
+              size: "large",
+              width: 320,
+              height: 40
             }
     );
-
-    // 자동 팝업 등 바로 로그인 시도 방지용 (필요 시 사용)
-    // google.accounts.id.prompt();
   }
 
   function handleCredentialResponse(response) {
     console.log("ID 토큰:", response.credential);
 
-    // 토큰 서버 전송 예시
+    // 토큰 서버 전송
     $.ajax({
       type: "POST",
-      url: "/auth/google-login",  // 또는 https://wildcat-credible-gibbon.ngrok-free.app/auth/google-login
+      url: "/auth/google-login",
       contentType: "application/json",
       data: JSON.stringify({ idToken: response.credential }),
       success: function (data) {
-        alert("구글 로그인 성공");
-        console.log("응답 데이터:", data);
-        // TODO: 로그인 성공 후 처리
+        console.log("구글 로그인 응답:", data);
+
+        if (data.status === "existing_user") {
+          // 기존 회원 - 바로 로딩 페이지로 이동
+          window.location.href = data.redirectUrl; // /loading
+        } else if (data.status === "new_user") {
+          // 신규 회원 - 휴대폰 본인인증 팝업 열기
+          openGooglePhoneVerification();
+        } else {
+          alert("구글 로그인 중 오류가 발생했습니다: " + data.message);
+        }
       },
       error: function (xhr, status, error) {
+        console.error("구글 로그인 오류:", xhr.responseText);
         alert("구글 로그인 실패: " + error);
-        console.error("오류 응답:", xhr.responseText);
       }
     });
+  }
+
+  function openGooglePhoneVerification() {
+    const width = 500;
+    const height = 700;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+
+    window.open(
+            '/google/phone-verification',
+            'googlePhoneVerificationPopup',
+            `width=${width},height=${height},left=${left},top=${top}`
+    );
   }
 
   function openNaverLogin() {
@@ -343,6 +361,11 @@
     else if (event.data === "naverLoginComplete") {
       console.log("네이버 기존 회원 로그인 완료 - /loading으로 이동");
       window.location.href = "/loading";
+    } else if (event.data === "googleRegistrationComplete") {
+      console.log("구글 회원가입 완료 - /loading으로 이동");
+      window.location.href = "/loading";
+    } else if (event.data === "googleRegistrationFailed") {
+      console.log("구글 회원가입 실패");
     }
 
 

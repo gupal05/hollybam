@@ -8,8 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
-  <meta name="google-signin-client_id" content="92346439771-d4b0tga52c1klh9f0qnrc31h51i8vfqm.apps.googleusercontent.com">
-  <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
 
   <style>
     * { box-sizing: border-box; }
@@ -162,6 +162,29 @@
       color: #666;
       font-size: 14px;
     }
+    #googleLoginBtn {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Roboto', Arial, sans-serif;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    #googleLoginBtn:hover {
+      background-color: #357ae8;
+    }
+    #googleLoginBtn img {
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
@@ -173,24 +196,6 @@
   const msg = document.getElementById('message')?.textContent;
   if (msg) {
     alert(msg);
-  }
-
-  function onSuccess(googleUser) {
-    console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
-  }
-  function onFailure(error) {
-    console.log(error);
-  }
-  function renderButton() {
-    gapi.signin2.render('my-signin2', {
-      'scope': 'profile email',
-      'width': 320,
-      'height': 40,
-      'longtitle': true,
-      'theme': 'dark',
-      'onsuccess': onSuccess,
-      'onfailure': onFailure
-    });
   }
 </script>
 
@@ -223,12 +228,11 @@
       <div style="cursor: pointer;" onclick="openNaverLogin()">
         <img th:src="@{/images/btnG_padded_320x40.png}" alt="네이버 로그인" style="margin: 0; width: 100%; height: 100%;">
       </div>
-      <div style="cursor: pointer;" onclick="window.location.href='/auth/login/naver'">
+      <div style="cursor: pointer;">
         <img th:src="@{/images/kakao_login_clean_320x40.png}" alt="카카오 로그인" style="margin: 0; width: 100%; height: 100%;">
       </div>
-      <div>
-        <div id="my-signin2"></div>
-      </div>
+      <div id="g_id_signin" style="width: 320px; height: 40px;"></div>
+
     </div>
   </div>
 
@@ -254,6 +258,47 @@
   </div>
 </div>
 <script>
+  window.onload = function () {
+    google.accounts.id.initialize({
+      client_id: "92346439771-d4b0tga52c1klh9f0qnrc31h51i8vfqm.apps.googleusercontent.com", // 본인 클라이언트 ID
+      callback: handleCredentialResponse,
+    });
+
+    google.accounts.id.renderButton(
+            document.getElementById("g_id_signin"),
+            {
+              theme: "outline",       // 버튼 테마: "outline", "filled_blue", "filled_black"
+              size: "large",          // "small", "medium", "large" 중 선택 (large가 320x40에 가깝습니다)
+              width: 320,             // 버튼 너비
+              height: 40              // 버튼 높이
+            }
+    );
+
+    // 자동 팝업 등 바로 로그인 시도 방지용 (필요 시 사용)
+    // google.accounts.id.prompt();
+  }
+
+  function handleCredentialResponse(response) {
+    console.log("ID 토큰:", response.credential);
+
+    // 토큰 서버 전송 예시
+    $.ajax({
+      type: "POST",
+      url: "/auth/google-login",  // 또는 https://wildcat-credible-gibbon.ngrok-free.app/auth/google-login
+      contentType: "application/json",
+      data: JSON.stringify({ idToken: response.credential }),
+      success: function (data) {
+        alert("구글 로그인 성공");
+        console.log("응답 데이터:", data);
+        // TODO: 로그인 성공 후 처리
+      },
+      error: function (xhr, status, error) {
+        alert("구글 로그인 실패: " + error);
+        console.error("오류 응답:", xhr.responseText);
+      }
+    });
+  }
+
   function openNaverLogin() {
     const width = 500;
     const height = 600;

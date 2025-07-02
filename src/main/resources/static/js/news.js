@@ -168,7 +168,7 @@ $(document).ready(function() {
                     } else {
                         moveNewsSlider('prev');
                     }
-                    setTimeout(startNewsAutoSlide, 1000);
+                    setTimeout(startNewsAutoSlide, 3000); // 1초 → 3초로 변경
                 }
             });
         }
@@ -180,7 +180,8 @@ $(document).ready(function() {
 
         let newsAutoSlideInterval;
         function startNewsAutoSlide() {
-            newsAutoSlideInterval = setInterval(() => moveNewsSlider('next'), 4000);
+            // 4초 → 6초로 변경 (자동 슬라이드 간격 늘림)
+            newsAutoSlideInterval = setInterval(() => moveNewsSlider('next'), 6000);
         }
 
         function stopNewsAutoSlide() {
@@ -191,20 +192,20 @@ $(document).ready(function() {
         $('#newsNextBtn').on('click', () => {
             moveNewsSlider('next');
             stopNewsAutoSlide();
-            setTimeout(startNewsAutoSlide, 1000);
+            setTimeout(startNewsAutoSlide, 3000); // 1초 → 3초로 변경
         });
 
         $('#newsPrevBtn').on('click', () => {
             moveNewsSlider('prev');
             stopNewsAutoSlide();
-            setTimeout(startNewsAutoSlide, 1000);
+            setTimeout(startNewsAutoSlide, 3000); // 1초 → 3초로 변경
         });
 
         $newsDots.on('click', function() {
             const slideIndex = parseInt($(this).data('slide'));
             goToNewsSlide(slideIndex);
             stopNewsAutoSlide();
-            setTimeout(startNewsAutoSlide, 1000);
+            setTimeout(startNewsAutoSlide, 3000); // 1초 → 3초로 변경
         });
 
         $('.hollybam-news-section').hover(stopNewsAutoSlide, startNewsAutoSlide);

@@ -12,10 +12,16 @@
                 var isAdult = /*[[${isAdult}]]*/ false;
                 const message = isAdult ? "authSuccess" : "authFail";
 
-                // 직접 부모(naverPhoneVerification.html)에게만 메시지 전송
+                // 1. 직접 부모(naverPhoneVerification.html)에게 메시지 전송
                 if (window.opener && !window.opener.closed) {
-                    console.log("authPopupCallback에서 메시지 전송:", message);
                     window.opener.postMessage(message, "*");
+                }
+
+                // 2. 최상위 부모(intro.html)에게도 메시지 전송
+                if (window.opener && window.opener.opener && !window.opener.opener.closed) {
+                    // 네이버 관련 메시지로 구분하여 전송
+                    const naverMessage = isAdult ? "naverAuthSuccess" : "naverAuthFail";
+                    window.opener.opener.postMessage(naverMessage, "*");
                 }
 
             } catch (e) {

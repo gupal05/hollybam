@@ -8,12 +8,11 @@ import java.util.List;
 public interface IF_CartService {
     public int addToCart(CartDto cartDto);
     public List<CartDto> getCartItemsByMember(int memCode);
-    public List<CartDto> getCartItemsByGuest(String guestUuid);
+    public List<CartDto> getCartItemsByGuest(int guestCode);
     public int updateCartQuantity(int cartCode, int quantity);
     public int removeFromCart(int cartCode);
     public int clearCartByMember(int memCode);
-    public int clearCartByGuest(String guestUuid);
-    public int getGuestCodeByUuid(String guestUuid);
+    public int clearCartByGuest(int cartCode);
 
     // 추가 메서드들
     public CartDto getCartOwner(int cartCode);

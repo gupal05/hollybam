@@ -10,13 +10,12 @@ import java.util.List;
 public interface IF_CartDao {
     public int addToCart(CartDto cartDto);
     public List<CartDto> getCartItemsByMember(int memCode);
-    public List<CartDto> getCartItemsByGuest(String guestUuid);
+    public List<CartDto> getCartItemsByGuest(int guestCode);
     public int updateCartQuantity(@Param("cartCode") int cartCode, @Param("quantity") int quantity);
     public int removeFromCart(int cartCode);
     public int clearCartByMember(int memCode);
-    public int clearCartByGuest(String guestUuid);
+    public int clearCartByGuest(int guestCode);
     public CartDto findExistingCartItem(CartDto cartDto);
-    public int getGuestCodeByUuid(String guestUuid);
     // 추가 메서드: 장바구니 소유자 확인 (보안용)
     public CartDto getCartOwner(int cartCode);
 

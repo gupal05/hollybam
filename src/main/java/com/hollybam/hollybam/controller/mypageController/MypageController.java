@@ -1,5 +1,6 @@
 package com.hollybam.hollybam.controller.mypageController;
 
+import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.dto.PointDto;
 import com.hollybam.hollybam.dto.WishlistDto;
@@ -40,7 +41,7 @@ public class MypageController {
             // 세션에서 사용자 정보 가져오기
             MemberDto member = (MemberDto) session.getAttribute("member");
             Integer memCode = member != null ? member.getMemberCode() : null;
-            String guestUuid = (String) session.getAttribute("guest_uuid");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
 
             // 위시리스트 데이터 가져오기 (최신 3개만)
             List<WishlistDto> recentWishlist;
@@ -55,10 +56,10 @@ public class MypageController {
                 int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
                 String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
                 model.addAttribute("totalPoint", totalPoint);
-            } else if (guestUuid != null) {
+            } else if (guest != null) {
                 // 비회원
-                Integer guestCode = wishlistService.getGuestCodeByUuid(guestUuid);
-                if (guestCode != null) {
+                int guestCode = guest.getGuestCode();
+                if (guestCode != 0) {
                     List<WishlistDto> allWishlist = wishlistService.getGuestWishlist(guestCode);
                     recentWishlist = allWishlist.stream().limit(3).toList();
                     totalWishlistCount = wishlistService.getGuestWishlistCount(guestCode);

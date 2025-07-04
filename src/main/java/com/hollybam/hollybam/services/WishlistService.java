@@ -1,7 +1,6 @@
 package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dao.IF_WishlistDao;
-import com.hollybam.hollybam.dao.IF_CertificationDao;
 import com.hollybam.hollybam.dto.WishlistDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,6 @@ import java.util.List;
 public class WishlistService implements IF_WishlistService {
 
     private final IF_WishlistDao wishlistDao;
-    private final IF_CertificationDao certificationDao;
 
     @Override
     @Transactional
@@ -156,19 +154,6 @@ public class WishlistService implements IF_WishlistService {
         } catch (Exception e) {
             log.error("위시리스트 상품 코드 조회 실패 - memCode: {}, guestCode: {}", memCode, guestCode, e);
             throw new RuntimeException("위시리스트 상태 확인 중 오류가 발생했습니다.", e);
-        }
-    }
-
-    @Override
-    public Integer getGuestCodeByUuid(String guestUuid) {
-        try {
-            // CertificationDao를 통해 guestUuid로 guestCode 조회
-            Integer guestCode = certificationDao.selectGuestCodeByUuid(guestUuid);
-            log.debug("UUID로 비회원 코드 조회 - uuid: {}, guestCode: {}", guestUuid, guestCode);
-            return guestCode;
-        } catch (Exception e) {
-            log.error("UUID로 비회원 코드 조회 실패 - uuid: {}", guestUuid, e);
-            return null;
         }
     }
 

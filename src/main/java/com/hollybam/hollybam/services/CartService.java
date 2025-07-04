@@ -43,8 +43,8 @@ public class CartService implements IF_CartService {
 
     @Override
     @Transactional
-    public List<CartDto> getCartItemsByGuest(String guestUuid) {
-        return cartDao.getCartItemsByGuest(guestUuid);
+    public List<CartDto> getCartItemsByGuest(int guestCode) {
+        return cartDao.getCartItemsByGuest(guestCode);
     }
 
     @Override
@@ -67,14 +67,8 @@ public class CartService implements IF_CartService {
 
     @Override
     @Transactional
-    public int clearCartByGuest(String guestUuid) {
-        return cartDao.clearCartByGuest(guestUuid);
-    }
-
-    @Override
-    @Transactional
-    public int getGuestCodeByUuid(String guestUuid) {
-        return cartDao.getGuestCodeByUuid(guestUuid);
+    public int clearCartByGuest(int guestCode) {
+        return cartDao.clearCartByGuest(guestCode);
     }
 
     // 추가 메서드들 구현

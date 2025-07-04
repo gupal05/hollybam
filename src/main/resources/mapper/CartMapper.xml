@@ -76,19 +76,19 @@
     </select>
 
     <!-- 비회원 장바구니 목록 조회 -->
-    <select id="getCartItemsByGuest" parameterType="String" resultMap="CartResultMap">
+    <select id="getCartItemsByGuest" parameterType="int" resultMap="CartResultMap">
         SELECT c.cart_code, c.mem_code, c.guest_code, c.product_code, c.option_code,
                c.quantity, c.selected, c.create_at, c.update_at,
                p.product_name, p.product_id, pr.price_selling,
                po.option_name, po.option_value, po.option_price,
                i.image_url, pr.price_original
         FROM cart c
-                 JOIN guest_user g ON c.guest_code = g.guest_code
+                 JOIN guest g ON c.guest_code = g.guest_code
                  JOIN product p ON c.product_code = p.product_code
                  JOIN price pr ON p.product_code = pr.product_code
                  LEFT JOIN product_option po ON c.option_code = po.option_code
                  LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
-        WHERE g.guest_uuid = #{guestUuid}
+        WHERE g.guest_code = #{guestCode}
         ORDER BY c.create_at DESC
     </select>
 
@@ -109,11 +109,6 @@
         )
     </select>
 
-    <!-- UUID로 guest_code 조회 -->
-    <select id="getGuestCodeByUuid" parameterType="String" resultType="int">
-        SELECT guest_code FROM guest_user WHERE guest_uuid = #{guestUuid}
-    </select>
-
     <!-- 수량 업데이트 -->
     <update id="updateCartQuantity">
         UPDATE cart SET quantity = #{quantity}, update_at = CURRENT_TIMESTAMP
@@ -130,9 +125,9 @@
         DELETE FROM cart WHERE mem_code = #{memCode}
     </delete>
 
-    <delete id="clearCartByGuest" parameterType="String">
+    <delete id="clearCartByGuest" parameterType="int">
         DELETE FROM cart WHERE guest_code = (
-            SELECT guest_code FROM guest_user WHERE guest_uuid = #{guestUuid}
+            SELECT guest_code FROM guest WHERE guest_code = #{guestCode}
         )
     </delete>
 

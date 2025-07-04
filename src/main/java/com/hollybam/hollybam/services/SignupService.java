@@ -45,12 +45,6 @@ public class SignupService implements IF_SignupService{
 
     @Override
     @Transactional
-    public MemberDto getGuestInfo(String uuId){
-        return signupDao.getGuestInfo(uuId);
-    }
-
-    @Override
-    @Transactional
     public void deleteGuestByDi(String uuid){
         signupDao.deleteGuestByDi(uuid);
     }

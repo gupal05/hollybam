@@ -58,11 +58,6 @@ public interface IF_WishlistService {
     List<Integer> getWishlistProductCodes(Integer memCode, Integer guestCode, List<Integer> productCodes);
 
     /**
-     * UUID로 비회원 코드 조회
-     */
-    Integer getGuestCodeByUuid(String guestUuid);
-
-    /**
      * 위시리스트 존재 여부 확인
      */
     boolean isInWishlist(Integer memCode, Integer guestCode, int productCode);

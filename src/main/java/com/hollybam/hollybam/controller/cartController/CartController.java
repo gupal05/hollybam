@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.controller.cartController;
 
 import com.hollybam.hollybam.dto.CartDto;
+import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.services.CartService;
 import jakarta.servlet.http.HttpSession;
@@ -30,10 +31,8 @@ public class CartController {
         try {
             // 세션에서 사용자 정보 가져오기
             MemberDto member = (MemberDto) session.getAttribute("member");
-            String guestUuid = (String) session.getAttribute("guest_uuid");
-            System.out.println(guestUuid);
-            System.out.println(member);
-            if (member == null && guestUuid == null) {
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+            if (member == null && guest == null) {
                 response.put("status", false);
                 response.put("message", "로그인이 필요합니다.");
                 return response;
@@ -56,7 +55,7 @@ public class CartController {
                     cartDto.setGuestCode(null); // 명시적으로 null 설정
                 } else {
                     // 비회원인 경우
-                    int guestCode = cartService.getGuestCodeByUuid(guestUuid);
+                    int guestCode = guest.getGuestCode();
                     cartDto.setMemCode(null); // 명시적으로 null 설정
                     cartDto.setGuestCode(guestCode);
                 }
@@ -79,14 +78,14 @@ public class CartController {
     @GetMapping
     public ModelAndView getCartPage(HttpSession session, ModelAndView mav) {
         MemberDto member = (MemberDto) session.getAttribute("member");
-        String guestUuid = (String) session.getAttribute("guest_uuid");
+        GuestDto guest = (GuestDto) session.getAttribute("guest");
 
         List<CartDto> cartItems = new ArrayList<>();
 
         if (member != null) {
             cartItems = cartService.getCartItemsByMember(member.getMemberCode());
-        } else if (guestUuid != null) {
-            cartItems = cartService.getCartItemsByGuest(guestUuid);
+        } else if (guest != null) {
+            cartItems = cartService.getCartItemsByGuest(guest.getGuestCode());
         }
         mav.addObject("cartItems", cartItems);
         mav.setViewName("cart");
@@ -212,13 +211,13 @@ public class CartController {
 
         try {
             MemberDto member = (MemberDto) session.getAttribute("member");
-            String guestUuid = (String) session.getAttribute("guest_uuid");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
 
             int result = 0;
             if (member != null) {
                 result = cartService.clearCartByMember(member.getMemberCode());
-            } else if (guestUuid != null) {
-                result = cartService.clearCartByGuest(guestUuid);
+            } else if (guest != null) {
+                result = cartService.clearCartByGuest(guest.getGuestCode());
             }
 
             if (result > 0) {
@@ -242,9 +241,9 @@ public class CartController {
     private boolean isValidCartAccess(int cartCode, HttpSession session) {
         try {
             MemberDto member = (MemberDto) session.getAttribute("member");
-            String guestUuid = (String) session.getAttribute("guest_uuid");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
 
-            if (member == null && guestUuid == null) {
+            if (member == null && guest == null) {
                 return false;
             }
 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,10 +22,10 @@ public class SignupController {
 
     //회원가입 페이지 이동 메서드
     @GetMapping("/signup")
-    public String signup(Model model, HttpSession session) {
+    public String signup(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         GuestDto guestDto = (GuestDto) session.getAttribute("guest");
         if(signupService.isRecodeSignup(guestDto.getGuestDi()) > 0) {
-            model.addAttribute("recodeMessage", "가입하신 이력이 존재합니다.");
+            redirectAttributes.addFlashAttribute("recodeMessage", "가입하신 이력이 존재합니다.");
             return "redirect:/auth/login";
         } else {
             MemberDto guestInfo = new MemberDto();
@@ -40,7 +41,7 @@ public class SignupController {
             System.out.println("info : "+guestInfo);
             model.addAttribute("guestInfo", guestInfo);
             model.addAttribute("memberDto", new MemberDto());
-            return "/auth/signup";
+            return "auth/signup";
         }
     }
 
@@ -72,6 +73,15 @@ public class SignupController {
         // get order Info
         // if uuid로 주문한 orderInfo 있으면 order 테이블 memberCode update
         GuestDto guestInfo = (GuestDto) session.getAttribute("guest");
+        if(signupService.getGuestCartCount(guestInfo) > 0){
+            signupService.updateGuestToMemberCart(memberCode, guestInfo.getGuestCode());
+        }
+        if(signupService.getGuestWishCount(guestInfo) > 0){
+            signupService.updateGuestToMemberWishList(memberCode, guestInfo.getGuestCode());
+        }
+        if(signupService.getGuestOrderCount(guestInfo) > 0){
+            signupService.updateGuestToMemberOrder(memberCode, guestInfo.getGuestCode());
+        }
         signupService.deleteGuestByDi(guestInfo.getGuestDi());
         session.removeAttribute("guest");
         session.setAttribute("temp", "temp");

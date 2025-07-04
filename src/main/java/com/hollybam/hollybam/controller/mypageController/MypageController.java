@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.controller.mypageController;
 
 import com.hollybam.hollybam.dto.MemberDto;
+import com.hollybam.hollybam.dto.PointDto;
 import com.hollybam.hollybam.dto.WishlistDto;
 import com.hollybam.hollybam.services.CouponService;
 import com.hollybam.hollybam.services.MypageService;
@@ -245,21 +246,33 @@ public class MypageController {
     }
 
     @GetMapping("/points")
-    public String pointsPage(HttpSession session, Model model) {
+    public String pointsPage(HttpSession session, Model model,
+                             @RequestParam(defaultValue = "1") int page) {
         MemberDto member = (MemberDto) session.getAttribute("member");
-        int couponPossibleCount = 0;
-        couponPossibleCount = couponService.selectCouponCount(member.getMemberCode());
+        int couponPossibleCount = couponService.selectCouponCount(member.getMemberCode());
         int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
         int addPoints = mypageService.selectMemberAddPoint(member.getMemberCode());
         int usePoints = mypageService.selectMemberUsePoint(member.getMemberCode());
+
+        // 페이지네이션 설정
+        int pageSize = 10;
+        List<PointDto> pointHistory = mypageService.selectPointHistory(member.getMemberCode(), page, pageSize);
+        int totalCount = mypageService.selectPointHistoryCount(member.getMemberCode());
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
         String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
         String addPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(addPoints);
         String usePoint = NumberFormat.getNumberInstance(Locale.KOREA).format(usePoints);
 
-        model.addAttribute("couponCount",  couponPossibleCount);
+        model.addAttribute("couponCount", couponPossibleCount);
         model.addAttribute("totalPoint", totalPoint);
         model.addAttribute("addPoint", addPoint);
         model.addAttribute("usePoint", usePoint);
+        model.addAttribute("pointHistory", pointHistory);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
         return "mypage/points";
     }
 }

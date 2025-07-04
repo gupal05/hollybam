@@ -33,7 +33,7 @@ public class CustomerServiceController {
         MemberDto memberDto = (MemberDto) session.getAttribute("member");
         List<InquiryDto> inquiryList = inquiryService.selectInquiryList(memberDto.getMemberCode());
         model.addAttribute("inquiryList", inquiryList);
-        return "/cs";
+        return "cs";
     }
 
     @GetMapping("/event/detail/{code}")
@@ -42,7 +42,7 @@ public class CustomerServiceController {
         EventDetailDto detail = eventService.selectEventDetailByEventCode(eventCode);
         model.addAttribute("event", event);
         model.addAttribute("detail", detail);
-        return "/eventDetail";  // 템플릿 이름
+        return "eventDetail";  // 템플릿 이름
     }
 
     @PostMapping("/inquiry")

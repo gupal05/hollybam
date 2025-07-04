@@ -3,6 +3,7 @@ package com.hollybam.hollybam.controller;
 import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.ProductDto;
 import com.hollybam.hollybam.services.GuestService;
+import com.hollybam.hollybam.services.IF_SignupService;
 import com.hollybam.hollybam.services.ProductService;
 import com.hollybam.hollybam.services.nice.NiceCryptoTokenService;
 import com.hollybam.hollybam.util.NiceCryptoUtil;
@@ -35,9 +36,12 @@ public class HomeController {
     private NiceCryptoTokenService niceCryptoTokenService;
     @Autowired
     private GuestService guestService;
+    @Autowired
+    private IF_SignupService signupService;
 
     @GetMapping("/")
     public String introPage(HttpServletRequest request, Model model) {
+        session.setAttribute("guest", guestService.getGuestByDi("MC0GCCqGSIb3DQIJAyEACKfBOHYuC7XzJeid99M29aD87Fi8pI9WFEOLJw0IpnI="));
         try {
             log.info("=== NICE 암호화 토큰 요청 시작 ===");
             Map<String, String> result = niceCryptoTokenService.requestCryptoToken();
@@ -81,29 +85,42 @@ public class HomeController {
             String birthdate = resultMap.get("birthdate");
             boolean isAdult = isAdult(birthdate);
             String name = resultMap.get("utf8_name");
+            String di = resultMap.get("di");
+
             try {
                 name = java.net.URLDecoder.decode(name, "UTF-8");
             } catch (Exception e) {
                 log.warn("이름 디코딩 실패", e);
             }
 
+            log.info("비회원 NICE 인증 완료: 성인여부={}, DI={}", isAdult, di);
+
             if (isAdult) {
-                if(guestService.isGuest(resultMap.get("di")) > 0) {
-                    System.out.println("재입장");
-                    session.setAttribute("guest", guestService.getGuestByDi(resultMap.get("di")));
+                // ✅ 1. 먼저 member 테이블에 해당 DI로 가입한 이력이 있는지 확인
+                if (signupService.isRecodeSignup(di) > 0) {
+                    log.info("기존 회원 가입 이력 발견 - DI: {}", di);
+                    model.addAttribute("isAdult", true);
+                    model.addAttribute("isDuplicateMember", true); // 중복 회원 플래그
+                    return "authPopupCallback";
+                }
+
+                // ✅ 2. member 테이블에 없으면 기존 guest 로직 수행
+                if(guestService.isGuest(di) > 0) {
+                    session.setAttribute("guest", guestService.getGuestByDi(di));
                 } else {
-                    guest.setGuestDi(resultMap.get("di"));
+                    guest.setGuestDi(di);
                     guest.setGuestName(name);
                     guest.setGuestBirth(LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("yyyyMMdd")));
                     guest.setGuestGender(resultMap.get("gender").equals("1") ? "남자" : "여자");
                     guest.setGuestPhone(resultMap.get("mobileno"));
                     guestService.insertGuest(guest);
-                    session.setAttribute("guest", guestService.getGuestByDi(resultMap.get("di")));
+                    session.setAttribute("guest", guestService.getGuestByDi(di));
                 }
             }
 
             model.addAttribute("isAdult", isAdult);
-            return "authPopupCallback"; // 이 HTML이 팝업에서 postMessage 보내는 역할
+            return "authPopupCallback";
+
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("isAdult", false);
@@ -126,10 +143,8 @@ public class HomeController {
         String deviceType = detectDevice(userAgent);
         if(deviceType.equals("pc")){
             proList = productService.selectBestProducts();
-            System.out.println("pc 8");
         } else {
             proList = productService.selectBestProductsForMobile();
-            System.out.println("mo 4"+proList.size());
         }
         List<ProductDto> newProList = productService.selectNewProducts();
         mav.addObject("proList", proList);
@@ -139,10 +154,10 @@ public class HomeController {
     }
 
     @GetMapping("/loading")
-    public String loadingPage(){ return "/loading"; }
+    public String loadingPage(){ return "loading"; }
 
     @GetMapping("/real")
-    public String realPage(){ return "/real"; }
+    public String realPage(){ return "real"; }
 
 
     private String detectDevice(String userAgent) {

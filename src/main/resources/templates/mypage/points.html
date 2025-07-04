@@ -235,7 +235,7 @@
 
         .points-details {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -384,13 +384,22 @@
             color: #dc3545;
         }
 
-        .points-expired {
-            border-left: 4px solid #6c757d;
+        .points-refund {
+            border-left: 4px solid #007bff;
         }
 
-        .points-expired .points-item-amount {
-            background: #f8f9fa;
-            color: #6c757d;
+        .points-refund .points-item-amount {
+            background: #e8f3ff;
+            color: #007bff;
+        }
+
+        .points-manual {
+            border-left: 4px solid #6f42c1;
+        }
+
+        .points-manual .points-item-amount {
+            background: #f3e8ff;
+            color: #6f42c1;
         }
 
         .points-item-content {
@@ -419,8 +428,12 @@
             background: #dc3545;
         }
 
-        .points-expired .points-item-icon {
-            background: #6c757d;
+        .points-refund .points-item-icon {
+            background: #007bff;
+        }
+
+        .points-manual .points-item-icon {
+            background: #6f42c1;
         }
 
         .points-item-info {
@@ -438,15 +451,6 @@
             font-size: 14px;
             color: #666;
             line-height: 1.4;
-        }
-
-        .points-item-balance {
-            text-align: right;
-            font-size: 13px;
-            color: #999;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #f0f0f0;
         }
 
         /* 빈 상태 */
@@ -612,10 +616,6 @@
                 gap: 10px;
             }
 
-            .points-item-balance {
-                text-align: center;
-            }
-
             .pagination {
                 flex-wrap: wrap;
                 gap: 5px;
@@ -708,6 +708,7 @@
                 </div>
             </div>
 
+            <!-- 소멸 예정 부분 제거, 2열로 변경 -->
             <div class="points-details">
                 <div class="points-detail-item">
                     <div class="points-detail-label">이번 달 적립</div>
@@ -716,10 +717,6 @@
                 <div class="points-detail-item">
                     <div class="points-detail-label">이번 달 사용</div>
                     <div class="points-detail-value" th:text="'-'+${usePoint}+'원'">-0원</div>
-                </div>
-                <div class="points-detail-item">
-                    <div class="points-detail-label">소멸 예정</div>
-                    <div class="points-detail-value">5,000원</div>
                 </div>
             </div>
         </div>
@@ -742,9 +739,10 @@
                     <span class="filter-label">구분</span>
                     <select class="filter-select" id="typeFilter">
                         <option value="all">전체</option>
-                        <option value="earned">적립</option>
-                        <option value="used">사용</option>
-                        <option value="expired">소멸</option>
+                        <option value="SAVE">적립</option>
+                        <option value="USE">사용</option>
+                        <option value="REFUND">환불</option>
+                        <option value="MANUAL">수동조정</option>
                     </select>
                 </div>
 
@@ -763,116 +761,79 @@
         <section class="points-history">
             <div class="section-title">
                 적립금 내역
-                <span style="font-size: 14px; color: #666; font-weight: normal;">총 23건</span>
+                <span style="font-size: 14px; color: #666; font-weight: normal;" th:text="'총 ' + ${totalCount} + '건'">총 0건</span>
             </div>
 
-            <!-- 적립금 내역 리스트 -->
-            <div class="points-list">
-                <!-- 적립 내역 -->
-                <div class="points-item points-earned">
+            <!-- 적립금 내역이 있는 경우 -->
+            <div class="points-list" th:if="${pointHistory != null and !pointHistory.isEmpty()}">
+                <div class="points-item" th:each="point : ${pointHistory}"
+                     th:classappend="${point.pointChange > 0 ? (point.pointType == 'SAVE' ? 'points-earned' : (point.pointType == 'REFUND' ? 'points-refund' : 'points-manual')) : 'points-used'}">
                     <div class="points-item-header">
-                        <span class="points-item-date">2025.06.20</span>
-                        <span class="points-item-amount">+5,000원</span>
+                        <span class="points-item-date" th:text="${#temporals.format(point.createdAt, 'yyyy.MM.dd HH:mm')}">2025.06.20 14:30</span>
+                        <span class="points-item-amount"
+                              th:text="${point.pointChange > 0 ? '+' : ''} + ${#numbers.formatInteger(point.pointChange, 3, 'COMMA')} + '원'">+5,000원</span>
                     </div>
                     <div class="points-item-content">
                         <div class="points-item-icon">
-                            <i class="fas fa-plus"></i>
+                            <i th:if="${point.pointType == 'SAVE'}" class="fas fa-plus"></i>
+                            <i th:if="${point.pointType == 'USE'}" class="fas fa-minus"></i>
+                            <i th:if="${point.pointType == 'REFUND'}" class="fas fa-undo"></i>
+                            <i th:if="${point.pointType == 'MANUAL'}" class="fas fa-edit"></i>
                         </div>
                         <div class="points-item-info">
-                            <div class="points-item-title">상품 구매 적립</div>
-                            <div class="points-item-description">홀리밤 프리미엄 세트 구매 (주문번호: ORD20250620001)</div>
+                            <div class="points-item-title">
+                                <span th:if="${point.pointType == 'SAVE'}">적립금 적립</span>
+                                <span th:if="${point.pointType == 'USE'}">적립금 사용</span>
+                                <span th:if="${point.pointType == 'REFUND'}">적립금 환불</span>
+                                <span th:if="${point.pointType == 'MANUAL'}">관리자 조정</span>
+                            </div>
+                            <div class="points-item-description" th:text="${point.description != null ? point.description : '상세 내역이 없습니다.'}">
+                                상품 구매 적립
+                            </div>
+                            <div class="points-item-order" th:if="${point.relatedOrderCode != null}">
+                                <small style="color: #999; font-size: 12px;" th:text="'주문번호: ORD' + ${point.relatedOrderCode}">주문번호: ORD123456</small>
+                            </div>
                         </div>
                     </div>
-                    <div class="points-item-balance">잔액: 25,000원</div>
                 </div>
+            </div>
 
-                <!-- 사용 내역 -->
-                <div class="points-item points-used">
-                    <div class="points-item-header">
-                        <span class="points-item-date">2025.06.18</span>
-                        <span class="points-item-amount">-3,000원</span>
-                    </div>
-                    <div class="points-item-content">
-                        <div class="points-item-icon">
-                            <i class="fas fa-minus"></i>
-                        </div>
-                        <div class="points-item-info">
-                            <div class="points-item-title">상품 구매 시 사용</div>
-                            <div class="points-item-description">홀리밤 스페셜 에디션 구매 (주문번호: ORD20250618001)</div>
-                        </div>
-                    </div>
-                    <div class="points-item-balance">잔액: 20,000원</div>
-                </div>
-
-                <!-- 적립 내역 -->
-                <div class="points-item points-earned">
-                    <div class="points-item-header">
-                        <span class="points-item-date">2025.06.15</span>
-                        <span class="points-item-amount">+2,500원</span>
-                    </div>
-                    <div class="points-item-content">
-                        <div class="points-item-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="points-item-info">
-                            <div class="points-item-title">리뷰 작성 적립</div>
-                            <div class="points-item-description">홀리밤 베이직 라인 리뷰 작성</div>
-                        </div>
-                    </div>
-                    <div class="points-item-balance">잔액: 23,000원</div>
-                </div>
-
-                <!-- 적립 내역 -->
-                <div class="points-item points-earned">
-                    <div class="points-item-header">
-                        <span class="points-item-date">2025.06.10</span>
-                        <span class="points-item-amount">+1,000원</span>
-                    </div>
-                    <div class="points-item-content">
-                        <div class="points-item-icon">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <div class="points-item-info">
-                            <div class="points-item-title">회원가입 축하 적립금</div>
-                            <div class="points-item-description">홀리밤 회원가입을 축하합니다!</div>
-                        </div>
-                    </div>
-                    <div class="points-item-balance">잔액: 20,500원</div>
-                </div>
-
-                <!-- 소멸 내역 -->
-                <div class="points-item points-expired">
-                    <div class="points-item-header">
-                        <span class="points-item-date">2025.06.01</span>
-                        <span class="points-item-amount">-1,500원</span>
-                    </div>
-                    <div class="points-item-content">
-                        <div class="points-item-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="points-item-info">
-                            <div class="points-item-title">적립금 소멸</div>
-                            <div class="points-item-description">2024.06.01 적립된 적립금 유효기간 만료</div>
-                        </div>
-                    </div>
-                    <div class="points-item-balance">잔액: 19,500원</div>
-                </div>
+            <!-- 적립금 내역이 없는 경우 -->
+            <div class="empty-state" th:if="${pointHistory == null or pointHistory.isEmpty()}">
+                <i class="fas fa-coins"></i>
+                <h3>적립금 내역이 없습니다</h3>
+                <p>상품을 구매하거나 활동을 통해 적립금을 모아보세요!</p>
+                <a href="/main" class="btn">쇼핑하러 가기</a>
             </div>
         </section>
 
         <!-- 페이지네이션 -->
-        <div class="pagination">
-            <a href="#" class="disabled">
+        <div class="pagination" th:if="${totalPages > 1}">
+            <!-- 이전 페이지 -->
+            <a th:href="@{/mypage/points(page=${currentPage - 1})}"
+               th:if="${currentPage > 1}">
                 <i class="fas fa-chevron-left"></i>
             </a>
-            <span class="current">1</span>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">4</a>
-            <a href="#">5</a>
-            <a href="#">
+            <span class="disabled" th:if="${currentPage == 1}">
+                <i class="fas fa-chevron-left"></i>
+            </span>
+
+            <!-- 페이지 번호 -->
+            <th:block th:with="startPage=${(currentPage - 1) / 5 * 5 + 1}, endPage=${#numbers.arrayMin(new int[]{startPage + 4, totalPages})}">
+                <a th:href="@{/mypage/points(page=${page})}"
+                   th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                   th:classappend="${page == currentPage ? 'current' : ''}"
+                   th:text="${page}">1</a>
+            </th:block>
+
+            <!-- 다음 페이지 -->
+            <a th:href="@{/mypage/points(page=${currentPage + 1})}"
+               th:if="${currentPage < totalPages}">
                 <i class="fas fa-chevron-right"></i>
             </a>
+            <span class="disabled" th:if="${currentPage == totalPages}">
+                <i class="fas fa-chevron-right"></i>
+            </span>
         </div>
     </main>
 </div>
@@ -894,31 +855,15 @@
         const type = document.getElementById('typeFilter').value;
         const search = document.getElementById('searchInput').value;
 
-        console.log('필터 조건:', { period, type, search });
+        // URL 파라미터 구성
+        const params = new URLSearchParams();
+        if (period && period !== 'all') params.append('period', period);
+        if (type && type !== 'all') params.append('type', type);
+        if (search) params.append('search', search);
+        params.append('page', '1'); // 필터링 시 첫 페이지로
 
-        // 실제 구현 시에는 서버에 필터 조건을 전송하여 결과를 받아옴
-        // 현재는 UI 시연용
-
-        // 예시: AJAX 요청
-        /*
-        $.ajax({
-          url: '/mypage/points/filter',
-          method: 'GET',
-          data: {
-            period: period,
-            type: type,
-            search: search
-          },
-          success: function(response) {
-            // 결과로 페이지 업데이트
-            $('.points-list').html(response.pointsList);
-            $('.section-title span').text('총 ' + response.totalCount + '건');
-          },
-          error: function() {
-            alert('검색 중 오류가 발생했습니다.');
-          }
-        });
-        */
+        // 페이지 리로드
+        window.location.href = '/mypage/points?' + params.toString();
     }
 
     // Enter 키로 검색
@@ -935,47 +880,64 @@
     // 정보 수정 페이지로 이동
     function changePage() {
         // 비밀번호 확인 후 정보 수정 페이지로 이동하는 로직
-        // 마이페이지와 동일한 비밀번호 확인 모달 사용
         window.location.href = '/mypage/profile/edit';
     }
 
     // 로그아웃
     function logout() {
         if (confirm('정말 로그아웃 하시겠습니까?')) {
-            window.location.href = '/auth/logout';
+            $.ajax({
+                url: '/auth/logout',
+                method: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        alert('로그아웃되었습니다.');
+                        window.location.href = '/main';
+                    } else {
+                        alert('로그아웃에 실패했습니다.');
+                    }
+                },
+                error: function() {
+                    // 서버 오류가 발생해도 클라이언트 측에서 로그아웃 처리
+                    alert('로그아웃되었습니다.');
+                    window.location.href = '/main';
+                }
+            });
         }
     }
 
-    // 적립금 상세 정보 토글 (선택사항)
+    // 적립금 상세 정보 툴팁
+    function showPointsInfo() {
+        alert('적립금은 상품 구매, 리뷰 작성 등을 통해 적립되며, 다양한 혜택에 사용하실 수 있습니다.');
+    }
+
+    // URL 파라미터에서 필터 값 복원
+    $(document).ready(function() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.get('period')) {
+            document.getElementById('periodFilter').value = urlParams.get('period');
+        }
+        if (urlParams.get('type')) {
+            document.getElementById('typeFilter').value = urlParams.get('type');
+        }
+        if (urlParams.get('search')) {
+            document.getElementById('searchInput').value = urlParams.get('search');
+        }
+    });
+
+    // 적립금 내역 상세보기 토글 (선택사항)
     $('.points-item').on('click', function() {
         // 클릭 시 상세 정보 표시/숨김 기능 추가 가능
         $(this).toggleClass('expanded');
     });
 
-    // 페이지네이션 클릭 이벤트
-    $('.pagination a:not(.disabled)').on('click', function(e) {
-        e.preventDefault();
-        const page = $(this).text() || $(this).find('i').length > 0 ? 'nav' : $(this).text();
-        console.log('페이지 이동:', page);
-
-        // 실제 구현 시 페이지 이동 로직
-        /*
-        window.location.href = '/mypage/points?page=' + page;
-        */
-    });
-
-    // 적립금 안내 툴팁 (선택사항)
-    function showPointsInfo() {
-        alert('적립금은 상품 구매, 리뷰 작성 등을 통해 적립되며, 적립일로부터 1년간 사용 가능합니다.');
-    }
-
-    // 소멸 예정 적립금 알림
-    $(document).ready(function() {
-        const expiringPoints = 5000; // 서버에서 받아올 데이터
-        if (expiringPoints > 0) {
-            // 30일 이내 소멸 예정 적립금이 있을 때 알림 표시
-            console.log('소멸 예정 적립금:', expiringPoints + '원');
-        }
+    // 페이지네이션 부드러운 전환
+    $('.pagination a').on('click', function(e) {
+        // 페이지 로딩 시 부드러운 스크롤 효과
+        $('html, body').animate({
+            scrollTop: $('.page-title').offset().top - 100
+        }, 300);
     });
 </script>
 </body>

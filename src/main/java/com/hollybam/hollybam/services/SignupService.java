@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dao.IF_SignupDao;
+import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.MemberDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -78,5 +79,35 @@ public class SignupService implements IF_SignupService{
     @Override
     public String getMemberType(String di){
         return signupDao.getMemberType(di);
+    }
+
+    @Override
+    public int getGuestCartCount(GuestDto guest){
+        return signupDao.getGuestCartCount(guest);
+    }
+
+    @Override
+    public int getGuestWishCount(GuestDto guest){
+        return signupDao.getGuestWishCount(guest);
+    }
+
+    @Override
+    public int getGuestOrderCount(GuestDto guest){
+        return signupDao.getGuestOrderCount(guest);
+    }
+
+    @Override
+    public void updateGuestToMemberCart(int memberCode, int guestCode){
+        signupDao.updateGuestToMemberCart(memberCode, guestCode);
+    }
+
+    @Override
+    public void updateGuestToMemberWishList(int memberCode, int guestCode){
+        signupDao.updateGuestToMemberWishList(memberCode, guestCode);
+    }
+
+    @Override
+    public void updateGuestToMemberOrder(int memberCode, int guestCode){
+        signupDao.updateGuestToMemberOrder(memberCode, guestCode);
     }
 }

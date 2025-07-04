@@ -43,7 +43,7 @@ public class ProductController {
         mav.addObject("product", productService.getProductDetailInfo_first(productId));
         mav.addObject("options", options);
         mav.addObject("optionNames", optionNames); // 추가
-        mav.setViewName("/product/productDetail");
+        mav.setViewName("product/productDetail");
         return mav;
     }
 

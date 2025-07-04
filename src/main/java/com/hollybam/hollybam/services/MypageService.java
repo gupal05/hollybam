@@ -1,11 +1,13 @@
 package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dao.IF_MypageDao;
-import com.hollybam.hollybam.dao.IF_PaymentDao;
 import com.hollybam.hollybam.dto.MemberDto;
+import com.hollybam.hollybam.dto.PointDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class MypageService implements IF_MypageService {
@@ -19,11 +21,28 @@ public class MypageService implements IF_MypageService {
     }
 
     @Override
-    public int selectMemberPoint(int memberCode) { return mypageDao.selectMemberPoint(memberCode); }
+    public int selectMemberPoint(int memberCode) {
+        return mypageDao.selectMemberPoint(memberCode);
+    }
 
     @Override
-    public int selectMemberAddPoint(int memberCode){ return mypageDao.selectMemberAddPoint(memberCode); }
+    public int selectMemberAddPoint(int memberCode){
+        return mypageDao.selectMemberAddPoint(memberCode);
+    }
 
     @Override
-    public int selectMemberUsePoint(int memberCode){ return mypageDao.selectMemberUsePoint(memberCode); }
+    public int selectMemberUsePoint(int memberCode){
+        return mypageDao.selectMemberUsePoint(memberCode);
+    }
+
+    @Override
+    public List<PointDto> selectPointHistory(int memberCode, int page, int size) {
+        int offset = (page - 1) * size;
+        return mypageDao.selectPointHistory(memberCode, offset, size);
+    }
+
+    @Override
+    public int selectPointHistoryCount(int memberCode) {
+        return mypageDao.selectPointHistoryCount(memberCode);
+    }
 }

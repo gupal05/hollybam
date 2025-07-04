@@ -89,7 +89,7 @@ public class CartController {
             cartItems = cartService.getCartItemsByGuest(guestUuid);
         }
         mav.addObject("cartItems", cartItems);
-        mav.setViewName("/cart");
+        mav.setViewName("cart");
         return mav;
     }
 

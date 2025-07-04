@@ -86,7 +86,7 @@ public class AdminProductController {
                     model.addAttribute("errorMessage", "상품 목록을 불러오는 중 오류가 발생했습니다.");
                 }
 
-                return "/admin/product/list";
+                return "admin/product/list";
             }
         } else  {
             return "redirect:/admin";

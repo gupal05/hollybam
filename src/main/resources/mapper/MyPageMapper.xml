@@ -16,11 +16,10 @@
         WHERE mem_code = #{memberCode}
     </select>
 
-
     <select id="selectMemberAddPoint" parameterType="int" resultType="int">
         SELECT IFNULL(SUM(point_change), 0) AS total_saved_points
         FROM point
-        WHERE mem_code = #{memCode}
+        WHERE mem_code = #{memberCode}
           AND point_change &gt; 0
           AND created_at &gt;= DATE_FORMAT(CURDATE(), '%Y-%m-01')
           AND created_at &lt; DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
@@ -29,11 +28,31 @@
     <select id="selectMemberUsePoint" parameterType="int" resultType="int">
         SELECT IFNULL(SUM(ABS(point_change)), 0) AS total_used_points
         FROM point
-        WHERE mem_code = #{memCode}
+        WHERE mem_code = #{memberCode}
           AND point_change &lt; 0
           AND created_at &gt;= DATE_FORMAT(CURDATE(), '%Y-%m-01')
           AND created_at &lt; DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
     </select>
 
+    <select id="selectPointHistory" resultType="com.hollybam.hollybam.dto.PointDto">
+        SELECT
+            point_code as pointCode,
+            mem_code as memberCode,
+            point_change as pointChange,
+            point_type as pointType,
+            description,
+            related_order_code as relatedOrderCode,
+            created_at as createdAt
+        FROM point
+        WHERE mem_code = #{memberCode}
+        ORDER BY created_at DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectPointHistoryCount" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM point
+        WHERE mem_code = #{memberCode}
+    </select>
 
 </mapper>

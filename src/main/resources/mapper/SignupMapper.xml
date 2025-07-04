@@ -39,6 +39,45 @@
         DELETE FROM guest WHERE guest_di = #{di}
     </delete>
 
+    <select id="getGuestCartCount" parameterType="com.hollybam.hollybam.dto.GuestDto" resultType="int">
+        select count(*)
+        from cart
+        where guest_code = #{guestCode}
+    </select>
+
+    <select id="getGuestWishCount" parameterType="com.hollybam.hollybam.dto.GuestDto" resultType="int">
+        select count(*)
+        from wishlist
+        where guest_code = #{guestCode}
+    </select>
+
+    <select id="getGuestOrderCount" parameterType="com.hollybam.hollybam.dto.GuestDto" resultType="int">
+        select count(*)
+        from orders
+        where guest_code = #{guestCode}
+    </select>
+
+    <update id="updateGuestToMemberCart" parameterType="com.hollybam.hollybam.dto.GuestDto">
+        update cart
+        set mem_code = #{memberCode},
+            guest_code = null
+        where guest_code = #{guestCode}
+    </update>
+
+    <update id="updateGuestToMemberWishList" parameterType="com.hollybam.hollybam.dto.GuestDto">
+        update wishlist
+        set mem_code = #{memberCode},
+            guest_code = null
+        where guest_code = #{guestCode}
+    </update>
+
+    <update id="updateGuestToMemberOrder" parameterType="com.hollybam.hollybam.dto.GuestDto">
+        update orders
+        set mem_code = #{memberCode},
+            guest_code = null
+        where guest_code = #{guestCode}
+    </update>
+
     <select id="getMemberCode" resultType="int" parameterType="String">
         select mem_code
         from member

@@ -107,7 +107,7 @@ public class WishlistController {
 
             MemberDto member = (MemberDto) session.getAttribute("member");
             Integer memCode = member != null ? member.getMemberCode() : null;
-            String guestUuid = (String) session.getAttribute("guest_uuid");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
 
             boolean isInWishlist;
 
@@ -115,12 +115,12 @@ public class WishlistController {
                 // 회원
                 log.info("회원 위시리스트 토글 - memCode: {}", memCode);
                 isInWishlist = wishlistService.toggleMemberWishlist(memCode, productCode);
-            } else if (guestUuid != null) {
+            } else if (guest != null) {
                 // 비회원
-                log.info("비회원 위시리스트 토글 - guestUuid: {}", guestUuid);
-                Integer guestCode = wishlistService.getGuestCodeByUuid(guestUuid);
-                if (guestCode == null) {
-                    log.warn("guestCode를 찾을 수 없음 - guestUuid: {}", guestUuid);
+                log.info("비회원 위시리스트 토글 - guest: {}", guest);
+                int guestCode = guest.getGuestCode();
+                if (guestCode == 0) {
+                    log.warn("guestCode를 찾을 수 없음 - guest: {}", guest);
                     response.put("success", false);
                     response.put("message", "성인인증이 필요합니다.");
                     return ResponseEntity.badRequest().body(response);
@@ -168,7 +168,7 @@ public class WishlistController {
             Integer memCode = member != null ? member.getMemberCode() : null;
             GuestDto guest = (GuestDto) session.getAttribute("guest");
 
-            log.info("세션 정보 - memCode: {}, guestUuid: {}", memCode, guest);
+            log.info("세션 정보 - memCode: {}, guest: {}", memCode, guest);
 
             List<Integer> wishlistProductCodes;
 
@@ -222,17 +222,17 @@ public class WishlistController {
 
             MemberDto member = (MemberDto) session.getAttribute("member");
             Integer memCode = member != null ? member.getMemberCode() : null;
-            String guestUuid = (String) session.getAttribute("guest_uuid");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
 
             boolean removed;
 
             if (memCode != null) {
                 log.info("회원 위시리스트 제거");
                 removed = wishlistService.removeMemberWishlist(memCode, productCode);
-            } else if (guestUuid != null) {
+            } else if (guest != null) {
                 log.info("비회원 위시리스트 제거");
-                Integer guestCode = wishlistService.getGuestCodeByUuid(guestUuid);
-                if (guestCode == null) {
+                int guestCode = guest.getGuestCode();
+                if (guestCode == 0) {
                     log.warn("guestCode를 찾을 수 없음");
                     response.put("success", false);
                     response.put("message", "인증 정보를 찾을 수 없습니다.");
@@ -272,15 +272,15 @@ public class WishlistController {
         try {
             MemberDto member = (MemberDto) session.getAttribute("member");
             Integer memCode = member != null ? member.getMemberCode() : null;
-            String guestUuid = (String) session.getAttribute("guest_uuid");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
 
             int count = 0;
 
             if (memCode != null) {
                 count = wishlistService.getMemberWishlistCount(memCode);
-            } else if (guestUuid != null) {
-                Integer guestCode = wishlistService.getGuestCodeByUuid(guestUuid);
-                if (guestCode != null) {
+            } else if (guest != null) {
+                int guestCode = guest.getGuestCode();
+                if (guestCode != 0) {
                     count = wishlistService.getGuestWishlistCount(guestCode);
                 }
             }

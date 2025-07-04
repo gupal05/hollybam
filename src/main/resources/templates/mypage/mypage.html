@@ -240,76 +240,61 @@
       font-weight: 500;
     }
 
-    .order-item {
-      background: #f8f9fa;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 15px;
-      transition: all 0.3s ease;
-    }
-
-    .order-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    }
-
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #e9ecef;
-    }
-
-    .order-date {
-      font-size: 14px;
-      color: #666;
-    }
-
-    .order-status {
-      padding: 6px 12px;
+    /* 주문 내역이 없을 때 스타일 */
+    .empty-orders {
+      text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
       border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      background: #EE386D;
-      color: white;
+      border: 2px dashed #e9ecef;
+      margin-bottom: 40px;
     }
 
-    .order-products {
-      display: flex;
-      gap: 15px;
-    }
-
-    .product-image {
+    .empty-orders-icon {
       width: 80px;
       height: 80px;
-      border-radius: 12px;
-      background: #e9ecef;
-      flex-shrink: 0;
+      background: linear-gradient(135deg, #f1f3f4, #e8eaed);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: #9aa0a6;
+      font-size: 32px;
     }
 
-    .product-info {
-      flex: 1;
-    }
-
-    .product-name {
-      font-size: 16px;
+    .empty-orders-title {
+      font-size: 20px;
       font-weight: 600;
       color: #1a1a1a;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
     }
 
-    .product-price {
-      font-size: 18px;
-      font-weight: 700;
-      color: #EE386D;
-      margin-bottom: 5px;
-    }
-
-    .product-quantity {
-      font-size: 14px;
+    .empty-orders-subtitle {
+      font-size: 16px;
       color: #666;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .start-shopping-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
+    }
+
+    .start-shopping-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(238, 56, 109, 0.4);
+      color: white;
+      text-decoration: none;
     }
 
     /* 위시리스트 */
@@ -609,14 +594,31 @@
         display: none !important;
       }
 
-      .order-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+      .empty-orders {
+        padding: 40px 15px;
+        margin-bottom: 30px;
       }
 
-      .order-products {
-        flex-direction: column;
+      .empty-orders-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+        margin-bottom: 15px;
+      }
+
+      .empty-orders-title {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+
+      .empty-orders-subtitle {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .start-shopping-btn {
+        font-size: 14px;
+        padding: 10px 25px;
       }
 
       .wishlist-grid {
@@ -741,21 +743,21 @@
           <i class="fas fa-clock"></i>
         </div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">결제완료</div>
-        <div class="order-count" style="font-weight: bold;">2</div>
+        <div class="order-count" style="font-weight: bold;">0</div>
       </div>
       <div class="order-card">
         <div class="order-icon">
           <i class="fas fa-truck"></i>
         </div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">배송중</div>
-        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">1</div>
+        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">0</div>
       </div>
       <div class="order-card">
         <div class="order-icon">
           <i class="fas fa-check-circle"></i>
         </div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">배송완료</div>
-        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">5</div>
+        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">0</div>
       </div>
       <div class="order-card">
         <div class="order-icon">
@@ -780,42 +782,53 @@
       </div>
     </div>
 
-    <!-- 최근 주문 내역 -->
+    <!-- 최근 주문 내역 - 주문이 없는 경우 -->
     <section class="recent-orders">
       <div class="section-title">
         최근 주문 내역
-        <a href="#" class="view-all">전체 보기 →</a>
+        <a href="/mypage/orders" class="view-all">전체 보기 →</a>
       </div>
 
-      <div class="order-item">
-        <div class="order-header">
-          <span class="order-date">2025.06.15</span>
-          <span class="order-status">배송중</span>
+      <!-- Thymeleaf 조건부 렌더링: 주문 내역이 없는 경우 -->
+      <div class="empty-orders" th:if="${recentOrders == null or recentOrders.isEmpty()}">
+        <div class="empty-orders-icon">
+          <i class="fas fa-shopping-bag"></i>
         </div>
-        <div class="order-products">
-          <div class="product-image"></div>
-          <div class="product-info">
-            <div class="product-name">홀리밤 프리미엄 세트</div>
-            <div class="product-price">₩150,000</div>
-            <div class="product-quantity">수량: 1개</div>
+        <div class="empty-orders-title">아직 주문 내역이 없습니다</div>
+        <div class="empty-orders-subtitle">
+          홀리밤의 다양한 상품을 만나보세요!<br>
+          첫 주문 시 특별 혜택이 기다리고 있어요 ✨
+        </div>
+        <a href="/main" class="start-shopping-btn">
+          <i class="fas fa-rocket" style="margin-right: 8px;"></i>
+          쇼핑 시작하기
+        </a>
+      </div>
+
+      <!-- 주문 내역이 있는 경우를 위한 템플릿 (현재는 주석 처리) -->
+      <!--
+      <div th:if="${recentOrders != null and !recentOrders.isEmpty()}">
+        <div class="order-item" th:each="order : ${recentOrders}">
+          <div class="order-header">
+            <span class="order-date" th:text="${#temporals.format(order.orderDate, 'yyyy.MM.dd')}">2025.06.15</span>
+            <span class="order-status" th:text="${order.orderStatus}">배송중</span>
+          </div>
+          <div class="order-products">
+            <div class="product-image" th:if="${order.productImage != null}">
+              <img th:src="@{'/testImage/' + ${order.productImage}}"
+                   th:alt="${order.productName}"
+                   style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+            </div>
+            <div class="product-image" th:unless="${order.productImage != null}"></div>
+            <div class="product-info">
+              <div class="product-name" th:text="${order.productName}">홀리밤 프리미엄 세트</div>
+              <div class="product-price" th:text="${'₩' + #numbers.formatInteger(order.totalPrice, 3, 'COMMA')}">₩150,000</div>
+              <div class="product-quantity" th:text="'수량: ' + ${order.quantity} + '개'">수량: 1개</div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div class="order-item">
-        <div class="order-header">
-          <span class="order-date">2025.06.10</span>
-          <span class="order-status">배송완료</span>
-        </div>
-        <div class="order-products">
-          <div class="product-image"></div>
-          <div class="product-info">
-            <div class="product-name">홀리밤 스페셜 에디션</div>
-            <div class="product-price">₯89,000</div>
-            <div class="product-quantity">수량: 2개</div>
-          </div>
-        </div>
-      </div>
+      -->
     </section>
 
     <!-- 위시리스트 -->
@@ -946,15 +959,61 @@
   });
 
   // 위시리스트 제거
-  $('.remove-wishlist').on('click', function() {
-    $(this).closest('.wishlist-item').fadeOut(300, function() {
-      $(this).remove();
-    });
-  });
+  function removeFromWishlist(button) {
+    const productCode = button.getAttribute('data-product-code');
+
+    if (!productCode) {
+      alert('상품 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    if (confirm('위시리스트에서 제거하시겠습니까?')) {
+      $.ajax({
+        url: '/wishlist/remove',
+        method: 'POST',
+        data: { productCode: productCode },
+        success: function(response) {
+          if (response.success) {
+            $(button).closest('.wishlist-item').fadeOut(300, function() {
+              $(this).remove();
+
+              // 위시리스트가 모두 비었는지 확인
+              if ($('.wishlist-item').length === 0) {
+                $('.wishlist-grid').hide();
+                if ($('.empty-wishlist').length === 0) {
+                  $('.wishlist').append(`
+                    <div class="empty-wishlist" style="text-align: center; padding: 40px 20px; background: #f8f9fa; border-radius: 16px;">
+                      <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;">💝</div>
+                      <div style="font-size: 16px; color: #666; margin-bottom: 10px;">위시리스트가 비어있습니다</div>
+                      <div style="font-size: 14px; color: #999; margin-bottom: 20px;">마음에 드는 상품을 위시리스트에 추가해보세요</div>
+                      <a href="/main" style="display: inline-block; background: #EE386D; color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-size: 14px;">
+                        쇼핑하러 가기
+                      </a>
+                    </div>
+                  `);
+                }
+              }
+            });
+          } else {
+            alert('위시리스트 제거에 실패했습니다.');
+          }
+        },
+        error: function() {
+          alert('서버 오류가 발생했습니다.');
+        }
+      });
+    }
+  }
 
   // 주문 카드 클릭 이벤트
   $('.order-card').on('click', function() {
-    const orderType = $(this).find('.order-label').text();
+    const orderType = $(this).find('.order-label').text().trim();
+
+    // 1:1 문의는 이미 onclick으로 처리되므로 제외
+    if (orderType === '1:1 문의' || orderType === '작성한 리뷰') {
+      return;
+    }
+
     console.log('주문 카드 클릭:', orderType);
 
     // 주문 상태별 페이지 이동
@@ -1008,7 +1067,7 @@
       return;
     }
 
-    // 실제 구현 시에는 아래와 같이 서버 검증
+    // 서버에 비밀번호 검증 요청
     $.ajax({
       url: '/auth/verify-password',
       method: 'POST',
@@ -1028,6 +1087,29 @@
     });
   }
 
+  // 로그아웃 함수
+  function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+      $.ajax({
+        url: '/auth/logout',
+        method: 'POST',
+        success: function(response) {
+          if (response.success) {
+            alert('로그아웃되었습니다.');
+            window.location.href = '/main';
+          } else {
+            alert('로그아웃에 실패했습니다.');
+          }
+        },
+        error: function() {
+          // 서버 오류가 발생해도 클라이언트 측에서 로그아웃 처리
+          alert('로그아웃되었습니다.');
+          window.location.href = '/main';
+        }
+      });
+    }
+  }
+
   // 모달 외부 클릭 시 닫기
   window.onclick = function(event) {
     const modal = document.getElementById('passwordModal');
@@ -1043,14 +1125,98 @@
         verifyPassword();
       }
     });
+
+    // 비밀번호 토글 기능
+    document.querySelector('.toggle-password').addEventListener('click', function() {
+      const target = document.getElementById(this.getAttribute('data-target'));
+      const icon = this.querySelector('i');
+
+      if (target.type === 'password') {
+        target.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        target.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
   });
 
+  // 상품 페이지로 이동
   function goToProduct(element) {
     const productId = element.getAttribute('data-product-id');
     if (productId) {
       window.location.href = '/product/' + productId;
     }
   }
+
+  // 폼 스타일 추가 (모달에서 사용)
+  const style = document.createElement('style');
+  style.textContent = `
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #1a1a1a;
+      font-size: 14px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #EE386D;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(238, 56, 109, 0.1);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(238, 56, 109, 0.4);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+  `;
+  document.head.appendChild(style);
 </script>
 </body>
 </html>

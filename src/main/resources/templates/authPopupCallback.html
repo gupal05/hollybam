@@ -11,7 +11,19 @@
             try {
                 var isAdult = /*[[${isAdult}]]*/ false;
                 var authType = /*[[${authType}]]*/ 'default'; // 인증 타입 구분
+                var isDuplicateMember = /*[[${isDuplicateMember}]]*/ false; // 중복 회원 플래그
 
+                console.log("authPopupCallback: isAdult=" + isAdult + ", authType=" + authType + ", isDuplicateMember=" + isDuplicateMember);
+
+                // ✅ 기존 회원 가입 이력이 있는 경우 처리
+                if (isDuplicateMember) {
+                    alert("기존에 회원가입 이력이 있습니다.");
+                    // 팝업 닫기 후 intro 페이지 유지 (메시지 전송 없음)
+                    closePopup();
+                    return;
+                }
+
+                // ✅ 기존 로직 유지 (중복 회원이 아닌 경우)
                 const message = isAdult ? "authSuccess" : "authFail";
 
                 // 1. 직접 부모에게 메시지 전송 (네이버/구글 본인인증 페이지)
@@ -46,10 +58,15 @@
                     }
                 }
 
+                closePopup();
+
             } catch (e) {
                 console.error("postMessage 실패:", e);
+                closePopup();
             }
+        };
 
+        function closePopup() {
             // 팝업 닫기 시도 (2회 호출)
             setTimeout(() => {
                 window.close();
@@ -58,7 +75,7 @@
                     window.close();
                 }, 500);
             }, 100);
-        };
+        }
     </script>
 </head>
 <body>

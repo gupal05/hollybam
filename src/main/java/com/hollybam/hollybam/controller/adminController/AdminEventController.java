@@ -3,6 +3,7 @@ package com.hollybam.hollybam.controller.adminController;
 import com.hollybam.hollybam.dto.EventDetailDto;
 import com.hollybam.hollybam.dto.EventDto;
 import com.hollybam.hollybam.services.IF_EventService;
+import com.hollybam.hollybam.util.S3Uploader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +21,13 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/admin/event")
 public class AdminEventController {
-
+    @Autowired
+    private S3Uploader s3Uploader;
     @Autowired
     private IF_EventService eventService;
 
     // 이미지 저장 경로 (예: /resources/static/upload/event/)
-    private final String uploadDir = "src/main/resources/static/upload/event/";
+    private final String uploadDir = "https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/upload/event/";
 
     @GetMapping("/create")
     public String showEventForm(Model model) {
@@ -40,37 +42,25 @@ public class AdminEventController {
                               @RequestParam(value = "eventDetailActionUrl", required = false) String actionUrl,
                               RedirectAttributes redirectAttributes) {
         try {
-            // ✅ 상태 계산 (before / ing / end)
+            // ✅ 상태 계산
             LocalDate today = LocalDate.now();
             LocalDate start = eventDto.getEventStart();
-            LocalDate end = eventDto.getEventEnd(); // null일 수 있음
+            LocalDate end = eventDto.getEventEnd();
 
-            String status;
-            if (today.isBefore(start)) {
-                status = "before";
-            } else if (end == null || !today.isAfter(end)) {
-                status = "ing";
-            } else {
-                status = "end";
-            }
+            String status = (today.isBefore(start)) ? "before"
+                    : (end == null || !today.isAfter(end)) ? "ing"
+                    : "end";
             eventDto.setEventStatus(status);
 
-            // ✅ 썸네일 업로드
-            String thumbnailFileName = UUID.randomUUID() + "_" + thumbnailFile.getOriginalFilename();
-            Path thumbnailPath = Paths.get(uploadDir + thumbnailFileName);
-            Files.createDirectories(thumbnailPath.getParent());
-            Files.write(thumbnailPath, thumbnailFile.getBytes());
-            String thumbnailUrl = "/upload/event/" + thumbnailFileName;
+            // ✅ 썸네일 S3 업로드
+            String thumbnailUrl = s3Uploader.upload(thumbnailFile, "upload/event");
             eventDto.setThumbnailUrl(thumbnailUrl);
 
             // ✅ 이벤트 저장
             int eventCode = eventService.insertEvent(eventDto);
 
-            // ✅ 상세 이미지 업로드
-            String contentFileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-            Path contentPath = Paths.get(uploadDir + contentFileName);
-            Files.write(contentPath, imageFile.getBytes());
-            String imageUrl = "/upload/event/" + contentFileName;
+            // ✅ 상세 이미지 S3 업로드
+            String imageUrl = s3Uploader.upload(imageFile, "upload/event");
 
             // ✅ 상세 등록
             EventDetailDto detailDto = new EventDetailDto();
@@ -88,7 +78,5 @@ public class AdminEventController {
             return "redirect:/admin/event/create";
         }
     }
-
-
 }
 

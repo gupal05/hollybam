@@ -899,8 +899,8 @@
             <div id="productList">
                 <!-- Thymeleaf로 상품 목록 표시 -->
                 <div th:each="item : ${cartItems}" class="product-item">
-                    <img th:src="${item.imageDto != null && item.imageDto.imageUrl != null} ? ('/testImage/' + ${item.imageDto.imageUrl}) : 'https://via.placeholder.com/80x80/f0f0f0/999?text=Product'"
-                         alt="상품 이미지" class="product-image">
+                    <img th:src="${item.imageDto != null && item.imageDto.imageUrl != null} ? '/testImage/' + item.imageDto.imageUrl : 'https://via.placeholder.com/80x80/f0f0f0/999?text=Product'" />
+                    alt="상품 이미지" class="product-image">
                     <div class="product-info">
                         <div class="product-name" th:text="${item.productDto.productName}">상품명</div>
                         <div class="product-options" th:if="${item.productOptionDto != null}">

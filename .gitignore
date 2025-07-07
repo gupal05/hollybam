@@ -38,3 +38,6 @@ out/
 
 src/main/resources/static/mp4/
 .bfg-report/
+src/main/resources/application.properties
+src/main/resources/application-ec2.properties
+src/main/resources/application-local.properties

@@ -664,8 +664,8 @@
                             <div class="product-item" th:each="product : ${order.products}">
                                 <div class="product-image">
                                     <img th:if="${product.productImage != null}"
-                                         th:src="@{'/images/' + ${product.productImage}}"
-                                         th:alt="${product.productName}">
+                                         th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/' + product.productImage}"
+                                         th:alt="${product.productName}" />
                                 </div>
                                 <div class="product-details">
                                     <div class="product-name" th:text="${product.productName}">홀리밤 피스톤 머신 (10종 구성)</div>

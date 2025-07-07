@@ -556,11 +556,10 @@
             <div class="cart-content">
                 <div class="cart-item" th:each="item : ${cartItems}" th:data-cart-code="${item.cartCode}">
                     <input type="checkbox" class="item-checkbox" th:checked="${item.selected}">
-                    <img th:src="@{'/testImage/' + ${item.imageDto?.imageUrl}}"
+                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + (item.imageDto != null ? item.imageDto.imageUrl : '')}"
                          th:alt="${item.productDto.productName}"
                          class="item-image"
                          onerror="this.src='https://via.placeholder.com/100x100/f0f0f0/999?text=No+Image'">
-
                     <div class="item-info">
                         <div class="item-name" th:text="${item.productDto.productName}">상품명</div>
                         <div class="item-options" th:if="${item.productOptionDto != null}"

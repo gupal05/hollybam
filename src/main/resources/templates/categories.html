@@ -699,7 +699,7 @@
                                     <th:block th:if="${product.imageDtoList != null and !product.imageDtoList.isEmpty()}">
                                         <th:block th:each="image : ${product.imageDtoList}">
                                             <img th:if="${image.imageType == 'title'}"
-                                                 th:src="@{'/testImage/' + ${image.imageUrl}}"
+                                                 th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + image.imageUrl}"
                                                  th:alt="${product.productName}" />
                                         </th:block>
                                     </th:block>

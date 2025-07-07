@@ -716,8 +716,8 @@
                         <i class="fas fa-times"></i>
                     </button>
                     <div class="card-product-img">
-                        <img th:src="@{${item.productImage != null ? '/testImage/' + item.productImage : '/images/no-image.png'}}"
-                             th:alt="${item.productName}">
+                        <img th:src="${item.productImage != null ? 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + item.productImage : 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/no-image.png'}"
+                             th:alt="${item.productName}" />
                     </div>
                     <div class="card-product-info">
                         <p class="card-product-title" th:text="${item.productName}">상품명</p>

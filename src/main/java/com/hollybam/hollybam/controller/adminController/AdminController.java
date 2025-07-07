@@ -6,6 +6,7 @@ import com.hollybam.hollybam.dto.*;
 import com.hollybam.hollybam.services.CouponService;
 import com.hollybam.hollybam.services.DiscountService;
 import com.hollybam.hollybam.services.ProductService;
+import com.hollybam.hollybam.util.S3Uploader;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class AdminController {
     private DiscountService discountService;
     @Autowired
     private HttpSession session;
+    @Autowired
+    private S3Uploader s3Uploader;
 
     @GetMapping
     public String admin(Model model) {
@@ -86,7 +89,7 @@ public class AdminController {
         Map<String, Boolean> response = new HashMap<>();
         boolean uploadStatus = true;
 
-        String uploadDir = "src/main/resources/static/testImage/";
+        String uploadDir = "testImage";
 
         try {
             // 필수 타이틀 이미지 저장
@@ -124,19 +127,9 @@ public class AdminController {
 
     // 파일 저장 메서드
     private void saveFile(MultipartFile file, String uploadDir) throws IOException {
-        if (file == null || file.isEmpty()) {
-            return; // 비어있으면 저장하지 않음
-        }
+        if (file == null || file.isEmpty()) return;
 
-        Path path = Paths.get(uploadDir + file.getOriginalFilename());
-
-        // 디렉토리 없으면 생성
-        if (!Files.exists(path.getParent())) {
-            Files.createDirectories(path.getParent());
-        }
-
-        // 파일 저장
-        file.transferTo(path);
+        s3Uploader.upload(file, uploadDir);  // S3에 업로드
     }
 
 

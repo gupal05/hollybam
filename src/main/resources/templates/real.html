@@ -523,7 +523,11 @@
             <div class="image-gallery">
                 <!-- 메인 이미지 -->
                 <div class="main-image-container">
-                    <img th:src="@{/images/995e4c0273de43dbd98b8b5368cbc645.jpg}"src="@{/images/995e4c0273de43dbd98b8b5368cbc645.jpg}" class="main-image" id="mainImage" alt="대표 이미지"/>
+                    <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/995e4c0273de43dbd98b8b5368cbc645.jpg'"
+                         class="main-image"
+                         id="mainImage"
+                         alt="대표 이미지" />
+
                     <button class="wishlist-btn">
                         <svg class="heart-icon" viewBox="0 0 24 24">
                             <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>
@@ -534,20 +538,20 @@
                 <!-- 썸네일 갤러리 -->
                 <div class="thumbnail-gallery">
                     <div class="thumbnail-item active"
-                         onclick="changeMainImage('[[ @{/images/귀엽고 섹시한 니아 165cm 대표1.jpg} ]]', this)">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm 대표1.jpg}" alt="대표이미지 1" class="thumbnail-image"/>
+                         onclick="changeMainImage('https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm 대표1.jpg', this)">
+                        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm 대표1.jpg'" alt="대표이미지 1" class="thumbnail-image"/>
                     </div>
                     <div class="thumbnail-item"
-                         onclick="changeMainImage('[[ @{/images/귀엽고 섹시한 니아 165cm 대표2.jpg} ]]', this)">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm 대표2.jpg}" alt="대표이미지 2" class="thumbnail-image"/>
+                         onclick="changeMainImage('https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm 대표2.jpg', this)">
+                        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm 대표2.jpg'" alt="대표이미지 2" class="thumbnail-image"/>
                     </div>
                     <div class="thumbnail-item"
-                         onclick="changeMainImage('[[ @{/images/귀엽고 섹시한 니아 165cm 대표3.jpg} ]]', this)">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm 대표3.jpg}" alt="대표이미지 3" class="thumbnail-image"/>
+                         onclick="changeMainImage('https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm 대표3.jpg', this)">
+                        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm 대표3.jpg'" alt="대표이미지 3" class="thumbnail-image"/>
                     </div>
                     <div class="thumbnail-item"
-                         onclick="changeMainImage('[[ @{/images/귀엽고 섹시한 니아 165cm 대표4.jpg} ]]', this)">
-                        <img th:src="@{/images/귀엽고 섹시한 니아 165cm 대표4.jpg}" alt="대표이미지 4" class="thumbnail-image"/>
+                         onclick="changeMainImage('https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm 대표4.jpg', this)">
+                        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm 대표4.jpg'" alt="대표이미지 4" class="thumbnail-image"/>
                     </div>
                 </div>
             </div>
@@ -605,24 +609,25 @@
 
         <div class="tab-content active" id="detail">
             <div class="detail-images">
-                <video th:src="@{/images/testmp4.mp4}" controls autoplay muted style="max-width: 100%; height: auto;"></video>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세1.jpg}" alt="상세 이미지 1"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세2.jpg}" alt="상세 이미지 2"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세3.jpg}" alt="상세 이미지 3"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세4.jpg}" alt="상세 이미지 4"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세5.jpg}" alt="상세 이미지 5"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세6.jpg}" alt="상세 이미지 6"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세7.jpg}" alt="상세 이미지 7"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세8.jpg}" alt="상세 이미지 8"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세9.jpg}" alt="상세 이미지 9"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세10.jpg}" alt="상세 이미지 10"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세11.jpg}" alt="상세 이미지 11"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세12.jpg}" alt="상세 이미지 12"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세13.jpg}" alt="상세 이미지 13"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세14.jpg}" alt="상세 이미지 14"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세15.jpg}" alt="상세 이미지 15"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세16.jpg}" alt="상세 이미지 16"/>
-                <img th:src="@{/images/귀엽고 섹시한 니아 165cm_상세17.jpg}" alt="상세 이미지 17"/>
+                <video src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/testmp4.mp4" controls autoplay muted style="max-width: 100%; height: auto;"></video>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세1.jpg" alt="상세 이미지 1"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세2.jpg" alt="상세 이미지 2"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세3.jpg" alt="상세 이미지 3"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세4.jpg" alt="상세 이미지 4"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세5.jpg" alt="상세 이미지 5"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세6.jpg" alt="상세 이미지 6"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세7.jpg" alt="상세 이미지 7"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세8.jpg" alt="상세 이미지 8"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세9.jpg" alt="상세 이미지 9"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세10.jpg" alt="상세 이미지 10"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세11.jpg" alt="상세 이미지 11"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세12.jpg" alt="상세 이미지 12"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세13.jpg" alt="상세 이미지 13"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세14.jpg" alt="상세 이미지 14"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세15.jpg" alt="상세 이미지 15"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세16.jpg" alt="상세 이미지 16"/>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/귀엽고 섹시한 니아 165cm_상세17.jpg" alt="상세 이미지 17"/>
+
             </div>
         </div>
 

@@ -633,7 +633,7 @@
             <div class="image-gallery">
                 <!-- 메인 이미지 -->
                 <div class="main-image-container">
-                    <img th:src="@{'/testImage/' + ${thumbnails[0].imageUrl}}" class="main-image" id="mainImage"/>
+                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + thumbnails[0].imageUrl}" class="main-image" id="mainImage"/>
                     <div class="wishlist-wrap">
                         <button class="wishlist-btn"
                                 th:data-product-code="${product.productCode}"
@@ -648,9 +648,10 @@
                     <div th:each="img, stat : ${thumbnails}"
                          class="thumbnail-item"
                          th:classappend="${stat.index == 0} ? ' active'"
-                         th:onclick="|changeMainImage('@{/testImage/{imgUrl}(imgUrl=${img.imageUrl})}', this)|">
+                         th:attr="data-img='https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/${img.imageUrl}'"
+                         onclick="changeMainImage(this.getAttribute('data-img'), this)">
 
-                        <img th:src="@{/testImage/{imgUrl}(imgUrl=${img.imageUrl})}"
+                        <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + img.imageUrl}"
                              th:alt="'대표이미지 ' + ${stat.index + 1}"
                              class="thumbnail-image"/>
                     </div>
@@ -746,7 +747,7 @@
         <div class="tab-content active" id="detail">
             <div class="detail-images">
                 <div th:each="img : ${contents}">
-                    <img th:src="@{/testImage/{imgUrl}(imgUrl=${img.imageUrl})}"
+                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + img.imageUrl}"
                          th:alt="'상세 이미지 ' + ${img.imageOrder + 1}" />
                 </div>
             </div>

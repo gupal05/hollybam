@@ -1701,8 +1701,8 @@
 
 <!-- 슬라이드 -->
 <div class="slide">
-    <img th:src="@{/images/da1589be137666f771fcb06bd045c8ff.webp}" alt="슬라이드1" class="active"/>
-<!--    <img th:src="@{/images/24e86dfad799d3ffad7d032aa0f9fb68.webp}" alt="슬라이드2"/>-->
+    <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/da1589be137666f771fcb06bd045c8ff.webp'" alt="슬라이드1" class="active"/>
+    <!--    <img th:src="@{/images/24e86dfad799d3ffad7d032aa0f9fb68.webp}" alt="슬라이드2"/>-->
 
     <!-- 네비게이션 화살표 -->
     <button class="slide-nav prev" id="prevBtn">
@@ -1786,12 +1786,12 @@
 <!--                    <div class="card-product-top-text">HOT🔥</div>-->
                     <div class="card-product-img">
                         <img class="product-img"
-                             th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
+                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
                              th:if="${product.imageDtoList[0].imageWebp != null}"
-                             th:attr="data-hover=@{/testImage/{hover}(hover=${product.imageDtoList[0].imageWebp})}"
+                             th:attr="data-hover=${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageWebp}"
                              alt="상품 이미지" />
                         <img class="product-img"
-                             th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
+                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
                              th:unless="${product.imageDtoList[0].imageWebp != null}"
                              alt="상품 이미지" />
                     </div>
@@ -1830,7 +1830,7 @@
                 <div class="reviews-slider" id="reviewsSlider">
                     <div class="review-card">
                         <div class="review-header">
-                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png'}" alt="상품 이미지" class="review-product-img">
                             <div class="review-product-info">
                                 <div class="review-product-name">홀 래빗 진동 흡입기1</div>
                                 <div class="review-rating">
@@ -1869,7 +1869,8 @@
                     <!-- 추가 리뷰 카드들 -->
                     <div class="review-card">
                         <div class="review-header">
-                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png'}" alt="상품 이미지" class="review-product-img">
+
                             <div class="review-product-info">
                                 <div class="review-product-name">홀 래빗 진동 흡입기2</div>
                                 <div class="review-rating">
@@ -1907,7 +1908,7 @@
                     </div>
                     <div class="review-card">
                         <div class="review-header">
-                            <img th:src="@{/testImage/홀 래빗 진동 흡입기.png}" alt="상품 이미지" class="review-product-img">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png'}" alt="상품 이미지" class="review-product-img">
                             <div class="review-product-info">
                                 <div class="review-product-name">홀 래빗 진동 흡입기3</div>
                                 <div class="review-rating">
@@ -1951,12 +1952,13 @@
                     <div class="card-product-top-text">New✨</div>
                     <div class="card-product-img">
                         <img class="product-img"
-                             th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
+                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
                              th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
-                             th:attr="data-hover=@{/testImage/{hover}(hover=${product.imageDtoList[0].imageWebp})}"
+                             th:attr="data-hover=${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageWebp}"
                              alt="상품 이미지" />
+
                         <img class="product-img"
-                             th:src="@{/testImage/{img}(img=${product.imageDtoList[0].imageUrl})}"
+                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
                              th:unless="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
                              alt="상품 이미지" />
                     </div>
@@ -2000,45 +2002,45 @@
                 </button>
 
                 <div class="news-slider" id="newsSlider">
-                    <div class="news-card" th:data-video="@{/mp4/lookbook.mp4}">
+                    <div class="news-card" th:data-video="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/mp4/lookbook.mp4'}">
                         <div class="news-image">
-                            <img th:src="@{/images/룩북.png}" alt="홀리밤 소식 4">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/룩북.png'}" alt="홀리밤 소식 4">
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 룩북</h3>
                             <p class="news-description">모델 코스프레 룩북 활영</p>
                         </div>
                     </div>
-                    <div class="news-card" th:data-video="@{/mp4/race.mp4}">
+                    <div class="news-card" th:data-video="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/mp4/race.mp4'}">
                         <div class="news-image">
-                            <img th:src="@{/images/KakaoTalk_20250617_173507796.jpg}" alt="홀리밤 소식 1">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/KakaoTalk_20250617_173507796.jpg'}" alt="홀리밤 소식 1">
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 행사</h3>
                             <p class="news-description">강남 클럽 레이스 스폰서 참여</p>
                         </div>
                     </div>
-                    <div class="news-card" th:data-video="@{/mp4/에리2 1부 SV1.mp4}">
+                    <div class="news-card" th:data-video="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/mp4/에리2 1부 SV1.mp4'}">
                         <div class="news-image">
-                            <img th:src="@{/images/에리1.png}" alt="홀리밤 소식 3">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/에리1.png'}" alt="홀리밤 소식 3">
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 with MIB</h3>
                             <p class="news-description">MIB(에리편 촬영) 10종 딜도 협찬</p>
                         </div>
                     </div>
-                    <div class="news-card" th:data-video="@{/mp4/mwoong.mp4}">
+                    <div class="news-card" th:data-video="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/mp4/mwoong.mp4'}">
                         <div class="news-image">
-                            <img th:src="@{/images/이태원.jpg}" alt="홀리밤 소식 2">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/이태원.jpg'}" alt="홀리밤 소식 2">
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 행사</h3>
                             <p class="news-description">이태원 하이브 클럽 스폰서 참여</p>
                         </div>
                     </div>
-                    <div class="news-card" th:data-video="@{/mp4/harin.mp4}">
+                    <div class="news-card" th:data-video="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/mp4/harin.mp4'}">
                         <div class="news-image">
-                            <img th:src="@{/images/harin.png}" alt="홀리밤 소식 2">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/harin.png'}" alt="홀리밤 소식 2">
                         </div>
                         <div class="news-content">
                             <h3 class="news-title">홀리밤 X 하린</h3>
@@ -2046,6 +2048,7 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- 비디오 팝업 모달 -->
                 <div class="video-modal" id="videoModal">
                     <div class="video-modal-content">

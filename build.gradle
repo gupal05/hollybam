@@ -65,6 +65,10 @@ dependencies {
 
 	// JacksonFactory가 포함된 JSON 처리 라이브러리
 	implementation 'com.google.http-client:google-http-client-jackson2:1.43.3'
+
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.683'
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
 }
 
 tasks.named('test') {

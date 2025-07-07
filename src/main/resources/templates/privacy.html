@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="icon" href="data:,">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>개인정보처리방침 - 홀리밤</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" th:href="@{/css/header.css}"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      line-height: 1.6;
+      color: #333333;
+    }
+
+    /* 메인 콘텐츠 */
+    .content {
+      min-height: 600px;
+      display: flex;
+      justify-content: center;
+      padding: 120px 20px 80px;
+      background: #ffffff;
+    }
+
+    .inner-box {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* 페이지 헤더 */
+    .page-header {
+      text-align: center;
+      margin-bottom: 80px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .page-title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: #888888;
+      font-weight: 400;
+    }
+
+    /* 개인정보처리방침 섹션 */
+    .privacy-section {
+      background: #ffffff;
+    }
+
+    .privacy-notice {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin-bottom: 60px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #666666;
+      text-align: center;
+    }
+
+    .privacy-intro {
+      margin-bottom: 60px;
+      padding: 30px 0;
+      border-top: 1px solid #e8e8e8;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .privacy-intro p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #444444;
+      text-align: center;
+    }
+
+    .privacy-content {
+      background: #ffffff;
+    }
+
+    .privacy-article {
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .privacy-article:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .article-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 30px;
+      letter-spacing: -0.3px;
+    }
+
+    .article-content {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #444444;
+    }
+
+    .article-content p {
+      margin-bottom: 20px;
+    }
+
+    .article-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 조항 리스트 */
+    .article-list {
+      margin: 24px 0;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .article-list li {
+      margin-bottom: 16px;
+      padding-left: 20px;
+      position: relative;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .article-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #666666;
+    }
+
+    /* 하위 조항 */
+    .sub-article {
+      margin: 30px 0;
+      padding-left: 20px;
+      border-left: 2px solid #f0f0f0;
+    }
+
+    .sub-article-title {
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #333333;
+      font-size: 16px;
+    }
+
+    /* 테이블 스타일 */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+      border: 1px solid #ddd;
+    }
+
+    .info-table th,
+    .info-table td {
+      padding: 16px 20px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    .info-table th {
+      background: #f8f8f8;
+      color: #333333;
+      font-weight: 600;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .info-table td {
+      background: #ffffff;
+    }
+
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* 강조 텍스트 */
+    .highlight {
+      font-weight: 600;
+      color: #EE386D;
+    }
+
+    /* 법률명 강조 */
+    .law-name {
+      font-weight: 600;
+      color: #EE386D;
+    }
+
+    /* 연락처 정보 */
+    .contact-info {
+      margin: 30px 0;
+      padding: 30px 0;
+      border-top: 1px solid #e8e8e8;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .contact-info h4 {
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .contact-info p {
+      margin: 8px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .contact-info strong {
+      color: #333333;
+      font-weight: 600;
+      display: inline-block;
+      width: 80px;
+    }
+
+    /* 목차 스타일 */
+    .privacy-index {
+      margin-bottom: 60px;
+      padding: 0;
+    }
+
+    .index-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .index-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 40px;
+    }
+
+    .index-list li {
+      padding: 12px 0;
+      font-size: 14px;
+      color: #555555;
+      line-height: 1.5;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 1024px) {
+      .content {
+        padding: 100px 24px 60px;
+      }
+
+      .page-header {
+        margin-bottom: 60px;
+        padding-bottom: 30px;
+      }
+
+      .page-title {
+        font-size: 32px;
+      }
+
+      .privacy-article {
+        margin-bottom: 50px;
+        padding-bottom: 30px;
+      }
+
+      .article-title {
+        font-size: 18px;
+      }
+
+      .article-content {
+        font-size: 14px;
+      }
+
+      .info-table th,
+      .info-table td {
+        padding: 14px 16px;
+        font-size: 13px;
+      }
+
+      .index-list {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 80px 20px 50px;
+      }
+
+      .page-header {
+        margin-bottom: 50px;
+        padding-bottom: 25px;
+      }
+
+      .page-title {
+        font-size: 28px;
+      }
+
+      .page-subtitle {
+        font-size: 14px;
+      }
+
+      .privacy-notice,
+      .privacy-intro {
+        padding: 20px 0;
+        margin-bottom: 40px;
+      }
+
+      .privacy-article {
+        margin-bottom: 40px;
+        padding-bottom: 25px;
+      }
+
+      .article-title {
+        font-size: 17px;
+        margin-bottom: 20px;
+      }
+
+      .article-content {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .article-list li {
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+
+      .info-table th,
+      .info-table td {
+        padding: 12px 14px;
+        font-size: 12px;
+      }
+
+      .contact-info {
+        padding: 20px 0;
+      }
+
+      .contact-info strong {
+        width: 70px;
+      }
+
+      .index-list li {
+        font-size: 13px;
+        padding: 10px 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 70px 16px 40px;
+      }
+
+      .page-header {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+      }
+
+      .page-title {
+        font-size: 26px;
+      }
+
+      .privacy-notice {
+        padding: 16px;
+        font-size: 12px;
+        margin-bottom: 35px;
+      }
+
+      .privacy-intro {
+        padding: 16px 0;
+        margin-bottom: 35px;
+      }
+
+      .privacy-article {
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+      }
+
+      .article-title {
+        font-size: 16px;
+        margin-bottom: 18px;
+      }
+
+      .article-content {
+        font-size: 13px;
+      }
+
+      .article-list li {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+
+      .info-table th,
+      .info-table td {
+        padding: 10px 12px;
+        font-size: 11px;
+      }
+
+      .contact-info {
+        padding: 16px 0;
+      }
+
+      .contact-info h4 {
+        font-size: 14px;
+      }
+
+      .contact-info p {
+        font-size: 12px;
+      }
+
+      .contact-info strong {
+        width: 60px;
+        font-size: 12px;
+      }
+
+      .sub-article {
+        padding-left: 16px;
+      }
+
+      .index-list li {
+        font-size: 12px;
+        padding: 8px 0;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .content {
+        padding: 60px 14px 35px;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+
+      .article-title {
+        font-size: 15px;
+      }
+
+      .article-content {
+        font-size: 12px;
+      }
+
+      .article-list li {
+        font-size: 12px;
+      }
+
+      .info-table th,
+      .info-table td {
+        padding: 8px 10px;
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 메인 콘텐츠 -->
+<div class="content">
+  <div class="inner-box">
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <h1 class="page-title" style="font-weight:bold">개인정보처리방침</h1>
+      <p class="page-subtitle">Privacy Policy</p>
+    </div>
+
+    <!-- 개인정보처리방침 섹션 -->
+    <div class="privacy-section">
+      <div class="privacy-notice">
+        본 양식은 쇼핑몰 운영에 도움을 드리고자 샘플로 제공되는 서식으로 쇼핑몰 운영형태에 따른 수정이 필요합니다. 쇼핑몰에 적용하시기 전, 쇼핑몰 운영 사항 등을 확인하시고 적절한 내용을 반영하여 사용하시기 바랍니다.
+      </div>
+
+      <div class="privacy-intro">
+        <p><strong>(주)혜안파트너스</strong>(이하 "회사"는) <span class="law-name">「개인정보 보호법」</span> 제30조에 따라 이용자의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보처리방침을 수립·공개합니다.</p>
+      </div>
+
+      <div class="privacy-index">
+        <h3 class="index-title">목차</h3>
+        <ul class="index-list">
+          <li>1. 개인정보의 처리 목적</li>
+          <li>2. 개인정보의 처리 및 보유 기간</li>
+          <li>3. 처리하는 개인정보의 항목 및 수집 방법</li>
+          <li>4. 만 14세 미만 아동의 개인정보 처리에 관한 사항</li>
+          <li>5. 개인정보의 제3자 제공에 관한 사항</li>
+          <li>6. 개인정보처리의 위탁에 관한 사항</li>
+          <li>7. 개인정보의 파기절차 및 파기방법</li>
+          <li>8. 정보주체와 법정대리인의 권리·의무 및 그 행사방법</li>
+          <li>9. 개인정보의 안전성 확보조치에 관한 사항</li>
+          <li>10. 개인정보 보호책임자에 관한 사항</li>
+          <li>11. 정보주체의 권익침해에 대한 구제방법</li>
+          <li>12. 개인정보처리방침 변경</li>
+        </ul>
+      </div>
+
+      <div class="privacy-content">
+        <article class="privacy-article">
+          <h2 class="article-title">1. 개인정보의 처리 목적</h2>
+          <div class="article-content">
+            <p>회사는 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며 이용 목적이 변경되는 경우에는 <span class="law-name">「개인정보 보호법」</span> 제18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.</p>
+
+            <div class="sub-article">
+              <div class="sub-article-title">(1) 홈페이지 회원가입 및 관리</div>
+              <p>회원 가입의사 확인, 회원제 서비스 제공에 따른 본인 식별·인증, 회원자격 유지·관리, 서비스 부정이용 방지, 만14세 미만 아동의 개인정보 처리 시 법정대리인의 동의여부 확인, 각종 고지·통지, 고충처리 목적으로 개인정보를 처리합니다.</p>
+            </div>
+
+            <div class="sub-article">
+              <div class="sub-article-title">(2) 재화 또는 서비스 제공</div>
+              <p>콘텐츠 제공, 구매 및 요금 결제, 물품배송 또는 청구서 등 발송, 서비스 제공, 맞춤서비스 제공을 목적으로 개인정보를 처리합니다.</p>
+            </div>
+
+            <div class="sub-article">
+              <div class="sub-article-title">(3) 마케팅 및 광고에의 활용</div>
+              <p>이벤트 및 광고성 정보 제공 및 참여기회 제공, 접속빈도 파악 또는 회원의 서비스 이용에 대한 통계 등을 목적으로 개인정보를 처리합니다.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="privacy-article">
+          <h2 class="article-title">2. 개인정보의 처리 및 보유 기간</h2>
+          <div class="article-content">
+            <p>회사는 정보주체로부터 개인정보를 수집 시에 동의 받은 개인정보 보유·이용기간 내에서 개인정보를 처리·보유합니다. 개인정보 처리목적 달성, 정보주체의 서비스 해지 요청이 있을 경우 지체없이 해당 개인정보를 파기합니다.</p>
+
+            <ul class="article-list">
+              <li>홈페이지 회원가입 및 관리 : 회원탈퇴 시까지</li>
+              <li>재화 또는 서비스 제공 : 재화·서비스 공급완료 및 요금결제·정산 시까지</li>
+            </ul>
+
+            <p>단, 관계법령의 규정에 의하여 보존할 필요가 있는 경우 회사는 관계법령에서 정한 일정한 기간 동안 회원정보를 보관합니다.</p>
+
+            <table class="info-table">
+              <thead>
+              <tr>
+                <th>보존 항목</th>
+                <th>보존 이유</th>
+                <th>보존 기간</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>계약 또는 청약철회 등에 관한 기록</td>
+                <td>전자상거래 등에서의 소비자보호에 관한 법률</td>
+                <td>5년</td>
+              </tr>
+              <tr>
+                <td>대금 결제 및 재화 등의 공급에 관한 기록</td>
+                <td>전자상거래 등에서의 소비자보호에 관한 법률</td>
+                <td>5년</td>
+              </tr>
+              <tr>
+                <td>소비자 불만 또는 분쟁처리에 관한 기록</td>
+                <td>전자상거래 등에서의 소비자보호에 관한 법률</td>
+                <td>3년</td>
+              </tr>
+              <tr>
+                <td>표시·광고에 관한 기록</td>
+                <td>전자상거래 등에서의 소비자보호에 관한 법률</td>
+                <td>6개월</td>
+              </tr>
+              <tr>
+                <td>서비스 방문 기록</td>
+                <td>통신비밀보호법</td>
+                <td>3개월</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="privacy-article">
+          <h2 class="article-title">3. 처리하는 개인정보의 항목 및 수집 방법</h2>
+          <div class="article-content">
+            <div class="sub-article">
+              <div class="sub-article-title">처리하는 개인정보 항목</div>
+              <ul class="article-list">
+                <li><strong>일반 회원가입 시</strong><br>
+                  필수항목: 아이디, 비밀번호, 이름, 이메일, 휴대전화, 생년월일<br>
+                  선택항목: 성별
+                </li>
+                <li><strong>상품 주문 시</strong><br>
+                  필수항목: 주문 정보(이름, 이메일, 휴대전화), 배송 정보(이름, 주소, 휴대전화)<br>
+                  선택항목: 일반전화
+                </li>
+                <li><strong>서비스 이용과정에서 수집되는 정보</strong><br>
+                  서비스 이용기록, 접속로그, 접속IP 정보, 결제기록, 이용정지기록, 불량이용기록
+                </li>
+              </ul>
+            </div>
+
+            <div class="sub-article">
+              <div class="sub-article-title">수집 방법</div>
+              <p>홈페이지, 서면양식, 게시판, 이메일, 이벤트 응모, 배송요청, 전화, 팩스, 제휴사로부터의 제공, 생성정보 수집 툴을 통한 수집</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="privacy-article">
+          <h2 class="article-title">6. 개인정보처리의 위탁에 관한 사항</h2>
+          <div class="article-content">
+            <p>회사는 원활한 개인정보 업무처리를 위하여 다음과 같이 개인정보 처리업무를 위탁하고 있습니다.</p>
+
+            <table class="info-table">
+              <thead>
+              <tr>
+                <th>수탁업체</th>
+                <th>위탁업무</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>[택배사명]</td>
+                <td>상품 배송 서비스</td>
+              </tr>
+              <tr>
+                <td>[PG사명]</td>
+                <td>결제 대행 서비스</td>
+              </tr>
+              </tbody>
+            </table>
+
+            <p>회사는 위탁계약 체결시 <span class="law-name">「개인정보 보호법」</span> 제26조에 따라 위탁업무 수행목적 외 개인정보 처리금지, 기술적․관리적 보호조치, 재위탁 제한, 수탁자에 대한 관리․감독, 손해배상 등 책임에 관한 사항을 계약서 등 문서에 명시하고, 수탁자가 개인정보를 안전하게 처리하는지를 감독하고 있습니다.</p>
+          </div>
+        </article>
+
+        <article class="privacy-article">
+          <h2 class="article-title">9. 개인정보의 안전성 확보조치에 관한 사항</h2>
+          <div class="article-content">
+            <p>회사는 개인정보의 안전성 확보를 위해 다음과 같은 조치를 취하고 있습니다.</p>
+            <ul class="article-list">
+              <li><strong>관리적 조치:</strong> 내부관리계획 수립·시행, 전담조직 운영, 정기적 직원 교육</li>
+              <li><strong>기술적 조치:</strong> 개인정보처리시스템 등의 접근권한 관리, 접근통제시스템 설치, 개인정보의 암호화, 보안프로그램 설치 및 갱신</li>
+              <li><strong>물리적 조치:</strong> 전산실, 자료보관실 등의 접근통제</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="privacy-article">
+          <h2 class="article-title">10. 개인정보 보호책임자에 관한 사항</h2>
+          <div class="article-content">
+            <p>회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 정보주체의 불만처리 및 피해구제 등을 위하여 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.</p>
+
+            <div class="contact-info">
+              <h4>개인정보 보호책임자</h4>
+              <p><strong>성명:</strong> 윤태</p>
+              <p><strong>소속:</strong> 관리팀</p>
+              <p><strong>전화:</strong> 1533-4965</p>
+              <p><strong>이메일:</strong> privacy@hollybam.com</p>
+            </div>
+
+            <p>정보주체는 회사의 서비스를 이용하시면서 발생한 모든 개인정보보호 관련 문의, 불만처리, 피해구제 등에 관한 사항을 개인정보 보호책임자에게 문의할 수 있습니다.</p>
+          </div>
+        </article>
+
+        <article class="privacy-article">
+          <h2 class="article-title">11. 정보주체의 권익침해에 대한 구제방법</h2>
+          <div class="article-content">
+            <p>개인정보침해로 인한 구제를 받기 위하여 개인정보분쟁조정위원회, 한국인터넷진흥원 개인정보침해신고센터 등에 분쟁해결이나 상담 등을 신청할 수 있습니다.</p>
+
+            <div class="contact-info">
+              <h4>개인정보 관련 기관</h4>
+              <p><strong>개인정보분쟁조정위원회:</strong> (국번없이) 1833-6972</p>
+              <p><strong>개인정보침해신고센터:</strong> (국번없이) 118</p>
+              <p><strong>대검찰청:</strong> (국번없이) 1301</p>
+              <p><strong>경찰청:</strong> (국번없이) 182</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="privacy-article">
+          <h2 class="article-title">12. 개인정보처리방침 변경</h2>
+          <div class="article-content">
+            <p>이 개인정보처리방침은 <span class="highlight">2025년 1월 1일</span>부터 적용됩니다.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+</body>
+</html>

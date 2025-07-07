@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="icon" href="data:,">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>이용안내 - 홀리밤</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" th:href="@{/css/header.css}"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      line-height: 1.6;
+      color: #333333;
+    }
+
+    /* 메인 콘텐츠 */
+    .content {
+      min-height: 600px;
+      display: flex;
+      justify-content: center;
+      padding: 120px 20px 80px;
+      background: #ffffff;
+    }
+
+    .inner-box {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* 페이지 헤더 */
+    .page-header {
+      text-align: center;
+      margin-bottom: 80px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .page-title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: #888888;
+      font-weight: 400;
+    }
+
+    /* 이용안내 섹션 */
+    .guide-section {
+      background: #ffffff;
+    }
+
+    .guide-content {
+      background: #ffffff;
+    }
+
+    .guide-article {
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .guide-article:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .article-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 30px;
+      letter-spacing: -0.3px;
+    }
+
+    .article-content {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #444444;
+    }
+
+    .article-content p {
+      margin-bottom: 20px;
+    }
+
+    .article-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 단계별 안내 */
+    .step-guide {
+      margin: 30px 0;
+      padding: 0;
+    }
+
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      counter-reset: step-counter;
+    }
+
+    .step-item {
+      counter-increment: step-counter;
+      padding: 16px 0;
+      border-bottom: 1px solid #f5f5f5;
+      position: relative;
+      padding-left: 40px;
+    }
+
+    .step-item:last-child {
+      border-bottom: none;
+    }
+
+    .step-item::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 16px;
+      width: 24px;
+      height: 24px;
+      background: #333333;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* 조항 리스트 */
+    .guide-list {
+      margin: 24px 0;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .guide-list li {
+      margin-bottom: 16px;
+      padding-left: 20px;
+      position: relative;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .guide-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #666666;
+    }
+
+    /* 하위 조항 */
+    .sub-section {
+      margin: 30px 0;
+      padding-left: 20px;
+      border-left: 2px solid #f0f0f0;
+    }
+
+    .sub-section-title {
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #333333;
+      font-size: 16px;
+    }
+
+    /* 테이블 스타일 */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+      border: 1px solid #ddd;
+    }
+
+    .info-table th,
+    .info-table td {
+      padding: 16px 20px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    .info-table th {
+      background: #f8f8f8;
+      color: #333333;
+      font-weight: 600;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .info-table td {
+      background: #ffffff;
+    }
+
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* 강조 섹션 */
+    .highlight-section {
+      margin: 30px 0;
+      padding: 30px 0;
+      border-top: 1px solid #e8e8e8;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .highlight-section h4 {
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .highlight-section p {
+      margin: 8px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* 강조 텍스트 */
+    .highlight {
+      font-weight: 600;
+      color: #EE386D;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 1024px) {
+      .content {
+        padding: 100px 24px 60px;
+      }
+
+      .page-header {
+        margin-bottom: 60px;
+        padding-bottom: 30px;
+      }
+
+      .page-title {
+        font-size: 32px;
+      }
+
+      .guide-article {
+        margin-bottom: 50px;
+        padding-bottom: 30px;
+      }
+
+      .article-title {
+        font-size: 18px;
+      }
+
+      .article-content {
+        font-size: 14px;
+      }
+
+      .info-table th,
+      .info-table td {
+        padding: 14px 16px;
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 80px 20px 50px;
+      }
+
+      .page-header {
+        margin-bottom: 50px;
+        padding-bottom: 25px;
+      }
+
+      .page-title {
+        font-size: 28px;
+      }
+
+      .page-subtitle {
+        font-size: 14px;
+      }
+
+      .guide-article {
+        margin-bottom: 40px;
+        padding-bottom: 25px;
+      }
+
+      .article-title {
+        font-size: 17px;
+        margin-bottom: 20px;
+      }
+
+      .article-content {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .guide-list li {
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+
+      .step-item {
+        padding-left: 35px;
+      }
+
+      .step-item::before {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+      }
+
+      .info-table th,
+      .info-table td {
+        padding: 12px 14px;
+        font-size: 12px;
+      }
+
+      .highlight-section {
+        padding: 20px 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 70px 16px 40px;
+      }
+
+      .page-header {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+      }
+
+      .page-title {
+        font-size: 26px;
+      }
+
+      .guide-article {
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+      }
+
+      .article-title {
+        font-size: 16px;
+        margin-bottom: 18px;
+      }
+
+      .article-content {
+        font-size: 13px;
+      }
+
+      .guide-list li {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+
+      .step-item {
+        padding-left: 32px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+      }
+
+      .step-item::before {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+        top: 14px;
+      }
+
+      .info-table th,
+      .info-table td {
+        padding: 10px 12px;
+        font-size: 11px;
+      }
+
+      .highlight-section {
+        padding: 16px 0;
+      }
+
+      .highlight-section h4 {
+        font-size: 14px;
+      }
+
+      .highlight-section p {
+        font-size: 12px;
+      }
+
+      .sub-section {
+        padding-left: 16px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .content {
+        padding: 60px 14px 35px;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+
+      .article-title {
+        font-size: 15px;
+      }
+
+      .article-content {
+        font-size: 12px;
+      }
+
+      .guide-list li {
+        font-size: 12px;
+      }
+
+      .info-table th,
+      .info-table td {
+        padding: 8px 10px;
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 메인 콘텐츠 -->
+<div class="content">
+  <div class="inner-box">
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <h1 class="page-title" style="font-weight:bold">이용안내</h1>
+      <p class="page-subtitle">User Guide</p>
+    </div>
+
+    <!-- 이용안내 섹션 -->
+    <div class="guide-section">
+      <div class="guide-content">
+        <article class="guide-article">
+          <h2 class="article-title">회원가입 안내</h2>
+          <div class="article-content">
+            <p>[회원가입] 메뉴를 통해 휴대폰 본인인증 및 이용약관, 개인정보보호정책 동의 및 일정 양식의 가입항목을 기입함으로써 회원에 가입되며, 가입 즉시 서비스를 무료로 이용하실 수 있습니다.</p>
+
+            <div class="highlight-section">
+              <h4>회원가입 혜택</h4>
+              <p>• 주문 시 각종 정보를 일일이 입력하지 않으셔도 됩니다.</p>
+              <p>• 회원을 위한 이벤트 및 각종 할인행사에 참여하실 수 있습니다.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="guide-article">
+          <h2 class="article-title">주문 안내</h2>
+          <div class="article-content">
+            <p>상품주문은 다음 단계로 이루어집니다.</p>
+
+            <div class="step-guide">
+              <ol class="step-list">
+                <li class="step-item">로그인 / 비회원 성인인증</li>
+                <li class="step-item">장바구니에 담기</li>
+                <li class="step-item">주문서 작성</li>
+                <li class="step-item">결제방법 선택 및 결제</li>
+                <li class="step-item">주문 성공 화면 (주문번호 확인)</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+
+        <article class="guide-article">
+          <h2 class="article-title">결제 안내</h2>
+          <div class="article-content">
+            <div class="sub-section">
+              <div class="sub-section-title">신용카드 결제</div>
+              <p>고액결제의 경우 안전을 위해 카드사에서 확인전화를 드릴 수도 있습니다. 확인과정에서 도난 카드의 사용이나 타인 명의의 주문등 정상적인 주문이 아니라고 판단될 경우 임의로 주문을 보류 또는 취소할 수 있습니다.</p>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-title">무통장 입금</div>
+              <p>상품 구매 대금은 PC뱅킹, 인터넷뱅킹, 텔레뱅킹 혹은 가까운 은행에서 직접 입금하시면 됩니다.</p>
+              <ul class="guide-list">
+                <li>주문시 입력한 입금자명과 실제입금자의 성명이 반드시 일치하여야 합니다</li>
+                <li>7일 이내로 입금을 하셔야 하며 입금되지 않은 주문은 자동취소 됩니다</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="guide-article">
+          <h2 class="article-title">배송 안내</h2>
+          <div class="article-content">
+            <table class="info-table">
+              <thead>
+              <tr>
+                <th>항목</th>
+                <th>내용</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>배송 방법</td>
+                <td>택배</td>
+              </tr>
+              <tr>
+                <td>배송 지역</td>
+                <td>전국지역</td>
+              </tr>
+              <tr>
+                <td>배송 비용</td>
+                <td>조건부 무료: 주문 금액 50,000원 미만 시 배송비 2,500원</td>
+              </tr>
+              <tr>
+                <td>배송 기간</td>
+                <td>3일 ~ 7일</td>
+              </tr>
+              </tbody>
+            </table>
+
+            <div class="highlight-section">
+              <h4>배송 안내사항</h4>
+              <p>• 산간벽지나 도서지방은 별도의 추가금액을 지불하셔야 하는 경우가 있습니다.</p>
+              <p>• 고객님께서 주문하신 상품은 입금 확인후 배송해 드립니다.</p>
+              <p>• 상품종류에 따라서 상품의 배송이 다소 지연될 수 있습니다.</p>
+              <p>• <span class="highlight">고객분들을 위한 안심배송 서비스를 진행하여 송장에 상품 정보를 표기하지 않습니다.</span></p>
+            </div>
+          </div>
+        </article>
+
+        <article class="guide-article">
+          <h2 class="article-title">교환/반품 안내</h2>
+          <div class="article-content">
+            <div class="sub-section">
+              <div class="sub-section-title">교환 및 반품이 가능한 경우</div>
+              <ul class="guide-list">
+                <li>계약내용에 관한 서면을 받은 날부터 7일. 단, 그 서면을 받은 때보다 재화등의 공급이 늦게 이루어진 경우에는 재화등을 공급받거나 재화등의 공급이 시작된 날부터 7일 이내</li>
+                <li>공급받으신 상품 및 용역의 내용이 표시·광고 내용과 다르거나 계약내용과 다르게 이행된 때에는 당해 재화 등을 공급받은 날부터 3월이내, 그 사실을 알게 된 날 또는 알 수 있었던 날부터 30일이내</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-title">교환 및 반품이 불가능한 경우</div>
+              <ul class="guide-list">
+                <li>이용자에게 책임 있는 사유로 재화 등이 멸실 또는 훼손된 경우(다만, 재화 등의 내용을 확인하기 위하여 포장 등을 훼손한 경우에는 청약철회를 할 수 있습니다)</li>
+                <li>이용자의 사용 또는 일부 소비에 의하여 재화 등의 가치가 현저히 감소한 경우</li>
+                <li>시간의 경과에 의하여 재판매가 곤란할 정도로 재화등의 가치가 현저히 감소한 경우</li>
+                <li>복제가 가능한 재화등의 포장을 훼손한 경우</li>
+                <li>개별 주문 생산되는 재화 등 청약철회시 판매자에게 회복할 수 없는 피해가 예상되어 소비자의 사전 동의를 얻은 경우</li>
+                <li>디지털 콘텐츠의 제공이 개시된 경우(다만, 가분적 용역 또는 가분적 디지털콘텐츠로 구성된 계약의 경우 제공이 개시되지 아니한 부분은 청약철회를 할 수 있습니다)</li>
+              </ul>
+            </div>
+
+            <p><strong>반품 비용:</strong> 고객님의 마음이 바뀌어 교환, 반품을 하실 경우 상품반송 비용은 고객님께서 부담하셔야 합니다. (색상 교환, 사이즈 교환 등 포함)</p>
+          </div>
+        </article>
+
+        <article class="guide-article">
+          <h2 class="article-title">환불 안내</h2>
+          <div class="article-content">
+            <p>환불시 반품 확인여부를 확인한 후 3영업일 이내에 결제 금액을 환불해 드립니다.</p>
+            <p>신용카드로 결제하신 경우는 신용카드 승인을 취소하여 결제 대금이 청구되지 않게 합니다. (단, 신용카드 결제일자에 맞추어 대금이 청구 될 수 있으면 이경우 익월 신용카드 대금청구시 카드사에서 환급처리 됩니다.)</p>
+          </div>
+        </article>
+
+        <article class="guide-article">
+          <h2 class="article-title">적립금 안내</h2>
+          <div class="article-content">
+            <div class="sub-section">
+              <div class="sub-section-title">이용기간</div>
+              <ul class="guide-list">
+                <li>주문으로 발생한 적립금은 배송완료 체크시점으로부터 20일이 지나야 실제 사용 가능 적립금으로 변환됩니다</li>
+                <li>20일 동안은 미가용 적립금으로 분류됩니다</li>
+                <li>미가용 적립금은 반품, 구매취소 등을 대비한 실질적인 구입이 되지 않은 주문의 적립금입니다</li>
+                <li>사용가능한 적립금(총 적립금-사용된적립금-미가용적립금)은 상품구매시 즉시 사용하실 수 있습니다</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-title">이용조건</div>
+              <ul class="guide-list">
+                <li>적립금 사용시 최소구매가능적립금은 5,000원입니다</li>
+                <li>적립금 사용시 최대구매가능적립금은 한도제한이 없습니다</li>
+              </ul>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-title">소멸조건</div>
+              <ul class="guide-list">
+                <li>주문취소/환불시에 상품구매로 적립된 적립금은 함께 취소됩니다</li>
+                <li>회원 탈퇴시에는 적립금은 자동적으로 소멸됩니다</li>
+                <li>최종 적립금 발생일로부터 3년 동안 추가적립금 누적이 없을 경우에도 적립금은 소멸됩니다</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+</body>
+</html>

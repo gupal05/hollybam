@@ -55,5 +55,4 @@ public class OrderDto {
     // 조인용 필드
     private List<OrderItemDto> orderItems;
     private MemberDto memberDto;
-    private GuestUserDto guestUserDto;
 }

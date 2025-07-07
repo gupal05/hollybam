@@ -198,4 +198,24 @@ public class HomeController {
 
         return "niceRedirect"; // 위 HTML 템플릿
     }
+
+    @GetMapping("/companyInfo")
+    public String companyInfo() {
+        return "companyInfo";
+    }
+
+    @GetMapping("/terms")
+    public String terms() {
+        return "terms";
+    }
+
+    @GetMapping("/privacy")
+    public String privacy() {
+        return "privacy";
+    }
+
+    @GetMapping("/guide")
+    public String guide() {
+        return "guide";
+    }
 }

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="icon" href="data:,">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>회사 소개 - 홀리밤</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" th:href="@{/css/header.css}"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      line-height: 1.6;
+      color: #333333;
+    }
+
+    /* 메인 콘텐츠 */
+    .content {
+      min-height: 600px;
+      display: flex;
+      justify-content: center;
+      padding: 120px 20px 80px;
+      background: #ffffff;
+    }
+
+    .inner-box {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* 페이지 헤더 */
+    .page-header {
+      text-align: center;
+      margin-bottom: 80px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .page-title {
+      font-size: 36px;
+      font-weight: 300;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: #888888;
+      font-weight: 400;
+    }
+
+    /* 회사 정보 섹션 */
+    .company-info-section {
+      background: #ffffff;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 50px;
+      letter-spacing: -0.3px;
+    }
+
+    /* 회사 정보 테이블 스타일 */
+    .company-info-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .info-row {
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      padding: 28px 0;
+      width: 200px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #666666;
+      vertical-align: top;
+      letter-spacing: -0.2px;
+    }
+
+    .info-value {
+      padding: 28px 0 28px 40px;
+      font-size: 16px;
+      font-weight: 400;
+      color: #1a1a1a;
+      line-height: 1.6;
+      letter-spacing: -0.2px;
+    }
+
+    /* 특별 스타일 */
+    .company-name .info-value {
+      font-size: 22px;
+      font-weight: 600;
+      color: #EE386D;
+    }
+
+    .phone-number .info-value {
+      font-size: 18px;
+      font-weight: 500;
+      color: #EE386D;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 1024px) {
+      .content {
+        padding: 100px 24px 60px;
+      }
+
+      .page-header {
+        margin-bottom: 60px;
+        padding-bottom: 30px;
+      }
+
+      .page-title {
+        font-size: 32px;
+      }
+
+      .section-title {
+        font-size: 22px;
+        margin-bottom: 40px;
+      }
+
+      .info-label {
+        width: 180px;
+        padding: 24px 0;
+      }
+
+      .info-value {
+        padding: 24px 0 24px 30px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 80px 20px 50px;
+      }
+
+      .page-header {
+        margin-bottom: 50px;
+        padding-bottom: 25px;
+      }
+
+      .page-title {
+        font-size: 28px;
+      }
+
+      .page-subtitle {
+        font-size: 14px;
+      }
+
+      .section-title {
+        font-size: 20px;
+        margin-bottom: 30px;
+      }
+
+      /* 모바일에서는 세로 레이아웃으로 변경 */
+      .company-info-table,
+      .company-info-table tbody,
+      .info-row {
+        display: block;
+        width: 100%;
+      }
+
+      .info-label,
+      .info-value {
+        display: block;
+        width: 100%;
+        padding: 0;
+      }
+
+      .info-label {
+        padding-top: 24px;
+        padding-bottom: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #888888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .info-value {
+        padding-bottom: 24px;
+        font-size: 16px;
+      }
+
+      .company-name .info-value {
+        font-size: 20px;
+      }
+
+      .phone-number .info-value {
+        font-size: 17px;
+      }
+
+      .info-row {
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 24px;
+        margin-bottom: 24px;
+      }
+
+      .info-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 70px 16px 40px;
+      }
+
+      .page-header {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+      }
+
+      .page-title {
+        font-size: 26px;
+      }
+
+      .section-title {
+        font-size: 18px;
+        margin-bottom: 25px;
+      }
+
+      .info-label {
+        padding-top: 20px;
+        padding-bottom: 6px;
+        font-size: 12px;
+      }
+
+      .info-value {
+        padding-bottom: 20px;
+        font-size: 15px;
+      }
+
+      .company-name .info-value {
+        font-size: 18px;
+      }
+
+      .phone-number .info-value {
+        font-size: 16px;
+      }
+
+      .info-row {
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .content {
+        padding: 60px 14px 35px;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+
+      .section-title {
+        font-size: 17px;
+      }
+
+      .info-value {
+        font-size: 14px;
+      }
+
+      .company-name .info-value {
+        font-size: 17px;
+      }
+
+      .phone-number .info-value {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 메인 콘텐츠 -->
+<div class="content">
+  <div class="inner-box">
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <h1 class="page-title" style="font-weight: bold;">회사 소개</h1>
+      <p class="page-subtitle">Company Information</p>
+    </div>
+
+    <!-- 회사 정보 섹션 -->
+    <div class="company-info-section">
+      <h2 class="section-title">기업 정보</h2>
+
+      <table class="company-info-table">
+        <tbody>
+        <tr class="info-row company-name">
+          <td class="info-label">상점명</td>
+          <td class="info-value">홀리밤</td>
+        </tr>
+        <tr class="info-row">
+          <td class="info-label">대표이사</td>
+          <td class="info-value">가범석</td>
+        </tr>
+        <tr class="info-row phone-number">
+          <td class="info-label">대표전화</td>
+          <td class="info-value">1533-4965</td>
+        </tr>
+        <tr class="info-row">
+          <td class="info-label">주소</td>
+          <td class="info-value">인천 연수구 송도과학로16번길 13-18<br>송도건원테크노큐브 710호(송도동)</td>
+        </tr>
+        <tr class="info-row">
+          <td class="info-label">사업자등록번호</td>
+          <td class="info-value">894-87-03344</td>
+        </tr>
+        <tr class="info-row">
+          <td class="info-label">통신판매업신고</td>
+          <td class="info-value">2024-인천연수구-3848</td>
+        </tr>
+        <tr class="info-row">
+          <td class="info-label">개인정보 관리책임자</td>
+          <td class="info-value">차윤태</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+</body>
+</html>

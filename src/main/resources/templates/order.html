@@ -611,6 +611,10 @@
             pointer-events: auto !important;
         }
 
+        #discountCode {
+            text-transform: uppercase !important;
+        }
+
         /* 반응형 */
         @media (max-width: 1024px) {
             .checkout-layout {
@@ -858,14 +862,6 @@
                         <input type="radio" id="trans" name="payment" value="trans">
                         <label for="trans">실시간계좌이체</label>
                     </div>
-                    <div class="payment-method">
-                        <input type="radio" id="vbank" name="payment" value="vbank">
-                        <label for="vbank">가상계좌</label>
-                    </div>
-                    <div class="payment-method">
-                        <input type="radio" id="phone" name="payment" value="phone">
-                        <label for="phone">휴대폰 소액결제</label>
-                    </div>
                 </div>
             </div>
 
@@ -979,9 +975,6 @@
     let activeDiscount = null; // 현재 활성화된 할인 (쿠폰 또는 할인코드)
     let originalAmount = paymentInfo.totalAmount || 0;
     let currentTotalAmount = paymentInfo.finalAmount || 0;
-
-    // 아임포트 초기화
-    window.IMP.init("imp03183375");
 
     // 유효성 검사 상태 추적
     const validationState = {
@@ -1118,14 +1111,7 @@
 
         // 결제 버튼 클릭
         $('#paymentButton').click(function() {
-            if (isFormValid()) {
-                processPayment();
-            } else {
-                const firstErrorField = Object.keys(validationState).find(key => !validationState[key]);
-                if (firstErrorField && firstErrorField !== 'agreeTerms' && firstErrorField !== 'agreePrivacy' && firstErrorField !== 'agreeAdult') {
-                    $('#' + firstErrorField).focus();
-                }
-            }
+            alert("결제 기능 준비 중");
         });
     }
 
@@ -1539,164 +1525,6 @@
             showUserMessage('모든 필수 항목을 올바르게 입력해주세요.', 'error');
             return;
         }
-
-        isPaymentProcessing = true;
-
-        const paymentData = {
-            ordererName: $('#ordererName').val(),
-            ordererPhone: $('#ordererPhone').val(),
-            ordererEmail: $('#ordererEmail').val(),
-            receiverName: $('#receiverName').val(),
-            receiverPhone: $('#receiverPhone').val(),
-            receiverZip: $('#receiverZip').val(),
-            receiverAddr: $('#receiverAddr').val(),
-            receiverAddrDetail: $('#same-info').is(':checked') ? '' : $('#receiverAddrDetail').val(),
-            deliveryRequest: $('#deliveryRequest').val(),
-            paymentMethod: $('input[name="payment"]:checked').val(),
-            totalAmount: originalAmount,
-            discountAmount: paymentInfo.discountAmount || 0,
-            deliveryFee: paymentInfo.deliveryFee || 0,
-            appliedDiscount: activeDiscount,
-            finalAmount: currentTotalAmount,
-            cartCodes: cartCodes,
-            agreeTerms: $('#agree-terms').is(':checked'),
-            agreePrivacy: $('#agree-privacy').is(':checked'),
-            agreeMarketing: $('#agree-marketing').is(':checked'),
-            adultVerified: true
-        };
-
-        setPaymentButtonLoading(true);
-
-        $.ajax({
-            url: '/order/payment/prepare',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(paymentData),
-            success: function(response) {
-                if (response.success) {
-                    requestPayment(response.orderId, paymentData);
-                } else {
-                    showUserMessage('결제 준비 실패: ' + response.message, 'error');
-                    forceResetPaymentButton();
-                    isPaymentProcessing = false;
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('결제 준비 오류:', xhr.responseText);
-                showUserMessage('결제 준비 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error');
-                forceResetPaymentButton();
-                isPaymentProcessing = false;
-            }
-        });
-    }
-
-    function setPaymentButtonLoading(isLoading) {
-        const $button = $('#paymentButton');
-
-        if (isLoading) {
-            $button.prop('disabled', true)
-                .addClass('processing')
-                .removeClass('disabled')
-                .css({
-                    'background': '#6c757d',
-                    'cursor': 'not-allowed',
-                    'transform': 'none',
-                    'box-shadow': 'none',
-                    'color': 'white'
-                })
-                .html('<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>결제 처리 중...');
-        } else {
-            $button.prop('disabled', false)
-                .removeClass('processing')
-                .css({
-                    'background': 'linear-gradient(135deg, #EE386D 0%, #d63060 100%)',
-                    'cursor': 'pointer',
-                    'transform': 'none',
-                    'box-shadow': '0 4px 12px rgba(238, 56, 109, 0.3)',
-                    'color': 'white'
-                });
-
-            $('#paymentButtonText').text(`₩${currentTotalAmount.toLocaleString()} 결제하기`);
-        }
-    }
-
-    function requestPayment(orderId, paymentData) {
-        let productName = "홀리밤 상품";
-        if (cartItems && cartItems.length > 0) {
-            if (cartItems.length === 1) {
-                productName = cartItems[0].productDto.productName;
-            } else {
-                productName = cartItems[0].productDto.productName + " 외 " + (cartItems.length - 1) + "건";
-            }
-        }
-
-        const paymentRequest = {
-            pg: "html5_inicis",
-            pay_method: paymentData.paymentMethod,
-            merchant_uid: orderId,
-            name: productName,
-            amount: currentTotalAmount,
-            buyer_email: paymentData.ordererEmail,
-            buyer_name: paymentData.ordererName,
-            buyer_tel: paymentData.ordererPhone,
-            buyer_addr: paymentData.receiverAddr + ' ' + (paymentData.receiverAddrDetail || ''),
-            buyer_postcode: paymentData.receiverZip,
-            m_redirect_url: window.location.origin + "/order/payment/mobile-callback",
-            custom_data: {
-                adult_verified: true,
-                product_type: "adult_products",
-                cart_codes: cartCodes,
-                applied_discount: activeDiscount
-            }
-        };
-
-        IMP.request_pay(paymentRequest, function(response) {
-            isPaymentProcessing = false;
-
-            if (response.success) {
-                $.ajax({
-                    url: '/order/payment/complete',
-                    method: 'POST',
-                    data: {
-                        imp_uid: response.imp_uid,
-                        merchant_uid: response.merchant_uid
-                    },
-                    success: function(serverResponse) {
-                        if (serverResponse.success) {
-                            window.location.href = '/order/payment/success?orderId=' + orderId;
-                        } else {
-                            alert('결제 검증 실패: ' + serverResponse.message);
-                            window.location.href = '/order/payment/fail?orderId=' + orderId + '&error_msg=' + encodeURIComponent(serverResponse.message);
-                        }
-                    },
-                    error: function() {
-                        alert('결제 검증 중 오류가 발생했습니다.');
-                        window.location.href = '/order/payment/fail?orderId=' + orderId + '&error_msg=' + encodeURIComponent('결제 검증 오류');
-                    }
-                });
-            } else {
-                const errorMsg = response.error_msg || '결제가 취소되었습니다.';
-
-                if (response.error_msg && response.error_msg.includes('취소')) {
-                    showUserMessage('결제가 취소되었습니다.', 'info');
-                    forceResetPaymentButton();
-                } else {
-                    showUserMessage('결제 실패: ' + errorMsg, 'error');
-
-                    $.ajax({
-                        url: '/order/payment/fail',
-                        method: 'POST',
-                        data: {
-                            merchant_uid: orderId,
-                            error_msg: errorMsg
-                        },
-                        complete: function() {
-                            forceResetPaymentButton();
-                        }
-                    });
-                }
-            }
-        });
     }
 
     function showUserMessage(message, type) {
@@ -1748,76 +1576,6 @@
         setTimeout(() => {
             $('.user-message').fadeOut();
         }, 5000);
-    }
-
-    function forceResetPaymentButton() {
-        console.log('forceResetPaymentButton 함수 호출됨');
-
-        const $button = $('#paymentButton');
-
-        $button.removeClass('processing disabled force-active')
-            .prop('disabled', false)
-            .removeAttr('style')
-            .off('click mouseenter mouseleave');
-
-        $button.attr('style', `
-            background: linear-gradient(135deg, #EE386D 0%, #d63060 100%) !important;
-            color: white !important;
-            cursor: pointer !important;
-            transform: none !important;
-            box-shadow: 0 4px 12px rgba(238, 56, 109, 0.3) !important;
-            pointer-events: auto !important;
-            border: none !important;
-            width: 100% !important;
-            padding: 18px !important;
-            border-radius: 12px !important;
-            font-size: 16px !important;
-            font-weight: 600 !important;
-            margin-top: 20px !important;
-        `);
-
-        $('#paymentButtonText').text(`₩${currentTotalAmount.toLocaleString()} 결제하기`);
-
-        $button.on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (isFormValid()) {
-                processPayment();
-            } else {
-                const firstErrorField = Object.keys(validationState).find(key => !validationState[key]);
-                if (firstErrorField && firstErrorField !== 'agreeTerms' && firstErrorField !== 'agreePrivacy' && firstErrorField !== 'agreeAdult') {
-                    $('#' + firstErrorField).focus();
-                } else {
-                    showUserMessage('모든 필수 항목을 입력하고 약관에 동의해주세요.', 'error');
-                }
-            }
-        });
-
-        $button.on({
-            mouseenter: function() {
-                if (!$(this).prop('disabled') && !$(this).hasClass('processing')) {
-                    $(this).css({
-                        'transform': 'translateY(-2px)',
-                        'box-shadow': '0 6px 20px rgba(238, 56, 109, 0.4)'
-                    });
-                }
-            },
-            mouseleave: function() {
-                if (!$(this).prop('disabled') && !$(this).hasClass('processing')) {
-                    $(this).css({
-                        'transform': 'none',
-                        'box-shadow': '0 4px 12px rgba(238, 56, 109, 0.3)'
-                    });
-                }
-            }
-        });
-
-        setTimeout(() => {
-            validateAllFields();
-        }, 50);
-
-        console.log('결제 버튼이 강제로 초기화되었습니다.');
     }
 
     function execDaumPostcode() {
@@ -1956,8 +1714,8 @@
     });
 
     // 할인코드 입력 시 대문자 변환
-    document.getElementById('discountCode').addEventListener('input', function (e) {
-        e.target.value = e.target.value.toUpperCase();
+    $('#discountCode').on('input keyup paste', function() {
+        this.value = this.value.toUpperCase();
     });
 </script>
 </body>

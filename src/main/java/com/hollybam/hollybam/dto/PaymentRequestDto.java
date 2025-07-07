@@ -43,6 +43,6 @@ public class PaymentRequestDto {
     private boolean agreeMarketing;
 
     // 사용자 구분
-    private Integer memCode;
-    private String guestUuid;
+    private Integer memberCode;
+    private Integer guestCode;
 }

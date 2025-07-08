@@ -648,13 +648,13 @@
                     <div th:each="img, stat : ${thumbnails}"
                          class="thumbnail-item"
                          th:classappend="${stat.index == 0} ? ' active'"
-                         th:attr="data-img='https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/${img.imageUrl}'"
+                         th:attr="data-img='https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${img.imageUrl}"
                          onclick="changeMainImage(this.getAttribute('data-img'), this)">
-
-                        <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + img.imageUrl}"
+                        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${img.imageUrl}"
                              th:alt="'대표이미지 ' + ${stat.index + 1}"
                              class="thumbnail-image"/>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -1052,9 +1052,122 @@
     document.getElementById('buyBtn').addEventListener('click', function() {
         if (this.disabled) return;
 
-        // 바로 구매 로직
-        alert('주문 페이지로 이동합니다.');
+        // 옵션이 있는 상품인지 확인
+        if (options && options.length > 0) {
+            // 옵션이 있는 상품: 선택된 옵션이 있는지 확인
+            if (selectedOptions.size === 0) {
+                alert('옵션을 선택해주세요.');
+                return;
+            }
+
+            // 여러 옵션이 선택된 경우 첫 번째 옵션으로 바로 구매
+            // (여러 옵션 동시 구매는 장바구니 이용 권장)
+            if (selectedOptions.size > 1) {
+                alert('바로 구매는 하나의 옵션만 선택 가능합니다.\n여러 옵션을 구매하시려면 장바구니를 이용해주세요.');
+                return;
+            }
+
+            // 선택된 옵션 정보 가져오기
+            const firstOption = selectedOptions.values().next().value;
+            directPurchase(productCode, firstOption.optionCode, firstOption.quantity);
+
+        } else {
+            // 옵션이 없는 상품: 기본 수량으로 바로 구매
+            const quantity = parseInt(document.getElementById('quantity').value);
+
+            if (quantity <= 0) {
+                alert('올바른 수량을 입력해주세요.');
+                return;
+            }
+
+            directPurchase(productCode, null, quantity);
+        }
     });
+
+    /**
+     * 바로 구매 처리 함수
+     * @param {number} productCode - 상품 코드
+     * @param {number|null} optionCode - 옵션 코드 (없으면 null)
+     * @param {number} quantity - 수량
+     */
+    function directPurchase(productCode, optionCode, quantity) {
+        // 로그인 상태 확인 (세션 체크는 서버에서 처리)
+
+        // POST 방식으로 바로 구매 페이지로 이동
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/order/direct-purchase';
+
+        // 상품 코드
+        const productInput = document.createElement('input');
+        productInput.type = 'hidden';
+        productInput.name = 'productCode';
+        productInput.value = productCode;
+        form.appendChild(productInput);
+
+        // 옵션 코드 (있는 경우만)
+        if (optionCode !== null) {
+            const optionInput = document.createElement('input');
+            optionInput.type = 'hidden';
+            optionInput.name = 'optionCode';
+            optionInput.value = optionCode;
+            form.appendChild(optionInput);
+        }
+
+        // 수량
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'hidden';
+        quantityInput.name = 'quantity';
+        quantityInput.value = quantity;
+        form.appendChild(quantityInput);
+
+        // 폼 제출
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // 옵션 선택 시 바로 구매 버튼 상태 업데이트 함수도 수정
+    function updatePurchaseButtons() {
+        const cartBtn = document.getElementById('cartBtn');
+        const buyBtn = document.getElementById('buyBtn');
+
+        if (options && options.length > 0) {
+            // 옵션이 있는 상품
+            const hasValidSelections = selectedOptions.size > 0;
+            const allValidQuantity = Array.from(selectedOptions.values()).every(option => option.quantity > 0);
+
+            if (hasValidSelections && allValidQuantity) {
+                cartBtn.disabled = false;
+                buyBtn.disabled = false;
+
+                // 바로 구매는 하나의 옵션만 선택 가능하다는 힌트
+                if (selectedOptions.size > 1) {
+                    buyBtn.title = '바로 구매는 하나의 옵션만 선택 가능합니다.';
+                    buyBtn.style.opacity = '0.7';
+                } else {
+                    buyBtn.title = '';
+                    buyBtn.style.opacity = '1';
+                }
+            } else {
+                cartBtn.disabled = true;
+                buyBtn.disabled = true;
+                buyBtn.style.opacity = '0.5';
+            }
+        } else {
+            // 옵션이 없는 상품
+            const quantity = parseInt(document.getElementById('quantity').value) || 0;
+
+            if (quantity > 0) {
+                cartBtn.disabled = false;
+                buyBtn.disabled = false;
+                buyBtn.style.opacity = '1';
+            } else {
+                cartBtn.disabled = true;
+                buyBtn.disabled = true;
+                buyBtn.style.opacity = '0.5';
+            }
+        }
+    }
 </script>
 </body>
 </html>

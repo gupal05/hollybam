@@ -1,9 +1,6 @@
 package com.hollybam.hollybam.services;
 
-import com.hollybam.hollybam.dto.CategoryDto;
-import com.hollybam.hollybam.dto.ImageDto;
-import com.hollybam.hollybam.dto.ProductDto;
-import com.hollybam.hollybam.dto.ProductOptionDto;
+import com.hollybam.hollybam.dto.*;
 
 import java.util.List;
 
@@ -23,4 +20,22 @@ public interface IF_ProductService {
     public List<ProductOptionDto> getProductOptions(int productCode);
     List<ProductDto> getProductsByCategoryCode(String categoryCode, String sort);
     List<ProductDto> getProductsByCategoryAndDetail(String categoryCode, String detailCode, String sort);
+    /**
+     * 상품 코드로 상품 정보 조회
+     */
+    ProductDto getProductByCode(int productCode);
+    /**
+     * 상품 코드로 가격 정보 조회
+     */
+    PriceDto getProductPrice(int productCode);
+
+    /**
+     * 옵션 코드로 특정 옵션 정보 조회
+     */
+    ProductOptionDto getProductOption(int optionCode);
+
+    /**
+     * 상품 대표 이미지 조회
+     */
+    ImageDto getProductTitleImage(int productCode);
 }

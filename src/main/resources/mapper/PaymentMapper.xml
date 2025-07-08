@@ -58,4 +58,30 @@
             <result property="imageUrl" column="image_url"/>
         </association>
     </resultMap>
+
+    <!-- 상품 가격 정보 조회 -->
+    <select id="selectProductPrice" parameterType="int" resultType="com.hollybam.hollybam.dto.PriceDto">
+        SELECT
+            price_code as priceCode,
+            product_code as productCode,
+            price_original as priceOriginal,
+            price_cost as priceCost,
+            price_selling as priceSelling,
+            price_margin as priceMargin
+        FROM price
+        WHERE product_code = #{productCode}
+    </select>
+
+    <!-- 옵션 코드로 특정 옵션 정보 조회 -->
+    <select id="selectProductOption" parameterType="int" resultType="com.hollybam.hollybam.dto.ProductOptionDto">
+        SELECT
+            option_code as optionCode,
+            product_code as productCode,
+            option_name as optionName,
+            option_value as optionValue,
+            option_price as optionPrice,
+            option_quantity as optionQuantity
+        FROM product_option
+        WHERE option_code = #{optionCode}
+    </select>
 </mapper>

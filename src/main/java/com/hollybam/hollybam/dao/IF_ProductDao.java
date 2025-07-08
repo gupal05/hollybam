@@ -1,9 +1,6 @@
 package com.hollybam.hollybam.dao;
 
-import com.hollybam.hollybam.dto.CategoryDto;
-import com.hollybam.hollybam.dto.ImageDto;
-import com.hollybam.hollybam.dto.ProductDto;
-import com.hollybam.hollybam.dto.ProductOptionDto;
+import com.hollybam.hollybam.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -27,4 +24,23 @@ public interface IF_ProductDao {
     public List<ProductOptionDto> getProductOptions(int productCode);
     List<ProductDto> selectProductsByCategoryCode(String categoryCode, String sort);
     List<ProductDto> selectProductsByCategoryAndDetail(String categoryCode, String detailCode, String sort);
+    /**
+     * 상품 코드로 상품 정보 조회
+     */
+    ProductDto selectProductByCode(int productCode);
+
+    /**
+     * 상품 가격 정보 조회
+     */
+    PriceDto selectProductPrice(int productCode);
+
+    /**
+     * 옵션 코드로 특정 옵션 정보 조회
+     */
+    ProductOptionDto selectProductOption(int optionCode);
+
+    /**
+     * 상품 대표 이미지 조회
+     */
+    ImageDto selectProductTitleImage(int productCode);
 }

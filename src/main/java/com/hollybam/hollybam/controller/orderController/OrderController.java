@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 @Controller
 @RequestMapping("/order")
 @Slf4j
@@ -46,42 +45,76 @@ public class OrderController {
             MemberDto member = (MemberDto) session.getAttribute("member");
             GuestDto guest = (GuestDto) session.getAttribute("guest");
 
-            // String을 Integer로 변환
+            // 로그인 상태 확인 - 둘 다 없으면 로그인 페이지로
+            if (member == null && guest == null) {
+                mav.setViewName("redirect:/auth/login");
+                return mav;
+            }
+
+            // cartCodes 유효성 검사
+            if (cartCodes == null || cartCodes.isEmpty()) {
+                mav.setViewName("redirect:/cart");
+                return mav;
+            }
+
+            // String을 Integer로 안전하게 변환
             List<Integer> cartCodeList = new ArrayList<>();
             for (String code : cartCodes) {
                 try {
-                    cartCodeList.add(Integer.parseInt(code));
+                    if (code != null && !code.trim().isEmpty()) {
+                        cartCodeList.add(Integer.parseInt(code.trim()));
+                    }
                 } catch (NumberFormatException e) {
-                    System.err.println("Invalid cart code: " + code);
+                    log.error("Invalid cart code: " + code, e);
+                    // 잘못된 cartCode가 있어도 계속 진행
                 }
             }
 
-            // 장바구니 상품 정보 조회 및 주문 정보 계산
-            PaymentRequestDto paymentInfo = paymentService.calculateOrderFromCart(
-                    cartCodeList,
-                    member != null ? member.getMemberCode() : null,
-                    guest.getGuestCode());
+            // 유효한 cartCode가 없으면 장바구니로 리다이렉트
+            if (cartCodeList.isEmpty()) {
+                mav.setViewName("redirect:/cart");
+                return mav;
+            }
 
-            // 장바구니 상품 상세 정보 조회 (상품명, 이미지, 옵션 등)
+            // 안전한 null 체크로 주문 정보 계산
+            Integer memberCode = member != null ? member.getMemberCode() : null;
+            Integer guestCode = guest != null ? guest.getGuestCode() : null;
+
+            PaymentRequestDto paymentInfo = paymentService.calculateOrderFromCart(
+                    cartCodeList, memberCode, guestCode);
+
+            // paymentInfo null 체크
+            if (paymentInfo == null) {
+                log.error("PaymentInfo is null");
+                mav.setViewName("redirect:/cart");
+                return mav;
+            }
+
+            // 장바구니 상품 상세 정보 조회
             List<CartDto> cartItems = getCartItemsWithDetails(cartCodeList);
+
+            // cartItems null 또는 빈 리스트 체크
+            if (cartItems == null || cartItems.isEmpty()) {
+                log.error("CartItems is null or empty");
+                mav.setViewName("redirect:/cart");
+                return mav;
+            }
+
+            // 쿠폰 정보 조회 (회원만, 예외 발생해도 계속 진행)
             List<CouponDto> couponList = new ArrayList<>();
             try {
-                if(member != null) {
-                    System.out.println(member.getMemberCode());
+                if (member != null) {
                     couponList = couponService.getUsePossibleCoupon(member.getMemberCode());
-                    System.out.println(couponList.size());
-                    System.out.println(couponList);
-                }
-                for (CouponDto couponDto : couponList) {
-                    System.out.println(couponDto);
+                    if (couponList == null) {
+                        couponList = new ArrayList<>();
+                    }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("쿠폰 조회 실패, 빈 리스트로 계속 진행", e);
+                couponList = new ArrayList<>();
             }
 
-            // ====================================================================================비회원 구현
-
-            // ModelAndView에 데이터 추가
+            // ModelAndView에 데이터 추가 (모든 값이 null이 아님을 보장)
             mav.addObject("member", member);
             mav.addObject("paymentInfo", paymentInfo);
             mav.addObject("cartItems", cartItems);
@@ -90,22 +123,28 @@ public class OrderController {
             mav.setViewName("order");
 
         } catch (Exception e) {
-            e.printStackTrace();
-            mav.addObject("error", "주문 페이지를 불러올 수 없습니다: " + e.getMessage());
-            mav.setViewName("error/error");
+            log.error("주문 페이지 로드 중 예외 발생", e);
+            // 어떤 예외가 발생해도 장바구니로 안전하게 리다이렉트
+            mav.setViewName("redirect:/cart");
         }
 
         return mav;
     }
 
     /**
-     * 장바구니 상품 상세 정보 조회
+     * 장바구니 상품 상세 정보 조회 (안전한 버전)
      */
     private List<CartDto> getCartItemsWithDetails(List<Integer> cartCodes) {
         try {
-            return paymentService.getCartItemsWithDetails(cartCodes);
+            if (cartCodes == null || cartCodes.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            List<CartDto> result = paymentService.getCartItemsWithDetails(cartCodes);
+            return result != null ? result : new ArrayList<>();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("장바구니 상품 상세 정보 조회 실패", e);
             return new ArrayList<>();
         }
     }
@@ -155,4 +194,98 @@ public class OrderController {
         }
     }
 
+    /**
+     * 상품 상세 페이지에서 바로 구매
+     */
+    @PostMapping("/direct-purchase")
+    public ModelAndView directPurchase(@RequestParam("productCode") int productCode,
+                                       @RequestParam(value = "optionCode", required = false) Integer optionCode,
+                                       @RequestParam("quantity") int quantity,
+                                       HttpSession session, ModelAndView mav) {
+        try {
+            // 세션에서 사용자 정보 가져오기
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                mav.addObject("error", "로그인이 필요합니다.");
+                mav.setViewName("redirect:/auth/login");
+                return mav;
+            }
+
+            // 바로 구매할 상품 정보로 임시 주문 정보 생성
+            PaymentRequestDto paymentInfo = paymentService.calculateDirectPurchase(
+                    productCode, optionCode, quantity,
+                    member != null ? member.getMemberCode() : null,
+                    guest != null ? guest.getGuestCode() : null);
+
+            // 바로 구매할 상품의 상세 정보 조회
+            List<CartDto> cartItems = createDirectPurchaseItems(productCode, optionCode, quantity);
+
+            // 쿠폰 정보 조회 (회원만)
+            List<CouponDto> couponList = new ArrayList<>();
+            try {
+                if(member != null) {
+                    couponList = couponService.getUsePossibleCoupon(member.getMemberCode());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // ModelAndView에 데이터 추가 (기존 checkout과 동일한 구조)
+            mav.addObject("member", member);
+            mav.addObject("paymentInfo", paymentInfo);
+            mav.addObject("cartItems", cartItems);
+            mav.addObject("cartCodes", new ArrayList<Integer>()); // 빈 리스트 (바로구매는 cartCode 없음)
+            mav.addObject("couponList", couponList);
+            mav.addObject("isDirect", true); // 바로구매 구분용
+            mav.setViewName("order");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mav.addObject("error", "주문 페이지를 불러올 수 없습니다: " + e.getMessage());
+            mav.setViewName("error/error");
+        }
+
+        return mav;
+    }
+
+    /**
+     * 바로 구매용 CartDto 생성 (실제 장바구니에 저장하지 않고 주문 페이지 표시용)
+     */
+    private List<CartDto> createDirectPurchaseItems(int productCode, Integer optionCode, int quantity) {
+        try {
+            // ProductService를 통해 상품 상세 정보 조회
+            ProductDto product = productService.getProductByCode(productCode);
+
+            CartDto cartItem = new CartDto();
+            cartItem.setProductCode(productCode);
+            cartItem.setOptionCode(optionCode);
+            cartItem.setQuantity(quantity);
+            cartItem.setSelected(true);
+
+            // 상품 정보 설정
+            cartItem.setProductDto(product);
+
+            // 가격 정보 설정
+            PriceDto price = productService.getProductPrice(productCode);
+            cartItem.setPriceDto(price);
+
+            // 옵션 정보 설정 (옵션이 있는 경우)
+            if (optionCode != null) {
+                ProductOptionDto option = productService.getProductOption(optionCode);
+                cartItem.setProductOptionDto(option);
+            }
+
+            // 이미지 정보 설정
+            ImageDto image = productService.getProductTitleImage(productCode);
+            cartItem.setImageDto(image);
+
+            return List.of(cartItem);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 }

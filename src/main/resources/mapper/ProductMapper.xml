@@ -336,4 +336,60 @@
           AND (i.image_type = 'title' OR i.image_type = 'webp' OR i.image_code IS NULL)
         ORDER BY p.product_order_count DESC, p.create_at DESC
     </select>
+    <!-- 상품 코드로 상품 정보 조회 -->
+    <select id="selectProductByCode" parameterType="int" resultType="com.hollybam.hollybam.dto.ProductDto">
+        SELECT
+            product_code as productCode,
+            product_id as productId,
+            product_name as productName,
+            product_description as productDescription,
+            product_quantity as productQuantity,
+            product_active as productActive,
+            cate_code as cateCode,
+            cd_code as cdCode
+        FROM product
+        WHERE product_code = #{productCode}
+          AND product_active = 1
+    </select>
+
+    <!-- 상품 가격 정보 조회 -->
+    <select id="selectProductPrice" parameterType="int" resultType="com.hollybam.hollybam.dto.PriceDto">
+        SELECT
+            price_code as priceCode,
+            product_code as productCode,
+            price_original as priceOriginal,
+            price_cost as priceCost,
+            price_selling as priceSelling,
+            price_margin as priceMargin
+        FROM price
+        WHERE product_code = #{productCode}
+    </select>
+
+    <!-- 옵션 코드로 특정 옵션 정보 조회 -->
+    <select id="selectProductOption" parameterType="int" resultType="com.hollybam.hollybam.dto.ProductOptionDto">
+        SELECT
+            option_code as optionCode,
+            product_code as productCode,
+            option_name as optionName,
+            option_value as optionValue,
+            option_price as optionPrice,
+            option_quantity as optionQuantity
+        FROM product_option
+        WHERE option_code = #{optionCode}
+    </select>
+
+    <!-- 상품 대표 이미지 조회 -->
+    <select id="selectProductTitleImage" parameterType="int" resultType="com.hollybam.hollybam.dto.ImageDto">
+        SELECT
+            image_code as imageCode,
+            product_code as productCode,
+            image_url as imageUrl,
+            image_type as imageType,
+            image_order as imageOrder
+        FROM image
+        WHERE product_code = #{productCode}
+          AND image_type = 'title'
+        ORDER BY image_order ASC
+        LIMIT 1
+    </select>
 </mapper>

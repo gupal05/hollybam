@@ -1,10 +1,7 @@
 package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dao.IF_ProductDao;
-import com.hollybam.hollybam.dto.CategoryDto;
-import com.hollybam.hollybam.dto.ImageDto;
-import com.hollybam.hollybam.dto.ProductDto;
-import com.hollybam.hollybam.dto.ProductOptionDto;
+import com.hollybam.hollybam.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,6 +105,30 @@ public class ProductService implements IF_ProductService{
     @Transactional
     public List<ProductDto> getProductsByCategoryAndDetail(String categoryCode, String detailCode, String sort) {
         return productDao.selectProductsByCategoryAndDetail(categoryCode, detailCode, sort);
+    }
+
+    @Override
+    @Transactional
+    public ProductDto getProductByCode(int productCode) {
+        return productDao.selectProductByCode(productCode);
+    }
+
+    @Override
+    @Transactional
+    public PriceDto getProductPrice(int productCode) {
+        return productDao.selectProductPrice(productCode);
+    }
+
+    @Override
+    @Transactional
+    public ProductOptionDto getProductOption(int optionCode) {
+        return productDao.selectProductOption(optionCode);
+    }
+
+    @Override
+    @Transactional
+    public ImageDto getProductTitleImage(int productCode) {
+        return productDao.selectProductTitleImage(productCode);
     }
 
 

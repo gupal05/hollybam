@@ -41,7 +41,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String introPage(HttpServletRequest request, Model model) {
-        session.setAttribute("guest", guestService.getGuestByDi("MC0GCCqGSIb3DQIJAyEACKfBOHYuC7XzJeid99M29aD87Fi8pI9WFEOLJw0IpnI="));
         try {
             log.info("=== NICE 암호화 토큰 요청 시작 ===");
             Map<String, String> result = niceCryptoTokenService.requestCryptoToken();
@@ -217,5 +216,11 @@ public class HomeController {
     @GetMapping("/guide")
     public String guide() {
         return "guide";
+    }
+
+    @GetMapping("/kiki")
+    public String kiki() {
+        session.setAttribute("guest", guestService.getGuestByDi("MC0GCCqGSIb3DQIJAyEACKfBOHYuC7XzJeid99M29aD87Fi8pI9WFEOLJw0IpnI="));
+        return "loading";
     }
 }

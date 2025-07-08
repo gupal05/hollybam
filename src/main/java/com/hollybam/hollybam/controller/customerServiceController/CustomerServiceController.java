@@ -29,10 +29,12 @@ public class CustomerServiceController {
         List<EventDto> eventList = eventService.selectVisibleEvents();
         model.addAttribute("eventList", eventList);
 
-        // 1:1 문의 내역
-        MemberDto memberDto = (MemberDto) session.getAttribute("member");
-        List<InquiryDto> inquiryList = inquiryService.selectInquiryList(memberDto.getMemberCode());
-        model.addAttribute("inquiryList", inquiryList);
+        if(session.getAttribute("member") != null){
+            // 1:1 문의 내역
+            MemberDto memberDto = (MemberDto) session.getAttribute("member");
+            List<InquiryDto> inquiryList = inquiryService.selectInquiryList(memberDto.getMemberCode());
+            model.addAttribute("inquiryList", inquiryList);
+        }
         return "cs";
     }
 
@@ -48,8 +50,10 @@ public class CustomerServiceController {
     @PostMapping("/inquiry")
     @ResponseBody
     public ResponseEntity<Boolean> insertInquiry(@ModelAttribute InquiryDto inquiryDto, HttpSession session) {
-        MemberDto memberDto = (MemberDto) session.getAttribute("member");
-        inquiryDto.setInquiryCode(memberDto.getMemberCode());
+        if(session.getAttribute("member") != null){
+            MemberDto memberDto = (MemberDto) session.getAttribute("member");
+            inquiryDto.setInquiryCode(memberDto.getMemberCode());
+        }
         return ResponseEntity.ok(inquiryService.insertInquiry(inquiryDto) > 0);
     }
 

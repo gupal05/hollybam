@@ -97,8 +97,10 @@ public class MypageController {
             String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
             model.addAttribute("totalPoint", totalPoint);
             model.addAttribute("couponCount", couponCount);
+            return "mypage/orderList";
+        } else {
+            return "mypage/guest/orderList";
         }
-        return "mypage/orderList";
     }
 
     @GetMapping("/profile/edit")

@@ -53,6 +53,15 @@ public class WishlistController {
                 couponCount = couponService.selectCouponCount(memCode);
                 wishlistItems = wishlistService.getMemberWishlist(memCode);
                 totalCount = wishlistService.getMemberWishlistCount(memCode);
+
+                model.addAttribute("wishlistItems", wishlistItems);
+                model.addAttribute("totalCount", totalCount);
+                model.addAttribute("couponCount", couponCount);
+                model.addAttribute("isLoggedIn", true);
+
+                // 회원용 위시리스트 페이지로 이동
+                return "mypage/wishlist";
+
             } else if (guest != null) {
                 // 비회원
                 log.info("비회원 위시리스트 조회 - guest: {}", guest);
@@ -67,22 +76,19 @@ public class WishlistController {
                     wishlistItems = List.of();
                     totalCount = 0;
                 }
+
+                model.addAttribute("wishlistItems", wishlistItems);
+                model.addAttribute("totalCount", totalCount);
+                model.addAttribute("isLoggedIn", false);
+
+                // 비회원용 위시리스트 페이지로 이동
+                return "mypage/guest/wishlist";
+
             } else {
                 // 로그인/인증 필요
                 log.warn("로그인 또는 성인인증 필요");
                 return "redirect:/intro";
             }
-
-            log.info("위시리스트 아이템 수: {}, 총 개수: {}", wishlistItems.size(), totalCount);
-            for(int i = 0; i < wishlistItems.size(); i++) {
-                System.out.println(wishlistItems.get(i));
-            }
-            model.addAttribute("wishlistItems", wishlistItems);
-            model.addAttribute("totalCount", totalCount);
-            model.addAttribute("couponCount", couponCount);
-            model.addAttribute("isLoggedIn", memCode != null);
-
-            return "mypage/wishlist";
 
         } catch (Exception e) {
             log.error("위시리스트 페이지 로드 실패", e);

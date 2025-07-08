@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>위시리스트 - 홀리밤</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" th:href="@{/css/header.css}"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 140px 20px 60px;
+      display: flex;
+      gap: 30px;
+    }
+
+    .page-header {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .wishlist-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .item-count {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .control-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      background: white;
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      border-color: #EE386D;
+      color: #EE386D;
+    }
+
+    .btn-primary {
+      background: #EE386D;
+      color: white;
+      border-color: #EE386D;
+    }
+
+    .btn-primary:hover {
+      background: #d1326a;
+      border-color: #d1326a;
+      color: white;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .wishlist-content {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    /* 위시리스트 그리드 */
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .wishlist-item {
+      position: relative;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: visible;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .wishlist-item:hover {
+      transform: translateY(-3px);
+    }
+
+    .item-checkbox {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 3;
+      width: 20px;
+      height: 20px;
+      accent-color: #EE386D;
+    }
+
+    .card-product-widget {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      height: 100%;
+    }
+
+    .card-product-img {
+      position: relative;
+      background: #f5f5f5;
+      border-radius: 20px;
+      overflow: hidden;
+      aspect-ratio: 1;
+      margin-bottom: 15px;
+    }
+
+    .card-product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .wishlist-item:hover .card-product-img img {
+      transform: scale(1.05);
+    }
+
+    .remove-item {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 3;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888888;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .remove-item:hover {
+      background: #EE386D;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .card-product-info {
+      padding: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-product-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      margin: 0 0 10px 0;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-product-price {
+      margin-bottom: 10px;
+    }
+
+    .sale-perc {
+      display: inline-block;
+      background: #EE386D;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    .sale_price {
+      font-size: 16px;
+      font-weight: 700;
+      color: #EE386D;
+      margin-right: 8px;
+    }
+
+    .regular_price {
+      font-size: 12px;
+      color: #999;
+      text-decoration: line-through;
+    }
+
+    .product_review_container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 15px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .product_review_container svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    .product_review_container .heart-icon {
+      fill: #e74c3c;
+    }
+
+    .product_review_container .star-icon {
+      fill: #ffc107;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .item-actions .btn {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    .btn-sm {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    /* 비어있는 위시리스트 */
+    .empty-wishlist {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .empty-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      opacity: 0.7;
+    }
+
+    .empty-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .empty-desc {
+      font-size: 16px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .shop-now-btn {
+      display: inline-block;
+      background: #EE386D;
+      color: white;
+      text-decoration: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .shop-now-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(238, 56, 109, 0.3);
+    }
+
+    /* 대량 작업 플로팅 버튼 */
+    .bulk-actions {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 20px 30px;
+      border-radius: 50px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .bulk-actions.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .selected-count {
+      font-size: 14px;
+      font-weight: 600;
+      color: #EE386D;
+    }
+
+    /* 로딩 상태 */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #EE386D;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 토스트 메시지 */
+    .toast-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #333;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast-message.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .toast-message.toast-success {
+      background: #27ae60;
+    }
+
+    .toast-message.toast-error {
+      background: #e74c3c;
+    }
+
+    /* 비회원용 사이드바 */
+    .sidebar {
+      width: 280px;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      height: fit-content;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 140px;
+    }
+
+    .guest-profile {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .guest-profile-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6c757d, #9ca3af);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      color: white;
+      font-size: 28px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    .guest-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 5px;
+    }
+
+    .guest-status {
+      font-size: 14px;
+      color: #6c757d;
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
+
+    .join-promotion {
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .promotion-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .promotion-desc {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .join-btn {
+      background: white;
+      color: #EE386D;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .join-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+      color: #EE386D;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu li {
+      margin-bottom: 8px;
+    }
+
+    .sidebar-menu a {
+      display: block;
+      padding: 12px 16px;
+      text-decoration: none;
+      color: #666;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+      background: #EE386D;
+      color: white;
+      transform: translateX(5px);
+    }
+
+    .sidebar-menu i {
+      width: 20px;
+      margin-right: 12px;
+    }
+
+    .main-content {
+      flex: 1;
+    }
+
+    .page-header,
+    .orders-list {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    /* 반응형 */
+    @media (max-width: 1024px) {
+      .container {
+        flex-direction: column;
+        padding: 120px 20px 60px;
+      }
+
+      .sidebar {
+        width: 100%;
+        position: static;
+      }
+
+      .wishlist-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 120px 16px 40px;
+      }
+
+      .page-header,
+      .wishlist-content,
+      .sidebar {
+        padding: 25px 20px;
+        border-radius: 15px;
+      }
+
+      .page-title {
+        font-size: 26px;
+      }
+
+      .wishlist-controls {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+      }
+
+      .control-buttons {
+        justify-content: center;
+      }
+
+      .wishlist-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .bulk-actions {
+        bottom: 20px;
+        padding: 15px 20px;
+        border-radius: 25px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .wishlist-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .wishlist-content {
+        padding: 20px 15px;
+      }
+
+      .card-product-title {
+        font-size: 12px;
+      }
+
+      .sale_price {
+        font-size: 14px;
+      }
+
+      .item-actions {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .empty-icon {
+        font-size: 60px;
+      }
+
+      .empty-title {
+        font-size: 20px;
+      }
+
+      .empty-desc {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<div class="container">
+  <!-- 비회원용 사이드바 -->
+  <aside class="sidebar">
+    <div class="guest-profile">
+      <div class="guest-profile-image">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="guest-name">비회원</div>
+      <div class="guest-status">임시 이용 중</div>
+    </div>
+
+    <div class="join-promotion">
+      <div class="promotion-title">🎉 회원가입 특가!</div>
+      <div class="promotion-desc">
+        회원가입 시 즉시 5천원 쿠폰과<br>
+        다양한 혜택을 받아보세요
+      </div>
+      <a href="/auth/register" class="join-btn">
+        <i class="fas fa-user-plus"></i> 회원가입하기
+      </a>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li><a href="/guest/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+      <li><a href="/guest/wishlist" class="active"><i class="fas fa-heart"></i>위시리스트</a></li>
+      <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>비회원 로그아웃</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <h1 class="page-title">위시리스트</h1>
+      <p class="page-subtitle">관심 있는 상품들을 모아보세요.</p>
+
+      <div class="wishlist-controls">
+        <div class="item-count">총 <span id="totalCount" th:text="${totalCount ?: 0}">0</span>개의 상품</div>
+        <div class="control-buttons">
+          <button class="btn" id="selectAll">전체선택</button>
+          <button class="btn" id="deleteSelected">선택삭제</button>
+          <button class="btn btn-primary" id="addToCart">장바구니 담기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 위시리스트 콘텐츠 -->
+    <div class="wishlist-content">
+      <!-- 위시리스트가 있는 경우 -->
+      <div class="wishlist-grid" id="wishlistGrid" th:if="${wishlistItems != null and !wishlistItems.isEmpty()}">
+        <!-- 위시리스트 아이템 반복 -->
+        <article class="wishlist-item" th:each="item : ${wishlistItems}">
+          <input type="checkbox" class="item-checkbox" th:data-product-code="${item.productCode}">
+          <a class="card-product-widget" th:href="@{/product/detail/{id}(id=${item.productCode})}">
+            <button class="remove-item"
+                    th:data-product-code="${item.productCode}"
+                    type="button"
+                    title="위시리스트에서 제거">
+              <i class="fas fa-times"></i>
+            </button>
+            <div class="card-product-img">
+              <img th:src="${item.productImage != null ? 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + item.productImage : 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/no-image.png'}"
+                   th:alt="${item.productName}" />
+            </div>
+            <div class="card-product-info">
+              <p class="card-product-title" th:text="${item.productName}">상품명</p>
+              <div class="card-product-price">
+                <!-- 할인율 계산 및 표시 -->
+                <th:block th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}">
+                                    <span class="sale-perc"
+                                          th:with="discountRate=${T(java.lang.Math).round((1.0 - item.sellingPrice * 1.0 / item.originalPrice) * 100)}"
+                                          th:text="${discountRate + '%'}">
+                                        25%
+                                    </span>
+                </th:block>
+                <span class="sale_price" th:text="${'₩' + #numbers.formatInteger(item.sellingPrice, 3, 'COMMA')}">₩150,000</span>
+                <span class="regular_price"
+                      th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}"
+                      th:text="${'₩' + #numbers.formatInteger(item.originalPrice, 3, 'COMMA')}">₩200,000</span>
+              </div>
+              <div class="product_review_container">
+                <svg class="heart-icon" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span>45</span>
+                <svg class="star-icon" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span>4.9 (23)</span>
+              </div>
+              <div class="item-actions">
+                <button class="btn btn-sm cart-btn" th:data-product-code="${item.productCode}">장바구니</button>
+                <button class="btn btn-sm btn-primary buy-btn" th:data-product-code="${item.productCode}">바로구매</button>
+              </div>
+            </div>
+          </a>
+        </article>
+      </div>
+
+      <!-- 위시리스트가 비어있는 경우 -->
+      <div class="empty-wishlist" id="emptyWishlist" th:if="${wishlistItems == null or wishlistItems.isEmpty()}">
+        <div class="empty-icon">💝</div>
+        <div class="empty-title">위시리스트가 비어있습니다</div>
+        <div class="empty-desc">마음에 드는 상품을 위시리스트에 추가해보세요.<br>나중에 쉽게 찾아볼 수 있습니다.</div>
+        <a href="/main" class="shop-now-btn">쇼핑하러 가기</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 대량 작업 플로팅 버튼 -->
+<div class="bulk-actions" id="bulkActions">
+  <span class="selected-count"><span id="selectedCount">0</span>개 선택됨</span>
+  <button class="btn btn-sm" id="bulkDelete">선택 삭제</button>
+  <button class="btn btn-sm btn-primary" id="bulkAddToCart">선택 구매</button>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+  $(document).ready(function() {
+    // 선택된 상품들을 관리하는 Set
+    let selectedItems = new Set();
+
+    // 개별 체크박스 이벤트
+    $('.item-checkbox').on('change', function() {
+      const productCode = parseInt($(this).data('product-code'));
+      if ($(this).is(':checked')) {
+        selectedItems.add(productCode);
+      } else {
+        selectedItems.delete(productCode);
+      }
+      updateBulkActions();
+    });
+
+    // 전체 선택 버튼
+    $('#selectAll').on('click', function() {
+      const isAllSelected = $('.item-checkbox:checked').length === $('.item-checkbox').length;
+      $('.item-checkbox').prop('checked', !isAllSelected);
+
+      selectedItems.clear();
+      if (!isAllSelected) {
+        $('.item-checkbox').each(function() {
+          selectedItems.add(parseInt($(this).data('product-code')));
+        });
+      }
+      updateBulkActions();
+    });
+
+    // 대량 작업 UI 업데이트
+    function updateBulkActions() {
+      const selectedCount = selectedItems.size;
+      $('#selectedCount').text(selectedCount);
+
+      if (selectedCount > 0) {
+        $('#bulkActions').addClass('show');
+      } else {
+        $('#bulkActions').removeClass('show');
+      }
+    }
+
+    // 위시리스트 아이템 제거 (개별)
+    $('.remove-item').on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const productCode = parseInt($(this).data('product-code'));
+      const $item = $(this).closest('.wishlist-item');
+
+      if (confirm('이 상품을 위시리스트에서 제거하시겠습니까?')) {
+        removeFromWishlist(productCode, $item);
+      }
+    });
+
+    // 선택 삭제 버튼
+    $('#deleteSelected, #bulkDelete').on('click', function() {
+      if (selectedItems.size === 0) {
+        showToast('삭제할 상품을 선택해주세요.', 'error');
+        return;
+      }
+
+      if (confirm(`선택한 ${selectedItems.size}개의 상품을 위시리스트에서 제거하시겠습니까?`)) {
+        removeMultipleFromWishlist(Array.from(selectedItems));
+      }
+    });
+
+    // 장바구니 담기 (개별)
+    $('.cart-btn').on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const productCode = parseInt($(this).data('product-code'));
+      addToCart([productCode]);
+    });
+
+    // 장바구니 담기 (선택)
+    $('#addToCart, #bulkAddToCart').on('click', function() {
+      if (selectedItems.size === 0) {
+        showToast('장바구니에 담을 상품을 선택해주세요.', 'error');
+        return;
+      }
+
+      addToCart(Array.from(selectedItems));
+    });
+
+    // 바로구매 버튼
+    $('.buy-btn').on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const productCode = parseInt($(this).data('product-code'));
+      window.location.href = `/order/direct?productCode=${productCode}`;
+    });
+
+    // 위시리스트에서 제거 함수 (비회원은 로컬스토리지 사용)
+    function removeFromWishlist(productCode, $item = null) {
+      // 비회원의 경우 로컬스토리지에서 제거
+      let wishlist = JSON.parse(localStorage.getItem('guest_wishlist')) || [];
+      wishlist = wishlist.filter(code => code !== productCode);
+      localStorage.setItem('guest_wishlist', JSON.stringify(wishlist));
+
+      if ($item) {
+        $item.fadeOut(300, function() {
+          $(this).remove();
+          updateItemCount();
+          checkEmptyWishlist();
+        });
+      }
+      showToast('위시리스트에서 제거되었습니다.', 'success');
+
+      // 선택된 항목에서도 제거
+      selectedItems.delete(productCode);
+      updateBulkActions();
+    }
+
+    // 여러 상품 위시리스트에서 제거
+    function removeMultipleFromWishlist(productCodes) {
+      let wishlist = JSON.parse(localStorage.getItem('guest_wishlist')) || [];
+
+      productCodes.forEach(productCode => {
+        wishlist = wishlist.filter(code => code !== productCode);
+        $(`.wishlist-item .item-checkbox[data-product-code="${productCode}"]`)
+                .closest('.wishlist-item')
+                .fadeOut(300, function() {
+                  $(this).remove();
+                });
+      });
+
+      localStorage.setItem('guest_wishlist', JSON.stringify(wishlist));
+
+      setTimeout(() => {
+        selectedItems.clear();
+        updateBulkActions();
+        updateItemCount();
+        checkEmptyWishlist();
+        showToast(`${productCodes.length}개의 상품이 위시리스트에서 제거되었습니다.`, 'success');
+      }, 300);
+    }
+
+    // 장바구니 추가 함수
+    function addToCart(productCodes) {
+      // 비회원 장바구니 처리 (로컬스토리지)
+      let cart = JSON.parse(localStorage.getItem('guest_cart')) || [];
+
+      productCodes.forEach(productCode => {
+        if (!cart.includes(productCode)) {
+          cart.push(productCode);
+        }
+      });
+
+      localStorage.setItem('guest_cart', JSON.stringify(cart));
+      showToast(`${productCodes.length}개의 상품이 장바구니에 추가되었습니다.`, 'success');
+    }
+
+    // 아이템 개수 업데이트
+    function updateItemCount() {
+      const count = $('.wishlist-item').length;
+      $('#totalCount').text(count);
+    }
+
+    // 빈 위시리스트 체크
+    function checkEmptyWishlist() {
+      if ($('.wishlist-item').length === 0) {
+        $('#wishlistGrid').hide();
+        $('#emptyWishlist').show();
+      }
+    }
+
+    // 토스트 메시지 표시
+    function showToast(message, type = 'info') {
+      const $toast = $(`
+                <div class="toast-message toast-${type}">
+                    <span>${message}</span>
+                </div>
+            `);
+
+      $('body').append($toast);
+
+      setTimeout(() => {
+        $toast.addClass('show');
+      }, 100);
+
+      setTimeout(() => {
+        $toast.removeClass('show');
+        setTimeout(() => $toast.remove(), 300);
+      }, 3000);
+    }
+
+    // 상품 클릭 시 상세페이지 이동 (버튼 제외)
+    $('.card-product-widget').on('click', function(e) {
+      if ($(e.target).closest('.remove-item, .item-checkbox, .item-actions').length > 0) {
+        e.preventDefault();
+        return;
+      }
+    });
+
+    // 체크박스 클릭 시 이벤트 전파 중지
+    $('.item-checkbox').on('click', function(e) {
+      e.stopPropagation();
+    });
+  });
+
+  // 비회원 세션 종료 함수
+  function logout() {
+    if(confirm('로그아웃 하시겠습니까?')) {
+      window.location.href = '/logout';
+    }
+  }
+
+  // 현재 페이지에 따른 사이드바 메뉴 활성화
+  $(document).ready(function() {
+    const currentPath = window.location.pathname;
+    $('.sidebar-menu a').removeClass('active');
+    $(`.sidebar-menu a[href="${currentPath}"]`).addClass('active');
+  });
+</script>
+</body>
+</html>

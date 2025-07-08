@@ -1043,6 +1043,114 @@
         align-self: flex-end;
       }
     }
+
+    .inquiry-login-warning {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin: 20px 0;
+      min-height: 300px;
+      border: 2px dashed #e0e0e0;
+    }
+
+    .inquiry-login-warning p {
+      font-size: 18px;
+      font-weight: 600;
+      color: #666666;
+      margin-bottom: 24px;
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .inquiry-login-warning p i {
+      font-size: 24px;
+      color: #EE386D;
+    }
+
+    .login-btn {
+      background: #EE386D;
+      color: white;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .login-btn:hover {
+      background: #d63056;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(238, 56, 109, 0.3);
+      color: white;
+      text-decoration: none;
+    }
+
+    .login-btn::after {
+      content: '\f054';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .login-btn:hover::after {
+      transform: translateX(3px);
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      .inquiry-login-warning {
+        padding: 40px 20px;
+        min-height: 250px;
+      }
+
+      .inquiry-login-warning p {
+        font-size: 16px;
+        margin-bottom: 20px;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .inquiry-login-warning p i {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+
+      .login-btn {
+        padding: 12px 24px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .inquiry-login-warning {
+        padding: 30px 16px;
+        min-height: 200px;
+      }
+
+      .inquiry-login-warning p {
+        font-size: 14px;
+        margin-bottom: 16px;
+      }
+
+      .inquiry-login-warning p i {
+        font-size: 28px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1294,7 +1402,7 @@
     </div>
 
     <!-- 1:1 문의 탭 -->
-    <div class="tab-content" id="inquiry-tab">
+    <div th:if="${session.member != null}" class="tab-content" id="inquiry-tab">
       <div class="inquiry-container">
         <!-- 문의 작성 폼 -->
         <div class="inquiry-form">
@@ -1375,6 +1483,11 @@
           </div>
         </div>
       </div>
+    </div>
+    <!-- 로그인 유도 메시지 (비회원) -->
+    <div th:if="${session.member == null}" class="inquiry-login-warning">
+      <p><i class="fas fa-sign-in-alt"></i> 문의 기능을 사용하려면 로그인이 필요합니다.</p>
+      <a href="/auth/login" class="login-btn">로그인하러 가기</a>
     </div>
   </div>
 </div>

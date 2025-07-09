@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 public class PaymentLogDto {
     private int logCode;
     private String orderId;
-    private String impUid;
     private String merchantUid;
     private int amount;
     private String status;

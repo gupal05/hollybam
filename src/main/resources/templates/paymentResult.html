@@ -422,15 +422,22 @@
         <!-- 주문 상품 -->
         <div class="summary-section">
             <h2 class="section-title">주문 상품</h2>
-            <!-- 실제로는 orderItems 리스트를 반복하여 표시 -->
-            <div class="product-item">
-                <img src="https://via.placeholder.com/60x60/f0f0f0/999?text=Product" alt="상품" class="product-image">
+
+            <!-- orderDetails 리스트를 반복하여 상품 정보 표시 -->
+            <div th:each="item : ${orderDetails}" class="product-item">
+                <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${item['product_image']}"
+                     alt="상품 이미지"
+                     class="product-image">
                 <div class="product-info">
-                    <div class="product-name">홀리밤 상품</div>
-                    <div class="product-options">색상: 핑크 / 사이즈: L</div>
+                    <div class="product-name" th:text="${item['product_name']}">상품명</div>
+
+                    <!-- 옵션이 있을 경우에만 표시 -->
+                    <div th:if="${item['product_option'] != null and item['product_option'] != ''}" class="product-options"
+                         th:text="${item['product_option']}">옵션</div>
+
                     <div class="product-price">
-                        <span class="product-quantity">수량 1개</span>
-                        <span class="product-amount">₩150,000</span>
+                        <span class="product-quantity" th:text="'수량 ' + ${item['quantity']} + '개'">수량</span>
+                        <span class="product-amount" th:text="'₩' + ${#numbers.formatInteger(item['total_price'], 0, 'COMMA')}">₩0</span>
                     </div>
                 </div>
             </div>
@@ -463,11 +470,18 @@
 
     <!-- 액션 버튼 -->
     <div class="action-buttons">
-        <a href="/payment/orders" class="btn btn-secondary">
+        <!-- member가 session에 있을 경우 -->
+        <a href="/mypage/orders" class="btn btn-secondary" th:if="${session.member}">
             <i class="fas fa-list" style="margin-right: 8px;"></i>
             주문내역
         </a>
-        <a href="/" class="btn btn-primary">
+
+        <!-- guest가 session에 있을 경우 -->
+        <a href="/mypage/orders" class="btn btn-secondary" th:if="${session.guest}">
+            <i class="fas fa-list" style="margin-right: 8px;"></i>
+            주문내역
+        </a>
+        <a href="/main" class="btn btn-primary">
             <i class="fas fa-home" style="margin-right: 8px;"></i>
             쇼핑 계속하기
         </a>

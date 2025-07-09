@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -724,19 +724,19 @@
                 <div class="form-group">
                     <label class="form-label required">이름</label>
                     <input type="text" id="ordererName" class="form-input" placeholder="이름을 입력해주세요"
-                           th:value="${member != null} ? ${member.memberName} : ''" required>
+                           th:value="${member?.memberName ?: (guest?.guestName ?: '')}" required>
                     <div class="field-error" id="ordererName-error"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label required">휴대폰 번호</label>
                     <input type="tel" id="ordererPhone" class="form-input" placeholder="휴대폰 번호를 입력해주세요 (010-1234-5678)"
-                           th:value="${member != null} ? ${member.memberPhone} : ''" required>
+                           th:value="${member?.memberPhone ?: (guest?.guestPhone ?: '')}" required>
                     <div class="field-error" id="ordererPhone-error"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label required">이메일</label>
                     <input type="email" id="ordererEmail" class="form-input" placeholder="이메일을 입력해주세요"
-                           th:value="${member != null} ? ${member.memberMail} : ''" required>
+                           th:value="${member?.memberMail ?: ''}" required>
                     <div class="field-error" id="ordererEmail-error"></div>
                 </div>
             </div>
@@ -808,19 +808,19 @@
                 <h2 class="section-title">배송 정보</h2>
                 <div class="checkbox-group">
                     <input type="checkbox" id="same-info" class="checkbox-input"
-                           th:checked="${member != null}">
+                           th:checked="${member != null or guest != null}">
                     <label for="same-info" class="checkbox-label">주문자 정보와 동일</label>
                 </div>
                 <div class="form-group">
                     <label class="form-label required">받는 분</label>
                     <input type="text" id="receiverName" class="form-input" placeholder="받는 분 이름을 입력해주세요"
-                           th:value="${member != null} ? ${member.memberName} : ''" required>
+                           th:value="${member?.memberName ?: (guest?.guestName ?: '')}" required>
                     <div class="field-error" id="receiverName-error"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label required">휴대폰 번호</label>
                     <input type="tel" id="receiverPhone" class="form-input" placeholder="휴대폰 번호를 입력해주세요 (010-1234-5678)"
-                           th:value="${member != null} ? ${member.memberPhone} : ''" required>
+                           th:value="${member?.memberPhone ?: (guest?.guestPhone ?: '')}" required>
                     <div class="field-error" id="receiverPhone-error"></div>
                 </div>
 
@@ -830,14 +830,14 @@
                         <label class="form-label required">주소</label>
                         <div class="input-group">
                             <input type="text" id="receiverZip" class="form-input" placeholder="우편번호"
-                                   th:value="${member != null} ? ${member.memberZip} : ''"
-                                   th:data-member-zip="${member != null} ? ${member.memberZip} : ''"
+                                   th:value="${member?.memberZip ?: ''}"
+                                   th:data-member-zip="${member?.memberZip ?: ''}"
                                    required readonly>
                             <button type="button" class="btn-search" onclick="execDaumPostcode()">주소 검색</button>
                         </div>
                         <input type="text" id="receiverAddr" class="form-input" placeholder="기본 주소"
-                               th:value="${member != null} ? ${member.memberAddr} : ''"
-                               th:data-member-addr="${member != null} ? ${member.memberAddr} : ''"
+                               th:value="${member?.memberAddr ?: ''}"
+                               th:data-member-addr="${member?.memberAddr ?: ''}"
                                style="margin-top: 10px;" required readonly>
                         <input type="text" id="receiverAddrDetail" class="form-input" placeholder="상세 주소를 입력해주세요"
                                style="margin-top: 10px;" required>
@@ -964,15 +964,23 @@
 
 <script th:inline="javascript">
     // 서버에서 전달받은 데이터
+    var isDirect = /*[[${isDirect}]]*/ false;
     const paymentInfo = /*[[${paymentInfo}]]*/ {};
     const cartCodes = /*[[${cartCodes}]]*/ [];
     const cartItems = /*[[${cartItems}]]*/ [];
 
-    // 회원 정보 (Thymeleaf에서 안전하게 추출)
+    // 회원/비회원 정보 (수정된 버전)
     const memberInfo = {
-        memberZip: /*[[${member != null ? member.memberZip : ''}]]*/ '',
-        memberAddr: /*[[${member != null ? member.memberAddr : ''}]]*/ ''
+        memberZip: /*[[${member?.memberZip ?: ''}]]*/ '',
+        memberAddr: /*[[${member?.memberAddr ?: ''}]]*/ ''
     };
+
+    const guestInfo = {
+        guestName: /*[[${guest?.guestName ?: ''}]]*/ '',
+        guestPhone: /*[[${guest?.guestPhone ?: ''}]]*/ ''
+    };
+
+    const hasUserInfo = /*[[${member != null or guest != null}]]*/ false;
 
     // 할인 관련 변수 (단독 사용)
     let activeDiscount = null; // 현재 활성화된 할인 (쿠폰 또는 할인코드)
@@ -1090,19 +1098,19 @@
             validateField(this.id);
         });
 
-        $('#ordererPhone, #receiverPhone').on('input', function() {
-            const value = $(this).val().replace(/[^0-9]/g, '');
-            if (value.length <= 11) {
-                let formatted = value;
-                if (value.length > 6) {
-                    formatted = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7);
-                } else if (value.length > 3) {
-                    formatted = value.slice(0, 3) + '-' + value.slice(3);
-                }
-                $(this).val(formatted);
-            }
-            validateField(this.id);
-        });
+        // $('#ordererPhone, #receiverPhone').on('input', function() {
+        //     const value = $(this).val().replace(/[^0-9]/g, '');
+        //     if (value.length <= 11) {
+        //         let formatted = value;
+        //         if (value.length > 6) {
+        //             formatted = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7);
+        //         } else if (value.length > 3) {
+        //             formatted = value.slice(0, 3) + '-' + value.slice(3);
+        //         }
+        //         $(this).val(formatted);
+        //     }
+        //     validateField(this.id);
+        // });
 
         $('#ordererEmail').on('input', function() {
             validateField(this.id);
@@ -1112,10 +1120,10 @@
             validateField('receiverAddr');
         });
 
-        // 결제 버튼 클릭
-        $('#paymentButton').click(function() {
-            alert("결제 기능 준비 중");
-        });
+        // // 결제 버튼 클릭
+        // $('#paymentButton').click(function() {
+        //     alert("결제 기능 준비 중");
+        // });
     }
 
     // 할인코드 적용 (백엔드 검증)
@@ -1508,10 +1516,6 @@
         errorElement.hide();
     }
 
-    function isFormValid() {
-        return Object.values(validationState).every(isValid => isValid);
-    }
-
     function updatePaymentButton() {
         const isValid = isFormValid();
         $('#paymentButton').prop('disabled', !isValid);
@@ -1521,6 +1525,10 @@
         } else {
             $('#paymentButton').addClass('disabled');
         }
+    }
+
+    function isFormValid() {
+        return Object.values(validationState).every(isValid => isValid);
     }
 
     function processPayment() {
@@ -1635,15 +1643,23 @@
         }
     });
 
-    $('#paymentButton').click(function() {
-        if (isFormValid()) {
-            isPaymentProcessing = true;
-        }
-    });
+    // $('#paymentButton').click(function() {
+    //     if (isFormValid()) {
+    //         isPaymentProcessing = true;
+    //     }
+    // });
 
     // 글로벌 함수 노출
     window.forceResetPaymentButton = forceResetPaymentButton;
     window.removeDiscount = removeDiscount;
+
+    function forceResetPaymentButton() {
+        const button = document.getElementById('paymentButton');  // 결제 버튼
+        button.disabled = false;  // 버튼을 활성화
+        button.classList.remove('processing');  // 'processing' 클래스 제거
+        button.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="paymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;  // 버튼 텍스트 복원
+    }
+
 
     // 테스트 함수들 (개발자 도구에서 사용 가능)
     window.testResetButton = function() {
@@ -1720,6 +1736,204 @@
     $('#discountCode').on('input keyup paste', function() {
         this.value = this.value.toUpperCase();
     });
+
+    // 기존 order.html 파일에서 결제하기 버튼 관련 JavaScript만 수정
+
+    // 결제하기 버튼 클릭 이벤트 (기존 코드 대체)
+    document.getElementById('paymentButton').addEventListener('click', function() {
+        // 결제 진행 중 상태로 변경
+        this.disabled = true;
+        this.classList.add('processing');
+        this.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>주문 처리 중...';
+
+        try {
+            // 주문 데이터 수집
+            const orderData = collectOrderData();
+
+            // 입력 검증
+            if (!validateOrderData(orderData)) {
+                resetPaymentButton();
+                return;
+            }
+
+            // 주문 생성 요청
+            createOrder(orderData);
+
+        } catch (error) {
+            console.error('주문 처리 중 오류:', error);
+            alert('주문 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+            resetPaymentButton();
+        }
+    });
+
+    // 주문 데이터 수집
+    function collectOrderData() {
+        const ordererName = document.getElementById('ordererName').value.trim();
+        const ordererPhone = document.getElementById('ordererPhone').value.trim();
+        const ordererEmail = document.getElementById('ordererEmail').value.trim();
+        const receiverName = document.getElementById('receiverName').value.trim();
+        const receiverPhone = document.getElementById('receiverPhone').value.trim();
+        const receiverZip = document.getElementById('receiverZip').value.trim();
+        const receiverAddr = document.getElementById('receiverAddr').value.trim();
+        const receiverAddrDetail = document.getElementById('receiverAddrDetail').value.trim();
+        const deliveryRequest = document.getElementById('deliveryRequest').value.trim();
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card';
+        const agreeTerms = document.getElementById('agree-terms').checked;
+        const agreePrivacy = document.getElementById('agree-privacy').checked;
+        const agreeAdult = document.getElementById('agree-adult').checked;
+        const couponCode = document.getElementById('couponSelect').value;
+        const discountCode = document.getElementById('discountCode').value;
+
+        let productCode, optionCode, quantity;
+
+        if (isDirect) {
+            productCode = /*[[${productCode}]]*/ null;
+            optionCode = /*[[${optionCode}]]*/ null;
+            quantity = /*[[${quantity}]]*/ null;
+        } else {
+            productCode = null;
+            optionCode = null;
+            quantity = null;
+        }
+
+        return {
+            ordererName, ordererPhone, ordererEmail,
+            receiverName, receiverPhone, receiverZip, receiverAddr, receiverAddrDetail, deliveryRequest,
+            paymentMethod,
+            totalAmount: paymentInfo.totalAmount,
+            discountAmount: activeDiscount ? activeDiscount.amount : 0,
+            deliveryFee: paymentInfo.deliveryFee,
+            finalAmount: currentTotalAmount,
+            cartCodes: isDirect ? [] : cartCodes,
+            productCode, optionCode, quantity,         // Thymeleaf 표현식
+            couponCode, discountCode, agreeTerms, agreePrivacy, agreeAdult
+        };
+    }
+
+    // 주문 데이터 검증
+    function validateOrderData(data) {
+        if (!data.ordererName) {
+            alert('주문자 이름을 입력해주세요.');
+            document.getElementById('ordererName').focus();
+            return false;
+        }
+        if (!data.ordererPhone) {
+            alert('주문자 연락처를 입력해주세요.');
+            document.getElementById('ordererPhone').focus();
+            return false;
+        }
+        if (!data.ordererEmail) {
+            alert('주문자 이메일을 입력해주세요.');
+            document.getElementById('ordererEmail').focus();
+            return false;
+        }
+        if (!data.receiverName) {
+            alert('받는 분 이름을 입력해주세요.');
+            document.getElementById('receiverName').focus();
+            return false;
+        }
+        if (!data.receiverPhone) {
+            alert('받는 분 연락처를 입력해주세요.');
+            document.getElementById('receiverPhone').focus();
+            return false;
+        }
+        if (!data.receiverZip || !data.receiverAddr) {
+            alert('배송지 주소를 입력해주세요.');
+            return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.ordererEmail)) {
+            alert('올바른 이메일 형식을 입력해주세요.');
+            document.getElementById('ordererEmail').focus();
+            return false;
+        }
+
+        const phoneRegex = /^01[0-9]-?[0-9]{4}-?[0-9]{4}$/;
+        if (!phoneRegex.test(data.ordererPhone.replace(/-/g, ''))) {
+            alert('올바른 연락처를 입력해주세요. (예: 010-1234-5678)');
+            document.getElementById('ordererPhone').focus();
+            return false;
+        }
+
+        if (!phoneRegex.test(data.receiverPhone.replace(/-/g, ''))) {
+            alert('올바른 받는 분 연락처를 입력해주세요.');
+            document.getElementById('receiverPhone').focus();
+            return false;
+        }
+
+        if (!data.agreeTerms) {
+            alert('이용약관에 동의해주세요.');
+            return false;
+        }
+
+        if (!data.agreePrivacy) {
+            alert('개인정보 처리방침에 동의해주세요.');
+            alert(data.agreePrivacy);
+            return false;
+        }
+
+        if (!data.agreeAdult) {
+            alert('성인용품 구매 동의 및 성인인증 확인을 해주세요.');
+            return false;
+        }
+
+        if (data.finalAmount <= 0) {
+            alert('주문 금액이 올바르지 않습니다.');
+            return false;
+        }
+
+        return true;
+    }
+
+    // 주문 생성 요청
+    function createOrder(orderData) {
+        const endpoint = isDirect ? '/order/create-direct-order' : '/order/create-order';
+
+        console.log('주문 생성 요청:', orderData);
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(orderData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('주문 생성 응답:', data);
+
+                if (data.success) {
+                    alert('주문이 완료되었습니다!');
+                    sessionStorage.removeItem('orderDraft');
+                    window.location.href = `/order/order-complete/${data.orderId}`;
+                    // 결제 기능 추가 시 여기서 PG사 결제 처리
+                    // processPayment(data.orderCode, orderData.finalAmount);
+                } else {
+                    alert('주문 처리 실패: ' + (data.message || '알 수 없는 오류가 발생했습니다.'));
+                    resetPaymentButton();
+                }
+            })
+            .catch(error => {
+                console.error('주문 요청 오류:', error);
+                alert('주문 처리 중 네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.');
+                resetPaymentButton();
+            });
+    }
+
+    // 결제 버튼 상태 초기화
+    function resetPaymentButton() {
+        const button = document.getElementById('paymentButton');
+        button.disabled = false;
+        button.classList.remove('processing');
+        button.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="paymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
+    }
 </script>
 </body>
 </html>

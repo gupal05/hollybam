@@ -2,10 +2,7 @@
 package com.hollybam.hollybam.controller.orderController;
 
 import com.hollybam.hollybam.dto.*;
-import com.hollybam.hollybam.services.CouponService;
-import com.hollybam.hollybam.services.DiscountService;
-import com.hollybam.hollybam.services.IF_PaymentService;
-import com.hollybam.hollybam.services.ProductService;
+import com.hollybam.hollybam.services.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -36,6 +33,8 @@ public class OrderController {
     private CouponService couponService;
     @Autowired
     private DiscountService discountService;
+    @Autowired
+    private IF_OrderService orderService;
 
     @PostMapping("/checkout")
     public ModelAndView introPage(@RequestParam("cartCodes") List<String> cartCodes,
@@ -66,41 +65,34 @@ public class OrderController {
                     }
                 } catch (NumberFormatException e) {
                     log.error("Invalid cart code: " + code, e);
-                    // 잘못된 cartCode가 있어도 계속 진행
                 }
             }
 
-            // 유효한 cartCode가 없으면 장바구니로 리다이렉트
             if (cartCodeList.isEmpty()) {
                 mav.setViewName("redirect:/cart");
                 return mav;
             }
 
-            // 안전한 null 체크로 주문 정보 계산
             Integer memberCode = member != null ? member.getMemberCode() : null;
             Integer guestCode = guest != null ? guest.getGuestCode() : null;
 
             PaymentRequestDto paymentInfo = paymentService.calculateOrderFromCart(
                     cartCodeList, memberCode, guestCode);
 
-            // paymentInfo null 체크
             if (paymentInfo == null) {
                 log.error("PaymentInfo is null");
                 mav.setViewName("redirect:/cart");
                 return mav;
             }
 
-            // 장바구니 상품 상세 정보 조회
             List<CartDto> cartItems = getCartItemsWithDetails(cartCodeList);
 
-            // cartItems null 또는 빈 리스트 체크
             if (cartItems == null || cartItems.isEmpty()) {
                 log.error("CartItems is null or empty");
                 mav.setViewName("redirect:/cart");
                 return mav;
             }
 
-            // 쿠폰 정보 조회 (회원만, 예외 발생해도 계속 진행)
             List<CouponDto> couponList = new ArrayList<>();
             try {
                 if (member != null) {
@@ -114,8 +106,9 @@ public class OrderController {
                 couponList = new ArrayList<>();
             }
 
-            // ModelAndView에 데이터 추가 (모든 값이 null이 아님을 보장)
+            // ★ 핵심 수정: 둘 다 모델에 추가
             mav.addObject("member", member);
+            mav.addObject("guest", guest);
             mav.addObject("paymentInfo", paymentInfo);
             mav.addObject("cartItems", cartItems);
             mav.addObject("cartCodes", cartCodeList);
@@ -124,7 +117,6 @@ public class OrderController {
 
         } catch (Exception e) {
             log.error("주문 페이지 로드 중 예외 발생", e);
-            // 어떤 예외가 발생해도 장바구니로 안전하게 리다이렉트
             mav.setViewName("redirect:/cart");
         }
 
@@ -225,7 +217,7 @@ public class OrderController {
             // 쿠폰 정보 조회 (회원만)
             List<CouponDto> couponList = new ArrayList<>();
             try {
-                if(member != null) {
+                if (member != null) {
                     couponList = couponService.getUsePossibleCoupon(member.getMemberCode());
                 }
             } catch (Exception e) {
@@ -233,9 +225,16 @@ public class OrderController {
             }
 
             // ModelAndView에 데이터 추가 (기존 checkout과 동일한 구조)
-            mav.addObject("member", member);
+            if(member != null) {
+                mav.addObject("member", member);
+            } else {
+                mav.addObject("guest", guest);
+            }
             mav.addObject("paymentInfo", paymentInfo);
             mav.addObject("cartItems", cartItems);
+            mav.addObject("productCode",  productCode);
+            mav.addObject("optionCode",  optionCode);
+            mav.addObject("quantity",  quantity);
             mav.addObject("cartCodes", new ArrayList<Integer>()); // 빈 리스트 (바로구매는 cartCode 없음)
             mav.addObject("couponList", couponList);
             mav.addObject("isDirect", true); // 바로구매 구분용
@@ -249,6 +248,7 @@ public class OrderController {
 
         return mav;
     }
+
 
     /**
      * 바로 구매용 CartDto 생성 (실제 장바구니에 저장하지 않고 주문 페이지 표시용)
@@ -287,5 +287,244 @@ public class OrderController {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    /**
+     * 주문 생성 (장바구니에서)
+     */
+    @PostMapping("/create-order")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createOrder(
+            @RequestBody Map<String, Object> orderData,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                result.put("success", false);
+                result.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            if (member != null) {
+                orderData.put("memCode", member.getMemberCode());
+                orderData.put("adultVerified", member.isAdultVerified());
+            } else {
+                orderData.put("guestCode", guest.getGuestCode());
+                orderData.put("adultVerified", guest.isAdultVerified());
+            }
+
+            Boolean adultVerified = (Boolean) orderData.get("adultVerified");
+            if (!adultVerified) {
+                result.put("success", false);
+                result.put("message", "성인 인증이 필요합니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            OrderDto order = orderService.createOrderFromCart(orderData);
+
+            result.put("success", true);
+            result.put("message", "주문이 완료되었습니다.");
+            result.put("orderId", order.getOrderId());
+            result.put("orderCode", order.getOrderCode());
+
+        } catch (Exception e) {
+            log.error("주문 생성 실패", e);
+            result.put("success", false);
+            result.put("message", "주문 처리 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 바로 구매 주문 생성
+     */
+    @PostMapping("/create-direct-order")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createDirectOrder(
+            @RequestBody Map<String, Object> orderData,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                result.put("success", false);
+                result.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            if (member != null) {
+                orderData.put("memCode", member.getMemberCode());
+                orderData.put("adultVerified", member.isAdultVerified());
+            } else {
+                orderData.put("guestCode", guest.getGuestCode());
+                orderData.put("adultVerified", guest.isAdultVerified());
+            }
+
+            Boolean adultVerified = (Boolean) orderData.get("adultVerified");
+            if (!adultVerified) {
+                result.put("success", false);
+                result.put("message", "성인 인증이 필요합니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            OrderDto order = orderService.createDirectOrder(orderData);
+
+            result.put("success", true);
+            result.put("message", "주문이 완료되었습니다.");
+            result.put("orderId", order.getOrderId());
+            result.put("orderCode", order.getOrderCode());
+
+        } catch (Exception e) {
+            log.error("바로 구매 주문 생성 실패", e);
+            result.put("success", false);
+            result.put("message", "주문 처리 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 주문 완료 페이지
+     */
+    @GetMapping("/order-complete/{orderId}")
+    public ModelAndView orderComplete(@PathVariable String orderId) {
+        ModelAndView mav = new ModelAndView();
+        try {
+            OrderDto order = orderService.getOrderDetail(orderId);
+            List<Map<String, Object>> orderDetails = orderService.getOrderDetails(order.getOrderCode());
+            mav.addObject("orderDetails", orderDetails);
+            System.out.println(orderDetails);
+            mav.addObject("order", order);
+            mav.setViewName("paymentResult");
+
+        } catch (Exception e) {
+            log.error("주문 완료 페이지 조회 실패: {}", orderId, e);
+            mav.addObject("error", "주문 정보를 불러올 수 없습니다.");
+            mav.setViewName("error/error");
+        }
+
+        return mav;
+    }
+
+    /**
+     * 주문 목록 페이지
+     */
+    @GetMapping("/orders")
+    public ModelAndView orderList(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpSession session) {
+
+        ModelAndView mav = new ModelAndView();
+
+        try {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                mav.setViewName("redirect:/auth/login");
+                return mav;
+            }
+
+            List<OrderDto> orderList;
+            int totalOrders;
+
+            if (member != null) {
+                orderList = orderService.getMemberOrders(member.getMemberCode(), page, size);
+                totalOrders = orderService.getMemberOrderCount(member.getMemberCode());
+                mav.setViewName("mypage/orderList");
+            } else {
+                orderList = orderService.getGuestOrders(guest.getGuestCode(), page, size);
+                totalOrders = orderService.getGuestOrderCount(guest.getGuestCode());
+                mav.setViewName("mypage/guest/orderList");
+            }
+
+            int totalPages = (int) Math.ceil((double) totalOrders / size);
+
+            mav.addObject("orderList", orderList);
+            mav.addObject("totalOrders", totalOrders);
+            mav.addObject("totalPages", totalPages);
+            mav.addObject("currentPage", page);
+            mav.addObject("pageSize", size);
+
+        } catch (Exception e) {
+            log.error("주문 목록 조회 실패", e);
+            mav.addObject("error", "주문 목록을 불러올 수 없습니다.");
+            mav.setViewName("error/error");
+        }
+
+        return mav;
+    }
+
+    /**
+     * 주문 취소
+     */
+    @PostMapping("/cancel/{orderId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> cancelOrder(
+            @PathVariable String orderId,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            OrderDto order = orderService.getOrderDetail(orderId);
+            if (order == null) {
+                result.put("success", false);
+                result.put("message", "주문을 찾을 수 없습니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            boolean hasPermission = false;
+            if (member != null && order.getMemCode() != null &&
+                    member.getMemberCode() == order.getMemCode()) {
+                hasPermission = true;
+            } else if (guest != null && order.getGuestCode() != null &&
+                    guest.getGuestCode() == order.getGuestCode()) {
+                hasPermission = true;
+            }
+
+            if (!hasPermission) {
+                result.put("success", false);
+                result.put("message", "주문 취소 권한이 없습니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            if (!order.getOrderStatus().equals("PAID") && !order.getOrderStatus().equals("PREPARING")) {
+                result.put("success", false);
+                result.put("message", "현재 주문 상태에서는 취소가 불가능합니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            boolean cancelled = orderService.cancelOrder(order.getOrderCode(), orderId);
+
+            if (cancelled) {
+                result.put("success", true);
+                result.put("message", "주문이 취소되었습니다.");
+            } else {
+                result.put("success", false);
+                result.put("message", "주문 취소 처리에 실패했습니다.");
+            }
+
+        } catch (Exception e) {
+            log.error("주문 취소 실패: {}", orderId, e);
+            result.put("success", false);
+            result.put("message", "주문 취소 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
     }
 }

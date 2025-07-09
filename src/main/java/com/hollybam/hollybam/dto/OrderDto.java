@@ -37,7 +37,6 @@ public class OrderDto {
     private int finalAmount;
 
     // PG 결제 정보
-    private String impUid;
     private String pgProvider;
     private String pgTid;
 

@@ -370,4 +370,39 @@ public class OrderServiceImpl implements IF_OrderService {
     public List<Map<String, Object>> getOrderDetails(int orderCode) {
         return orderDao.getOrderDetails(orderCode);
     }
+
+    @Override
+    @Transactional
+    public List<OrderDto> selectOrdersByMember(int memberCode) {
+        return orderDao.selectOrdersByMember(memberCode);
+    }
+
+    @Override
+    @Transactional
+    public List<OrderDto> selectOrdersByGuest(int guestCode){
+        return orderDao.selectOrdersByGuest(guestCode);
+    }
+
+    @Override
+    @Transactional
+    public List<OrderDto> selectOrdersByMemberForLimit(int memberCode){
+        return orderDao.selectOrdersByMemberForLimit(memberCode);
+    }
+    @Override
+    @Transactional
+    public List<OrderDto> selectOrdersByGuestForLimit(int guestCode){
+        return orderDao.selectOrdersByGuestForLimit(guestCode);
+    }
+
+    @Override
+    @Transactional
+    public int getFinalAmount(int code){
+        return orderDao.getFinalAmount(code);
+    }
+
+    @Override
+    @Transactional
+    public DeliveryDto getTrackingNumber(int orderCode){
+        return orderDao.getTrackingNumber(orderCode);
+    }
 }

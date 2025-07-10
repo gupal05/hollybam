@@ -29,6 +29,226 @@
             gap: 30px;
         }
 
+        /* 사이드바 공통 스타일 */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            height: fit-content;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 140px;
+        }
+
+        /* 회원 프로필 */
+        .user-profile {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 32px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .user-grade {
+            font-size: 14px;
+            color: #EE386D;
+            font-weight: 500;
+        }
+
+        /* 비회원 프로필 */
+        .guest-profile {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .guest-profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c757d, #9ca3af);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .guest-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .guest-status {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        /* 회원 멤버십 상태 */
+        .membership-status {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .membership-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .points-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .points-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .points-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* 비회원 회원가입 프로모션 */
+        .join-promotion {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .promotion-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .promotion-desc {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .join-btn {
+            background: white;
+            color: #EE386D;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .join-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+            color: #EE386D;
+        }
+
+        /* 정보 수정 버튼 (회원용) */
+        .edit-profile-btn {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .edit-profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.4);
+        }
+
+        /* 사이드바 메뉴 */
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #EE386D;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            flex: 1;
+        }
+
         .page-header {
             background: white;
             border-radius: 20px;
@@ -411,6 +631,16 @@
 
         /* 반응형 */
         @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                padding: 120px 20px 60px;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
             .wishlist-grid {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 15px;
@@ -423,7 +653,8 @@
             }
 
             .page-header,
-            .wishlist-content {
+            .wishlist-content,
+            .sidebar {
                 padding: 25px 20px;
                 border-radius: 15px;
             }
@@ -489,165 +720,6 @@
                 font-size: 14px;
             }
         }
-
-        .sidebar {
-            width: 280px;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            height: fit-content;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            position: sticky;
-            top: 140px;
-        }
-
-        .user-profile {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .profile-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #EE386D, #ff6b9d);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            color: white;
-            font-size: 32px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
-        }
-
-        .user-name {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 5px;
-        }
-
-        .user-grade {
-            font-size: 14px;
-            color: #EE386D;
-            font-weight: 500;
-        }
-
-        .membership-status {
-            background: linear-gradient(135deg, #EE386D, #ff6b9d);
-            color: white;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .membership-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .points-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .points-label {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .points-value {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .sidebar-menu li {
-            margin-bottom: 8px;
-        }
-
-        .sidebar-menu a {
-            display: block;
-            padding: 12px 16px;
-            text-decoration: none;
-            color: #666;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background: #EE386D;
-            color: white;
-            transform: translateX(5px);
-        }
-
-        .sidebar-menu i {
-            width: 20px;
-            margin-right: 12px;
-        }
-
-        .edit-profile-btn {
-            background: linear-gradient(135deg, #EE386D, #ff6b9d);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .edit-profile-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.4);
-        }
-
-        /* 메인 콘텐츠 수정 */
-        .main-content {
-            flex: 1;
-        }
-
-        .page-header,
-        .orders-list {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        /* 반응형 수정 */
-        @media (max-width: 1024px) {
-            .container {
-                flex-direction: column;
-                padding: 120px 20px 60px;
-            }
-
-            .sidebar {
-                width: 100%;
-                position: static;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                padding: 25px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -655,9 +727,10 @@
 <div th:replace="~{layout/header :: header}"></div>
 
 <div class="container">
-    <!-- 사이드바 추가 -->
+    <!-- 사이드바 -->
     <aside class="sidebar">
-        <div class="user-profile">
+        <!-- 회원용 프로필 -->
+        <div th:if="${session.member != null}" class="user-profile">
             <div class="profile-image">
                 <span th:text="${#strings.substring(session.member.memberName, 0, 1)}">홍</span>
             </div>
@@ -668,7 +741,17 @@
             </button>
         </div>
 
-        <div class="membership-status">
+        <!-- 비회원용 프로필 -->
+        <div th:unless="${session.member != null}" class="guest-profile">
+            <div class="guest-profile-image">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="guest-name">비회원</div>
+            <div class="guest-status">임시 이용 중</div>
+        </div>
+
+        <!-- 회원용 멤버십 상태 -->
+        <div th:if="${session.member != null}" class="membership-status">
             <div class="membership-title">Member Since 2025</div>
             <div class="points-info">
                 <span class="points-label" th:text="'🎁 쿠폰 ' + ${couponCount} + '개'">🎁 쿠폰 0개</span>
@@ -676,92 +759,119 @@
             </div>
         </div>
 
+        <!-- 비회원용 회원가입 프로모션 -->
+        <div th:unless="${session.member != null}" class="join-promotion">
+            <div class="promotion-title">🎉 회원가입 특가!</div>
+            <div class="promotion-desc">
+                회원가입 시 즉시 5천원 쿠폰과<br>
+                다양한 혜택을 받아보세요
+            </div>
+            <a href="/auth/register" class="join-btn">
+                <i class="fas fa-user-plus"></i> 회원가입하기
+            </a>
+        </div>
+
+        <!-- 사이드바 메뉴 -->
         <ul class="sidebar-menu">
-            <li><a href="/mypage"><i class="fas fa-user"></i>계정 정보</a></li>
-            <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
-            <li><a href="/wishlist" class="active"><i class="fas fa-heart"></i>위시리스트</a></li>
-            <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
-            <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
-            <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
+            <!-- 회원용 메뉴 -->
+            <th:block th:if="${session.member != null}">
+                <li><a href="/mypage"><i class="fas fa-user"></i>계정 정보</a></li>
+                <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+                <li><a href="/wishlist" class="active"><i class="fas fa-heart"></i>위시리스트</a></li>
+                <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
+                <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
+                <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
+            </th:block>
+
+            <!-- 비회원용 메뉴 -->
+            <th:block th:unless="${session.member != null}">
+                <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+                <li><a href="/wishlist" class="active"><i class="fas fa-heart"></i>위시리스트</a></li>
+                <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>비회원 로그아웃</a></li>
+            </th:block>
         </ul>
     </aside>
-    <main class="main-content">
-    <!-- 페이지 헤더 -->
-    <div class="page-header">
-        <h1 class="page-title">위시리스트</h1>
-        <p class="page-subtitle">관심 있는 상품들을 모아보세요.</p>
 
-        <div class="wishlist-controls">
-            <div class="item-count">총 <span id="totalCount" th:text="${totalCount ?: 0}">0</span>개의 상품</div>
-            <div class="control-buttons">
-                <button class="btn" id="selectAll">전체선택</button>
-                <button class="btn" id="deleteSelected">선택삭제</button>
-                <button class="btn btn-primary" id="addToCart">장바구니 담기</button>
+    <main class="main-content">
+        <!-- 페이지 헤더 -->
+        <div class="page-header">
+            <h1 class="page-title">위시리스트</h1>
+            <p class="page-subtitle">관심 있는 상품들을 모아보세요.</p>
+
+            <div class="wishlist-controls">
+                <div class="item-count">총 <span id="totalCount" th:text="${totalCount ?: 0}">0</span>개의 상품</div>
+                <div class="control-buttons">
+                    <button class="btn" id="selectAll">전체선택</button>
+                    <button class="btn" id="deleteSelected">선택삭제</button>
+                    <button class="btn btn-primary" id="addToCart">장바구니 담기</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- 위시리스트 콘텐츠 -->
-    <div class="wishlist-content">
-        <!-- 위시리스트가 있는 경우 -->
-        <div class="wishlist-grid" id="wishlistGrid" th:if="${wishlistItems != null and !wishlistItems.isEmpty()}">
-            <!-- 위시리스트 아이템 반복 -->
-            <article class="wishlist-item" th:each="item : ${wishlistItems}">
-                <input type="checkbox" class="item-checkbox" th:data-product-code="${item.productCode}">
-                <a class="card-product-widget" th:href="@{/product/detail/{id}(id=${item.productCode})}">
-                    <button class="remove-item"
-                            th:data-product-code="${item.productCode}"
-                            type="button"
-                            title="위시리스트에서 제거">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="card-product-img">
-                        <img th:src="${item.productImage != null ? 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + item.productImage : 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/no-image.png'}"
-                             th:alt="${item.productName}" />
-                    </div>
-                    <div class="card-product-info">
-                        <p class="card-product-title" th:text="${item.productName}">상품명</p>
-                        <div class="card-product-price">
-                            <!-- 할인율 계산 및 표시 -->
-                            <th:block th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}">
-                                <span class="sale-perc"
-                                      th:with="discountRate=${T(java.lang.Math).round((1.0 - item.sellingPrice * 1.0 / item.originalPrice) * 100)}"
-                                      th:text="${discountRate + '%'}">
-                                    25%
-                                </span>
-                            </th:block>
-                            <span class="sale_price" th:text="${'₩' + #numbers.formatInteger(item.sellingPrice, 3, 'COMMA')}">₩150,000</span>
-                            <span class="regular_price"
-                                  th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}"
-                                  th:text="${'₩' + #numbers.formatInteger(item.originalPrice, 3, 'COMMA')}">₩200,000</span>
+        <!-- 위시리스트 콘텐츠 -->
+        <div class="wishlist-content">
+            <!-- 위시리스트가 있는 경우 -->
+            <div class="wishlist-grid" id="wishlistGrid" th:if="${wishlistItems != null and !wishlistItems.isEmpty()}">
+                <!-- 위시리스트 아이템 반복 -->
+                <article class="wishlist-item" th:each="item : ${wishlistItems}">
+                    <input type="checkbox" class="item-checkbox"
+                           th:attr="data-product-code=${item.productCode}">
+                    <a class="card-product-widget" th:href="@{/product/detail/{id}(id=${item.productCode})}">
+                        <button class="remove-item"
+                                th:attr="data-product-code=${item.productCode}"
+                                type="button"
+                                title="위시리스트에서 제거">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="card-product-img">
+                            <img th:src="${item.productImage != null ? 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + item.productImage : 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/no-image.png'}"
+                                 th:alt="${item.productName}" />
                         </div>
-                        <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24">
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                            </svg>
-                            <span>45</span>
-                            <svg class="star-icon" viewBox="0 0 24 24">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                            <span>4.9 (23)</span>
+                        <div class="card-product-info">
+                            <p class="card-product-title" th:text="${item.productName}">상품명</p>
+                            <div class="card-product-price">
+                                <!-- 할인율 계산 및 표시 -->
+                                <th:block th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}">
+                                    <span class="sale-perc"
+                                          th:with="discountRate=${T(java.lang.Math).round((1.0 - item.sellingPrice * 1.0 / item.originalPrice) * 100)}"
+                                          th:text="${discountRate + '%'}">
+                                        25%
+                                    </span>
+                                </th:block>
+                                <span class="sale_price" th:text="${'₩' + #numbers.formatInteger(item.sellingPrice, 3, 'COMMA')}">₩150,000</span>
+                                <span class="regular_price"
+                                      th:if="${item.originalPrice != null and item.originalPrice > item.sellingPrice}"
+                                      th:text="${'₩' + #numbers.formatInteger(item.originalPrice, 3, 'COMMA')}">₩200,000</span>
+                            </div>
+                            <div class="product_review_container">
+                                <svg class="heart-icon" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span>45</span>
+                                <svg class="star-icon" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span>4.9 (23)</span>
+                            </div>
+                            <div class="item-actions">
+                                <button class="btn btn-sm cart-btn"
+                                        th:attr="data-product-code=${item.productCode}">장바구니</button>
+                                <button class="btn btn-sm btn-primary buy-btn"
+                                        th:attr="data-product-code=${item.productCode}">바로구매</button>
+                            </div>
                         </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm cart-btn" th:data-product-code="${item.productCode}">장바구니</button>
-                            <button class="btn btn-sm btn-primary buy-btn" th:data-product-code="${item.productCode}">바로구매</button>
-                        </div>
-                    </div>
-                </a>
-            </article>
-        </div>
+                    </a>
+                </article>
+            </div>
 
-        <!-- 위시리스트가 비어있는 경우 -->
-        <div class="empty-wishlist" id="emptyWishlist" th:if="${wishlistItems == null or wishlistItems.isEmpty()}">
-            <div class="empty-icon">💝</div>
-            <div class="empty-title">위시리스트가 비어있습니다</div>
-            <div class="empty-desc">마음에 드는 상품을 위시리스트에 추가해보세요.<br>나중에 쉽게 찾아볼 수 있습니다.</div>
-            <a href="/main" class="shop-now-btn">쇼핑하러 가기</a>
+            <!-- 위시리스트가 비어있는 경우 -->
+            <div class="empty-wishlist" id="emptyWishlist" th:if="${wishlistItems == null or wishlistItems.isEmpty()}">
+                <div class="empty-icon">💝</div>
+                <div class="empty-title">위시리스트가 비어있습니다</div>
+                <div class="empty-desc">마음에 드는 상품을 위시리스트에 추가해보세요.<br>나중에 쉽게 찾아볼 수 있습니다.</div>
+                <a href="/main" class="shop-now-btn">쇼핑하러 가기</a>
+            </div>
         </div>
-    </div>
     </main>
 </div>
 
@@ -775,7 +885,10 @@
 <!-- 푸터 -->
 <div th:replace="~{layout/footer :: footer}"></div>
 
-<script>
+<script th:inline="javascript">
+    // 회원 여부 확인
+    const isMember = [[${session.member != null}]];
+
     $(document).ready(function() {
         // 선택된 상품들을 관리하는 Set
         let selectedItems = new Set();
@@ -870,70 +983,104 @@
             window.location.href = `/order/direct?productCode=${productCode}`;
         });
 
-        // 위시리스트에서 제거 함수
+        // 위시리스트에서 제거 함수 (회원/비회원 구분)
         function removeFromWishlist(productCode, $item = null) {
-            $.ajax({
-                url: '/wishlist/remove',
-                type: 'DELETE',
-                data: { productCode: productCode },
-                success: function(response) {
-                    if (response.success) {
-                        if ($item) {
-                            $item.fadeOut(300, function() {
-                                $(this).remove();
-                                updateItemCount();
-                                checkEmptyWishlist();
-                            });
-                        }
-                        showToast(response.message, 'success');
-
-                        // 선택된 항목에서도 제거
-                        selectedItems.delete(productCode);
-                        updateBulkActions();
-                    } else {
-                        showToast(response.message, 'error');
-                    }
-                },
-                error: function() {
-                    showToast('제거 중 오류가 발생했습니다.', 'error');
-                }
-            });
-        }
-
-        // 여러 상품 위시리스트에서 제거
-        function removeMultipleFromWishlist(productCodes) {
-            let completed = 0;
-            let errors = 0;
-
-            productCodes.forEach(productCode => {
+            if (isMember) {
+                // 회원의 경우 서버 API 호출
                 $.ajax({
                     url: '/wishlist/remove',
                     type: 'DELETE',
                     data: { productCode: productCode },
                     success: function(response) {
-                        completed++;
                         if (response.success) {
-                            $(`.wishlist-item .item-checkbox[data-product-code="${productCode}"]`)
-                                .closest('.wishlist-item')
-                                .fadeOut(300, function() {
-                                    $(this).remove();
-                                    if (completed === productCodes.length) {
-                                        finishBulkDelete(productCodes.length - errors);
-                                    }
-                                });
+                            handleRemoveSuccess(productCode, $item);
+                            showToast(response.message, 'success');
                         } else {
-                            errors++;
+                            showToast(response.message, 'error');
                         }
                     },
                     error: function() {
-                        completed++;
-                        errors++;
-                        if (completed === productCodes.length) {
-                            finishBulkDelete(productCodes.length - errors);
-                        }
+                        showToast('제거 중 오류가 발생했습니다.', 'error');
                     }
                 });
-            });
+            } else {
+                // 비회원의 경우 로컬스토리지에서 제거
+                let wishlist = JSON.parse(localStorage.getItem('guest_wishlist')) || [];
+                wishlist = wishlist.filter(code => code !== productCode);
+                localStorage.setItem('guest_wishlist', JSON.stringify(wishlist));
+
+                handleRemoveSuccess(productCode, $item);
+                showToast('위시리스트에서 제거되었습니다.', 'success');
+            }
+        }
+
+        function handleRemoveSuccess(productCode, $item) {
+            if ($item) {
+                $item.fadeOut(300, function() {
+                    $(this).remove();
+                    updateItemCount();
+                    checkEmptyWishlist();
+                });
+            }
+            selectedItems.delete(productCode);
+            updateBulkActions();
+        }
+
+        // 여러 상품 위시리스트에서 제거
+        function removeMultipleFromWishlist(productCodes) {
+            if (isMember) {
+                // 회원의 경우 서버 API 호출
+                let completed = 0;
+                let errors = 0;
+
+                productCodes.forEach(productCode => {
+                    $.ajax({
+                        url: '/wishlist/remove',
+                        type: 'DELETE',
+                        data: { productCode: productCode },
+                        success: function(response) {
+                            completed++;
+                            if (response.success) {
+                                fadeOutItem(productCode);
+                            } else {
+                                errors++;
+                            }
+                            if (completed === productCodes.length) {
+                                finishBulkDelete(productCodes.length - errors);
+                            }
+                        },
+                        error: function() {
+                            completed++;
+                            errors++;
+                            if (completed === productCodes.length) {
+                                finishBulkDelete(productCodes.length - errors);
+                            }
+                        }
+                    });
+                });
+            } else {
+                // 비회원의 경우 로컬스토리지에서 제거
+                let wishlist = JSON.parse(localStorage.getItem('guest_wishlist')) || [];
+
+                productCodes.forEach(productCode => {
+                    wishlist = wishlist.filter(code => code !== productCode);
+                    fadeOutItem(productCode);
+                });
+
+                localStorage.setItem('guest_wishlist', JSON.stringify(wishlist));
+
+                setTimeout(() => {
+                    finishBulkDelete(productCodes.length);
+                }, 300);
+            }
+        }
+
+        function fadeOutItem(productCode) {
+            $(`.wishlist-item .item-checkbox[data-product-code="${productCode}"]`)
+                .closest('.wishlist-item')
+                .fadeOut(300, function() {
+                    $(this).remove();
+                });
         }
 
         function finishBulkDelete(successCount) {
@@ -944,24 +1091,38 @@
             showToast(`${successCount}개의 상품이 위시리스트에서 제거되었습니다.`, 'success');
         }
 
-        // 장바구니 추가 함수
+        // 장바구니 추가 함수 (회원/비회원 구분)
         function addToCart(productCodes) {
-            // 실제 장바구니 API 호출
-            $.ajax({
-                url: '/cart/add-multiple',
-                type: 'POST',
-                data: { productCodes: productCodes },
-                success: function(response) {
-                    if (response.success) {
-                        showToast(`${productCodes.length}개의 상품이 장바구니에 추가되었습니다.`, 'success');
-                    } else {
-                        showToast(response.message || '장바구니 추가 중 오류가 발생했습니다.', 'error');
+            if (isMember) {
+                // 회원의 경우 서버 API 호출
+                $.ajax({
+                    url: '/cart/add-multiple',
+                    type: 'POST',
+                    data: { productCodes: productCodes },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast(`${productCodes.length}개의 상품이 장바구니에 추가되었습니다.`, 'success');
+                        } else {
+                            showToast(response.message || '장바구니 추가 중 오류가 발생했습니다.', 'error');
+                        }
+                    },
+                    error: function() {
+                        showToast('장바구니 추가 중 오류가 발생했습니다.', 'error');
                     }
-                },
-                error: function() {
-                    showToast('장바구니 추가 중 오류가 발생했습니다.', 'error');
-                }
-            });
+                });
+            } else {
+                // 비회원의 경우 로컬스토리지 처리
+                let cart = JSON.parse(localStorage.getItem('guest_cart')) || [];
+
+                productCodes.forEach(productCode => {
+                    if (!cart.includes(productCode)) {
+                        cart.push(productCode);
+                    }
+                });
+
+                localStorage.setItem('guest_cart', JSON.stringify(cart));
+                showToast(`${productCodes.length}개의 상품이 장바구니에 추가되었습니다.`, 'success');
+            }
         }
 
         // 아이템 개수 업데이트
@@ -981,10 +1142,10 @@
         // 토스트 메시지 표시
         function showToast(message, type = 'info') {
             const $toast = $(`
-            <div class="toast-message toast-${type}">
-                <span>${message}</span>
-            </div>
-        `);
+                <div class="toast-message toast-${type}">
+                    <span>${message}</span>
+                </div>
+            `);
 
             $('body').append($toast);
 
@@ -1010,28 +1171,17 @@
         $('.item-checkbox').on('click', function(e) {
             e.stopPropagation();
         });
-    });
 
-
-    // 비밀번호 확인 함수들 추가
-    function changePage() {
-        // 비밀번호 확인 모달이 있다면 여기에 추가
-        // 또는 직접 페이지 이동
-        window.location.href = '/mypage/profile/edit';
-    }
-
-    function logout() {
-        if(confirm('로그아웃 하시겠습니까?')) {
-            window.location.href = '/logout';
-        }
-    }
-
-    // 현재 페이지에 따른 사이드바 메뉴 활성화
-    $(document).ready(function() {
+        // 현재 페이지에 따른 사이드바 메뉴 활성화
         const currentPath = window.location.pathname;
         $('.sidebar-menu a').removeClass('active');
         $(`.sidebar-menu a[href="${currentPath}"]`).addClass('active');
     });
+
+    // 정보 수정 페이지 이동 (회원용)
+    function changePage() {
+        window.location.href = '/mypage/profile/edit';
+    }
 </script>
 </body>
 </html>

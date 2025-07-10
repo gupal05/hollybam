@@ -212,4 +212,171 @@
             oi.order_code = #{orderCode}
     </select>
 
+    <!-- Order 전체 조회 (회원 기준) -->
+    <select id="selectOrdersByMember" parameterType="int" resultMap="orderResultMap">
+        SELECT
+            o.order_code, o.order_id, o.order_status, o.create_at, o.final_amount,
+
+            oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
+            oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
+
+            p.product_name, p.product_code, p.product_order_count,
+
+            po.option_name, po.option_value,
+
+            pr.price_selling,
+
+            i.image_url
+
+        FROM orders o
+                 LEFT JOIN order_items oi ON o.order_code = oi.order_code
+                 LEFT JOIN product p ON oi.product_code = p.product_code
+                 LEFT JOIN product_option po ON oi.option_code = po.option_code
+                 LEFT JOIN price pr ON p.product_code = pr.product_code
+                 LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
+
+        WHERE o.mem_code = #{memberCode}
+        ORDER BY o.create_at DESC
+    </select>
+
+    <!-- Order 전체 조회 (비회원 기준) -->
+    <select id="selectOrdersByGuest" parameterType="int" resultMap="orderResultMap">
+        SELECT
+            o.order_code, o.order_id, o.order_status, o.create_at, o.final_amount,
+
+            oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
+            oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
+
+            p.product_name, p.product_code, p.product_order_count,
+
+            po.option_name, po.option_value,
+
+            pr.price_selling,
+
+            i.image_url
+
+        FROM orders o
+                 LEFT JOIN order_items oi ON o.order_code = oi.order_code
+                 LEFT JOIN product p ON oi.product_code = p.product_code
+                 LEFT JOIN product_option po ON oi.option_code = po.option_code
+                 LEFT JOIN price pr ON p.product_code = pr.product_code
+                 LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
+
+        WHERE o.guest_code = #{guestCode}
+        ORDER BY o.create_at DESC
+    </select>
+
+    <!-- Order 최근 조회 (회원 기준) -->
+    <select id="selectOrdersByMemberForLimit" parameterType="int" resultMap="orderResultMap">
+        SELECT
+            o.order_code, o.order_id, o.order_status, o.create_at, o.final_amount,
+
+            oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
+            oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
+
+            p.product_name, p.product_code, p.product_order_count,
+
+            po.option_name, po.option_value,
+
+            pr.price_selling,
+
+            i.image_url
+
+        FROM orders o
+                 LEFT JOIN order_items oi ON o.order_code = oi.order_code
+                 LEFT JOIN product p ON oi.product_code = p.product_code
+                 LEFT JOIN product_option po ON oi.option_code = po.option_code
+                 LEFT JOIN price pr ON p.product_code = pr.product_code
+                 LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
+
+        WHERE o.mem_code = #{memberCode}
+        ORDER BY o.create_at DESC
+        LIMIT 2
+    </select>
+
+    <!-- Order 최근 조회 (비회원 기준) -->
+    <select id="selectOrdersByGuestForLimit" parameterType="int" resultMap="orderResultMap">
+        SELECT
+            o.order_code, o.order_id, o.order_status, o.create_at, o.final_amount,
+
+            oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
+            oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
+
+            p.product_name, p.product_code, p.product_order_count,
+
+            po.option_name, po.option_value,
+
+            pr.price_selling,
+
+            i.image_url
+
+        FROM orders o
+                 LEFT JOIN order_items oi ON o.order_code = oi.order_code
+                 LEFT JOIN product p ON oi.product_code = p.product_code
+                 LEFT JOIN product_option po ON oi.option_code = po.option_code
+                 LEFT JOIN price pr ON p.product_code = pr.product_code
+                 LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
+
+        WHERE o.guest_code = #{guestCode}
+        ORDER BY o.create_at DESC
+        LIMIT 2
+    </select>
+
+
+    <!-- resultMap -->
+    <resultMap id="orderResultMap" type="com.hollybam.hollybam.dto.OrderDto">
+        <id property="orderCode" column="order_code"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="createAt" column="create_at"/>
+        <result property="finalAmount" column="final_amount"/>
+
+        <!-- orderItems -->
+        <collection property="orderItems" javaType="java.util.ArrayList" ofType="com.hollybam.hollybam.dto.OrderItemDto">
+            <id property="orderItemCode" column="order_item_code"/>
+            <result property="orderCode" column="oi_order_code"/>
+            <result property="productCode" column="product_code"/>
+            <result property="optionCode" column="option_code"/>
+            <result property="quantity" column="quantity"/>
+            <result property="unitPrice" column="unit_price"/>
+            <result property="optionPrice" column="option_price"/>
+            <result property="totalPrice" column="total_price"/>
+
+            <!-- productDto -->
+            <association property="productDto" javaType="com.hollybam.hollybam.dto.ProductDto">
+                <id property="productCode" column="product_code"/>
+                <result property="productName" column="product_name"/>
+                <result property="productOrderCount" column="product_order_count"/>
+
+                <!-- 단일 가격 정보 -->
+                <association property="priceDto" javaType="com.hollybam.hollybam.dto.PriceDto">
+                    <result property="priceSelling" column="price_selling"/>
+                </association>
+
+                <!-- 단일 대표 이미지 -->
+                <association property="imageDto" javaType="com.hollybam.hollybam.dto.ImageDto">
+                    <result property="imageUrl" column="image_url"/>
+                </association>
+            </association>
+
+            <!-- 단일 옵션 정보 -->
+            <association property="productOptionDto" javaType="com.hollybam.hollybam.dto.ProductOptionDto">
+                <result property="optionName" column="option_name"/>
+                <result property="optionValue" column="option_value"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <select id="getFinalAmount" parameterType="int" resultType="int">
+        select final_amount
+        from orders
+        where order_code = #{code}
+    </select>
+
+    <select id="getTrackingNumber" parameterType="int" resultType="com.hollybam.hollybam.dto.DeliveryDto">
+        select tracking_number as trackingNumber
+        from delivery
+        where order_code = #{orderCode}
+    </select>
+
 </mapper>

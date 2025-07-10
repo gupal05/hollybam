@@ -693,6 +693,241 @@
         font-size: 9px;
       }
     }
+
+    /* 최근 주문 내역 스타일 */
+    .order-item {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .order-item:hover {
+      border-color: #EE386D;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(238, 56, 109, 0.15);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .order-date {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .order-status {
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(238, 56, 109, 0.3);
+    }
+
+    .order-products {
+      margin-bottom: 15px;
+    }
+
+    .product-preview {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #f0f0f0;
+      transition: all 0.3s ease;
+    }
+
+    .product-preview:hover {
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      transform: translateY(-1px);
+    }
+
+    .product-preview:last-child {
+      margin-bottom: 0;
+    }
+
+    .product-image {
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      background: #e9ecef;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .product-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .product-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 5px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-quantity {
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .product-summary {
+      text-align: right;
+      padding-top: 15px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .product-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: #EE386D;
+    }
+
+    /* 반응형 - 태블릿 */
+    @media (max-width: 1024px) {
+      .order-item {
+        padding: 20px;
+      }
+
+      .product-preview {
+        padding: 12px;
+      }
+
+      .product-image {
+        width: 70px;
+        height: 70px;
+      }
+
+      .product-name {
+        font-size: 15px;
+      }
+
+      .product-price {
+        font-size: 16px;
+      }
+    }
+
+    /* 반응형 - 모바일 */
+    @media (max-width: 768px) {
+      .order-item {
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+
+      .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+      }
+
+      .order-date {
+        font-size: 14px;
+      }
+
+      .order-status {
+        align-self: flex-end;
+        padding: 4px 12px;
+        font-size: 12px;
+      }
+
+      .product-preview {
+        flex-direction: column;
+        text-align: center;
+        padding: 12px;
+      }
+
+      .product-image {
+        width: 100%;
+        max-width: 120px;
+        height: 120px;
+        margin: 0 auto 10px;
+      }
+
+      .product-info {
+        width: 100%;
+      }
+
+      .product-name {
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+
+      .product-quantity {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+
+      .product-summary {
+        text-align: center;
+        padding-top: 10px;
+        margin-top: 10px;
+      }
+
+      .product-price {
+        font-size: 16px;
+      }
+    }
+
+    /* 작은 모바일 */
+    @media (max-width: 480px) {
+      .order-item {
+        padding: 12px;
+      }
+
+      .product-preview {
+        padding: 10px;
+      }
+
+      .product-image {
+        max-width: 100px;
+        height: 100px;
+      }
+
+      .product-name {
+        font-size: 13px;
+      }
+
+      .product-quantity {
+        font-size: 12px;
+      }
+
+      .product-price {
+        font-size: 15px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -743,28 +978,28 @@
           <i class="fas fa-clock"></i>
         </div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">결제완료</div>
-        <div class="order-count" style="font-weight: bold;">0</div>
+        <div class="order-count" style="font-weight: bold; color: #1a1a1a;" th:text="${paidCount}">0</div>
       </div>
       <div class="order-card">
         <div class="order-icon">
           <i class="fas fa-truck"></i>
         </div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">배송중</div>
-        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">0</div>
+        <div class="order-count" style="font-weight: bold; color: #1a1a1a;" th:text="${shippedCount}">0</div>
       </div>
       <div class="order-card">
         <div class="order-icon">
           <i class="fas fa-check-circle"></i>
         </div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">배송완료</div>
-        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">0</div>
+        <div class="order-count" style="font-weight: bold; color: #1a1a1a;" th:text="${deliveredCount}">0</div>
       </div>
       <div class="order-card">
         <div class="order-icon">
           <i class="fas fa-undo"></i>
         </div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">취소/반품</div>
-        <div class="order-count" style="font-weight: bold; color: #1a1a1a;">0</div>
+        <div class="order-count" style="font-weight: bold; color: #1a1a1a;" th:text="${cancelCount}">0</div>
       </div>
       <div class="order-card" onclick="window.location.href='/customer-service/inquiry'">
         <div class="order-icon">
@@ -805,30 +1040,35 @@
         </a>
       </div>
 
-      <!-- 주문 내역이 있는 경우를 위한 템플릿 (현재는 주석 처리) -->
-      <!--
       <div th:if="${recentOrders != null and !recentOrders.isEmpty()}">
         <div class="order-item" th:each="order : ${recentOrders}">
           <div class="order-header">
-            <span class="order-date" th:text="${#temporals.format(order.orderDate, 'yyyy.MM.dd')}">2025.06.15</span>
+            <span class="order-date" th:text="${#temporals.format(order.createAt, 'yyyy.MM.dd HH:mm')}">2025.06.15</span>
             <span class="order-status" th:text="${order.orderStatus}">배송중</span>
           </div>
+
           <div class="order-products">
-            <div class="product-image" th:if="${order.productImage != null}">
-              <img th:src="@{'/testImage/' + ${order.productImage}}"
-                   th:alt="${order.productName}"
-                   style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+            <div class="product-preview" th:each="item : ${order.orderItems}">
+              <div class="product-image"
+                   th:if="${item.productDto != null and item.productDto.imageDto != null}">
+                <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${item.productDto.imageDto.imageUrl}}"
+                     th:alt="${item.productDto.productName}"
+                     style="width: 100px; height: 100px; object-fit: cover; border-radius: 12px;" />
+              </div>
+              <div class="product-info">
+                <div class="product-name" th:text="${item.productDto.productName}">상품명</div>
+                <div class="product-quantity" th:text="'수량: ' + ${item.quantity} + '개'">수량: 1개</div>
+              </div>
             </div>
-            <div class="product-image" th:unless="${order.productImage != null}"></div>
-            <div class="product-info">
-              <div class="product-name" th:text="${order.productName}">홀리밤 프리미엄 세트</div>
-              <div class="product-price" th:text="${'₩' + #numbers.formatInteger(order.totalPrice, 3, 'COMMA')}">₩150,000</div>
-              <div class="product-quantity" th:text="'수량: ' + ${order.quantity} + '개'">수량: 1개</div>
+
+            <div class="product-summary" style="margin-top: 10px;">
+              <div class="product-price" th:text="'총 결제금액: ₩' + ${#numbers.formatInteger(order.finalAmount, 3, 'COMMA')}">
+                총 결제금액: ₩0
+              </div>
             </div>
           </div>
         </div>
       </div>
-      -->
     </section>
 
     <!-- 위시리스트 -->
@@ -1085,29 +1325,6 @@
         document.getElementById('modalError').style.display = 'block';
       }
     });
-  }
-
-  // 로그아웃 함수
-  function logout() {
-    if (confirm('로그아웃 하시겠습니까?')) {
-      $.ajax({
-        url: '/auth/logout',
-        method: 'POST',
-        success: function(response) {
-          if (response.success) {
-            alert('로그아웃되었습니다.');
-            window.location.href = '/main';
-          } else {
-            alert('로그아웃에 실패했습니다.');
-          }
-        },
-        error: function() {
-          // 서버 오류가 발생해도 클라이언트 측에서 로그아웃 처리
-          alert('로그아웃되었습니다.');
-          window.location.href = '/main';
-        }
-      });
-    }
   }
 
   // 모달 외부 클릭 시 닫기

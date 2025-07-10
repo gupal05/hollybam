@@ -417,56 +417,6 @@ public class OrderController {
     }
 
     /**
-     * 주문 목록 페이지
-     */
-    @GetMapping("/orders")
-    public ModelAndView orderList(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            HttpSession session) {
-
-        ModelAndView mav = new ModelAndView();
-
-        try {
-            MemberDto member = (MemberDto) session.getAttribute("member");
-            GuestDto guest = (GuestDto) session.getAttribute("guest");
-
-            if (member == null && guest == null) {
-                mav.setViewName("redirect:/auth/login");
-                return mav;
-            }
-
-            List<OrderDto> orderList;
-            int totalOrders;
-
-            if (member != null) {
-                orderList = orderService.getMemberOrders(member.getMemberCode(), page, size);
-                totalOrders = orderService.getMemberOrderCount(member.getMemberCode());
-                mav.setViewName("mypage/orderList");
-            } else {
-                orderList = orderService.getGuestOrders(guest.getGuestCode(), page, size);
-                totalOrders = orderService.getGuestOrderCount(guest.getGuestCode());
-                mav.setViewName("mypage/guest/orderList");
-            }
-
-            int totalPages = (int) Math.ceil((double) totalOrders / size);
-
-            mav.addObject("orderList", orderList);
-            mav.addObject("totalOrders", totalOrders);
-            mav.addObject("totalPages", totalPages);
-            mav.addObject("currentPage", page);
-            mav.addObject("pageSize", size);
-
-        } catch (Exception e) {
-            log.error("주문 목록 조회 실패", e);
-            mav.addObject("error", "주문 목록을 불러올 수 없습니다.");
-            mav.setViewName("error/error");
-        }
-
-        return mav;
-    }
-
-    /**
      * 주문 취소
      */
     @PostMapping("/cancel/{orderId}")

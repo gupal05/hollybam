@@ -9,12 +9,20 @@ import java.util.List;
 
 @Mapper
 public interface IF_MypageDao {
-    public void updateMember(MemberDto memberDto);
-    public int selectMemberPoint(int memberCode);
-    public int selectMemberAddPoint(int memberCode);
-    public int selectMemberUsePoint(int memberCode);
-    public List<PointDto> selectPointHistory(@Param("memberCode") int memberCode,
+    void updateMember(MemberDto memberDto);
+    int selectMemberPoint(int memberCode);
+    int selectMemberAddPoint(int memberCode);
+    int selectMemberUsePoint(int memberCode);
+    List<PointDto> selectPointHistory(@Param("memberCode") int memberCode,
                                              @Param("offset") int offset,
                                              @Param("size") int size);
-    public int selectPointHistoryCount(int memberCode);
+    int selectPointHistoryCount(int memberCode);
+    int getMemberPaidCount(int memberCode);
+    int getGuestPaidCount(int guestCode);
+    int getMemberShippedCount(int memberCode);
+    int getGuestShippedCount(int guestCode);
+    int getMemberDeliveredCount(int memberCode);
+    int getGuestDeliveredCount(int guestCode);
+    int getMemberCancelCount(int memberCode);
+    int getGuestCancelCount(int guestCode);
 }

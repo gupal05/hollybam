@@ -1,10 +1,8 @@
 package com.hollybam.hollybam.controller.mypageController;
 
-import com.hollybam.hollybam.dto.GuestDto;
-import com.hollybam.hollybam.dto.MemberDto;
-import com.hollybam.hollybam.dto.PointDto;
-import com.hollybam.hollybam.dto.WishlistDto;
+import com.hollybam.hollybam.dto.*;
 import com.hollybam.hollybam.services.CouponService;
+import com.hollybam.hollybam.services.IF_OrderService;
 import com.hollybam.hollybam.services.MypageService;
 import com.hollybam.hollybam.services.IF_WishlistService;
 import jakarta.servlet.http.HttpSession;
@@ -35,6 +33,9 @@ public class MypageController {
     @Autowired
     private CouponService couponService;
 
+    @Autowired
+    private IF_OrderService orderService;
+
     @GetMapping("")
     public String mypage(HttpSession session, Model model) {
         try {
@@ -42,6 +43,7 @@ public class MypageController {
             MemberDto member = (MemberDto) session.getAttribute("member");
             Integer memCode = member != null ? member.getMemberCode() : null;
             GuestDto guest = (GuestDto) session.getAttribute("guest");
+            List<OrderDto> orders;
 
             // 위시리스트 데이터 가져오기 (최신 3개만)
             List<WishlistDto> recentWishlist;
@@ -55,6 +57,18 @@ public class MypageController {
                 couponCount = couponService.selectCouponCount(memCode);
                 int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
                 String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
+                orders = orderService.selectOrdersByMemberForLimit(member.getMemberCode());
+                for(int i = 0; i < orders.size(); i++) {
+                    orders.get(i).setOrderStatus(this.getStatusText(orders.get(i).getOrderStatus()));
+                    if(orders.get(i).getOrderStatus().equals("배송중")){
+                        orders.get(i).setDeliveryDto(orderService.getTrackingNumber(orders.get(i).getOrderCode()));
+                    }
+                }
+                model.addAttribute("recentOrders", orders);
+                model.addAttribute("paidCount", mypageService.getMemberPaidCount(member.getMemberCode()));
+                model.addAttribute("shippedCount", mypageService.getMemberShippedCount(member.getMemberCode()));
+                model.addAttribute("deliveredCount", mypageService.getMemberDeliveredCount(member.getMemberCode()));
+                model.addAttribute("cancelCount", mypageService.getMemberCancelCount(member.getMemberCode()));
                 model.addAttribute("totalPoint", totalPoint);
             } else if (guest != null) {
                 // 비회원
@@ -63,6 +77,11 @@ public class MypageController {
                     List<WishlistDto> allWishlist = wishlistService.getGuestWishlist(guestCode);
                     recentWishlist = allWishlist.stream().limit(3).toList();
                     totalWishlistCount = wishlistService.getGuestWishlistCount(guestCode);
+                    orders = orderService.selectOrdersByGuestForLimit(guest.getGuestCode());
+                    for(int i = 0; i < orders.size(); i++) {
+                        orders.get(i).setOrderStatus(this.getStatusText(orders.get(i).getOrderStatus()));
+                    }
+                    model.addAttribute("recentOrders", orders);
                 } else {
                     recentWishlist = List.of();
                 }
@@ -90,17 +109,34 @@ public class MypageController {
     @GetMapping("/orders")
     public String orders(Model model, HttpSession session) {
         int couponCount = 0;
+        List<OrderDto> orders;
         if(session.getAttribute("member") != null) {
             MemberDto member = (MemberDto) session.getAttribute("member");
             couponCount = couponService.selectCouponCount(member.getMemberCode());
             int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
             String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
+            orders = orderService.selectOrdersByMember(member.getMemberCode());
+            for(int i = 0; i < orders.size(); i++) {
+                orders.get(i).setOrderStatus(this.getStatusText(orders.get(i).getOrderStatus()));
+                if(orders.get(i).getOrderStatus().equals("배송중")){
+                    orders.get(i).setDeliveryDto(orderService.getTrackingNumber(orders.get(i).getOrderCode()));
+                }
+            }
+            System.out.println(orders);
+            model.addAttribute("isMember", session.getAttribute("member") != null);
+            model.addAttribute("orderList", orders);
             model.addAttribute("totalPoint", totalPoint);
             model.addAttribute("couponCount", couponCount);
-            return "mypage/orderList";
         } else {
-            return "mypage/guest/orderList";
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+            orders = orderService.selectOrdersByGuest(guest.getGuestCode());
+            for(int i = 0; i < orders.size(); i++) {
+                orders.get(i).setOrderStatus(this.getStatusText(orders.get(i).getOrderStatus()));
+            }
+            model.addAttribute("isGuest", session.getAttribute("guest") != null);
+            model.addAttribute("orderList", orders);
         }
+        return "mypage/orderList";
     }
 
     @GetMapping("/profile/edit")
@@ -277,5 +313,17 @@ public class MypageController {
         model.addAttribute("totalPages", totalPages);
 
         return "mypage/points";
+    }
+
+    public String getStatusText(String orderStatus) {
+        switch (orderStatus) {
+            case "PENDING": return "주문 보류";
+            case "PAID", "PREPARING": return "결제완료";
+            case "SHIPPED": return "배송중";
+            case "DELIVERED": return "배송완료";
+            case "CANCELLED": return "취소됨";
+            case "REFUNDED": return "반품";
+            default: return "기타";
+        }
     }
 }

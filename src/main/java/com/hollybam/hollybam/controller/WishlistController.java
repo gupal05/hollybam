@@ -82,7 +82,7 @@ public class WishlistController {
                 model.addAttribute("isLoggedIn", false);
 
                 // 비회원용 위시리스트 페이지로 이동
-                return "mypage/guest/wishlist";
+                return "mypage/wishlist";
 
             } else {
                 // 로그인/인증 필요

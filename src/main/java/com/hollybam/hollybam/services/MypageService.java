@@ -45,4 +45,45 @@ public class MypageService implements IF_MypageService {
     public int selectPointHistoryCount(int memberCode) {
         return mypageDao.selectPointHistoryCount(memberCode);
     }
+
+    @Override
+    @Transactional
+    public int getMemberPaidCount(int memberCode){
+        return mypageDao.getMemberPaidCount(memberCode);
+    }
+    @Override
+    @Transactional
+    public int getGuestPaidCount(int guestCode){
+        return mypageDao.getGuestPaidCount(guestCode);
+    }
+    @Override
+    @Transactional
+    public int getMemberShippedCount(int memberCode){
+        return mypageDao.getMemberShippedCount(memberCode);
+    }
+    @Override
+    @Transactional
+    public int getGuestShippedCount(int guestCode){
+        return mypageDao.getGuestShippedCount(guestCode);
+    }
+    @Override
+    @Transactional
+    public int getMemberDeliveredCount(int memberCode){
+        return mypageDao.getMemberDeliveredCount(memberCode);
+    }
+    @Override
+    @Transactional
+    public int getGuestDeliveredCount(int guestCode){
+        return mypageDao.getGuestDeliveredCount(guestCode);
+    }
+    @Override
+    @Transactional
+    public int getMemberCancelCount(int memberCode){
+        return mypageDao.getMemberCancelCount(memberCode);
+    }
+    @Override
+    @Transactional
+    public int getGuestCancelCount(int guestCode){
+        return mypageDao.getGuestCancelCount(guestCode);
+    }
 }

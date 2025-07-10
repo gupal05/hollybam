@@ -55,4 +55,56 @@
         WHERE mem_code = #{memberCode}
     </select>
 
+    <select id="getMemberPaidCount" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE mem_code = #{memCode}
+          AND order_status IN ('PAID', 'PREPARING')
+    </select>
+    <select id="getGuestPaidCount" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE guest_code = #{guestCode}
+          AND order_status IN ('PAID', 'PREPARING')
+    </select>
+
+    <select id="getMemberShippedCount" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE mem_code = #{memCode}
+          AND order_status = 'SHIPPED'
+    </select>
+    <select id="getGuestShippedCount" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE guest_code = #{guestCode}
+          AND order_status = 'SHIPPED'
+    </select>
+
+    <select id="getMemberDeliveredCount" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE mem_code = #{memCode}
+          AND order_status = 'DELIVERED'
+    </select>
+    <select id="getGuestDeliveredCount" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE guest_code = #{guestCode}
+          AND order_status = 'DELIVERED'
+    </select>
+
+    <select id="getMemberCancelCount" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE mem_code = #{memCode}
+          AND order_status IN ('CANCELLED', 'REFUNDED')
+    </select>
+    <select id="getGuestCancelCount" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE guest_code = #{guestCode}
+          AND order_status IN ('CANCELLED', 'REFUNDED')
+    </select>
+
 </mapper>

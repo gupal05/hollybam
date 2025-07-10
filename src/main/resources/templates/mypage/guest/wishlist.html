@@ -664,8 +664,8 @@
     </div>
 
     <ul class="sidebar-menu">
-      <li><a href="/guest/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
-      <li><a href="/guest/wishlist" class="active"><i class="fas fa-heart"></i>위시리스트</a></li>
+      <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+      <li><a href="/wishlist" class="active"><i class="fas fa-heart"></i>위시리스트</a></li>
       <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>비회원 로그아웃</a></li>
     </ul>
   </aside>
@@ -963,12 +963,6 @@
     });
   });
 
-  // 비회원 세션 종료 함수
-  function logout() {
-    if(confirm('로그아웃 하시겠습니까?')) {
-      window.location.href = '/logout';
-    }
-  }
 
   // 현재 페이지에 따른 사이드바 메뉴 활성화
   $(document).ready(function() {

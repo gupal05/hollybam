@@ -30,4 +30,8 @@ public class ProductDto {
     private List<ImageDto> imageDtoList;
     private List<MovementDto> movementDtoList;
     private List<ProductOptionDto> productOptionDtoList;
+
+    private PriceDto priceDto;        // 단일 가격 정보
+    private ImageDto imageDto;        // 대표 이미지
+    private ProductOptionDto productOptionDto; // 대표 옵션
 }

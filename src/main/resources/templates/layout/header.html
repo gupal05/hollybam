@@ -69,7 +69,7 @@
 
                 <!-- 비회원 사용자 (기존 유지) -->
                 <div th:if="${session.member == null}" class="user-dropdown-content">
-                    <a href="/orders" class="user-dropdown-link">
+                    <a href="/mypage/orders" class="user-dropdown-link">
                         <i class="fa-solid fa-box"></i><span>주문조회</span>
                     </a>
                     <a href="https://www.cjlogistics.com/ko/tool/parcel/tracking" target="_blank" class="user-dropdown-link">
@@ -216,13 +216,17 @@
 
             <!-- 비회원 메뉴 -->
             <div th:if="${session.member == null}">
-                <a href="/order/guest" class="mobile-menu-link">
+                <a href="/mypage/orders" class="mobile-menu-link">
                     <i class="fa-solid fa-box"></i>
                     <span>주문조회</span>
                 </a>
                 <a href="/delivery/guest" class="mobile-menu-link">
                     <i class="fa-solid fa-truck"></i>
                     <span>배송조회</span>
+                </a>
+                <a href="/wishlist" class="mobile-menu-link">
+                    <i class="fa-regular fa-heart"></i>
+                    <span>위시리스트</span>
                 </a>
                 <a href="/cart" class="mobile-menu-link">
                     <i class="fa-solid fa-bag-shopping"></i>

@@ -18,4 +18,10 @@ public interface IF_OrderService {
     int getMemberOrderCount(int memCode);
     int getGuestOrderCount(int guestCode);
     List<Map<String, Object>> getOrderDetails(int orderCode);
+    List<OrderDto> selectOrdersByMember(int memberCode);
+    List<OrderDto> selectOrdersByGuest(int guestCode);
+    List<OrderDto> selectOrdersByMemberForLimit(int memberCode);
+    List<OrderDto> selectOrdersByGuestForLimit(int guestCode);
+    int getFinalAmount(int code);
+    DeliveryDto getTrackingNumber(int orderCode);
 }

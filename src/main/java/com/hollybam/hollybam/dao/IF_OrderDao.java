@@ -56,4 +56,12 @@ public interface IF_OrderDao {
 
     // 주문 제품 리스트 조회
     List<Map<String, Object>> getOrderDetails(int orderCode);
+
+    // 주문 조회
+    List<OrderDto> selectOrdersByMember(int memberCode);
+    List<OrderDto> selectOrdersByGuest(int guestCode);
+    List<OrderDto> selectOrdersByMemberForLimit(int memberCode);
+    List<OrderDto> selectOrdersByGuestForLimit(int guestCode);
+    int getFinalAmount(int code);
+    DeliveryDto getTrackingNumber(int orderCode);
 }

@@ -5,9 +5,7 @@ import com.hollybam.hollybam.dto.BestReviewDto;
 import com.hollybam.hollybam.dto.ReviewDto;
 import com.hollybam.hollybam.dto.ReviewImageDto;
 import com.hollybam.hollybam.util.S3Uploader;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,29 +18,34 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-public class ReviewService implements IF_ReviewService{
+public class ReviewService implements IF_ReviewService {
+
     @Autowired
     private IF_ReviewDao reviewDao;
 
     @Autowired
     private S3Uploader s3Uploader;
 
+    // ====== 기존 메서드들 ======
     @Override
     public boolean checkReviewEligibility(Integer orderItemCode, Integer memCode, Integer guestCode) {
         try {
-            // 주문 상태 확인
             String orderStatus = reviewDao.getOrderStatusByOrderItemCode(orderItemCode);
+
             if (!"DELIVERED".equals(orderStatus)) {
+                log.warn("주문 상태가 배송완료가 아님: {}", orderStatus);
                 return false;
             }
 
-            // 이미 리뷰가 작성되었는지 확인
             int existingReviewCount = reviewDao.countExistingReview(orderItemCode, memCode, guestCode);
-            return existingReviewCount == 0;
+            if (existingReviewCount > 0) {
+                log.warn("이미 리뷰가 작성됨. orderItemCode: {}", orderItemCode);
+                return false;
+            }
 
+            return true;
         } catch (Exception e) {
-            log.error("리뷰 작성 자격 확인 중 오류 발생", e);
+            log.error("리뷰 작성 가능 여부 확인 중 오류 발생", e);
             return false;
         }
     }
@@ -50,22 +53,27 @@ public class ReviewService implements IF_ReviewService{
     @Override
     @Transactional
     public void writeReview(ReviewDto reviewDto, List<MultipartFile> imageFiles) throws IOException {
-        // 리뷰 저장
-        reviewDao.insertReview(reviewDto);
+        try {
+            reviewDao.insertReview(reviewDto);
+            log.info("리뷰 저장 완료. reviewCode: {}", reviewDto.getReviewCode());
 
-        // 이미지가 있다면 업로드 및 저장
-        if (imageFiles != null && !imageFiles.isEmpty()) {
-            for (MultipartFile imageFile : imageFiles) {
-                if (!imageFile.isEmpty()) {
-                    String imageUrl = s3Uploader.upload(imageFile, "reviews");
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                for (MultipartFile imageFile : imageFiles) {
+                    if (!imageFile.isEmpty()) {
+                        String imageUrl = s3Uploader.upload(imageFile, "review");
 
-                    ReviewImageDto reviewImageDto = new ReviewImageDto();
-                    reviewImageDto.setReviewCode(reviewDto.getReviewCode());
-                    reviewImageDto.setImageUrl(imageUrl);
+                        ReviewImageDto reviewImageDto = new ReviewImageDto();
+                        reviewImageDto.setReviewCode(reviewDto.getReviewCode());
+                        reviewImageDto.setImageUrl(imageUrl);
 
-                    reviewDao.insertReviewImage(reviewImageDto);
+                        reviewDao.insertReviewImage(reviewImageDto);
+                        log.info("리뷰 이미지 저장 완료. imageUrl: {}", imageUrl);
+                    }
                 }
             }
+        } catch (Exception e) {
+            log.error("리뷰 작성 중 오류 발생", e);
+            throw e;
         }
     }
 
@@ -74,9 +82,24 @@ public class ReviewService implements IF_ReviewService{
         return reviewDao.isWroteReview(orderItemCode);
     }
 
+    // ====== 베스트 리뷰 관련 메서드들 ======
     @Override
     public List<BestReviewDto> selectBestReviews() {
         return reviewDao.selectBestReviews();
+    }
+
+    /**
+     * ⭐ 새로 추가: 베스트 리뷰 조회 (사용자별 좋아요 상태 포함) - 기존 메서드는 그대로 유지
+     */
+    @Override
+    public List<BestReviewDto> selectBestReviewsWithLikeStatus(Integer memCode, Integer guestCode) {
+        try {
+            log.info("베스트 리뷰 조회 (좋아요 상태 포함) - memCode: {}, guestCode: {}", memCode, guestCode);
+            return reviewDao.selectBestReviewsWithLikeStatus(memCode, guestCode);
+        } catch (Exception e) {
+            log.error("베스트 리뷰 조회 중 오류 발생", e);
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -84,6 +107,7 @@ public class ReviewService implements IF_ReviewService{
         return reviewDao.selectBestReviewsByProduct(productCode);
     }
 
+    // ====== 통계 관련 메서드들 ======
     @Override
     public Map<String, Object> selectMemberReviewStats(int memberCode) {
         return reviewDao.selectMemberReviewStats(memberCode);
@@ -94,7 +118,7 @@ public class ReviewService implements IF_ReviewService{
         return reviewDao.selectGuestReviewStats(guestCode);
     }
 
-    // ====== 기존 메서드들 구현 ======
+    // ====== 기존 리뷰 조회 메서드들 (하위 호환성 유지) ======
     @Override
     public List<Map<String, Object>> getPhotoReviewDesc() {
         return reviewDao.getPhotoReviewDesc();
@@ -111,12 +135,6 @@ public class ReviewService implements IF_ReviewService{
     }
 
     @Override
-    public Map<String, Object> getReviewCount() {
-        return reviewDao.getReviewCount();
-    }
-
-    // ====== 새로 추가된 텍스트리뷰 메서드들 ======
-    @Override
     public List<Map<String, Object>> getTextReviewDesc() {
         return reviewDao.getTextReviewDesc();
     }
@@ -131,7 +149,12 @@ public class ReviewService implements IF_ReviewService{
         return reviewDao.getTextReviewLike();
     }
 
-    // ====== 페이지네이션 및 필터링 메서드들 ======
+    @Override
+    public Map<String, Object> getReviewCount() {
+        return reviewDao.getReviewCount();
+    }
+
+    // ====== 페이지네이션 + 필터링 + 좋아요 상태 메서드들 ======
     @Override
     public List<Map<String, Object>> getPhotoReviews(String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode) {
         int offset = (page - 1) * size;

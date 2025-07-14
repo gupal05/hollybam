@@ -11,31 +11,44 @@ import java.util.Map;
 
 @Mapper
 public interface IF_ReviewDao {
-    // 기존 메서드들
-    String getOrderStatusByOrderItemCode(int orderItemCode);
-    int countExistingReview(@Param("orderItemCode") int orderItemCode,
+
+    // ====== 기존 메서드들 ======
+    String getOrderStatusByOrderItemCode(@Param("orderItemCode") Integer orderItemCode);
+    int countExistingReview(@Param("orderItemCode") Integer orderItemCode,
                             @Param("memCode") Integer memCode,
                             @Param("guestCode") Integer guestCode);
     void insertReview(ReviewDto reviewDto);
     void insertReviewImage(ReviewImageDto reviewImageDto);
     int isWroteReview(int orderItemCode);
-    List<BestReviewDto> selectBestReviews();
-    List<BestReviewDto> selectBestReviewsByProduct(@Param("productCode") int productCode);
-    Map<String, Object> selectMemberReviewStats(int memberCode);
-    Map<String, Object> selectGuestReviewStats(int guestCode);
 
-    // ====== 기존 포토리뷰 메서드들 (하위 호환성 유지) ======
+    // ====== 베스트 리뷰 관련 메서드들 ======
+    List<BestReviewDto> selectBestReviews();
+
+    /**
+     * ⭐ 새로 추가: 베스트 리뷰 조회 (사용자별 좋아요 상태 포함) - 기존 메서드는 그대로 유지
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 베스트 리뷰 목록 (사용자별 좋아요 상태 포함)
+     */
+    List<BestReviewDto> selectBestReviewsWithLikeStatus(@Param("memCode") Integer memCode,
+                                                        @Param("guestCode") Integer guestCode);
+
+    List<BestReviewDto> selectBestReviewsByProduct(@Param("productCode") int productCode);
+
+    // ====== 회원/비회원 통계 ======
+    Map<String, Object> selectMemberReviewStats(@Param("memberCode") int memberCode);
+    Map<String, Object> selectGuestReviewStats(@Param("guestCode") int guestCode);
+
+    // ====== 기존 리뷰 조회 메서드들 (하위 호환성) ======
     List<Map<String, Object>> getPhotoReviewDesc();
     List<Map<String, Object>> getPhotoReviewRating();
     List<Map<String, Object>> getPhotoReviewLike();
-    Map<String, Object> getReviewCount();
-
-    // ====== 새로 추가된 텍스트리뷰 메서드들 ======
     List<Map<String, Object>> getTextReviewDesc();
     List<Map<String, Object>> getTextReviewRating();
     List<Map<String, Object>> getTextReviewLike();
+    Map<String, Object> getReviewCount();
 
-    // ====== 페이지네이션 및 필터링이 적용된 메서드들 ======
+    // ====== 페이지네이션 + 필터링 + 좋아요 상태 메서드들 ======
     List<Map<String, Object>> getPhotoReviewDescWithPaging(@Param("offset") int offset,
                                                            @Param("limit") int limit,
                                                            @Param("rating") Integer rating,
@@ -51,7 +64,6 @@ public interface IF_ReviewDao {
                                                            @Param("rating") Integer rating,
                                                            @Param("memCode") Integer memCode,
                                                            @Param("guestCode") Integer guestCode);
-
     List<Map<String, Object>> getTextReviewDescWithPaging(@Param("offset") int offset,
                                                           @Param("limit") int limit,
                                                           @Param("rating") Integer rating,

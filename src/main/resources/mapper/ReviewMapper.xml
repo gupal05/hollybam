@@ -81,6 +81,9 @@
         <result property="writerBirth" column="writer_birth"/>
         <result property="writerType" column="writer_type"/>
 
+        <!-- ⭐ 새로 추가: 사용자별 좋아요 상태 -->
+        <result property="isLiked" column="is_liked"/>
+
         <!-- 주문 아이템 정보 -->
         <association property="orderItemDto" javaType="com.hollybam.hollybam.dto.OrderItemDto">
             <id property="orderItemCode" column="order_item_code"/>
@@ -921,4 +924,97 @@
         )
     </select>
 
+    <select id="selectBestReviewsWithLikeStatus" resultMap="BestReviewResultMap">
+        SELECT
+        r.review_code,
+        r.mem_code,
+        r.guest_code,
+        r.order_item_code,
+        r.rating,
+        r.content,
+        r.created_at,
+        COALESCE(rl.like_count, 0) as like_count,
+
+        oi.order_item_code,
+        oi.order_code,
+        oi.product_code,
+        oi.create_at as order_create_at,
+
+        p.product_code,
+        p.product_id,
+        p.product_name,
+
+        img.image_code,
+        img.image_url,
+        'title' as image_type,
+
+        m.mem_name,
+        m.mem_birth,
+        m.mem_gender,
+
+        g.guest_name,
+        g.guest_birth,
+        g.guest_gender,
+
+        <!-- 작성자 정보 통합 -->
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN m.mem_name
+        WHEN r.guest_code IS NOT NULL THEN g.guest_name
+        ELSE NULL
+        END as writer_name,
+
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN m.mem_birth
+        WHEN r.guest_code IS NOT NULL THEN g.guest_birth
+        ELSE NULL
+        END as writer_birth,
+
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN 'member'
+        WHEN r.guest_code IS NOT NULL THEN 'guest'
+        ELSE 'unknown'
+        END as writer_type,
+
+        <!-- ⭐ 사용자별 좋아요 상태 -->
+        CASE
+        WHEN user_likes.review_code IS NOT NULL THEN 1
+        ELSE 0
+        END as is_liked
+
+        FROM review r
+        -- 리뷰별 좋아요 수 계산
+        LEFT JOIN (
+        SELECT
+        review_code,
+        COUNT(*) as like_count
+        FROM review_like
+        GROUP BY review_code
+        ) rl ON r.review_code = rl.review_code
+
+        -- ⭐ 사용자별 좋아요 상태 확인
+        LEFT JOIN review_like user_likes ON r.review_code = user_likes.review_code
+        AND (
+        (#{memCode} IS NOT NULL AND user_likes.mem_code = #{memCode})
+        OR
+        (#{guestCode} IS NOT NULL AND user_likes.guest_code = #{guestCode})
+        )
+
+        -- 주문 아이템 정보
+        INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        -- 상품 정보
+        INNER JOIN product p ON oi.product_code = p.product_code
+        -- 상품 대표 이미지 (title 타입)
+        LEFT JOIN image img ON p.product_code = img.product_code
+        AND img.image_type = 'title'
+        -- 회원 정보 (있는 경우)
+        LEFT JOIN member m ON r.mem_code = m.mem_code
+        -- 비회원 정보 (있는 경우)
+        LEFT JOIN guest g ON r.guest_code = g.guest_code
+        -- 리뷰가 활성화된 것만
+        WHERE r.is_active = 1
+        -- 좋아요 수 내림차순, 그 다음 리뷰 작성일 내림차순
+        ORDER BY COALESCE(rl.like_count, 0) DESC, r.created_at DESC
+        -- 베스트 리뷰 12개
+        LIMIT 12
+    </select>
 </mapper>

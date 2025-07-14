@@ -2,6 +2,7 @@ package com.hollybam.hollybam.controller;
 
 import com.hollybam.hollybam.dto.BestReviewDto;
 import com.hollybam.hollybam.dto.GuestDto;
+import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.dto.ProductDto;
 import com.hollybam.hollybam.services.*;
 import com.hollybam.hollybam.services.admin.AdminBannerServiceImpl;
@@ -140,7 +141,7 @@ public class HomeController {
 
 
     @GetMapping("/main")
-    public ModelAndView mainPage(ModelAndView mav, HttpServletRequest request){
+    public ModelAndView mainPage(ModelAndView mav, HttpServletRequest request, HttpSession session){
         List<ProductDto> proList = new ArrayList<>();
         String userAgent = request.getHeader("User-Agent");
         String deviceType = detectDevice(userAgent);
@@ -157,7 +158,10 @@ public class HomeController {
         for(int i = 0; i < newProList.size(); i++){
             newProList.get(i).setProductQuantity(productService.getWishCount(newProList.get(i).getProductCode()));
         }
-        List<BestReviewDto> bestReview = reviewService.selectBestReviews();
+
+        // ⭐ 기존 코드를 최소 수정: 베스트 리뷰 조회 시 사용자별 좋아요 상태 포함
+        List<BestReviewDto> bestReview = getBestReviewsWithUserLikeStatus(session);
+
         for(int i = 0; i < bestReview.size(); i++){
             bestReview.get(i).setWriterAge(this.getAgeGroup(bestReview.get(i).getWriterBirth()));
             bestReview.get(i).setWriterName(bestReview.get(i).getWriterName().charAt(0)+"**");
@@ -168,6 +172,35 @@ public class HomeController {
         mav.addObject("newProList", newProList);
         mav.setViewName("main");
         return mav;
+    }
+
+    /**
+     * ⭐ 새로 추가: 베스트 리뷰 조회 (사용자별 좋아요 상태 포함) - 기존 코드 보존
+     */
+    private List<BestReviewDto> getBestReviewsWithUserLikeStatus(HttpSession session) {
+        try {
+            // 현재 사용자 정보 조회
+            Integer memCode = null;
+            Integer guestCode = null;
+
+            Object memberObj = session.getAttribute("member");
+            Object guestObj = session.getAttribute("guest");
+
+            if (memberObj != null) {
+                MemberDto member = (MemberDto) memberObj;
+                memCode = member.getMemberCode();
+            } else if (guestObj != null) {
+                GuestDto guest = (GuestDto) guestObj;
+                guestCode = guest.getGuestCode();
+            }
+
+            // 베스트 리뷰 조회 (사용자별 좋아요 상태 포함)
+            return reviewService.selectBestReviewsWithLikeStatus(memCode, guestCode);
+
+        } catch (Exception e) {
+            // 오류 발생 시 기존 방식으로 폴백 (기존 코드 보존)
+            return reviewService.selectBestReviews();
+        }
     }
 
     @GetMapping("/loading")

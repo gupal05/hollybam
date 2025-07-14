@@ -21,6 +21,15 @@ public interface IF_ReviewService {
     List<BestReviewDto> selectBestReviews();
 
     /**
+     * ⭐ 새로 추가: 전체 베스트 리뷰 조회 (사용자별 좋아요 상태 포함) - 기존 메서드는 그대로 유지
+     * @param memCode 회원 코드 (회원인 경우)
+     * @param guestCode 비회원 코드 (비회원인 경우)
+     * @return 베스트 리뷰 목록 (최대 12개, 사용자별 좋아요 상태 포함)
+     */
+    List<BestReviewDto> selectBestReviewsWithLikeStatus(@Param("memCode") Integer memCode,
+                                                        @Param("guestCode") Integer guestCode);
+
+    /**
      * 특정 상품의 베스트 리뷰 조회
      * @param productCode 상품 코드
      * @return 해당 상품의 베스트 리뷰 목록 (최대 12개)

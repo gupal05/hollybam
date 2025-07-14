@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.dao;
 
 import com.hollybam.hollybam.dto.MemberDto;
+import com.hollybam.hollybam.dto.OrderListDto;
 import com.hollybam.hollybam.dto.PointDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -25,4 +26,5 @@ public interface IF_MypageDao {
     int getGuestDeliveredCount(int guestCode);
     int getMemberCancelCount(int memberCode);
     int getGuestCancelCount(int guestCode);
+    List<OrderListDto> selectOrderDetailByOrderCode(int orderCode);
 }

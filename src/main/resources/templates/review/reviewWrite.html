@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="icon" href="data:,">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>리뷰 작성 - 홀리밤</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" th:href="@{/css/header.css}"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      line-height: 1.6;
+    }
+
+    /* 메인 컨테이너 */
+    .content {
+      min-height: 800px;
+      display: flex;
+      justify-content: center;
+      padding: 120px 20px 60px;
+      background: #fafafa;
+    }
+
+    .inner-box {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* 페이지 타이틀 */
+    .page-title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .page-title h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .page-title p {
+      font-size: 15px;
+      color: #666666;
+      margin: 0;
+    }
+
+    /* 작성 폼 */
+    .review-form {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 1px solid #f0f0f0;
+      overflow: hidden;
+    }
+
+    /* 상품 정보 섹션 */
+    .product-section {
+      padding: 30px;
+      border-bottom: 1px solid #f0f0f0;
+      background: #fafbfc;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .section-header i {
+      color: #EE386D;
+      font-size: 18px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+
+    .product-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #eef0f2;
+    }
+
+    .product-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #f5f5f5;
+    }
+
+    .product-details h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 8px 0;
+      line-height: 1.3;
+    }
+
+    .product-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: #EE386D;
+      margin-bottom: 6px;
+    }
+
+    .product-category {
+      font-size: 13px;
+      color: #888;
+      background: #f0f0f0;
+      padding: 4px 8px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    /* 별점 섹션 */
+    .rating-section {
+      padding: 30px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .rating-input-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: #fafbfc;
+      border-radius: 16px;
+      border: 1px solid #eef0f2;
+    }
+
+    .star-rating {
+      display: flex;
+      gap: 8px;
+      direction: rtl;
+    }
+
+    .star-rating input {
+      display: none;
+    }
+
+    .star-rating label {
+      font-size: 36px;
+      color: #ddd;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+      color: #ffd700;
+      transform: scale(1.1);
+    }
+
+    .rating-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-top: 8px;
+    }
+
+    .rating-descriptions {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 400px;
+      margin-top: 12px;
+    }
+
+    .rating-desc {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+
+    .rating-desc.active {
+      opacity: 1;
+      color: #EE386D;
+      font-weight: 600;
+    }
+
+    /* 리뷰 타입 섹션 */
+    .review-type-section {
+      padding: 30px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .review-type-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .type-option {
+      position: relative;
+    }
+
+    .type-option input {
+      display: none;
+    }
+
+    .type-option label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 24px;
+      border: 2px solid #eef0f2;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #fafbfc;
+    }
+
+    .type-option label:hover {
+      border-color: #EE386D;
+      background: #fff5f8;
+    }
+
+    .type-option input:checked + label {
+      border-color: #EE386D;
+      background: #fff5f8;
+      box-shadow: 0 4px 12px rgba(238, 56, 109, 0.15);
+    }
+
+    .type-icon {
+      width: 48px;
+      height: 48px;
+      background: #EE386D;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+    }
+
+    .type-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+
+    .type-desc {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* 이미지 업로드 섹션 */
+    .image-section {
+      padding: 30px;
+      border-bottom: 1px solid #f0f0f0;
+      display: none;
+    }
+
+    .image-section.active {
+      display: block;
+    }
+
+    .image-upload-container {
+      margin-top: 20px;
+    }
+
+    .upload-area {
+      border: 2px dashed #ddd;
+      border-radius: 16px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #fafbfc;
+    }
+
+    .upload-area:hover {
+      border-color: #EE386D;
+      background: #fff5f8;
+    }
+
+    .upload-area.dragover {
+      border-color: #EE386D;
+      background: #fff5f8;
+      transform: scale(1.02);
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      color: #ddd;
+      margin-bottom: 16px;
+    }
+
+    .upload-text {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .upload-hint {
+      font-size: 13px;
+      color: #999;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .image-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .image-preview {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #eef0f2;
+    }
+
+    .preview-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .remove-image {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 24px;
+      height: 24px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .remove-image:hover {
+      background: #EE386D;
+    }
+
+    /* 텍스트 섹션 */
+    .text-section {
+      padding: 30px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .text-input-container {
+      margin-top: 20px;
+    }
+
+    .review-textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 20px;
+      border: 2px solid #eef0f2;
+      border-radius: 16px;
+      font-size: 15px;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: vertical;
+      transition: all 0.3s ease;
+      background: #fafbfc;
+    }
+
+    .review-textarea:focus {
+      outline: none;
+      border-color: #EE386D;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(238, 56, 109, 0.1);
+    }
+
+    .review-textarea::placeholder {
+      color: #999;
+    }
+
+    .char-counter {
+      text-align: right;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .char-counter.warning {
+      color: #ff6b35;
+    }
+
+    /* 버튼 섹션 */
+    .button-section {
+      padding: 30px;
+      background: #fafbfc;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 120px;
+    }
+
+    .btn-cancel {
+      background: #f5f5f5;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+
+    .btn-cancel:hover {
+      background: #e9ecef;
+      color: #333;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+      box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(238, 56, 109, 0.4);
+    }
+
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* 알림 메시지 */
+    .alert {
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      .content {
+        padding: 100px 16px 40px;
+      }
+
+      .inner-box {
+        max-width: none;
+      }
+
+      .page-title h1 {
+        font-size: 24px;
+      }
+
+      .page-title p {
+        font-size: 14px;
+      }
+
+      .review-form {
+        border-radius: 16px;
+      }
+
+      .product-section,
+      .rating-section,
+      .review-type-section,
+      .image-section,
+      .text-section,
+      .button-section {
+        padding: 24px 20px;
+      }
+
+      .product-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+      }
+
+      .product-image {
+        width: 80px;
+        height: 80px;
+      }
+
+      .product-details h3 {
+        font-size: 16px;
+      }
+
+      .review-type-options {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .type-option label {
+        padding: 20px;
+      }
+
+      .star-rating label {
+        font-size: 32px;
+      }
+
+      .rating-descriptions {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .upload-area {
+        padding: 30px 15px;
+      }
+
+      .upload-icon {
+        font-size: 40px;
+      }
+
+      .upload-text {
+        font-size: 15px;
+      }
+
+      .button-group {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .btn {
+        padding: 14px 24px;
+        font-size: 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 90px 12px 30px;
+      }
+
+      .page-title h1 {
+        font-size: 22px;
+      }
+
+      .section-title {
+        font-size: 16px;
+      }
+
+      .product-details h3 {
+        font-size: 15px;
+      }
+
+      .product-price {
+        font-size: 15px;
+      }
+
+      .star-rating label {
+        font-size: 28px;
+        gap: 6px;
+      }
+
+      .rating-text {
+        font-size: 15px;
+      }
+
+      .type-title {
+        font-size: 15px;
+      }
+
+      .type-desc {
+        font-size: 12px;
+      }
+
+      .review-textarea {
+        min-height: 160px;
+        padding: 16px;
+        font-size: 14px;
+      }
+
+      .upload-area {
+        padding: 24px 12px;
+      }
+
+      .image-preview-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .product-section,
+      .rating-section,
+      .review-type-section,
+      .image-section,
+      .text-section,
+      .button-section {
+        padding: 20px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 메인 콘텐츠 -->
+<div class="content">
+  <div class="inner-box">
+    <!-- 페이지 타이틀 -->
+    <div class="page-title">
+      <h1>리뷰 작성</h1>
+      <p>구매하신 상품에 대한 솔직한 후기를 남겨주세요</p>
+    </div>
+
+    <!-- 알림 메시지 -->
+    <div class="alert success" id="successAlert">
+      리뷰가 성공적으로 등록되었습니다!
+    </div>
+    <div class="alert error" id="errorAlert">
+      <span id="errorMessage">모든 필수 항목을 입력해주세요.</span>
+    </div>
+
+    <!-- 리뷰 작성 폼 -->
+    <form class="review-form" id="reviewForm" enctype="multipart/form-data">
+      <!-- orderItemCode 히든 필드 -->
+      <input type="hidden" name="orderItemCode" th:value="${orderItem.orderItemCode}" id="orderItemCode">
+
+      <!-- 상품 정보 섹션 -->
+      <div class="product-section">
+        <div class="section-header">
+          <i class="fas fa-box"></i>
+          <h2 class="section-title">리뷰 대상 상품</h2>
+        </div>
+        <div class="product-info">
+          <img th:if="${image != null}"
+               th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + image.imageUrl}"
+               alt="상품 이미지"
+               class="product-image"/>
+          <div class="product-details">
+            <h3 th:text="${product.productName}">상품명</h3>
+            <div class="product-price" th:text="${#numbers.formatInteger(product.priceDto.priceSelling, 3, 'COMMA') + '원'}">0</div>
+            <div class="product-category"
+                 th:if="${option != null and option.optionName != null and option.optionValue != null}"
+                 th:text="${option.optionName} + ' : ' + ${option.optionValue}">옵션</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 별점 섹션 -->
+      <div class="rating-section">
+        <div class="section-header">
+          <i class="fas fa-star"></i>
+          <h2 class="section-title">만족도 평가</h2>
+        </div>
+        <div class="rating-input-container">
+          <div class="star-rating">
+            <input type="radio" id="star5" name="rating" value="5">
+            <label for="star5">★</label>
+            <input type="radio" id="star4" name="rating" value="4">
+            <label for="star4">★</label>
+            <input type="radio" id="star3" name="rating" value="3">
+            <label for="star3">★</label>
+            <input type="radio" id="star2" name="rating" value="2">
+            <label for="star2">★</label>
+            <input type="radio" id="star1" name="rating" value="1">
+            <label for="star1">★</label>
+          </div>
+          <div class="rating-text" id="ratingText">별점을 선택해주세요</div>
+          <div class="rating-descriptions">
+            <div class="rating-desc" data-rating="1">별로예요</div>
+            <div class="rating-desc" data-rating="2">그저그래요</div>
+            <div class="rating-desc" data-rating="3">보통이에요</div>
+            <div class="rating-desc" data-rating="4">좋아요</div>
+            <div class="rating-desc" data-rating="5">최고예요</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 리뷰 타입 섹션 -->
+      <div class="review-type-section">
+        <div class="section-header">
+          <i class="fas fa-edit"></i>
+          <h2 class="section-title">리뷰 타입 선택</h2>
+        </div>
+        <div class="review-type-options">
+          <div class="type-option">
+            <input type="radio" id="photoReview" name="reviewType" value="photo" checked>
+            <label for="photoReview">
+              <div class="type-icon">
+                <i class="fas fa-camera"></i>
+              </div>
+              <h3 class="type-title">포토리뷰</h3>
+              <p class="type-desc">사진과 함께 더 생생한<br>후기를 남겨보세요</p>
+            </label>
+          </div>
+          <div class="type-option">
+            <input type="radio" id="textReview" name="reviewType" value="text">
+            <label for="textReview">
+              <div class="type-icon">
+                <i class="fas fa-pen"></i>
+              </div>
+              <h3 class="type-title">텍스트리뷰</h3>
+              <p class="type-desc">글로만 간단하게<br>후기를 작성해보세요</p>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 이미지 업로드 섹션 -->
+      <div class="image-section active" id="imageSection">
+        <div class="section-header">
+          <i class="fas fa-images"></i>
+          <h2 class="section-title">사진 첨부 (최대 5장)</h2>
+        </div>
+        <div class="image-upload-container">
+          <div class="upload-area" id="uploadArea">
+            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+            <div class="upload-text">사진을 드래그하거나 클릭해서 업로드</div>
+            <div class="upload-hint">JPG, PNG, GIF 파일만 업로드 가능 (최대 10MB)</div>
+          </div>
+          <input type="file" id="fileInput" name="images[]" class="file-input" multiple accept="image/*">
+          <div class="image-preview-grid" id="imagePreviewGrid">
+            <!-- 미리보기 이미지들이 여기에 추가됩니다 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 텍스트 섹션 -->
+      <div class="text-section">
+        <div class="section-header">
+          <i class="fas fa-comment"></i>
+          <h2 class="section-title">후기 작성</h2>
+        </div>
+        <div class="text-input-container">
+          <textarea
+                  class="review-textarea"
+                  id="reviewText"
+                  name="reviewText"
+                  placeholder="상품을 사용해보신 솔직한 후기를 남겨주세요.&#10;&#10;다른 고객들에게 도움이 되는 리뷰일수록 더 많은 추천을 받을 수 있어요!&#10;&#10;• 상품의 품질은 어떠셨나요?&#10;• 배송이나 포장은 만족스러우셨나요?&#10;• 사용감이나 효과는 어떠셨나요?"
+                  maxlength="1000"></textarea>
+          <div class="char-counter">
+            <span id="charCount">0</span> / 1000
+          </div>
+        </div>
+      </div>
+
+      <!-- 버튼 섹션 -->
+      <div class="button-section">
+        <div class="button-group">
+          <button type="button" class="btn btn-cancel" onclick="history.back()">취소</button>
+          <button type="submit" class="btn btn-submit" id="submitBtn" disabled>리뷰 등록</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+  $(document).ready(function() {
+    let uploadedImages = [];
+    const maxImages = 5;
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
+
+    // 별점 선택 이벤트
+    $('input[name="rating"]').on('change', function() {
+      const rating = parseInt($(this).val());
+      const ratingTexts = {
+        1: '별로예요 😞',
+        2: '그저그래요 😐',
+        3: '보통이에요 😊',
+        4: '좋아요 😄',
+        5: '최고예요 🤩'
+      };
+
+      $('#ratingText').text(ratingTexts[rating]);
+
+      // 별점 설명 활성화
+      $('.rating-desc').removeClass('active');
+      $(`.rating-desc[data-rating="${rating}"]`).addClass('active');
+
+      validateForm();
+    });
+
+    // 리뷰 타입 선택 이벤트
+    $('input[name="reviewType"]').on('change', function() {
+      const reviewType = $(this).val();
+
+      if (reviewType === 'photo') {
+        $('#imageSection').addClass('active');
+      } else {
+        $('#imageSection').removeClass('active');
+        uploadedImages = [];
+        $('#imagePreviewGrid').empty();
+        // 파일 입력 초기화
+        $('#fileInput').val('');
+      }
+
+      validateForm();
+    });
+
+    // 파일 업로드 관련 이벤트
+    $('#uploadArea').on('click', function() {
+      $('#fileInput').click();
+    });
+
+    $('#fileInput').on('change', function(e) {
+      handleFiles(e.target.files);
+    });
+
+    // 드래그 앤 드롭
+    $('#uploadArea').on('dragover', function(e) {
+      e.preventDefault();
+      $(this).addClass('dragover');
+    });
+
+    $('#uploadArea').on('dragleave', function(e) {
+      e.preventDefault();
+      $(this).removeClass('dragover');
+    });
+
+    $('#uploadArea').on('drop', function(e) {
+      e.preventDefault();
+      $(this).removeClass('dragover');
+      handleFiles(e.originalEvent.dataTransfer.files);
+    });
+
+    // 파일 처리 함수
+    function handleFiles(files) {
+      Array.from(files).forEach(file => {
+        if (uploadedImages.length >= maxImages) {
+          alert(`최대 ${maxImages}장까지만 업로드 가능합니다.`);
+          return;
+        }
+
+        if (file.size > maxFileSize) {
+          alert('파일 크기는 10MB 이하만 업로드 가능합니다.');
+          return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+          alert('이미지 파일만 업로드 가능합니다.');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          addImagePreview(e.target.result, file);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // 이미지 미리보기 추가
+    function addImagePreview(src, file) {
+      const imageId = Date.now() + Math.random();
+      uploadedImages.push({ id: imageId, file: file, src: src });
+
+      const previewHtml = `
+        <div class="image-preview" data-id="${imageId}">
+          <img src="${src}" alt="미리보기" class="preview-image">
+          <button type="button" class="remove-image" onclick="removeImage('${imageId}')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `;
+
+      $('#imagePreviewGrid').append(previewHtml);
+      updateFileInput();
+      validateForm();
+    }
+
+    // 이미지 제거
+    window.removeImage = function(imageId) {
+      uploadedImages = uploadedImages.filter(img => img.id !== imageId);
+      $(`.image-preview[data-id="${imageId}"]`).remove();
+      updateFileInput();
+      validateForm();
+    };
+
+    // 파일 input 업데이트 (실제 전송할 파일들로)
+    function updateFileInput() {
+      const dt = new DataTransfer();
+      uploadedImages.forEach(img => {
+        dt.items.add(img.file);
+      });
+      document.getElementById('fileInput').files = dt.files;
+    }
+
+    // 텍스트 입력 이벤트
+    $('#reviewText').on('input', function() {
+      const length = $(this).val().length;
+      $('#charCount').text(length);
+
+      if (length > 900) {
+        $('.char-counter').addClass('warning');
+      } else {
+        $('.char-counter').removeClass('warning');
+      }
+
+      validateForm();
+    });
+
+    // 폼 유효성 검사
+    function validateForm() {
+      const rating = $('input[name="rating"]:checked').val();
+      const reviewType = $('input[name="reviewType"]:checked').val();
+      const reviewText = $('#reviewText').val().trim();
+
+      let isValid = false;
+
+      if (rating && reviewText.length >= 10) {
+        if (reviewType === 'photo') {
+          isValid = uploadedImages.length > 0;
+        } else {
+          isValid = true;
+        }
+      }
+
+      $('#submitBtn').prop('disabled', !isValid);
+    }
+
+    // 폼 제출
+    $('#reviewForm').on('submit', function(e) {
+      e.preventDefault();
+
+      const formData = new FormData();
+
+      // 기본 데이터 추가
+      formData.append('orderItemCode', $('#orderItemCode').val());
+      formData.append('rating', $('input[name="rating"]:checked').val());
+      formData.append('reviewText', $('#reviewText').val());
+
+      // 이미지 파일 추가 (백엔드의 @RequestPart("images[]")와 매칭)
+      uploadedImages.forEach(img => {
+        formData.append('images[]', img.file);
+      });
+
+      submitReview(formData);
+    });
+
+    // 리뷰 제출 함수
+    function submitReview(formData) {
+      $('#submitBtn').text('등록 중...').prop('disabled', true);
+
+      $.ajax({
+        url: '/review/write',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          $('#successAlert').fadeIn();
+
+          setTimeout(() => {
+            // 마이페이지 리뷰 목록으로 이동하거나 이전 페이지로 이동
+            window.location.href = '/mypage/review';
+          }, 2000);
+        },
+        error: function(xhr, status, error) {
+          let errorMessage = '리뷰 등록 중 오류가 발생했습니다.';
+
+          if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+          } else if (xhr.status === 400) {
+            errorMessage = '입력 정보를 확인해주세요.';
+          } else if (xhr.status === 401) {
+            errorMessage = '로그인이 필요합니다.';
+          } else if (xhr.status === 500) {
+            errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+          }
+
+          $('#errorMessage').text(errorMessage);
+          $('#errorAlert').fadeIn();
+          $('#submitBtn').text('리뷰 등록').prop('disabled', false);
+
+          setTimeout(() => {
+            $('#errorAlert').fadeOut();
+          }, 5000);
+        }
+      });
+    }
+
+    // 초기 유효성 검사
+    validateForm();
+  });
+</script>
+</body>
+</html>

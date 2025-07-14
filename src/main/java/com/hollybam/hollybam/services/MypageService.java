@@ -2,6 +2,7 @@ package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dao.IF_MypageDao;
 import com.hollybam.hollybam.dto.MemberDto;
+import com.hollybam.hollybam.dto.OrderListDto;
 import com.hollybam.hollybam.dto.PointDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,5 +86,11 @@ public class MypageService implements IF_MypageService {
     @Transactional
     public int getGuestCancelCount(int guestCode){
         return mypageDao.getGuestCancelCount(guestCode);
+    }
+
+    @Override
+    @Transactional
+    public List<OrderListDto> selectOrderDetailByOrderCode(int orderCode){
+        return mypageDao.selectOrderDetailByOrderCode(orderCode);
     }
 }

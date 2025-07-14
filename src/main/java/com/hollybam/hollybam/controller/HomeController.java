@@ -145,7 +145,13 @@ public class HomeController {
         } else {
             proList = productService.selectBestProductsForMobile();
         }
+        for(int i = 0; i < proList.size(); i++){
+            proList.get(i).setProductQuantity(productService.getWishCount(proList.get(i).getProductCode()));
+        }
         List<ProductDto> newProList = productService.selectNewProducts();
+        for(int i = 0; i < newProList.size(); i++){
+            newProList.get(i).setProductQuantity(productService.getWishCount(newProList.get(i).getProductCode()));
+        }
         mav.addObject("proList", proList);
         mav.addObject("newProList", newProList);
         mav.setViewName("main");

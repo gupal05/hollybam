@@ -392,4 +392,11 @@
         ORDER BY image_order ASC
         LIMIT 1
     </select>
+
+    <!-- 메인페이지 위시리스트 갯수 -->
+    <select id="getWishCount" parameterType="int" resultType="int">
+        select count(*)
+        from wishlist
+        where product_code = #{productCode}
+    </select>
 </mapper>

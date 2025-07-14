@@ -43,4 +43,6 @@ public interface IF_ProductDao {
      * 상품 대표 이미지 조회
      */
     ImageDto selectProductTitleImage(int productCode);
+
+    int getWishCount(int productCode);
 }

@@ -66,8 +66,8 @@
 
     <!-- 배송 정보 등록 -->
     <insert id="insertDelivery" parameterType="com.hollybam.hollybam.dto.DeliveryDto">
-        INSERT INTO delivery (order_code, delivery_status, delivery_memo)
-        VALUES (#{orderCode}, #{deliveryStatus}, #{deliveryMemo})
+        INSERT INTO delivery (order_code, delivery_status)
+        VALUES (#{orderCode}, #{deliveryStatus})
     </insert>
 
     <!-- 주문 상세 조회 -->
@@ -282,17 +282,24 @@
 
             i.image_url
 
-        FROM orders o
+        FROM (
+                 SELECT order_code
+                 FROM orders
+                 WHERE mem_code = #{memberCode}
+                 ORDER BY create_at DESC
+                 LIMIT 2
+             ) AS recent_orders
+                 JOIN orders o ON o.order_code = recent_orders.order_code
                  LEFT JOIN order_items oi ON o.order_code = oi.order_code
                  LEFT JOIN product p ON oi.product_code = p.product_code
                  LEFT JOIN product_option po ON oi.option_code = po.option_code
                  LEFT JOIN price pr ON p.product_code = pr.product_code
                  LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
 
-        WHERE o.mem_code = #{memberCode}
         ORDER BY o.create_at DESC
-        LIMIT 2
     </select>
+
+
 
     <!-- Order 최근 조회 (비회원 기준) -->
     <select id="selectOrdersByGuestForLimit" parameterType="int" resultMap="orderResultMap">
@@ -310,17 +317,24 @@
 
             i.image_url
 
-        FROM orders o
+        FROM (
+                 SELECT order_code
+                 FROM orders
+                 WHERE guest_code = #{guestCode}
+                 ORDER BY create_at DESC
+                 LIMIT 2
+             ) AS recent_orders
+                 JOIN orders o ON o.order_code = recent_orders.order_code
                  LEFT JOIN order_items oi ON o.order_code = oi.order_code
                  LEFT JOIN product p ON oi.product_code = p.product_code
                  LEFT JOIN product_option po ON oi.option_code = po.option_code
                  LEFT JOIN price pr ON p.product_code = pr.product_code
                  LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
 
-        WHERE o.guest_code = #{guestCode}
         ORDER BY o.create_at DESC
-        LIMIT 2
     </select>
+
+
 
 
     <!-- resultMap -->
@@ -379,4 +393,67 @@
         where order_code = #{orderCode}
     </select>
 
+    <select id="selectOrderItemDetail" parameterType="int" resultMap="orderItemResultMap">
+        SELECT
+            oi.order_item_code,
+            oi.product_code,
+            oi.option_code,
+            oi.quantity,
+            oi.unit_price,
+            oi.option_price,
+            oi.total_price,
+
+            p.product_name,
+            p.product_order_count,
+
+            po.option_name,
+            po.option_value,
+
+            i.image_url,
+            i.image_type,   -- 추가해야 함!
+
+            pr.price_selling
+
+        FROM order_items oi
+                 LEFT JOIN product p ON oi.product_code = p.product_code
+                 LEFT JOIN product_option po ON oi.option_code = po.option_code
+                 LEFT JOIN price pr ON oi.product_code = pr.product_code
+                 LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
+
+        WHERE oi.order_item_code = #{orderItemCode}
+    </select>
+    <resultMap id="orderItemResultMap" type="com.hollybam.hollybam.dto.OrderItemDto">
+        <!-- OrderItemDto 필드 -->
+        <id property="orderItemCode" column="order_item_code"/>
+        <result property="productCode" column="product_code"/>
+        <result property="optionCode" column="option_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="optionPrice" column="option_price"/>
+        <result property="totalPrice" column="total_price"/>
+
+        <!-- ProductDto -->
+        <association property="productDto" javaType="com.hollybam.hollybam.dto.ProductDto">
+            <id property="productCode" column="product_code"/>
+            <result property="productName" column="product_name"/>
+            <result property="productOrderCount" column="product_order_count"/>
+
+            <!-- ImageDto (대표 이미지) -->
+            <association property="imageDto" javaType="com.hollybam.hollybam.dto.ImageDto">
+                <result property="imageUrl" column="image_url"/>
+                <result property="imageType" column="image_type"/>
+            </association>
+            <association property="priceDto" javaType="com.hollybam.hollybam.dto.PriceDto">
+                <id property="priceCode" column="price_code"/>
+                <result property="priceSelling" column="price_selling"/>
+            </association>
+        </association>
+
+        <!-- ProductOptionDto -->
+        <association property="productOptionDto" javaType="com.hollybam.hollybam.dto.ProductOptionDto">
+            <id property="optionCode" column="option_code"/>
+            <result property="optionName" column="option_name"/>
+            <result property="optionValue" column="option_value"/>
+        </association>
+    </resultMap>
 </mapper>

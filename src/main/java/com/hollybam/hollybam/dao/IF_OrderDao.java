@@ -64,4 +64,5 @@ public interface IF_OrderDao {
     List<OrderDto> selectOrdersByGuestForLimit(int guestCode);
     int getFinalAmount(int code);
     DeliveryDto getTrackingNumber(int orderCode);
+    OrderItemDto selectOrderItemDetail(int orderItemCode);
 }

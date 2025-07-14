@@ -22,4 +22,5 @@ public class OrderItemDto {
     // 조인용 필드
     private ProductDto productDto;
     private ProductOptionDto productOptionDto;
+    private ReviewDto reviewDto;
 }

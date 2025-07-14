@@ -77,6 +77,43 @@
       font-weight: 500;
     }
 
+    /* 비회원 프로필 */
+    .guest-profile {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .guest-profile-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6c757d, #9ca3af);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      color: white;
+      font-size: 28px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    .guest-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 5px;
+    }
+
+    .guest-status {
+      font-size: 14px;
+      color: #6c757d;
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
+
     .membership-status {
       background: linear-gradient(135deg, #EE386D, #ff6b9d);
       color: white;
@@ -108,6 +145,50 @@
       font-weight: 700;
     }
 
+    /* 비회원 회원가입 프로모션 */
+    .join-promotion {
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .promotion-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .promotion-desc {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .join-btn {
+      background: white;
+      color: #EE386D;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .join-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+      color: #EE386D;
+    }
+
     .sidebar-menu {
       list-style: none;
       padding: 0;
@@ -126,6 +207,7 @@
       border-radius: 12px;
       transition: all 0.3s ease;
       font-weight: 500;
+      cursor: pointer;
     }
 
     .sidebar-menu a:hover,
@@ -184,6 +266,7 @@
       text-align: center;
       transition: all 0.3s ease;
       border: 2px solid transparent;
+      cursor: pointer;
     }
 
     .order-card:hover {
@@ -735,6 +818,19 @@
       box-shadow: 0 2px 8px rgba(238, 56, 109, 0.3);
     }
 
+    /* 운송장 번호 스타일 추가 */
+    .tracking-number {
+      font-size: 14px;
+      color: #EE386D;
+      font-weight: 500;
+      background: #fff5f7;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #EE386D;
+      margin-top: 5px;
+      display: inline-block;
+    }
+
     .order-products {
       margin-bottom: 15px;
     }
@@ -806,12 +902,37 @@
       text-align: right;
       padding-top: 15px;
       border-top: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .product-price {
       font-size: 18px;
       font-weight: 700;
       color: #EE386D;
+    }
+
+    /* 배송조회 버튼 스타일 */
+    .btn-track {
+      background: #17a2b8;
+      color: white;
+      border: 1px solid #17a2b8;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-track:hover {
+      background: #138496;
+      border-color: #138496;
+      color: white;
+      text-decoration: none;
     }
 
     /* 반응형 - 태블릿 */
@@ -894,6 +1015,8 @@
         text-align: center;
         padding-top: 10px;
         margin-top: 10px;
+        flex-direction: column;
+        gap: 10px;
       }
 
       .product-price {
@@ -928,6 +1051,385 @@
         font-size: 15px;
       }
     }
+    .mypage-order-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      overflow-y: auto;
+      backdrop-filter: blur(2px);
+    }
+
+    .mypage-order-modal-content {
+      background-color: #fff;
+      margin: 3% auto;
+      padding: 0;
+      border-radius: 16px;
+      width: 85%;
+      max-width: 700px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .mypage-order-header {
+      background: #ee386d;
+      color: white;
+      padding: 24px 28px;
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mypage-order-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .mypage-order-close {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: white;
+      font-size: 20px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .mypage-order-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+
+    .mypage-order-body {
+      padding: 24px 28px 28px;
+      background-color: #fafafa;
+    }
+
+    .mypage-section {
+      margin-bottom: 24px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+
+    .mypage-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .mypage-section-title {
+      background: linear-gradient(90deg, #f7fafc 0%, #edf2f7 100%);
+      padding: 16px 20px;
+      font-weight: 600;
+      font-size: 15px;
+      color: #2d3748;
+      border-bottom: 1px solid #e2e8f0;
+      margin: 0;
+    }
+
+    .mypage-section-content {
+      padding: 20px;
+    }
+
+    .mypage-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .mypage-info-grid:last-child {
+      margin-bottom: 0;
+    }
+
+    .mypage-info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .mypage-info-item:last-child {
+      border-bottom: none;
+    }
+
+    .mypage-info-label {
+      font-weight: 500;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .mypage-info-value {
+      color: #1e293b;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .mypage-status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .mypage-status-pending { background-color: #fef3c7; color: #92400e; }
+    .mypage-status-paid { background-color: #d1fae5; color: #065f46; }
+    .mypage-status-preparing { background-color: #dbeafe; color: #1e40af; }
+    .mypage-status-shipped { background-color: #e0e7ff; color: #3730a3; }
+    .mypage-status-delivered { background-color: #f3e8ff; color: #6b21a8; }
+    .mypage-status-cancelled { background-color: #fee2e2; color: #991b1b; }
+
+    .mypage-product-list {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .mypage-product-item {
+      display: flex;
+      padding: 16px;
+      border-bottom: 1px solid #f1f5f9;
+      align-items: center;
+      background: white;
+      transition: background-color 0.2s;
+    }
+
+    .mypage-product-item:hover {
+      background-color: #f8fafc;
+    }
+
+    .mypage-product-item:last-child {
+      border-bottom: none;
+    }
+
+    .mypage-product-image {
+      width: 70px;
+      height: 70px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-right: 16px;
+      border: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .mypage-product-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mypage-product-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: #1e293b;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .mypage-product-option {
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 4px;
+      background-color: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-right: 4px;
+    }
+
+    .mypage-product-quantity {
+      color: #475569;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .mypage-product-price {
+      text-align: right;
+      min-width: 90px;
+      flex-shrink: 0;
+    }
+
+    .mypage-unit-price {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 2px;
+      text-decoration: line-through;
+    }
+
+    .mypage-total-price {
+      font-weight: 700;
+      font-size: 15px;
+      color: #1e293b;
+    }
+
+    .mypage-payment-summary {
+      background: #ee386d;
+      border-radius: 10px;
+      padding: 20px;
+      color: white;
+    }
+
+    .mypage-summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .mypage-summary-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .mypage-summary-row.final {
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      padding-top: 12px;
+      margin-top: 12px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .mypage-address-text {
+      line-height: 1.5;
+      color: #374151;
+    }
+
+    .mypage-full-width {
+      grid-column: 1 / -1;
+    }
+
+    .mypage-tracking-number {
+      color: #EE386D;
+      font-weight: 600;
+      background: #fff5f7;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #EE386D;
+      font-size: 13px;
+      margin-top: 4px;
+      display: inline-block;
+    }
+
+    .mypage-modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .mypage-modal-btn {
+      padding: 10px 20px;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      background: white;
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mypage-modal-btn:hover {
+      border-color: #EE386D;
+      color: #EE386D;
+    }
+
+    .mypage-modal-btn.btn-track {
+      background: #17a2b8;
+      color: white;
+      border-color: #17a2b8;
+    }
+
+    .mypage-modal-btn.btn-track:hover {
+      background: #138496;
+      border-color: #138496;
+      color: white;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      .mypage-order-modal-content {
+        width: 95%;
+        margin: 2% auto;
+      }
+
+      .mypage-order-body {
+        padding: 20px;
+      }
+
+      .mypage-info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .mypage-product-item {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 16px;
+      }
+
+      .mypage-product-image {
+        margin-right: 0;
+        margin-bottom: 12px;
+      }
+
+      .mypage-product-price {
+        text-align: center;
+        margin-top: 12px;
+        min-width: auto;
+      }
+
+      .mypage-info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .mypage-info-value {
+        text-align: left;
+      }
+
+      .mypage-modal-actions {
+        flex-direction: column;
+      }
+
+      .mypage-modal-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -938,7 +1440,8 @@
 <div class="mypage-container">
   <!-- 사이드바 -->
   <aside class="sidebar">
-    <div class="user-profile">
+    <!-- 회원용 프로필 -->
+    <div th:if="${session.member != null}" class="user-profile">
       <div class="profile-image">
         <span th:text="${#strings.substring(session.member.memberName, 0, 1)}">홍</span>
       </div>
@@ -949,7 +1452,17 @@
       </button>
     </div>
 
-    <div class="membership-status">
+    <!-- 비회원용 프로필 -->
+    <div th:unless="${session.member != null}" class="guest-profile">
+      <div class="guest-profile-image">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="guest-name">비회원</div>
+      <div class="guest-status">임시 이용 중</div>
+    </div>
+
+    <!-- 회원용 멤버십 상태 -->
+    <div th:if="${session.member != null}" class="membership-status">
       <div class="membership-title">Member Since 2025</div>
       <div class="points-info">
         <span class="points-label" th:text="'🎁 쿠폰 ' + ${couponCount} + '개'">🎁 쿠폰 0개</span>
@@ -957,23 +1470,49 @@
       </div>
     </div>
 
+    <!-- 비회원용 회원가입 프로모션 -->
+    <div th:unless="${session.member != null}" class="join-promotion">
+      <div class="promotion-title">🎉 회원가입 특가!</div>
+      <div class="promotion-desc">
+        회원가입 시 즉시 5천원 쿠폰과<br>
+        다양한 혜택을 받아보세요
+      </div>
+      <a href="/auth/register" class="join-btn">
+        <i class="fas fa-user-plus"></i> 회원가입하기
+      </a>
+    </div>
+
+    <!-- 사이드바 메뉴 -->
     <ul class="sidebar-menu">
-      <li><a href="/mypage" class="active"><i class="fas fa-user"></i>계정 정보</a></li>
-      <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
-      <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
-      <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
-      <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
-      <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
+      <!-- 회원용 메뉴 -->
+      <th:block th:if="${session.member != null}">
+        <li><a href="/mypage" class="active"><i class="fas fa-user"></i>계정 정보</a></li>
+        <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+        <li><a href="/mypage/review"><i class="fas fa-star"></i>내가 작성한 리뷰</a></li>
+        <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+        <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
+        <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
+        <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
+      </th:block>
+
+      <!-- 비회원용 메뉴는 기존과 동일 -->
+      <th:block th:unless="${session.member != null}">
+        <li><a href="/mypage" class="active"><i class="fas fa-user"></i>비회원 정보</a></li>
+        <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+        <li><a href="/mypage/reviews"><i class="fas fa-star"></i>내가 작성한 리뷰</a></li>
+        <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+        <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>세션 종료</a></li>
+      </th:block>
     </ul>
   </aside>
 
   <!-- 메인 콘텐츠 -->
   <main class="main-content">
-    <h1 class="page-title" th:text="'안녕하세요, '+${session.member.memberName}+'님! 👋'">안녕하세요, guest님! 👋</h1>
+    <h1 class="page-title" th:text="'안녕하세요, '+${session.member != null ? session.member.memberName : '비회원'}+'님! 👋'">안녕하세요, guest님! 👋</h1>
 
     <!-- 주문 현황 요약 -->
     <div class="order-summary">
-      <div class="order-card" style="cursor: pointer;">
+      <div class="order-card">
         <div class="order-icon">
           <i class="fas fa-clock"></i>
         </div>
@@ -1001,14 +1540,15 @@
         <div class="order-label" style="font-weight: bold; color: #1a1a1a;">취소/반품</div>
         <div class="order-count" style="font-weight: bold; color: #1a1a1a;" th:text="${cancelCount}">0</div>
       </div>
-      <div class="order-card" onclick="window.location.href='/customer-service/inquiry'">
+      <!-- 회원 전용 카드들 -->
+      <div th:if="${session.member != null}" class="order-card" onclick="window.location.href='/customer-service?tab=inquiry'">
         <div class="order-icon">
           <i class="fas fa-headset"></i>
         </div>
         <div class="order-count" style="display: none;">0</div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a; margin-top: 30px; font-size: 21px;">1:1 문의</div>
       </div>
-      <div class="order-card">
+      <div th:if="${session.member != null}" class="order-card">
         <div class="order-icon">
           <i class="fas fa-star"></i>
         </div>
@@ -1041,10 +1581,31 @@
       </div>
 
       <div th:if="${recentOrders != null and !recentOrders.isEmpty()}">
-        <div class="order-item" th:each="order : ${recentOrders}">
+        <div class="order-item create-modal"
+             th:each="order : ${recentOrders}"
+             th:data-order-code="${order.orderCode}"
+             th:data-order-id="${order.orderId}">
+
           <div class="order-header">
-            <span class="order-date" th:text="${#temporals.format(order.createAt, 'yyyy.MM.dd HH:mm')}">2025.06.15</span>
-            <span class="order-status" th:text="${order.orderStatus}">배송중</span>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+              <span class="order-date" th:text="${#temporals.format(order.createAt, 'yyyy.MM.dd HH:mm')}"></span>
+              <!-- 운송장 번호 표시 (배송중이나 배송완료 상태일 때만) -->
+              <div th:if="${order.deliveryDto != null and order.deliveryDto.trackingNumber != null and !#strings.isEmpty(order.deliveryDto.trackingNumber)}"
+                   class="tracking-number"
+                   th:text="'운송장: ' + ${order.deliveryDto.trackingNumber}">
+                운송장: 1234567890123
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <!-- 배송조회 버튼 (운송장 번호가 있을 때만) -->
+              <button th:if="${order.deliveryDto != null and order.deliveryDto.trackingNumber != null and !#strings.isEmpty(order.deliveryDto.trackingNumber)}"
+                      class="btn-track"
+                      th:attr="data-tracking-number=${order.deliveryDto.trackingNumber}"
+                      onclick="trackDelivery(this); event.stopPropagation();">
+                <i class="fas fa-truck"></i> 배송조회
+              </button>
+              <span class="order-status" th:classappend="${order.orderStatus}" th:text="${order.orderStatus}">배송중</span>
+            </div>
           </div>
 
           <div class="order-products">
@@ -1056,15 +1617,14 @@
                      style="width: 100px; height: 100px; object-fit: cover; border-radius: 12px;" />
               </div>
               <div class="product-info">
-                <div class="product-name" th:text="${item.productDto.productName}">상품명</div>
-                <div class="product-quantity" th:text="'수량: ' + ${item.quantity} + '개'">수량: 1개</div>
+                <div class="product-name" th:text="${item.productDto.productName}"></div>
+                <div class="product-quantity" th:text="'수량: ' + ${item.quantity} + '개'"></div>
               </div>
             </div>
 
-            <div class="product-summary" style="margin-top: 10px;">
-              <div class="product-price" th:text="'총 결제금액: ₩' + ${#numbers.formatInteger(order.finalAmount, 3, 'COMMA')}">
-                총 결제금액: ₩0
-              </div>
+            <div class="product-summary">
+              <div class="product-price"
+                   th:text="'총 결제금액: ₩' + ${#numbers.formatInteger(order.finalAmount, 3, 'COMMA')}"></div>
             </div>
           </div>
         </div>
@@ -1190,13 +1750,193 @@
   </div>
 </div>
 
+<!-- 주문 상세 모달 -->
+<div id="mypageOrderModal" class="mypage-order-modal">
+  <div class="mypage-order-modal-content">
+    <!-- 모달 헤더 -->
+    <div class="mypage-order-header">
+      <h3 class="mypage-order-title">주문 상세보기</h3>
+      <button class="mypage-order-close" onclick="closeMypageOrderModal()">&times;</button>
+    </div>
+
+    <!-- 모달 바디 -->
+    <div class="mypage-order-body">
+      <!-- 주문 기본 정보 -->
+      <div class="mypage-section">
+        <h4 class="mypage-section-title">주문 정보</h4>
+        <div class="mypage-section-content">
+          <div class="mypage-info-grid">
+            <div class="mypage-info-item">
+              <span class="mypage-info-label">주문번호</span>
+              <span class="mypage-info-value">ORD20250710002</span>
+            </div>
+            <div class="mypage-info-item">
+              <span class="mypage-info-label">주문일시</span>
+              <span class="mypage-info-value">2025.07.10 15:45</span>
+            </div>
+          </div>
+          <div class="mypage-info-grid">
+            <div class="mypage-info-item">
+              <span class="mypage-info-label">주문상태</span>
+              <span class="mypage-info-value">
+                                <span class="mypage-status-badge mypage-status-shipped">배송중</span>
+                            </span>
+            </div>
+            <div class="mypage-info-item">
+              <span class="mypage-info-label">결제방법</span>
+              <span class="mypage-info-value">카카오페이</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 주문자 정보 -->
+      <div class="mypage-section">
+        <h4 class="mypage-section-title">주문자 정보</h4>
+        <div class="mypage-section-content">
+          <div class="mypage-info-grid">
+            <div class="mypage-info-item">
+              <span class="mypage-info-label">이름</span>
+              <span class="mypage-info-value">김회원</span>
+            </div>
+            <div class="mypage-info-item">
+              <span class="mypage-info-label">연락처</span>
+              <span class="mypage-info-value">010-9876-5432</span>
+            </div>
+          </div>
+          <div class="mypage-info-item">
+            <span class="mypage-info-label">이메일</span>
+            <span class="mypage-info-value">kim@example.com</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 배송지 정보 -->
+      <div class="mypage-section">
+        <h4 class="mypage-section-title">배송지 정보</h4>
+        <div class="mypage-section-content">
+          <div class="mypage-info-grid">
+            <div class="mypage-info-item">
+              <span class="mypage-info-label">수령인</span>
+              <span class="mypage-info-value">김회원</span>
+            </div>
+            <div class="mypage-info-item">
+              <span class="mypage-info-label">연락처</span>
+              <span class="mypage-info-value">010-9876-5432</span>
+            </div>
+          </div>
+          <div class="mypage-info-item mypage-full-width">
+            <span class="mypage-info-label">배송주소</span>
+            <span class="mypage-info-value mypage-address-text">(54321) 부산시 해운대구 해변로 456<br>오션타워 12층</span>
+          </div>
+          <div class="mypage-info-item mypage-full-width">
+            <span class="mypage-info-label">배송 요청사항</span>
+            <span class="mypage-info-value">문 앞에 놓고 벨 눌러주세요</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 주문 상품 목록 -->
+      <div class="mypage-section">
+        <h4 class="mypage-section-title">주문 상품</h4>
+        <div class="mypage-section-content">
+          <div class="mypage-product-list">
+            <div class="mypage-product-item">
+              <img src="https://via.placeholder.com/70" alt="상품" class="mypage-product-image">
+              <div class="mypage-product-info">
+                <div class="mypage-product-name">럭셔리 성인용품 프리미엄 A+</div>
+                <div>
+                  <span class="mypage-product-option">컬러: 로즈골드</span>
+                  <span class="mypage-product-option">사이즈: Large</span>
+                </div>
+                <div class="mypage-product-quantity">수량: 1개</div>
+              </div>
+              <div class="mypage-product-price">
+                <div class="mypage-unit-price">정가: 89,000원</div>
+                <div class="mypage-total-price">79,000원</div>
+              </div>
+            </div>
+
+            <div class="mypage-product-item">
+              <img src="https://via.placeholder.com/70" alt="상품" class="mypage-product-image">
+              <div class="mypage-product-info">
+                <div class="mypage-product-name">홀리밤 베스트 성인용품 세트</div>
+                <div>
+                  <span class="mypage-product-option">타입: 커플용</span>
+                  <span class="mypage-product-option">패키지: 디럭스</span>
+                </div>
+                <div class="mypage-product-quantity">수량: 1세트</div>
+              </div>
+              <div class="mypage-product-price">
+                <div class="mypage-unit-price">정가: 155,000원</div>
+                <div class="mypage-total-price">135,000원</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 결제 정보 -->
+      <div class="mypage-section">
+        <h4 class="mypage-section-title">결제 정보</h4>
+        <div class="mypage-section-content">
+          <div class="mypage-payment-summary">
+            <div class="mypage-summary-row">
+              <span>총 상품금액</span>
+              <span>214,000원</span>
+            </div>
+            <div class="mypage-summary-row">
+              <span>할인</span>
+              <span>-14,000원</span>
+            </div>
+            <div class="mypage-summary-row">
+              <span>배송비</span>
+              <span>무료</span>
+            </div>
+            <div class="mypage-summary-row final">
+              <span>최종 결제금액</span>
+              <span>190,000원</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
+  // 현재 모달에 표시된 운송장 번호를 저장할 변수
+  let currentTrackingNumber = null;
+
   // 현재 페이지에 따른 사이드바 메뉴 활성화
   $(document).ready(function() {
     const currentPath = window.location.pathname;
     $('.sidebar-menu a').removeClass('active');
     $(`.sidebar-menu a[href="${currentPath}"]`).addClass('active');
   });
+
+  // 배송 조회 (주문 목록에서)
+  function trackDelivery(button) {
+    const trackingNumber = button.getAttribute('data-tracking-number');
+
+    if (trackingNumber && trackingNumber !== 'null' && trackingNumber !== '') {
+      // CJ대한통운 배송조회 페이지로 이동
+      console.log('배송조회 운송장번호:', trackingNumber);
+      window.open("https://trace.cjlogistics.com/next/tracking.html?wblNo=" + trackingNumber, '_blank');
+    } else {
+      alert('배송조회 정보가 없습니다.');
+    }
+  }
+
+  // 배송 조회 (모달에서)
+  function trackDeliveryFromModal() {
+    if (currentTrackingNumber && currentTrackingNumber !== 'null' && currentTrackingNumber !== '') {
+      console.log('모달에서 배송조회 운송장번호:', currentTrackingNumber);
+      window.open("https://trace.cjlogistics.com/next/tracking.html?wblNo=" + currentTrackingNumber, '_blank');
+    } else {
+      alert('배송조회 정보가 없습니다.');
+    }
+  }
 
   // 위시리스트 제거
   function removeFromWishlist(button) {
@@ -1263,7 +2003,7 @@
         filterUrl += '?status=pending';
         break;
       case '배송중':
-        filterUrl += '?status=shipping';
+        filterUrl += '?status=shipped';
         break;
       case '배송완료':
         filterUrl += '?status=delivered';
@@ -1330,8 +2070,12 @@
   // 모달 외부 클릭 시 닫기
   window.onclick = function(event) {
     const modal = document.getElementById('passwordModal');
+    const orderModal = document.getElementById('mypageOrderModal');
     if (event.target === modal) {
       closePasswordModal();
+    }
+    if (event.target === orderModal) {
+      closeMypageOrderModal();
     }
   }
 
@@ -1434,6 +2178,247 @@
     }
   `;
   document.head.appendChild(style);
+
+  function openMypageOrderModal(data) {
+    console.log(data);
+    document.getElementById('mypageOrderModal').style.display = 'block';
+    document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+
+    const first = data[0];
+    const modalBody = document.querySelector(".mypage-order-body");
+    if (!modalBody) return;
+
+    // 운송장 번호 저장
+    currentTrackingNumber = first.trackingNumber || null;
+
+    // 주문 상태 뱃지 클래스
+    const statusMap = {
+      PAID: 'mypage-status-paid',
+      SHIPPED: 'mypage-status-shipped',
+      DELIVERED: 'mypage-status-delivered',
+      CANCELLED: 'mypage-status-cancelled'
+    };
+    const statusTextMap = {
+      PAID: '결제완료',
+      SHIPPED: '배송중',
+      DELIVERED: '배송완료',
+      CANCELLED: '취소'
+    };
+
+    // 주문일시 변환
+    const createdAt = new Date(first.createAt);
+    const orderDate = `${createdAt.getFullYear()}.${(createdAt.getMonth() + 1).toString().padStart(2, '0')}.${createdAt.getDate().toString().padStart(2, '0')} ${createdAt.getHours().toString().padStart(2, '0')}:${createdAt.getMinutes().toString().padStart(2, '0')}`;
+
+    // 주문 상품 HTML 생성
+    const productHtml = data.map(item => `
+    <div class="mypage-product-item">
+      <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/${item.imageUrl}" alt="상품" class="mypage-product-image">
+      <div class="mypage-product-info">
+        <div class="mypage-product-name">${item.productName}</div>
+        <div>
+          ${item.optionName ? `<span class="mypage-product-option">${item.optionName}: ${item.optionValue}</span>` : ''}
+        </div>
+        <div class="mypage-product-quantity">수량: ${item.quantity}개</div>
+      </div>
+      <div class="mypage-product-price">
+        <div class="mypage-unit-price">정가: ${(item.totalPrice).toLocaleString()}원</div>
+        <div class="mypage-total-price">${(item.totalPrice).toLocaleString()}원</div>
+      </div>
+    </div>
+  `).join('');
+
+    // 운송장 번호 HTML 생성
+    const trackingNumberHtml = first.trackingNumber ? `
+    <div class="mypage-info-item mypage-full-width">
+      <span class="mypage-info-label">운송장 번호</span>
+      <span class="mypage-info-value">
+        <span class="mypage-tracking-number">${first.trackingNumber}</span>
+      </span>
+    </div>
+  ` : '';
+
+    // 모달 액션 버튼들 HTML 생성
+    const modalActionsHtml = first.trackingNumber ? `
+    <div class="mypage-modal-actions">
+      <button class="mypage-modal-btn btn-track" onclick="trackDeliveryFromModal()">
+        <i class="fas fa-truck"></i> 배송조회
+      </button>
+      <button class="mypage-modal-btn" onclick="requestExchangeFromModal()">
+        교환/반품
+      </button>
+      <button class="mypage-modal-btn" onclick="reorderFromModal()">
+        재주문
+      </button>
+    </div>
+  ` : `
+    <div class="mypage-modal-actions">
+      <button class="mypage-modal-btn" onclick="requestExchangeFromModal()">
+        교환/반품
+      </button>
+      <button class="mypage-modal-btn" onclick="reorderFromModal()">
+        재주문
+      </button>
+    </div>
+  `;
+
+    modalBody.innerHTML = `
+    <div class="mypage-section">
+      <h4 class="mypage-section-title">주문 정보</h4>
+      <div class="mypage-section-content">
+        <div class="mypage-info-grid">
+          <div class="mypage-info-item">
+            <span class="mypage-info-label">주문번호</span>
+            <span class="mypage-info-value">${first.orderId}</span>
+          </div>
+          <div class="mypage-info-item">
+            <span class="mypage-info-label">주문일시</span>
+            <span class="mypage-info-value">${orderDate}</span>
+          </div>
+        </div>
+        <div class="mypage-info-grid">
+          <div class="mypage-info-item">
+            <span class="mypage-info-label">주문상태</span>
+            <span class="mypage-info-value">
+              <span class="mypage-status-badge ${statusMap[first.orderStatus] || ''}">${statusTextMap[first.orderStatus] || first.orderStatus}</span>
+            </span>
+          </div>
+          <div class="mypage-info-item">
+            <span class="mypage-info-label">결제방법</span>
+            <span class="mypage-info-value">${first.paymentMethod === 'card' ? '카드결제' : first.paymentMethod}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mypage-section">
+      <h4 class="mypage-section-title">주문자 정보</h4>
+      <div class="mypage-section-content">
+        <div class="mypage-info-grid">
+          <div class="mypage-info-item">
+            <span class="mypage-info-label">이름</span>
+            <span class="mypage-info-value">${first.ordererName}</span>
+          </div>
+          <div class="mypage-info-item">
+            <span class="mypage-info-label">연락처</span>
+            <span class="mypage-info-value">${first.ordererPhone}</span>
+          </div>
+        </div>
+        <div class="mypage-info-item">
+          <span class="mypage-info-label">이메일</span>
+          <span class="mypage-info-value">${first.ordererEmail}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mypage-section">
+      <h4 class="mypage-section-title">배송지 정보</h4>
+      <div class="mypage-section-content">
+        <div class="mypage-info-grid">
+          <div class="mypage-info-item">
+            <span class="mypage-info-label">수령인</span>
+            <span class="mypage-info-value">${first.receiverName}</span>
+          </div>
+          <div class="mypage-info-item">
+            <span class="mypage-info-label">연락처</span>
+            <span class="mypage-info-value">${first.receiverPhone}</span>
+          </div>
+        </div>
+        <div class="mypage-info-item mypage-full-width">
+          <span class="mypage-info-label">배송주소</span>
+          <span class="mypage-info-value mypage-address-text">${first.receiverAddr} ${first.receiverAddrDetail || ''}</span>
+        </div>
+        <div class="mypage-info-item mypage-full-width">
+          <span class="mypage-info-label">배송 요청사항</span>
+          <span class="mypage-info-value">${first.deliveryMemo}</span>
+        </div>
+        ${trackingNumberHtml}
+      </div>
+    </div>
+
+    <div class="mypage-section">
+      <h4 class="mypage-section-title">주문 상품</h4>
+      <div class="mypage-section-content">
+        <div class="mypage-product-list">
+          ${productHtml}
+        </div>
+      </div>
+    </div>
+
+    <div class="mypage-section">
+      <h4 class="mypage-section-title">결제 정보</h4>
+      <div class="mypage-section-content">
+        <div class="mypage-payment-summary">
+          <div class="mypage-summary-row">
+            <span>총 상품금액</span>
+            <span>${first.totalAmount.toLocaleString()}원</span>
+          </div>
+          <div class="mypage-summary-row">
+            <span>할인</span>
+            <span>-${first.discountAmount.toLocaleString()}원</span>
+          </div>
+          <div class="mypage-summary-row">
+            <span>배송비</span>
+            <span>${first.deliveryFee === 0 ? '무료' : first.deliveryFee.toLocaleString() + '원'}</span>
+          </div>
+          <div class="mypage-summary-row final">
+            <span>최종 결제금액</span>
+            <span>${first.finalAmount.toLocaleString()}원</span>
+          </div>
+        </div>
+        ${modalActionsHtml}
+      </div>
+    </div>
+  `;
+  }
+
+  function closeMypageOrderModal() {
+    document.getElementById('mypageOrderModal').style.display = 'none';
+    document.body.style.overflow = 'auto'; // 배경 스크롤 복원
+    currentTrackingNumber = null; // 운송장 번호 초기화
+  }
+
+  // 교환/반품 신청 (모달에서)
+  function requestExchangeFromModal() {
+    alert('교환/반품 신청은 고객센터(1588-0000)로 연락주세요.');
+  }
+
+  // 재주문 (모달에서)
+  function reorderFromModal() {
+    alert('재주문 기능을 준비중입니다.');
+  }
+
+  // ESC 키로 모달 닫기
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closePasswordModal();
+      closeMypageOrderModal();
+    }
+  });
+
+  $(document).ready(function () {
+    $(document).on("click", ".create-modal", function () {
+      const orderCode = $(this).data("order-code");
+      const orderId = $(this).data("order-id");
+
+      $.ajax({
+        url: '/mypage/order/detail/' + encodeURIComponent(orderId),
+        method: 'GET',
+        data: { orderCode: orderCode },
+        success: function (response) {
+          if (response.message) {
+            openMypageOrderModal(response.orderListDto);
+          } else {
+            alert("주문 정보를 불러오는 데 실패했습니다.");
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("에러 발생:", error);
+          alert("주문 정보를 불러오는 데 실패했습니다.");
+        }
+      });
+    });
+  });
+
 </script>
 </body>
 </html>

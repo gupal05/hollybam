@@ -1,10 +1,7 @@
 package com.hollybam.hollybam.controller.mypageController;
 
 import com.hollybam.hollybam.dto.*;
-import com.hollybam.hollybam.services.CouponService;
-import com.hollybam.hollybam.services.IF_OrderService;
-import com.hollybam.hollybam.services.MypageService;
-import com.hollybam.hollybam.services.IF_WishlistService;
+import com.hollybam.hollybam.services.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/mypage")
@@ -35,6 +33,8 @@ public class MypageController {
 
     @Autowired
     private IF_OrderService orderService;
+    @Autowired
+    private ReviewService reviewService;
 
     @GetMapping("")
     public String mypage(HttpSession session, Model model) {
@@ -80,8 +80,15 @@ public class MypageController {
                     orders = orderService.selectOrdersByGuestForLimit(guest.getGuestCode());
                     for(int i = 0; i < orders.size(); i++) {
                         orders.get(i).setOrderStatus(this.getStatusText(orders.get(i).getOrderStatus()));
+                        if(orders.get(i).getOrderStatus().equals("배송중")){
+                            orders.get(i).setDeliveryDto(orderService.getTrackingNumber(orders.get(i).getOrderCode()));
+                        }
                     }
                     model.addAttribute("recentOrders", orders);
+                    model.addAttribute("paidCount", mypageService.getGuestPaidCount(guest.getGuestCode()));
+                    model.addAttribute("shippedCount", mypageService.getGuestShippedCount(guest.getGuestCode()));
+                    model.addAttribute("deliveredCount", mypageService.getGuestDeliveredCount(guest.getGuestCode()));
+                    model.addAttribute("cancelCount", mypageService.getGuestCancelCount(guest.getGuestCode()));
                 } else {
                     recentWishlist = List.of();
                 }
@@ -107,22 +114,45 @@ public class MypageController {
     }
 
     @GetMapping("/orders")
-    public String orders(Model model, HttpSession session) {
+    public String orders(@RequestParam(required = false) String status, Model model, HttpSession session) {
         int couponCount = 0;
         List<OrderDto> orders;
+
         if(session.getAttribute("member") != null) {
             MemberDto member = (MemberDto) session.getAttribute("member");
             couponCount = couponService.selectCouponCount(member.getMemberCode());
             int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
             String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
             orders = orderService.selectOrdersByMember(member.getMemberCode());
+
             for(int i = 0; i < orders.size(); i++) {
                 orders.get(i).setOrderStatus(this.getStatusText(orders.get(i).getOrderStatus()));
                 if(orders.get(i).getOrderStatus().equals("배송중")){
                     orders.get(i).setDeliveryDto(orderService.getTrackingNumber(orders.get(i).getOrderCode()));
                 }
+                if(orders.get(i).getOrderStatus().equals("배송완료")){
+                    for(int j=0; j<orders.get(i).getOrderItems().size(); j++){
+                        if(reviewService.isWroteReview(orders.get(i).getOrderItems().get(j).getOrderItemCode()) > 0){
+                            orders.get(i).getOrderItems().get(j).setReviewDto(new ReviewDto());
+                            orders.get(i).getOrderItems().get(j).getReviewDto().setIsReview(true);
+                            System.out.println("작성 한 주문 : "+orders.get(i).getOrderItems().get(j));
+                        }else{
+                            orders.get(i).getOrderItems().get(j).setReviewDto(new ReviewDto());
+                            orders.get(i).getOrderItems().get(j).getReviewDto().setIsReview(false);
+                            System.out.println("작성 안 한 주문 : "+orders.get(i).getOrderItems().get(j));
+                        }
+                    }
+                }
             }
-            System.out.println(orders);
+
+            // 상태별 필터링 추가
+            if (status != null && !status.isEmpty()) {
+                String filterStatus = getStatusText(status);
+                orders = orders.stream()
+                        .filter(order -> order.getOrderStatus().equals(filterStatus))
+                        .collect(Collectors.toList());
+            }
+
             model.addAttribute("isMember", session.getAttribute("member") != null);
             model.addAttribute("orderList", orders);
             model.addAttribute("totalPoint", totalPoint);
@@ -130,13 +160,39 @@ public class MypageController {
         } else {
             GuestDto guest = (GuestDto) session.getAttribute("guest");
             orders = orderService.selectOrdersByGuest(guest.getGuestCode());
+
             for(int i = 0; i < orders.size(); i++) {
                 orders.get(i).setOrderStatus(this.getStatusText(orders.get(i).getOrderStatus()));
+                if(orders.get(i).getOrderStatus().equals("배송중")){
+                    orders.get(i).setDeliveryDto(orderService.getTrackingNumber(orders.get(i).getOrderCode()));
+                }
             }
+
+            // 비회원도 필터링 추가
+            if (status != null && !status.isEmpty()) {
+                String filterStatus = getStatusText(status);
+                orders = orders.stream()
+                        .filter(order -> order.getOrderStatus().equals(filterStatus))
+                        .collect(Collectors.toList());
+            }
+
             model.addAttribute("isGuest", session.getAttribute("guest") != null);
             model.addAttribute("orderList", orders);
         }
         return "mypage/orderList";
+    }
+
+    // 영문 상태를 한글로 매핑하는 메서드 추가
+    private String getStatusText(String englishStatus) {
+        switch (englishStatus) {
+            case "PENDING": return "주문 보류";
+            case "PAID", "PREPARING": return "결제완료";
+            case "SHIPPED": return "배송중";
+            case "DELIVERED": return "배송완료";
+            case "CANCELLED": return "취소됨";
+            case "REFUNDED": return "반품";
+            default: return "기타";
+        }
     }
 
     @GetMapping("/profile/edit")
@@ -315,15 +371,30 @@ public class MypageController {
         return "mypage/points";
     }
 
-    public String getStatusText(String orderStatus) {
-        switch (orderStatus) {
-            case "PENDING": return "주문 보류";
-            case "PAID", "PREPARING": return "결제완료";
-            case "SHIPPED": return "배송중";
-            case "DELIVERED": return "배송완료";
-            case "CANCELLED": return "취소됨";
-            case "REFUNDED": return "반품";
-            default: return "기타";
+
+
+    @GetMapping("/order/detail/{orderId}")
+    @ResponseBody
+    public Map<String, Object> getOrderDetail(@PathVariable("orderId") String orderId, @RequestParam int orderCode) {
+        Map<String, Object> result = new HashMap<>();
+        List<OrderListDto> orderListDto = mypageService.selectOrderDetailByOrderCode(orderCode);
+        for(int i=0; i<orderListDto.size(); i++) {
+            if(orderListDto.get(i).getOrderStatus().equals("PREPARING")) {
+                orderListDto.get(i).setOrderStatus("PAID");
+            }
         }
+        if(orderListDto != null) {
+            result.put("orderListDto", orderListDto);
+            result.put("message", true);
+        }else{
+            result.put("message", false);
+        }
+        return result;
     }
+
+    @GetMapping("/review")
+    public String reviewPage() {
+        return "mypage/review";
+    }
+
 }

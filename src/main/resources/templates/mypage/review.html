@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="icon" href="data:,">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>내 리뷰 - 홀리밤</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+    <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        /* 메인 컨테이너 */
+        .mypage-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 140px 20px 60px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            height: fit-content;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 140px;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 32px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .user-grade {
+            font-size: 14px;
+            color: #EE386D;
+            font-weight: 500;
+        }
+
+        /* 비회원 프로필 */
+        .guest-profile {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .guest-profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c757d, #9ca3af);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .guest-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .guest-status {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .membership-status {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .membership-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .points-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .points-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .points-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* 비회원 회원가입 프로모션 */
+        .join-promotion {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .promotion-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .promotion-desc {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .join-btn {
+            background: white;
+            color: #EE386D;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .join-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+            color: #EE386D;
+        }
+
+        .edit-profile-btn {
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .edit-profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(238, 56, 109, 0.4);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #EE386D;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        /* 페이지 타이틀 */
+        .page-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .page-title p {
+            font-size: 16px;
+            color: #666666;
+            margin: 0;
+        }
+
+        /* 통계 정보 */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 16px;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #EE386D;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* 탭 메뉴 */
+        .review-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #888888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: #EE386D;
+            border-bottom-color: #EE386D;
+        }
+
+        .tab-button:hover {
+            color: #EE386D;
+        }
+
+        .tab-badge {
+            background: #EE386D;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            font-weight: 700;
+        }
+
+        /* 필터 및 정렬 */
+        .review-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 0 5px;
+        }
+
+        .filter-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .filter-button {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-button.active {
+            background: #EE386D;
+            color: white;
+            border-color: #EE386D;
+        }
+
+        .filter-button:hover {
+            border-color: #EE386D;
+            color: #EE386D;
+        }
+
+        .sort-select {
+            background: white;
+            border: 1px solid #e9ecef;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .total-count {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .total-count .count {
+            color: #EE386D;
+            font-weight: 700;
+        }
+
+        /* 리뷰 그리드 */
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .review-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .review-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        /* 포토리뷰 카드 */
+        .photo-review .review-image {
+            position: relative;
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+
+        .photo-review .review-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .photo-review:hover .review-image img {
+            transform: scale(1.05);
+        }
+
+        .photo-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(238, 56, 109, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+
+        /* 텍스트리뷰 카드 */
+        .text-review {
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-review .review-content {
+            flex: 1;
+        }
+
+        /* 리뷰 내용 */
+        .review-info {
+            padding: 20px;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .product-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #f5f5f5;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+        }
+
+        .star {
+            width: 14px;
+            height: 14px;
+            fill: #ffd700;
+        }
+
+        .rating-number {
+            font-size: 12px;
+            color: #666;
+            margin-left: 4px;
+            font-weight: 500;
+        }
+
+        .review-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #444;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .review-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .review-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .review-date {
+            font-size: 12px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        /* 액션 버튼들 */
+        .review-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .action-btn {
+            background: none;
+            border: 1px solid #e9ecef;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #666;
+        }
+
+        .action-btn:hover {
+            border-color: #EE386D;
+            color: #EE386D;
+        }
+
+        .action-btn.edit {
+            color: #28a745;
+            border-color: #28a745;
+        }
+
+        .action-btn.edit:hover {
+            background: #28a745;
+            color: white;
+        }
+
+        .action-btn.delete {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .action-btn.delete:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .review-likes {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #666;
+            margin-right: 8px;
+        }
+
+        .like-icon {
+            width: 14px;
+            height: 14px;
+            fill: #EE386D;
+        }
+
+        /* 더보기 버튼 */
+        .load-more {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .load-more-btn {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .load-more-btn:hover {
+            background: #EE386D;
+            color: white;
+            border-color: #EE386D;
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #888;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .empty-action {
+            background: #EE386D;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .empty-action:hover {
+            background: #d63384;
+            transform: translateY(-2px);
+        }
+
+        /* 반응형 - 태블릿 */
+        @media (max-width: 1024px) {
+            .mypage-container {
+                flex-direction: column;
+                padding: 120px 20px 60px;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+        }
+
+        /* 반응형 - 모바일 */
+        @media (max-width: 768px) {
+            .mypage-container {
+                padding: 100px 16px 40px;
+                gap: 20px;
+            }
+
+            .sidebar {
+                padding: 25px;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .review-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .page-title h1 {
+                font-size: 22px;
+            }
+
+            .review-info {
+                padding: 16px;
+            }
+
+            .review-text {
+                font-size: 13px;
+                -webkit-line-clamp: 2;
+            }
+
+            .product-thumb {
+                width: 45px;
+                height: 45px;
+            }
+
+            .product-name {
+                font-size: 12px;
+            }
+
+            .tab-button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .stats-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stat-item {
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mypage-container {
+                padding: 80px 12px 30px;
+            }
+
+            .page-title {
+                margin-bottom: 30px;
+            }
+
+            .page-title h1 {
+                font-size: 20px;
+            }
+
+            .page-title p {
+                font-size: 13px;
+            }
+
+            .review-tabs {
+                margin-bottom: 30px;
+            }
+
+            .tab-button {
+                padding: 8px 16px;
+                font-size: 13px;
+                margin: 0 3px;
+            }
+
+            .review-info {
+                padding: 14px;
+            }
+
+            .review-text {
+                font-size: 12px;
+            }
+
+            .product-thumb {
+                width: 40px;
+                height: 40px;
+            }
+
+            .product-name {
+                font-size: 11px;
+            }
+
+            .rating-number {
+                font-size: 11px;
+            }
+
+            .review-date {
+                font-size: 11px;
+            }
+
+            .review-likes {
+                font-size: 11px;
+            }
+
+            .filter-button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .action-btn {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            .main-content {
+                padding: 25px 15px;
+            }
+
+            .sidebar {
+                padding: 20px;
+            }
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<!-- 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 마이페이지 컨테이너 -->
+<div class="mypage-container">
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+        <!-- 회원용 프로필 -->
+        <div th:if="${session.member != null}" class="user-profile">
+            <div class="profile-image">
+                <span th:text="${#strings.substring(session.member.memberName, 0, 1)}">홍</span>
+            </div>
+            <div class="user-name" th:text="${session.member.memberName}">홍길동</div>
+            <div class="user-grade">guest 회원</div>
+            <button class="edit-profile-btn" onclick="changePage()">
+                <i class="fas fa-edit"></i> 정보 수정
+            </button>
+        </div>
+
+        <!-- 비회원용 프로필 -->
+        <div th:unless="${session.member != null}" class="guest-profile">
+            <div class="guest-profile-image">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="guest-name">비회원</div>
+            <div class="guest-status">임시 이용 중</div>
+        </div>
+
+        <!-- 회원용 멤버십 상태 -->
+        <div th:if="${session.member != null}" class="membership-status">
+            <div class="membership-title">Member Since 2025</div>
+            <div class="points-info">
+                <span class="points-label" th:text="'🎁 쿠폰 ' + ${couponCount ?: 0} + '개'">🎁 쿠폰 0개</span>
+                <span class="points-label" th:text="'💎 적립금 '+ ${totalPoint ?: 0} +'원'">💎 포인트 0원</span>
+            </div>
+        </div>
+
+        <!-- 비회원용 회원가입 프로모션 -->
+        <div th:unless="${session.member != null}" class="join-promotion">
+            <div class="promotion-title">🎉 회원가입 특가!</div>
+            <div class="promotion-desc">
+                회원가입 시 즉시 5천원 쿠폰과<br>
+                다양한 혜택을 받아보세요
+            </div>
+            <a href="/auth/register" class="join-btn">
+                <i class="fas fa-user-plus"></i> 회원가입하기
+            </a>
+        </div>
+
+        <!-- 사이드바 메뉴 -->
+        <ul class="sidebar-menu">
+            <!-- 회원용 메뉴 -->
+            <th:block th:if="${session.member != null}">
+                <li><a href="/mypage"><i class="fas fa-user"></i>계정 정보</a></li>
+                <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+                <li><a href="/mypage/reviews" class="active"><i class="fas fa-star"></i>내가 작성한 리뷰</a></li>
+                <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+                <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
+                <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
+                <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>로그아웃</a></li>
+            </th:block>
+
+            <!-- 비회원용 메뉴 -->
+            <th:block th:unless="${session.member != null}">
+                <li><a href="/mypage"><i class="fas fa-user"></i>비회원 정보</a></li>
+                <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+                <li><a href="/mypage/reviews" class="active"><i class="fas fa-star"></i>내가 작성한 리뷰</a></li>
+                <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+                <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>세션 종료</a></li>
+            </th:block>
+        </ul>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+        <!-- 페이지 타이틀 -->
+        <div class="page-title">
+            <h1>내 리뷰</h1>
+            <p>작성하신 리뷰들을 관리하고 수정하실 수 있습니다</p>
+        </div>
+
+        <!-- 통계 정보 -->
+        <div class="stats-container">
+            <div class="stat-item">
+                <span class="stat-number">24</span>
+                <span class="stat-label">총 리뷰 수</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">18</span>
+                <span class="stat-label">포토 리뷰</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">4.8</span>
+                <span class="stat-label">평균 평점</span>
+            </div>
+        </div>
+
+        <!-- 탭 메뉴 -->
+        <div class="review-tabs">
+            <button class="tab-button active" data-tab="photo">
+                포토리뷰 <span class="tab-badge">18</span>
+            </button>
+            <button class="tab-button" data-tab="text">
+                텍스트리뷰 <span class="tab-badge">6</span>
+            </button>
+        </div>
+
+        <!-- 필터 및 정렬 -->
+        <div class="review-filters">
+            <div class="filter-left">
+                <button class="filter-button active">전체</button>
+                <button class="filter-button">5점</button>
+                <button class="filter-button">4점</button>
+                <button class="filter-button">3점 이하</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="total-count">
+                    총 <span class="count">18</span>개의 리뷰
+                </div>
+                <select class="sort-select">
+                    <option value="latest">최신순</option>
+                    <option value="oldest">오래된순</option>
+                    <option value="rating">평점순</option>
+                    <option value="likes">좋아요순</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 리뷰 그리드 -->
+        <div class="review-grid" id="allReviews">
+            <!-- 포토리뷰 카드 1 -->
+            <div class="review-card photo-review">
+                <div class="review-image">
+                    <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+                    <div class="photo-badge">PHOTO</div>
+                </div>
+                <div class="review-info">
+                    <div class="review-header">
+                        <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+                        <div class="product-info">
+                            <div class="product-name">홀 래빗 진동 흡입기</div>
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <span class="rating-number">5.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        정말 만족스러운 제품이에요! 생각했던 것보다 훨씬 좋고 배송도 빨라서 다음에도 여기서 구매하려고 합니다.
+                    </div>
+                    <div class="review-footer">
+                        <div class="review-meta">
+                            <div class="review-date">2025.07.10</div>
+                        </div>
+                        <div class="review-actions">
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>127</span>
+                            </div>
+                            <button class="action-btn edit">수정</button>
+                            <button class="action-btn delete">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 텍스트리뷰 카드 2 -->
+            <div class="review-card text-review">
+                <div class="review-info">
+                    <div class="review-header">
+                        <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+                        <div class="product-info">
+                            <div class="product-name">프리미엄 러브젤</div>
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
+                                <span class="rating-number">4.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-content">
+                        <div class="review-text">
+                            가성비가 정말 좋은 제품이에요. 사용감도 부드럽고 향도 좋습니다. 용량도 넉넉해서 오래 사용할 수 있을 것 같아요. 배송도 빨랐고 포장도 깔끔했습니다. 다음에도 재구매 의향이 있어요.
+                        </div>
+                    </div>
+                    <div class="review-footer">
+                        <div class="review-meta">
+                            <div class="review-date">2025.07.12</div>
+                        </div>
+                        <div class="review-actions">
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>45</span>
+                            </div>
+                            <button class="action-btn edit">수정</button>
+                            <button class="action-btn delete">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 추가 포토리뷰 카드들... -->
+            <div class="review-card photo-review">
+                <div class="review-image">
+                    <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+                    <div class="photo-badge">PHOTO</div>
+                </div>
+                <div class="review-info">
+                    <div class="review-header">
+                        <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+                        <div class="product-info">
+                            <div class="product-name">특수 마사지 오일</div>
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <span class="rating-number">5.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        향도 좋고 사용감도 부드러워서 만족해요. 다음에도 구매하겠습니다.
+                    </div>
+                    <div class="review-footer">
+                        <div class="review-meta">
+                            <div class="review-date">2025.07.03</div>
+                        </div>
+                        <div class="review-actions">
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>42</span>
+                            </div>
+                            <button class="action-btn edit">수정</button>
+                            <button class="action-btn delete">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="review-card text-review">
+                <div class="review-info">
+                    <div class="review-header">
+                        <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+                        <div class="product-info">
+                            <div class="product-name">베스트 콘돔 세트</div>
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
+                                <span class="rating-number">4.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-content">
+                        <div class="review-text">
+                            다양한 타입이 들어있어서 좋네요. 품질도 믿을만하고 가격도 합리적입니다. 포장도 신경써서 해주셔서 감사해요.
+                        </div>
+                    </div>
+                    <div class="review-footer">
+                        <div class="review-meta">
+                            <div class="review-date">2025.07.07</div>
+                        </div>
+                        <div class="review-actions">
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span>29</span>
+                            </div>
+                            <button class="action-btn edit">수정</button>
+                            <button class="action-btn delete">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 빈 상태 (리뷰가 없을 때) -->
+        <!-- <div class="empty-state" style="display: none;">
+          <i class="fas fa-edit"></i>
+          <h3>작성한 리뷰가 없습니다</h3>
+          <p>구매하신 상품에 대한 후기를 작성해보세요</p>
+          <a href="/mypage/orders" class="empty-action">주문 내역 보기</a>
+        </div> -->
+
+        <!-- 더보기 버튼 -->
+        <div class="load-more">
+            <button class="load-more-btn">더보기</button>
+        </div>
+    </main>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    $(document).ready(function() {
+        // 현재 페이지에 따른 사이드바 메뉴 활성화
+        const currentPath = window.location.pathname;
+        $('.sidebar-menu a').removeClass('active');
+        $(`.sidebar-menu a[href="${currentPath}"]`).addClass('active');
+
+        // 탭 전환 기능
+        $('.tab-button').on('click', function() {
+            const tabType = $(this).data('tab');
+
+            // 탭 버튼 활성화 상태 변경
+            $('.tab-button').removeClass('active');
+            $(this).addClass('active');
+
+            // 리뷰 필터링
+            filterReviewsByTab(tabType);
+        });
+
+        // 상태 필터 기능
+        $('.filter-button').on('click', function() {
+            $('.filter-button').removeClass('active');
+            $(this).addClass('active');
+
+            const filterType = $(this).text().trim();
+            filterReviewsByRating(filterType);
+        });
+
+        // 정렬 기능
+        $('.sort-select').on('change', function() {
+            const sortType = $(this).val();
+            sortReviews(sortType);
+        });
+
+        // 리뷰 수정 버튼
+        $('.action-btn.edit').on('click', function(e) {
+            e.stopPropagation();
+            const reviewCard = $(this).closest('.review-card');
+            const reviewId = reviewCard.data('review-id') || 1; // 예시
+
+            // 리뷰 수정 페이지로 이동
+            window.location.href = `/review/edit/${reviewId}`;
+        });
+
+        // 리뷰 삭제 버튼
+        $('.action-btn.delete').on('click', function(e) {
+            e.stopPropagation();
+
+            if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+                const reviewCard = $(this).closest('.review-card');
+                const reviewId = reviewCard.data('review-id') || 1; // 예시
+
+                // 삭제 API 호출
+                deleteReview(reviewId, reviewCard);
+            }
+        });
+
+        // 리뷰 카드 클릭 이벤트 (상세 보기)
+        $('.review-card').on('click', function() {
+            const reviewId = $(this).data('review-id') || 1; // 예시
+            window.location.href = `/review/detail/${reviewId}`;
+        });
+
+        // 더보기 버튼 기능
+        $('.load-more-btn').on('click', function() {
+            loadMoreReviews();
+        });
+
+        // 탭별 리뷰 필터링 함수
+        function filterReviewsByTab(tabType) {
+            const $cards = $('.review-card');
+            let visibleCount = 0;
+
+            $cards.each(function() {
+                const $card = $(this);
+                let show = false;
+
+                switch(tabType) {
+                    case 'photo':
+                        show = $card.hasClass('photo-review');
+                        break;
+                    case 'text':
+                        show = $card.hasClass('text-review');
+                        break;
+                }
+
+                if (show) {
+                    $card.show();
+                    visibleCount++;
+                } else {
+                    $card.hide();
+                }
+            });
+
+            $('.total-count .count').text(visibleCount);
+        }
+
+        // 평점별 리뷰 필터링 함수
+        function filterReviewsByRating(ratingText) {
+            const $cards = $('.review-card');
+            let visibleCount = 0;
+
+            $cards.each(function() {
+                const $card = $(this);
+                const rating = parseFloat($card.find('.rating-number').text());
+                let show = false;
+
+                switch(ratingText) {
+                    case '전체':
+                        show = true;
+                        break;
+                    case '5점':
+                        show = rating === 5.0;
+                        break;
+                    case '4점':
+                        show = rating >= 4.0 && rating < 5.0;
+                        break;
+                    case '3점 이하':
+                        show = rating <= 3.0;
+                        break;
+                }
+
+                if (show) {
+                    $card.show();
+                    visibleCount++;
+                } else {
+                    $card.hide();
+                }
+            });
+
+            $('.total-count .count').text(visibleCount);
+        }
+
+        // 리뷰 정렬 함수
+        function sortReviews(sortType) {
+            const $container = $('.review-grid');
+            const $cards = $container.find('.review-card').get();
+
+            $cards.sort(function(a, b) {
+                const $a = $(a);
+                const $b = $(b);
+
+                switch(sortType) {
+                    case 'latest':
+                        return new Date($b.find('.review-date').text()) - new Date($a.find('.review-date').text());
+                    case 'oldest':
+                        return new Date($a.find('.review-date').text()) - new Date($b.find('.review-date').text());
+                    case 'rating':
+                        return parseFloat($b.find('.rating-number').text()) - parseFloat($a.find('.rating-number').text());
+                    case 'likes':
+                        return parseInt($b.find('.review-likes span').text()) - parseInt($a.find('.review-likes span').text());
+                    default:
+                        return 0;
+                }
+            });
+
+            $.each($cards, function(index, card) {
+                $container.append(card);
+            });
+        }
+
+        // 리뷰 삭제 함수
+        function deleteReview(reviewId, $reviewCard) {
+            // 실제 구현시에는 서버 API 호출
+            $.ajax({
+                url: `/api/reviews/${reviewId}`,
+                method: 'DELETE',
+                success: function(response) {
+                    // 성공시 카드 제거 애니메이션
+                    $reviewCard.fadeOut(300, function() {
+                        $(this).remove();
+                        updateReviewCounts();
+                    });
+
+                    alert('리뷰가 삭제되었습니다.');
+                },
+                error: function(xhr, status, error) {
+                    alert('리뷰 삭제에 실패했습니다. 다시 시도해주세요.');
+                }
+            });
+        }
+
+        // 더보기 함수
+        function loadMoreReviews() {
+            const $btn = $('.load-more-btn');
+            $btn.text('로딩중...');
+
+            // 실제 구현시에는 서버에서 추가 데이터 로드
+            setTimeout(() => {
+                // 예시: 추가 리뷰 카드 추가
+                $btn.text('더보기');
+
+                // 더 이상 불러올 리뷰가 없는 경우
+                // $btn.text('모든 리뷰를 불러왔습니다').prop('disabled', true);
+            }, 1000);
+        }
+
+        // 리뷰 카운트 업데이트
+        function updateReviewCounts() {
+            const totalCount = $('.review-card').length;
+            const photoCount = $('.review-card.photo-review').length;
+            const textCount = $('.review-card.text-review').length;
+
+            $('.stat-item:nth-child(1) .stat-number').text(totalCount);
+            $('.stat-item:nth-child(2) .stat-number').text(photoCount);
+            $('.tab-button[data-tab="photo"] .tab-badge').text(photoCount);
+            $('.tab-button[data-tab="text"] .tab-badge').text(textCount);
+        }
+
+        // 페이지 로드 시 포토리뷰만 표시
+        filterReviewsByTab('photo');
+    });
+
+    // 마이페이지 관련 함수들
+    function changePage() {
+        // 마이페이지와 동일한 비밀번호 확인 로직 또는 직접 이동
+        window.location.href = '/mypage/profile/edit';
+    }
+
+    function logout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            window.location.href = '/auth/logout';
+        }
+    }
+</script>
+</body>
+</html>

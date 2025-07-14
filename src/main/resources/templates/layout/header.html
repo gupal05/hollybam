@@ -69,6 +69,9 @@
 
                 <!-- 비회원 사용자 (기존 유지) -->
                 <div th:if="${session.member == null}" class="user-dropdown-content">
+                    <a href="/mypage" class="user-dropdown-link">
+                        <i class="fa-regular fa-user"></i><span>비회원 정보</span>
+                    </a>
                     <a href="/mypage/orders" class="user-dropdown-link">
                         <i class="fa-solid fa-box"></i><span>주문조회</span>
                     </a>
@@ -216,6 +219,10 @@
 
             <!-- 비회원 메뉴 -->
             <div th:if="${session.member == null}">
+                <a href="/mypage" class="mobile-menu-link">
+                    <i class="fa-regular fa-user"></i>
+                    <span>비회원 정보</span>
+                </a>
                 <a href="/mypage/orders" class="mobile-menu-link">
                     <i class="fa-solid fa-box"></i>
                     <span>주문조회</span>

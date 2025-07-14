@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dto.MemberDto;
+import com.hollybam.hollybam.dto.OrderListDto;
 import com.hollybam.hollybam.dto.PointDto;
 import java.util.List;
 
@@ -19,4 +20,5 @@ public interface IF_MypageService {
     int getGuestDeliveredCount(int guestCode);
     int getMemberCancelCount(int memberCode);
     int getGuestCancelCount(int guestCode);
+    List<OrderListDto> selectOrderDetailByOrderCode(int orderCode);
 }

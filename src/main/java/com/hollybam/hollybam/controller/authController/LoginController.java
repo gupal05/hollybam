@@ -23,7 +23,6 @@ public class LoginController {
 
     @GetMapping("/login")
     public String loginPage() {
-        System.out.println("Login Page");
         return "auth/login";
     }
 
@@ -32,7 +31,12 @@ public class LoginController {
     public Map<String, Object> loginResult(@ModelAttribute MemberDto memberDto) {
         Map<String, Object> result = new HashMap<>();
         if(loginService.login(memberDto)) {
-            session.removeAttribute("temp");
+            if(session.getAttribute("temp") != null) {
+                session.removeAttribute("temp");
+            }
+            if(session.getAttribute("guest") != null) {
+                session.removeAttribute("guest");
+            }
             memberDto = loginService.getMemberInfo(memberDto.getMemberId());
             session.setAttribute("member", memberDto);
             result.put("loginResult", true);

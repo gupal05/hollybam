@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hollybam.hollybam.dao.IF_ReviewDao">
+
+    <!-- 주문 상태 조회 -->
+    <select id="getOrderStatusByOrderItemCode" resultType="String">
+        SELECT o.order_status
+        FROM orders o
+                 JOIN order_items oi ON o.order_code = oi.order_code
+        WHERE oi.order_item_code = #{orderItemCode}
+    </select>
+
+    <!-- 이미 리뷰가 작성되었는지 확인 -->
+    <select id="countExistingReview" resultType="int">
+        SELECT COUNT(*)
+        FROM review
+        WHERE order_item_code = #{orderItemCode}
+          AND (
+            (#{memCode} IS NOT NULL AND mem_code = #{memCode})
+                OR
+            (#{guestCode} IS NOT NULL AND guest_code = #{guestCode})
+            )
+    </select>
+
+    <insert id="insertReview" parameterType="ReviewDto" useGeneratedKeys="true" keyProperty="reviewCode">
+        INSERT INTO review (
+            order_item_code,
+            mem_code,
+            guest_code,
+            rating,
+            content,
+            is_active,
+            created_at
+        )
+        VALUES (
+                   #{orderItemCode},
+                   #{memCode},
+                   #{guestCode},
+                   #{rating},
+                   #{content},
+                   1,
+                   NOW()
+               )
+    </insert>
+
+    <insert id="insertReviewImage" parameterType="ReviewImageDto">
+        INSERT INTO review_image (
+            review_code,
+            image_url
+        )
+        VALUES (
+                   #{reviewCode},
+                   #{imageUrl}
+               )
+    </insert>
+    
+    <select id="isWroteReview" parameterType="int" resultType="int">
+        select count(*)
+        from review
+        where order_item_code = #{orderItemCode}
+    </select>
+
+</mapper>

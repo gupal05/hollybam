@@ -24,4 +24,5 @@ public interface IF_OrderService {
     List<OrderDto> selectOrdersByGuestForLimit(int guestCode);
     int getFinalAmount(int code);
     DeliveryDto getTrackingNumber(int orderCode);
+    OrderItemDto getOrderItemDetail(int orderItemCode);
 }

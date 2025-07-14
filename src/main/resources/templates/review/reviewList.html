@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="icon" href="data:,">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>리뷰 - 홀리밤</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" th:href="@{/css/header.css}"/>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <script type="text/javascript" th:src="@{/js/header.js}"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      line-height: 1.6;
+    }
+
+    /* 메인 컨테이너 */
+    .content {
+      min-height: 800px;
+      display: flex;
+      justify-content: center;
+      padding: 120px 20px 60px;
+    }
+
+    .inner-box {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 1280px;
+    }
+
+    /* 페이지 타이틀 */
+    .page-title {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .page-title h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0 0 10px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .page-title p {
+      font-size: 16px;
+      color: #666666;
+      margin: 0;
+    }
+
+    /* 탭 메뉴 */
+    .review-tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 40px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .tab-button {
+      background: none;
+      border: none;
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #888888;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+      margin: 0 10px;
+      position: relative;
+    }
+
+    .tab-button.active {
+      color: #EE386D;
+      border-bottom-color: #EE386D;
+    }
+
+    .tab-button:hover {
+      color: #EE386D;
+    }
+
+    .tab-badge {
+      background: #EE386D;
+      color: white;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: 5px;
+      font-weight: 700;
+    }
+
+    /* 필터 및 정렬 */
+    .review-filters {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 0 5px;
+    }
+
+    .filter-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .filter-button {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-button.active {
+      background: #EE386D;
+      color: white;
+      border-color: #EE386D;
+    }
+
+    .filter-button:hover {
+      border-color: #EE386D;
+      color: #EE386D;
+    }
+
+    .sort-select {
+      background: white;
+      border: 1px solid #e9ecef;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .total-count {
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .total-count .count {
+      color: #EE386D;
+      font-weight: 700;
+    }
+
+    /* 리뷰 그리드 */
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+
+    .review-card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1px solid #f0f0f0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .review-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+
+    /* 포토리뷰 카드 */
+    .photo-review .review-image {
+      position: relative;
+      aspect-ratio: 1;
+      overflow: hidden;
+    }
+
+    .photo-review .review-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .photo-review:hover .review-image img {
+      transform: scale(1.05);
+    }
+
+    .photo-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(238, 56, 109, 0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+
+    /* 텍스트리뷰 카드 */
+    .text-review {
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .text-review .review-content {
+      flex: 1;
+    }
+
+    /* 리뷰 내용 */
+    .review-info {
+      padding: 20px;
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .product-thumb {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #f5f5f5;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .product-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .rating-stars {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .star {
+      width: 14px;
+      height: 14px;
+      fill: #ffd700;
+    }
+
+    .rating-number {
+      font-size: 12px;
+      color: #666;
+      margin-left: 4px;
+      font-weight: 500;
+    }
+
+    .review-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #444;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .review-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .author-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .author-name {
+      font-size: 12px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .review-date {
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    .review-likes {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .like-icon {
+      width: 14px;
+      height: 14px;
+      fill: #EE386D;
+    }
+
+    /* 더보기 버튼 */
+    .load-more {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .load-more-btn {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .load-more-btn:hover {
+      background: #EE386D;
+      color: white;
+      border-color: #EE386D;
+    }
+
+    /* 빈 상태 */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #888;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: #ddd;
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #666;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      color: #999;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 1200px) {
+      .content {
+        padding: 110px 24px 60px;
+      }
+
+      .review-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+
+      .page-title h1 {
+        font-size: 28px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .content {
+        padding: 100px 20px 50px;
+      }
+
+      .review-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+
+      .page-title h1 {
+        font-size: 24px;
+      }
+
+      .page-title p {
+        font-size: 14px;
+      }
+
+      .review-filters {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+      }
+
+      .filter-left {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .tab-button {
+        padding: 12px 24px;
+        font-size: 15px;
+        margin: 0 5px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 90px 16px 40px;
+      }
+
+      .review-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .page-title h1 {
+        font-size: 22px;
+      }
+
+      .review-info {
+        padding: 16px;
+      }
+
+      .review-text {
+        font-size: 13px;
+        -webkit-line-clamp: 2;
+      }
+
+      .product-thumb {
+        width: 45px;
+        height: 45px;
+      }
+
+      .product-name {
+        font-size: 12px;
+      }
+
+      .tab-button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 80px 12px 30px;
+      }
+
+      .review-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .page-title {
+        margin-bottom: 30px;
+      }
+
+      .page-title h1 {
+        font-size: 20px;
+      }
+
+      .page-title p {
+        font-size: 13px;
+      }
+
+      .review-tabs {
+        margin-bottom: 30px;
+      }
+
+      .tab-button {
+        padding: 8px 16px;
+        font-size: 13px;
+        margin: 0 3px;
+      }
+
+      .review-info {
+        padding: 14px;
+      }
+
+      .review-text {
+        font-size: 12px;
+      }
+
+      .product-thumb {
+        width: 40px;
+        height: 40px;
+      }
+
+      .product-name {
+        font-size: 11px;
+      }
+
+      .rating-number {
+        font-size: 11px;
+      }
+
+      .author-name {
+        font-size: 11px;
+      }
+
+      .review-date {
+        font-size: 10px;
+      }
+
+      .review-likes {
+        font-size: 11px;
+      }
+
+      .filter-button {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 고정 헤더 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<!-- 메인 콘텐츠 -->
+<div class="content">
+  <div class="inner-box">
+    <!-- 페이지 타이틀 -->
+    <div class="page-title">
+      <h1>고객 리뷰</h1>
+      <p>실제 구매고객들의 생생한 후기를 확인해보세요</p>
+    </div>
+
+    <!-- 탭 메뉴 -->
+    <div class="review-tabs">
+      <button class="tab-button active" data-tab="photo">
+        포토리뷰 <span class="tab-badge">1,234</span>
+      </button>
+      <button class="tab-button" data-tab="text">
+        텍스트리뷰 <span class="tab-badge">2,567</span>
+      </button>
+    </div>
+
+    <!-- 필터 및 정렬 -->
+    <div class="review-filters">
+      <div class="filter-left">
+        <button class="filter-button active">전체</button>
+        <button class="filter-button">5점</button>
+        <button class="filter-button">4점</button>
+        <button class="filter-button">3점 이하</button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div class="total-count">
+          총 <span class="count">1,234</span>개의 리뷰
+        </div>
+        <select class="sort-select">
+          <option value="latest">최신순</option>
+          <option value="rating">평점순</option>
+          <option value="likes">좋아요순</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 포토리뷰 그리드 -->
+    <div class="review-grid" id="photoReviews">
+      <!-- 포토리뷰 카드 1 -->
+      <div class="review-card photo-review">
+        <div class="review-image">
+          <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+          
+        </div>
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">홀 래빗 진동 흡입기</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="rating-number">5.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-text">
+            정말 만족스러운 제품이에요! 생각했던 것보다 훨씬 좋고 배송도 빨라서 다음에도 여기서 구매하려고 합니다.
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">윤익**</div>
+              <div class="review-date">2025.07.10</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>127</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 포토리뷰 카드 2 -->
+      <div class="review-card photo-review">
+        <div class="review-image">
+          <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+          
+        </div>
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">리얼돌 프리미엄 에디션</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
+                <span class="rating-number">4.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-text">
+            품질이 예상보다 훨씬 좋네요. 포장도 깔끔하고 배송도 빨랐어요. 추천합니다!
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">김민**</div>
+              <div class="review-date">2025.07.09</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>89</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 포토리뷰 카드 3 -->
+      <div class="review-card photo-review">
+        <div class="review-image">
+          <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+          
+        </div>
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">SM 로프 세트</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="rating-number">5.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-text">
+            퀄리티가 정말 좋아요. 소재도 부드럽고 마감도 깔끔해서 만족합니다.
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">박지**</div>
+              <div class="review-date">2025.07.08</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>156</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 포토리뷰 카드 4 -->
+      <div class="review-card photo-review">
+        <div class="review-image">
+          <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+          
+        </div>
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">프리미엄 러브젤</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
+                <span class="rating-number">4.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-text">
+            좋은 제품이에요. 사용감도 좋고 가성비도 만족스럽습니다.
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">이수**</div>
+              <div class="review-date">2025.07.07</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>73</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 추가 포토리뷰 카드들... -->
+      <div class="review-card photo-review">
+        <div class="review-image">
+          <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+          
+        </div>
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">베스트 콘돔 세트</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="rating-number">5.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-text">
+            포장이 정말 신경쓴 느낌이고 제품도 기대 이상이에요!
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">정민**</div>
+              <div class="review-date">2025.07.06</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>98</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card photo-review">
+        <div class="review-image">
+          <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+          
+        </div>
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">특수 마사지 오일</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
+                <span class="rating-number">4.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-text">
+            향도 좋고 사용감도 부드러워서 만족해요.
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">최영**</div>
+              <div class="review-date">2025.07.05</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>45</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card photo-review">
+        <div class="review-image">
+          <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+          
+        </div>
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">프리미엄 패키지</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="rating-number">5.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-text">
+            패키지 구성이 알차고 하나하나 품질이 좋아요!
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">김현**</div>
+              <div class="review-date">2025.07.04</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>134</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card photo-review">
+        <div class="review-image">
+          <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="리뷰 이미지">
+          
+        </div>
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">고급 실리콘 제품</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
+                <span class="rating-number">4.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-text">
+            실리콘 소재가 정말 좋고 관리도 편해요.
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">박서**</div>
+              <div class="review-date">2025.07.03</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>67</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 텍스트리뷰 그리드 (기본 숨김) -->
+    <div class="review-grid" id="textReviews" style="display: none;">
+      <!-- 텍스트리뷰 카드 1 -->
+      <div class="review-card text-review">
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">홀 래빗 진동 흡입기</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="rating-number">5.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <div class="review-text">
+              처음 구매해봤는데 정말 만족스러워요! 품질도 예상보다 훨씬 좋고 배송도 빨라서 좋았습니다. 포장도 신경써서 해주셨고, 사용법 안내서도 같이 들어있어서 초보자도 쉽게 사용할 수 있었어요. 다음에도 여기서 구매하려고 합니다. 강력 추천드려요!
+            </div>
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">윤익**</div>
+              <div class="review-date">2025.07.10</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>234</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 텍스트리뷰 카드 2 -->
+      <div class="review-card text-review">
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">프리미엄 러브젤</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
+                <span class="rating-number">4.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <div class="review-text">
+              가성비가 정말 좋은 제품이에요. 사용감도 부드럽고 향도 좋습니다. 용량도 넉넉해서 오래 사용할 수 있을 것 같아요. 배송도 빨랐고 포장도 깔끔했습니다.
+            </div>
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">김민**</div>
+              <div class="review-date">2025.07.09</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>178</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 추가 텍스트리뷰 카드들... -->
+      <div class="review-card text-review">
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">SM 로프 세트</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="rating-number">5.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <div class="review-text">
+              소재의 품질이 정말 좋아요. 부드럽고 튼튼해서 안전하게 사용할 수 있을 것 같습니다. 초보자용으로도 좋을 것 같고, 가격대비 만족스러운 구성입니다.
+            </div>
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">박지**</div>
+              <div class="review-date">2025.07.08</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>142</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card text-review">
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">베스트 콘돔 세트</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
+                <span class="rating-number">4.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <div class="review-text">
+              다양한 타입이 들어있어서 좋네요. 품질도 믿을만하고 가격도 합리적입니다. 포장도 신경써서 해주셔서 감사해요.
+            </div>
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">이수**</div>
+              <div class="review-date">2025.07.07</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>89</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card text-review">
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">특수 마사지 오일</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="rating-number">5.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <div class="review-text">
+              향이 정말 좋고 사용감도 부드러워요. 피부에 자극이 없어서 안심하고 사용할 수 있습니다. 용량도 넉넉해서 만족스러워요.
+            </div>
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">정민**</div>
+              <div class="review-date">2025.07.06</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>95</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card text-review">
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">프리미엄 패키지</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
+                <span class="rating-number">4.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <div class="review-text">
+              패키지 구성이 정말 알차네요. 하나하나 품질도 좋고 가성비도 훌륭합니다. 처음 구매하시는 분들에게 추천드려요.
+            </div>
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">최영**</div>
+              <div class="review-date">2025.07.05</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>123</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card text-review">
+        <div class="review-info">
+          <div class="review-header">
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png" alt="상품" class="product-thumb">
+            <div class="product-info">
+              <div class="product-name">고급 실리콘 제품</div>
+              <div class="rating-stars">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="rating-number">5.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <div class="review-text">
+              실리콘 소재가 정말 부드럽고 좋네요. 관리하기도 편하고 내구성도 좋을 것 같습니다. 기대 이상의 품질이에요.
+            </div>
+          </div>
+          <div class="review-footer">
+            <div class="author-info">
+              <div class="author-name">김현**</div>
+              <div class="review-date">2025.07.04</div>
+            </div>
+            <div class="review-likes">
+              <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>167</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 더보기 버튼 -->
+    <div class="load-more">
+      <button class="load-more-btn">더보기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+  $(document).ready(function() {
+    // 탭 전환 기능
+    $('.tab-button').on('click', function() {
+      const tabType = $(this).data('tab');
+
+      // 탭 버튼 활성화 상태 변경
+      $('.tab-button').removeClass('active');
+      $(this).addClass('active');
+
+      // 리뷰 그리드 전환
+      if (tabType === 'photo') {
+        $('#photoReviews').show();
+        $('#textReviews').hide();
+        $('.total-count .count').text('1,234');
+      } else if (tabType === 'text') {
+        $('#photoReviews').hide();
+        $('#textReviews').show();
+        $('.total-count .count').text('2,567');
+      }
+    });
+
+    // 필터 버튼 기능
+    $('.filter-button').on('click', function() {
+      $('.filter-button').removeClass('active');
+      $(this).addClass('active');
+
+      // 여기에 필터링 로직 추가
+      // 예: rating에 따른 필터링
+    });
+
+    // 정렬 기능
+    $('.sort-select').on('change', function() {
+      const sortType = $(this).val();
+      // 여기에 정렬 로직 추가
+      console.log('정렬 타입:', sortType);
+    });
+
+    // 리뷰 카드 클릭 이벤트 (상세 페이지로 이동)
+    $('.review-card').on('click', function() {
+      // 포토리뷰인 경우에만 상세 페이지로 이동
+      if ($(this).hasClass('photo-review')) {
+        // 리뷰 ID 추출 (실제 구현시 data 속성 사용)
+        const reviewId = 1; // 예시
+        window.location.href = `/review/detail/${reviewId}`;
+      }
+    });
+
+    // 좋아요 버튼 기능
+    $('.review-likes').on('click', function(e) {
+      e.stopPropagation(); // 카드 클릭 이벤트와 분리
+
+      const $this = $(this);
+      const currentLikes = parseInt($this.find('span').text());
+
+      // 좋아요 토글 (실제 구현시 서버 통신)
+      $this.find('span').text(currentLikes + 1);
+      $this.find('.like-icon').css('fill', '#ff4757');
+
+      setTimeout(() => {
+        $this.find('.like-icon').css('fill', '#EE386D');
+      }, 200);
+    });
+
+    // 더보기 버튼 기능
+    $('.load-more-btn').on('click', function() {
+      // 여기에 페이지네이션 로직 추가
+      // 예: AJAX로 다음 페이지 데이터 로드
+      console.log('더보기 클릭');
+
+      // 로딩 상태 표시
+      $(this).text('로딩중...');
+
+      // 예시: 2초 후 원래 텍스트로 복구
+      setTimeout(() => {
+        $(this).text('더보기');
+      }, 2000);
+    });
+  });
+</script>
+</body>
+</html>

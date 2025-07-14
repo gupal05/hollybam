@@ -107,4 +107,73 @@
           AND order_status IN ('CANCELLED', 'REFUNDED')
     </select>
 
+
+    <select id="selectOrderDetailByOrderCode" parameterType="int" resultMap="orderDetailResultMap">
+        SELECT
+            o.order_id,
+            o.create_at,
+            o.order_status,
+            o.payment_method,
+            o.orderer_name,
+            o.orderer_phone,
+            o.orderer_email,
+            o.receiver_name,
+            o.receiver_phone,
+            o.receiver_addr,
+            o.receiver_addr_detail,
+            o.total_amount,
+            o.discount_amount,
+            o.delivery_fee,
+            o.final_amount,
+
+            d.delivery_memo,
+
+            p.product_name,
+            po.option_name,
+            po.option_value,
+            oi.quantity,
+            oi.total_price,
+
+            i.image_url
+
+        FROM orders o
+                 LEFT JOIN order_items oi ON o.order_code = oi.order_code
+                 LEFT JOIN product p ON oi.product_code = p.product_code
+                 LEFT JOIN product_option po ON oi.option_code = po.option_code
+                 LEFT JOIN delivery d ON o.order_code = d.order_code
+                 LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
+
+        WHERE o.order_code = #{orderCode}
+    </select>
+
+    <resultMap id="orderDetailResultMap" type="com.hollybam.hollybam.dto.OrderListDto">
+        <result property="orderId" column="order_id"/>
+        <result property="createAt" column="create_at"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="paymentMethod" column="payment_method"/>
+        <result property="ordererName" column="orderer_name"/>
+        <result property="ordererPhone" column="orderer_phone"/>
+        <result property="ordererEmail" column="orderer_email"/>
+        <result property="receiverName" column="receiver_name"/>
+        <result property="receiverPhone" column="receiver_phone"/>
+        <result property="receiverAddr" column="receiver_addr"/>
+        <result property="receiverAddrDetail" column="receiver_addr_detail"/>
+
+        <result property="totalAmount" column="total_amount"/>
+        <result property="discountAmount" column="discount_amount"/>
+        <result property="deliveryFee" column="delivery_fee"/>
+        <result property="finalAmount" column="final_amount"/>
+
+        <result property="deliveryMemo" column="delivery_memo"/>
+
+        <result property="productName" column="product_name"/>
+        <result property="optionName" column="option_name"/>
+        <result property="optionValue" column="option_value"/>
+        <result property="quantity" column="quantity"/>
+        <result property="totalPrice" column="total_price"/>
+
+        <result property="imageUrl" column="image_url"/>
+    </resultMap>
+
+
 </mapper>

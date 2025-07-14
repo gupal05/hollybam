@@ -777,6 +777,7 @@
             <th:block th:if="${session.member != null}">
                 <li><a href="/mypage"><i class="fas fa-user"></i>계정 정보</a></li>
                 <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+                <li><a href="/mypage/review"><i class="fas fa-star"></i>내가 작성한 리뷰</a></li>
                 <li><a href="/wishlist" class="active"><i class="fas fa-heart"></i>위시리스트</a></li>
                 <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
                 <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
@@ -785,9 +786,11 @@
 
             <!-- 비회원용 메뉴 -->
             <th:block th:unless="${session.member != null}">
-                <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
-                <li><a href="/wishlist" class="active"><i class="fas fa-heart"></i>위시리스트</a></li>
-                <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>비회원 로그아웃</a></li>
+                <li><a href="/mypage"><i class="fas fa-user"></i>비회원 정보</a></li>
+                <li><a href="/mypage/orders" class="active"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
+                <li><a href="/mypage/reviews"><i class="fas fa-star"></i>내가 작성한 리뷰</a></li>
+                <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
+                <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>세션 종료</a></li>
             </th:block>
         </ul>
     </aside>

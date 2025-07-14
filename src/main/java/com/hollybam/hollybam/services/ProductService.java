@@ -131,5 +131,10 @@ public class ProductService implements IF_ProductService{
         return productDao.selectProductTitleImage(productCode);
     }
 
+    @Override
+    @Transactional
+    public int getWishCount(int productCode){
+        return productDao.getWishCount(productCode);
+    }
 
 }

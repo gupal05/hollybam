@@ -38,4 +38,6 @@ public interface IF_ProductService {
      * 상품 대표 이미지 조회
      */
     ImageDto getProductTitleImage(int productCode);
+
+    int getWishCount(int productCode);
 }

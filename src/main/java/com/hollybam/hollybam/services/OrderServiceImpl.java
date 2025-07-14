@@ -237,7 +237,6 @@ public class OrderServiceImpl implements IF_OrderService {
         DeliveryDto delivery = new DeliveryDto();
         delivery.setOrderCode(orderCode);
         delivery.setDeliveryStatus("READY");
-        delivery.setDeliveryMemo("주문 접수 완료");
         orderDao.insertDelivery(delivery);
     }
 
@@ -404,5 +403,10 @@ public class OrderServiceImpl implements IF_OrderService {
     @Transactional
     public DeliveryDto getTrackingNumber(int orderCode){
         return orderDao.getTrackingNumber(orderCode);
+    }
+
+    @Override
+    public OrderItemDto getOrderItemDetail(int orderItemCode) {
+        return orderDao.selectOrderItemDetail(orderItemCode);
     }
 }

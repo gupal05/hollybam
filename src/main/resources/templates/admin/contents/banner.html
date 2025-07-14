@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>현재 배너</h2>
+<!-- 배너 리스트가 존재할 경우 -->
+<div th:if="${bannerList != null and !#lists.isEmpty(bannerList)}">
+    <div th:each="banner : ${bannerList}">
+        <img th:src="${banner.bannerUrl}" alt="배너 이미지" />
+    </div>
+</div>
+
+<!-- 배너 리스트가 null이거나 비어 있을 경우 -->
+<div th:if="${bannerList == null or #lists.isEmpty(bannerList)}">
+    <p>배너가 없습니다.</p>
+</div>
+<form th:action="@{/admin/banner/upload}" method="post" enctype="multipart/form-data" id="bannerForm">
+    <div id="banner-upload-group">
+        <input type="file" name="bannerImages" id="bannerImages" accept="image/*" multiple required />
+    </div>
+    <div id="url-fields"></div>
+
+    <button type="submit">배너 업로드</button>
+</form>
+
+<script>
+    const fileInput = document.getElementById('bannerImages');
+    const urlFields = document.getElementById('url-fields');
+
+    fileInput.addEventListener('change', function () {
+        urlFields.innerHTML = ''; // 기존 입력 필드 초기화
+
+        for (let i = 0; i < fileInput.files.length; i++) {
+            const div = document.createElement('div');
+            div.style.margin = '10px 0';
+
+            const label = document.createElement('label');
+            label.textContent = `배너 ${i + 1} 클릭 시 이동할 URL: `;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'bannerClickEvents'; // ← 여러 개 전달하려면 같은 name 사용
+            input.placeholder = 'https://example.com';
+
+            div.appendChild(label);
+            div.appendChild(input);
+            urlFields.appendChild(div);
+        }
+    });
+</script>
+</body>
+</html>

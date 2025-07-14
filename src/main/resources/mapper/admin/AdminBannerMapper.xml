@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.admin.IF_AdminBannerDao">
+    <select id="getBannerList" resultType="map">
+        SELECT
+            banner_code as bannerCode,
+            banner_url as bannerUrl,
+            banner_order as bannerOrder,
+            banner_click_event as bannerClickEvent
+        FROM
+            banner
+        ORDER BY
+            banner_order ASC;
+    </select>
+
+    <insert id="insBanner" parameterType="map">
+        insert into banner(banner_url, banner_order, banner_click_event)
+        values(#{url}, #{order}, #{event})
+    </insert>
+</mapper>

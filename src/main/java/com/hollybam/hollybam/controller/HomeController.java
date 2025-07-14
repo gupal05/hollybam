@@ -4,6 +4,7 @@ import com.hollybam.hollybam.dto.BestReviewDto;
 import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.ProductDto;
 import com.hollybam.hollybam.services.*;
+import com.hollybam.hollybam.services.admin.AdminBannerServiceImpl;
 import com.hollybam.hollybam.services.nice.NiceCryptoTokenService;
 import com.hollybam.hollybam.util.NiceCryptoUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,6 +40,8 @@ public class HomeController {
     private SignupService signupService;
     @Autowired
     private ReviewService reviewService;
+    @Autowired
+    private AdminBannerServiceImpl adminBannerService;
 
     @GetMapping("/")
     public String introPage(HttpServletRequest request, Model model) {
@@ -141,6 +144,7 @@ public class HomeController {
         List<ProductDto> proList = new ArrayList<>();
         String userAgent = request.getHeader("User-Agent");
         String deviceType = detectDevice(userAgent);
+        List<Map<String,Object>> bannerList = adminBannerService.getBannerList();
         if(deviceType.equals("pc")){
             proList = productService.selectBestProducts();
         } else {
@@ -158,6 +162,7 @@ public class HomeController {
             bestReview.get(i).setWriterAge(this.getAgeGroup(bestReview.get(i).getWriterBirth()));
             bestReview.get(i).setWriterName(bestReview.get(i).getWriterName().charAt(0)+"**");
         }
+        mav.addObject("banner", bannerList);
         mav.addObject("bestReviews", bestReview);
         mav.addObject("proList", proList);
         mav.addObject("newProList", newProList);

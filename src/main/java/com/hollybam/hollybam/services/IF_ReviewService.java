@@ -13,6 +13,7 @@ public interface IF_ReviewService {
     boolean checkReviewEligibility(Integer orderItemCode, Integer memCode, Integer guestCode);
     void writeReview(ReviewDto reviewDto, List<MultipartFile> imageFiles) throws IOException;
     int isWroteReview(int orderItemCode);
+
     /**
      * 전체 베스트 리뷰 조회 (좋아요 수 기준)
      * @return 베스트 리뷰 목록 (최대 12개)
@@ -28,41 +29,117 @@ public interface IF_ReviewService {
 
     /**
      * 회원의 리뷰 통계 조회
-     * 회원 코드
+     * @param memberCode 회원 코드
      * @return Map - totalReviews, photoReviews, textReviews
      */
     Map<String, Object> selectMemberReviewStats(int memberCode);
 
     /**
      * 비회원의 리뷰 통계 조회
-     * guestCode 비회원 코드
+     * @param guestCode 비회원 코드
      * @return Map - totalReviews, photoReviews, textReviews
      */
     Map<String, Object> selectGuestReviewStats(int guestCode);
 
+    // ====== 기존 메서드들 (하위 호환성 유지) ======
     /**
-     * 리뷰 최신순 조회
+     * 포토리뷰 최신순 조회
      * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
      */
     List<Map<String, Object>> getPhotoReviewDesc();
 
     /**
-     * 리뷰 평점순 조회
+     * 포토리뷰 평점순 조회
      * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
      */
     List<Map<String, Object>> getPhotoReviewRating();
 
     /**
-     * 리뷰 좋아요순 조회
+     * 포토리뷰 좋아요순 조회
      * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
      */
     List<Map<String, Object>> getPhotoReviewLike();
 
     /**
-     * 비회원의 리뷰 통계 조회
-     * guestCode 비회원 코드
+     * 리뷰 카운트 조회
      * @return Map - photoReviews, textReviews
      */
     Map<String, Object> getReviewCount();
 
+    // ====== 새로 추가된 메서드들 ======
+    /**
+     * 텍스트리뷰 최신순 조회
+     * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, likeCount
+     */
+    List<Map<String, Object>> getTextReviewDesc();
+
+    /**
+     * 텍스트리뷰 평점순 조회
+     * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
+     */
+    List<Map<String, Object>> getTextReviewRating();
+
+    /**
+     * 텍스트리뷰 좋아요순 조회
+     * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, likeCount
+     */
+    List<Map<String, Object>> getTextReviewLike();
+
+    /**
+     * 포토리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     * @param sort 정렬 방식 (latest, rating, likes)
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param rating 평점 필터
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 리뷰 목록
+     */
+    List<Map<String, Object>> getPhotoReviews(String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode);
+
+    /**
+     * 텍스트리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     * @param sort 정렬 방식 (latest, rating, likes)
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param rating 평점 필터
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 리뷰 목록
+     */
+    List<Map<String, Object>> getTextReviews(String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode);
+
+    /**
+     * 리뷰 카운트 조회 (필터링 적용)
+     * @param rating 평점 필터 (null이면 전체)
+     * @return Map - photoReviews, textReviews
+     */
+    Map<String, Object> getReviewCount(Integer rating);
+
+    /**
+     * 리뷰 좋아요 토글
+     * @param reviewCode 리뷰 코드
+     * @param memCode 회원 코드 (회원인 경우)
+     * @param guestCode 비회원 코드 (비회원인 경우)
+     * @return 좋아요 여부 (true: 좋아요 추가, false: 좋아요 취소)
+     */
+    boolean toggleReviewLike(int reviewCode, Integer memCode, Integer guestCode);
+
+    /**
+     * 사용자의 좋아요 상태 확인
+     * @param reviewCode 리뷰 코드
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 좋아요 여부
+     */
+    boolean checkUserLikeStatus(int reviewCode, Integer memCode, Integer guestCode);
+
+    /**
+     * 사용자가 좋아요한 리뷰 목록 조회
+     * @param reviewCodes 리뷰 코드 목록
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 좋아요한 리뷰 코드 목록
+     */
+    List<Integer> getUserLikedReviews(List<Integer> reviewCodes, Integer memCode, Integer guestCode);
 }

@@ -93,11 +93,15 @@
     .tab-badge {
       background: #EE386D;
       color: white;
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 10px;
-      margin-left: 5px;
-      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .tab-button:not(.active) .tab-badge {
+      background: #cccccc;
     }
 
     /* 필터 및 정렬 */
@@ -106,24 +110,24 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 30px;
-      padding: 0 5px;
+      padding: 0 10px;
     }
 
     .filter-left {
       display: flex;
-      align-items: center;
-      gap: 15px;
+      gap: 10px;
     }
 
     .filter-button {
-      background: #f8f9fa;
-      border: 1px solid #e9ecef;
+      background: none;
+      border: 1px solid #e0e0e0;
       padding: 8px 16px;
       border-radius: 20px;
       font-size: 14px;
       color: #666;
       cursor: pointer;
       transition: all 0.3s ease;
+      position: relative;
     }
 
     .filter-button.active {
@@ -137,59 +141,68 @@
       color: #EE386D;
     }
 
-    .sort-select {
-      background: white;
-      border: 1px solid #e9ecef;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      color: #666;
-      cursor: pointer;
+    .filter-button.active:hover {
+      color: white;
     }
 
     .total-count {
       font-size: 14px;
       color: #666;
-      font-weight: 500;
+      margin-right: 15px;
     }
 
     .total-count .count {
+      font-weight: 600;
       color: #EE386D;
-      font-weight: 700;
+    }
+
+    .sort-select {
+      border: 1px solid #e0e0e0;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .sort-select:focus {
+      outline: none;
+      border-color: #EE386D;
     }
 
     /* 리뷰 그리드 */
     .review-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-      margin-bottom: 60px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
     }
 
     .review-card {
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      border: 1px solid #f0f0f0;
+      background: white;
+      border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
       cursor: pointer;
       position: relative;
     }
 
     .review-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
 
-    /* 포토리뷰 카드 */
-    .photo-review .review-image {
+    /* 포토리뷰 이미지 */
+    .review-image {
+      width: 100%;
+      height: 200px;
       position: relative;
-      aspect-ratio: 1;
       overflow: hidden;
+      background: #f5f5f5;
     }
 
-    .photo-review .review-image img {
+    .review-image img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -271,6 +284,10 @@
       fill: #ffd700;
     }
 
+    .star.empty {
+      fill: #e0e0e0;
+    }
+
     .rating-number {
       font-size: 12px;
       color: #666;
@@ -304,28 +321,62 @@
     }
 
     .author-name {
-      font-size: 12px;
-      color: #888;
-      font-weight: 500;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
     }
 
     .review-date {
-      font-size: 11px;
-      color: #aaa;
+      font-size: 12px;
+      color: #888;
     }
 
+    /* 좋아요 버튼 스타일 */
     .review-likes {
       display: flex;
       align-items: center;
       gap: 4px;
+      color: #888;
       font-size: 12px;
-      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 6px 8px;
+      border-radius: 20px;
+    }
+
+    .review-likes:hover {
+      background: #f5f5f5;
+      color: #EE386D;
     }
 
     .like-icon {
       width: 14px;
       height: 14px;
+      transition: all 0.3s ease;
+    }
+
+    /* 좋아요 상태에 따른 하트 색상 */
+    .review-likes.liked .like-icon {
       fill: #EE386D;
+      animation: heartBeat 0.6s ease-in-out;
+    }
+
+    .review-likes:not(.liked) .like-icon {
+      fill: none;
+      stroke: #888;
+      stroke-width: 2;
+    }
+
+    .review-likes:hover:not(.liked) .like-icon {
+      stroke: #EE386D;
+    }
+
+    @keyframes heartBeat {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.2); }
+      50% { transform: scale(1); }
+      75% { transform: scale(1.1); }
+      100% { transform: scale(1); }
     }
 
     /* 더보기 버튼 */
@@ -336,79 +387,99 @@
     }
 
     .load-more-btn {
-      background: #f8f9fa;
-      border: 1px solid #e9ecef;
-      padding: 12px 30px;
+      background: #EE386D;
+      color: white;
+      border: none;
+      padding: 12px 40px;
       border-radius: 25px;
       font-size: 14px;
       font-weight: 600;
-      color: #666;
       cursor: pointer;
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
 
     .load-more-btn:hover {
-      background: #EE386D;
-      color: white;
-      border-color: #EE386D;
+      background: #d32f5d;
+      transform: translateY(-2px);
+    }
+
+    .load-more-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .load-more-btn.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* 로딩 스피너 */
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #EE386D;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
     }
 
     /* 빈 상태 */
     .empty-state {
       text-align: center;
       padding: 80px 20px;
-      color: #888;
+      color: #666;
     }
 
     .empty-state i {
       font-size: 48px;
+      color: #ccc;
       margin-bottom: 20px;
-      color: #ddd;
     }
 
     .empty-state h3 {
       font-size: 18px;
-      margin-bottom: 8px;
-      color: #666;
+      margin-bottom: 10px;
+      color: #333;
     }
 
     .empty-state p {
       font-size: 14px;
-      color: #999;
+      margin-bottom: 0;
     }
 
-    /* 반응형 디자인 */
-    @media (max-width: 1200px) {
+    /* 반응형 */
+    @media (max-width: 768px) {
       .content {
-        padding: 110px 24px 60px;
+        padding: 100px 15px 60px;
       }
 
       .review-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-      }
-
-      .page-title h1 {
-        font-size: 28px;
-      }
-    }
-
-    @media (max-width: 900px) {
-      .content {
-        padding: 100px 20px 50px;
-      }
-
-      .review-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
-      }
-
-      .page-title h1 {
-        font-size: 24px;
-      }
-
-      .page-title p {
-        font-size: 14px;
+        grid-template-columns: 1fr;
+        gap: 16px;
       }
 
       .review-filters {
@@ -419,122 +490,15 @@
 
       .filter-left {
         justify-content: center;
-        flex-wrap: wrap;
       }
 
       .tab-button {
-        padding: 12px 24px;
-        font-size: 15px;
-        margin: 0 5px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .content {
-        padding: 90px 16px 40px;
-      }
-
-      .review-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-      }
-
-      .page-title h1 {
-        font-size: 22px;
-      }
-
-      .review-info {
-        padding: 16px;
-      }
-
-      .review-text {
-        font-size: 13px;
-        -webkit-line-clamp: 2;
-      }
-
-      .product-thumb {
-        width: 45px;
-        height: 45px;
-      }
-
-      .product-name {
-        font-size: 12px;
-      }
-
-      .tab-button {
-        padding: 10px 20px;
+        padding: 12px 20px;
         font-size: 14px;
       }
-    }
-
-    @media (max-width: 480px) {
-      .content {
-        padding: 80px 12px 30px;
-      }
-
-      .review-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
-
-      .page-title {
-        margin-bottom: 30px;
-      }
 
       .page-title h1 {
-        font-size: 20px;
-      }
-
-      .page-title p {
-        font-size: 13px;
-      }
-
-      .review-tabs {
-        margin-bottom: 30px;
-      }
-
-      .tab-button {
-        padding: 8px 16px;
-        font-size: 13px;
-        margin: 0 3px;
-      }
-
-      .review-info {
-        padding: 14px;
-      }
-
-      .review-text {
-        font-size: 12px;
-      }
-
-      .product-thumb {
-        width: 40px;
-        height: 40px;
-      }
-
-      .product-name {
-        font-size: 11px;
-      }
-
-      .rating-number {
-        font-size: 11px;
-      }
-
-      .author-name {
-        font-size: 11px;
-      }
-
-      .review-date {
-        font-size: 10px;
-      }
-
-      .review-likes {
-        font-size: 11px;
-      }
-
-      .filter-button {
-        padding: 6px 12px;
-        font-size: 12px;
+        font-size: 24px;
       }
     }
   </style>
@@ -548,49 +512,54 @@
   <div class="inner-box">
     <!-- 페이지 타이틀 -->
     <div class="page-title">
-      <h1>고객 리뷰</h1>
-      <p>실제 구매고객들의 생생한 후기를 확인해보세요</p>
+      <h1>리뷰</h1>
+      <p>실제 구매 고객들의 생생한 후기를 확인해보세요</p>
     </div>
 
     <!-- 탭 메뉴 -->
     <div class="review-tabs">
       <button class="tab-button active" data-tab="photo">
-        포토리뷰 <span class="tab-badge" th:text="${photoReviews}">0</span>
+        포토리뷰 <span class="tab-badge" id="photoBadge" th:text="${photoReviews}">0</span>
       </button>
       <button class="tab-button" data-tab="text">
-        텍스트리뷰 <span class="tab-badge" th:text="${textReviews}">0</span>
+        텍스트리뷰 <span class="tab-badge" id="textBadge" th:text="${textReviews}">0</span>
       </button>
     </div>
 
     <!-- 필터 및 정렬 -->
     <div class="review-filters">
       <div class="filter-left">
-        <button class="filter-button active">전체</button>
-        <button class="filter-button">5점</button>
-        <button class="filter-button">4점</button>
-        <button class="filter-button">3점 이하</button>
+        <button class="filter-button active" data-rating="">전체</button>
+        <button class="filter-button" data-rating="5">5점</button>
+        <button class="filter-button" data-rating="4">4점</button>
+        <button class="filter-button" data-rating="3">3점 이하</button>
       </div>
       <div style="display: flex; align-items: center; gap: 15px;">
         <div class="total-count">
-          총 <span class="count" th:text="${photoReviews}">0</span>개의 리뷰
+          총 <span class="count" id="totalCount" th:text="${photoReviews}">0</span>개의 리뷰
         </div>
-        <label>
-          <select class="sort-select">
-            <option value="latest">최신순</option>
-            <option value="rating">평점순</option>
-            <option value="likes">좋아요순</option>
-          </select>
-        </label>
+        <select class="sort-select" id="sortSelect">
+          <option value="latest">최신순</option>
+          <option value="rating">평점순</option>
+          <option value="likes">좋아요순</option>
+        </select>
       </div>
     </div>
 
-    <!-- 포토리뷰 그리드 -->
-    <div class="review-grid" id="photoReviews">
-      <!-- 포토리뷰 목록 -->
+    <!-- 로딩 스피너 -->
+    <div class="loading-spinner" id="loadingSpinner">
+      <div class="spinner"></div>
+      <p>리뷰를 불러오는 중입니다...</p>
+    </div>
+
+    <!-- 리뷰 그리드 -->
+    <div class="review-grid" id="reviewGrid">
+      <!-- 초기 포토리뷰 목록 -->
       <div th:each="review : ${reviewList}">
-        <div class="review-card photo-review">
+        <div class="review-card photo-review" th:data-review-code="${review.review_code}">
           <div class="review-image">
             <img th:src="${review.reviewImage}" alt="리뷰 이미지">
+            <div class="photo-badge">PHOTO</div>
           </div>
           <div class="review-info">
             <div class="review-header">
@@ -598,12 +567,9 @@
               <div class="product-info">
                 <div class="product-name" th:text="${review.productName}">상품명</div>
                 <div class="rating-stars">
-                  <!-- 평점에 따른 별표 표시 (1~5점) -->
                   <th:block th:each="i : ${#numbers.sequence(1, 5)}">
                     <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : 'empty'" viewBox="0 0 24 24">
-                      <path th:if="${i <= review.rating}" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      <path th:if="${i > review.rating}" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                            fill="none" stroke="#ffd700" stroke-width="1"/>
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
                   </th:block>
                   <span class="rating-number" th:text="${review.rating + '.0'}">5.0</span>
@@ -618,11 +584,11 @@
                 <div class="author-name" th:text="${review.writerName}">작성자명</div>
                 <div class="review-date" th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2025.07.10</div>
               </div>
-              <div class="review-likes">
+              <div class="review-likes" th:data-review-code="${review.review_code}" th:classappend="${review.isLiked == 1} ? 'liked' : ''">
                 <svg class="like-icon" viewBox="0 0 24 24">
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
-                <span th:text="${review.likeCount}">127</span>
+                <span th:text="${review.likeCount}">0</span>
               </div>
             </div>
           </div>
@@ -630,9 +596,16 @@
       </div>
     </div>
 
+    <!-- 빈 상태 -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <i class="fas fa-comment-slash"></i>
+      <h3>등록된 리뷰가 없습니다</h3>
+      <p>조건에 맞는 리뷰가 없습니다. 다른 필터를 선택해보세요!</p>
+    </div>
+
     <!-- 더보기 버튼 -->
     <div class="load-more">
-      <button class="load-more-btn">더보기</button>
+      <button class="load-more-btn" id="loadMoreBtn">더보기</button>
     </div>
   </div>
 </div>
@@ -642,81 +615,330 @@
 
 <script>
   $(document).ready(function() {
+    let currentTab = 'photo';
+    let currentSort = 'latest';
+    let currentRating = null;
+    let currentPage = 1;
+    let hasMore = true;
+    let loading = false;
+
     // 탭 전환 기능
     $('.tab-button').on('click', function() {
       const tabType = $(this).data('tab');
+
+      // 같은 탭 클릭 시 무시
+      if (tabType === currentTab) return;
+
+      currentTab = tabType;
+      resetPagination();
 
       // 탭 버튼 활성화 상태 변경
       $('.tab-button').removeClass('active');
       $(this).addClass('active');
 
-      // 리뷰 그리드 전환
-      if (tabType === 'photo') {
-        $('#photoReviews').show();
-        $('#textReviews').hide();
-        $('.total-count .count').text('1,234');
-      } else if (tabType === 'text') {
-        $('#photoReviews').hide();
-        $('#textReviews').show();
-        $('.total-count .count').text('2,567');
-      }
-    });
-
-    // 필터 버튼 기능
-    $('.filter-button').on('click', function() {
-      $('.filter-button').removeClass('active');
-      $(this).addClass('active');
-
-      // 여기에 필터링 로직 추가
-      // 예: rating에 따른 필터링
+      // 리뷰 데이터 로드
+      loadReviews(false);
     });
 
     // 정렬 기능
-    $('.sort-select').on('change', function() {
-      const sortType = $(this).val();
-      // 여기에 정렬 로직 추가
-      console.log('정렬 타입:', sortType);
+    $('#sortSelect').on('change', function() {
+      currentSort = $(this).val();
+      resetPagination();
+      loadReviews(false);
     });
 
-    // 리뷰 카드 클릭 이벤트 (상세 페이지로 이동)
-    $('.review-card').on('click', function() {
-      // 포토리뷰인 경우에만 상세 페이지로 이동
-      if ($(this).hasClass('photo-review')) {
-        // 리뷰 ID 추출 (실제 구현시 data 속성 사용)
-        const reviewId = 1; // 예시
-        window.location.href = `/review/detail/${reviewId}`;
-      }
+    // 필터 기능
+    $('.filter-button').on('click', function() {
+      // 활성화 상태 변경
+      $('.filter-button').removeClass('active');
+      $(this).addClass('active');
+
+      // 필터 값 설정
+      const ratingValue = $(this).data('rating');
+      currentRating = ratingValue === '' ? null : parseInt(ratingValue);
+
+      resetPagination();
+      loadReviews(false);
     });
 
-    // 좋아요 버튼 기능
-    $('.review-likes').on('click', function(e) {
-      e.stopPropagation(); // 카드 클릭 이벤트와 분리
+    // 더보기 버튼
+    $('#loadMoreBtn').on('click', function() {
+      if (!hasMore || loading) return;
 
-      const $this = $(this);
-      const currentLikes = parseInt($this.find('span').text());
-
-      // 좋아요 토글 (실제 구현시 서버 통신)
-      $this.find('span').text(currentLikes + 1);
-      $this.find('.like-icon').css('fill', '#ff4757');
-
-      setTimeout(() => {
-        $this.find('.like-icon').css('fill', '#EE386D');
-      }, 200);
+      currentPage++;
+      loadReviews(true);
     });
 
-    // 더보기 버튼 기능
-    $('.load-more-btn').on('click', function() {
-      // 여기에 페이지네이션 로직 추가
-      // 예: AJAX로 다음 페이지 데이터 로드
-      console.log('더보기 클릭');
+    // 페이지네이션 리셋
+    function resetPagination() {
+      currentPage = 1;
+      hasMore = true;
+    }
+
+    // 리뷰 데이터 로드 함수
+    function loadReviews(append = false) {
+      if (loading) return;
+
+      loading = true;
 
       // 로딩 상태 표시
-      $(this).text('로딩중...');
+      if (append) {
+        showLoadMoreLoading();
+      } else {
+        showLoading();
+      }
 
-      // 예시: 2초 후 원래 텍스트로 복구
-      setTimeout(() => {
-        $(this).text('더보기');
-      }, 2000);
+      $.ajax({
+        url: '/review/api/reviews',
+        method: 'GET',
+        data: {
+          type: currentTab,
+          sort: currentSort,
+          page: currentPage,
+          size: 20,
+          rating: currentRating
+        },
+        success: function(response) {
+          loading = false;
+          hideLoading();
+          hideLoadMoreLoading();
+
+          if (response.success) {
+            // 리뷰 목록 업데이트
+            if (append) {
+              appendReviewGrid(response.reviewList, currentTab);
+            } else {
+              updateReviewGrid(response.reviewList, currentTab);
+            }
+
+            // 카운트 업데이트
+            updateCounts(response.photoReviews, response.textReviews, currentTab);
+
+            // 더보기 버튼 상태 업데이트
+            hasMore = response.hasMore;
+            updateLoadMoreButton();
+
+            // 빈 상태 처리
+            if (response.reviewList.length === 0 && !append) {
+              showEmptyState();
+            } else {
+              hideEmptyState();
+            }
+          } else {
+            alert('리뷰 데이터를 불러오는 중 오류가 발생했습니다.');
+          }
+        },
+        error: function(xhr, status, error) {
+          loading = false;
+          hideLoading();
+          hideLoadMoreLoading();
+          console.error('AJAX 오류:', error);
+          alert('서버와의 통신 중 오류가 발생했습니다.');
+        }
+      });
+    }
+
+    // 리뷰 그리드 업데이트
+    function updateReviewGrid(reviewList, type) {
+      const reviewGrid = $('#reviewGrid');
+      reviewGrid.empty();
+
+      reviewList.forEach(function(review) {
+        const reviewCard = createReviewCard(review, type);
+        reviewGrid.append(reviewCard);
+      });
+    }
+
+    // 리뷰 그리드에 추가 (더보기)
+    function appendReviewGrid(reviewList, type) {
+      const reviewGrid = $('#reviewGrid');
+
+      reviewList.forEach(function(review) {
+        const reviewCard = createReviewCard(review, type);
+        reviewGrid.append(reviewCard);
+      });
+    }
+
+    // 리뷰 카드 생성
+    function createReviewCard(review, type) {
+      const isPhotoReview = type === 'photo';
+      const reviewDate = new Date(review.reviewDate).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).replace(/\. /g, '.').replace(/\.$/, '');
+
+      // 별점 생성
+      let starsHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        const starClass = i <= review.rating ? 'filled' : 'empty';
+        starsHtml += `<svg class="star ${starClass}" viewBox="0 0 24 24">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>`;
+      }
+
+      // 좋아요 상태에 따른 클래스 및 아이콘
+      const likedClass = review.isLiked ? 'liked' : '';
+
+      const cardHtml = `
+        <div class="review-card ${isPhotoReview ? 'photo-review' : 'text-review'}" data-review-code="${review.review_code}">
+          ${isPhotoReview ? `
+            <div class="review-image">
+              <img src="${review.reviewImage}" alt="리뷰 이미지">
+              <div class="photo-badge">PHOTO</div>
+            </div>
+          ` : ''}
+          <div class="review-info">
+            <div class="review-header">
+              <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/${review.productImage}" alt="상품" class="product-thumb">
+              <div class="product-info">
+                <div class="product-name">${review.productName}</div>
+                <div class="rating-stars">
+                  ${starsHtml}
+                  <span class="rating-number">${review.rating}.0</span>
+                </div>
+              </div>
+            </div>
+            <div class="review-text">${review.content}</div>
+            <div class="review-footer">
+              <div class="author-info">
+                <div class="author-name">${review.writerName}</div>
+                <div class="review-date">${reviewDate}</div>
+              </div>
+              <div class="review-likes ${likedClass}" data-review-code="${review.review_code}">
+                <svg class="like-icon" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span>${review.likeCount}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      return cardHtml;
+    }
+
+    // 카운트 업데이트
+    function updateCounts(photoReviews, textReviews, currentType) {
+      $('#photoBadge').text(photoReviews);
+      $('#textBadge').text(textReviews);
+
+      const totalCount = currentType === 'photo' ? photoReviews : textReviews;
+      $('#totalCount').text(totalCount);
+    }
+
+    // 더보기 버튼 상태 업데이트
+    function updateLoadMoreButton() {
+      const loadMoreBtn = $('#loadMoreBtn');
+      if (hasMore) {
+        loadMoreBtn.show().prop('disabled', false).text('더보기');
+      } else {
+        loadMoreBtn.hide();
+      }
+    }
+
+    // 로딩 표시
+    function showLoading() {
+      $('#loadingSpinner').show();
+      $('#reviewGrid').hide();
+    }
+
+    // 로딩 숨김
+    function hideLoading() {
+      $('#loadingSpinner').hide();
+      $('#reviewGrid').show();
+    }
+
+    // 더보기 로딩 표시
+    function showLoadMoreLoading() {
+      $('#loadMoreBtn').addClass('loading').prop('disabled', true).text('');
+    }
+
+    // 더보기 로딩 숨김
+    function hideLoadMoreLoading() {
+      $('#loadMoreBtn').removeClass('loading').prop('disabled', false);
+    }
+
+    // 빈 상태 표시
+    function showEmptyState() {
+      $('#emptyState').show();
+      $('#reviewGrid').hide();
+      $('#loadMoreBtn').hide();
+    }
+
+    // 빈 상태 숨김
+    function hideEmptyState() {
+      $('#emptyState').hide();
+      $('#reviewGrid').show();
+    }
+
+    // 좋아요 버튼 기능
+    $(document).on('click', '.review-likes', function(e) {
+      e.stopPropagation();
+
+      const $this = $(this);
+      const reviewCode = $this.data('review-code');
+
+      // 이미 처리 중이면 무시
+      if ($this.hasClass('processing')) return;
+
+      $this.addClass('processing');
+
+      $.ajax({
+        url: '/review/api/like',
+        method: 'POST',
+        data: {
+          reviewCode: reviewCode
+        },
+        success: function(response) {
+          $this.removeClass('processing');
+
+          if (response.success) {
+            const $likeCount = $this.find('span');
+            const currentCount = parseInt($likeCount.text());
+
+            if (response.isLiked) {
+              // 좋아요 추가
+              $this.addClass('liked');
+              $likeCount.text(currentCount + 1);
+            } else {
+              // 좋아요 취소
+              $this.removeClass('liked');
+              $likeCount.text(Math.max(0, currentCount - 1));
+            }
+          } else {
+            if (response.message) {
+              alert(response.message);
+            } else {
+              alert('좋아요 처리 중 오류가 발생했습니다.');
+            }
+          }
+        },
+        error: function(xhr, status, error) {
+          $this.removeClass('processing');
+
+          if (xhr.status === 401) {
+            alert('로그인이 필요합니다.');
+          } else {
+            alert('좋아요 처리 중 오류가 발생했습니다.');
+          }
+        }
+      });
+    });
+
+    // 리뷰 카드 클릭 이벤트
+    $(document).on('click', '.review-card', function(e) {
+      // 좋아요 버튼 클릭 시에는 상세 페이지로 이동하지 않음
+      if ($(e.target).closest('.review-likes').length > 0) {
+        return;
+      }
+
+      // 포토리뷰인 경우에만 상세 페이지로 이동
+      if ($(this).hasClass('photo-review')) {
+        const reviewCode = $(this).data('review-code');
+        window.location.href = `/review/detail/${reviewCode}`;
+      }
     });
   });
 </script>

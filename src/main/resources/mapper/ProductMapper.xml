@@ -84,6 +84,8 @@
         <result property="productName" column="product_name" />
         <result property="productDescription" column="product_description" />
         <result property="productOrderCount" column="product_order_count" />
+        <result property="reviewAvg" column="avg_rating" />
+        <result property="reviewCount" column="review_count" />
 
         <!-- priceDtoList는 단일 항목이므로 하나만 매핑 -->
         <collection property="priceDtoList" ofType="com.hollybam.hollybam.dto.PriceDto">
@@ -109,15 +111,34 @@
             pr.price_original,
             pr.price_selling,
             title_img.image_url AS title_image_url,
-            webp_img.image_url AS webp_image_url
+            webp_img.image_url AS webp_image_url,
+            IFNULL(r.review_count, 0) AS review_count,
+            IFNULL(r.avg_rating, 0) AS avg_rating
         FROM
             product p
                 JOIN price pr ON p.product_code = pr.product_code
                 LEFT JOIN image title_img ON p.product_code = title_img.product_code AND title_img.image_type = 'title'
                 LEFT JOIN image webp_img ON p.product_code = webp_img.product_code AND webp_img.image_type = 'webp'
+
+                -- 리뷰 개수 및 평균 평점 서브쿼리 조인
+                LEFT JOIN (
+                SELECT
+                    oi.product_code,
+                    COUNT(rv.review_code) AS review_count,
+                    ROUND(AVG(rv.rating), 1) AS avg_rating
+                FROM
+                    review rv
+                        JOIN order_items oi ON rv.order_item_code = oi.order_item_code
+                WHERE
+                    rv.is_active = 1
+                GROUP BY
+                    oi.product_code
+            ) r ON p.product_code = r.product_code
+
         WHERE
             p.product_active = 1
-        ORDER BY p.product_order_count DESC
+        ORDER BY
+            p.product_order_count DESC
         LIMIT 8
     </select>
 
@@ -133,15 +154,34 @@
             pr.price_original,
             pr.price_selling,
             title_img.image_url AS title_image_url,
-            webp_img.image_url AS webp_image_url
+            webp_img.image_url AS webp_image_url,
+            IFNULL(r.review_count, 0) AS review_count,
+            IFNULL(r.avg_rating, 0) AS avg_rating
         FROM
             product p
                 JOIN price pr ON p.product_code = pr.product_code
                 LEFT JOIN image title_img ON p.product_code = title_img.product_code AND title_img.image_type = 'title'
                 LEFT JOIN image webp_img ON p.product_code = webp_img.product_code AND webp_img.image_type = 'webp'
+
+                -- 리뷰 개수 및 평균 평점 서브쿼리 조인
+                LEFT JOIN (
+                SELECT
+                    oi.product_code,
+                    COUNT(rv.review_code) AS review_count,
+                    ROUND(AVG(rv.rating), 1) AS avg_rating
+                FROM
+                    review rv
+                        JOIN order_items oi ON rv.order_item_code = oi.order_item_code
+                WHERE
+                    rv.is_active = 1
+                GROUP BY
+                    oi.product_code
+            ) r ON p.product_code = r.product_code
+
         WHERE
             p.product_active = 1
-        ORDER BY p.product_order_count DESC
+        ORDER BY
+            p.product_order_count DESC
         LIMIT 4
     </select>
 
@@ -157,12 +197,30 @@
             pr.price_original,
             pr.price_selling,
             title_img.image_url AS title_image_url,
-            webp_img.image_url AS webp_image_url
+            webp_img.image_url AS webp_image_url,
+            IFNULL(r.review_count, 0) AS review_count,
+            IFNULL(r.avg_rating, 0) AS avg_rating
         FROM
             product p
                 JOIN price pr ON p.product_code = pr.product_code
                 LEFT JOIN image title_img ON p.product_code = title_img.product_code AND title_img.image_type = 'title'
                 LEFT JOIN image webp_img ON p.product_code = webp_img.product_code AND webp_img.image_type = 'webp'
+
+                -- 리뷰 개수 및 평균 평점 서브쿼리 조인
+                LEFT JOIN (
+                SELECT
+                    oi.product_code,
+                    COUNT(rv.review_code) AS review_count,
+                    ROUND(AVG(rv.rating), 1) AS avg_rating
+                FROM
+                    review rv
+                        JOIN order_items oi ON rv.order_item_code = oi.order_item_code
+                WHERE
+                    rv.is_active = 1
+                GROUP BY
+                    oi.product_code
+            ) r ON p.product_code = r.product_code
+
         WHERE
             p.product_active = 1
         ORDER BY

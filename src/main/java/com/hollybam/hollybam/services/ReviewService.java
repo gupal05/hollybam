@@ -6,122 +6,200 @@ import com.hollybam.hollybam.dto.ReviewDto;
 import com.hollybam.hollybam.dto.ReviewImageDto;
 import com.hollybam.hollybam.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService implements IF_ReviewService{
-    private final IF_ReviewDao reviewDao;
-    private final S3Uploader s3Uploader;
+    @Autowired
+    private IF_ReviewDao reviewDao;
+
+    @Autowired
+    private S3Uploader s3Uploader;
 
     @Override
     public boolean checkReviewEligibility(Integer orderItemCode, Integer memCode, Integer guestCode) {
-        // 1. 주문 상태 확인 (배송완료인지)
-        String orderStatus = reviewDao.getOrderStatusByOrderItemCode(orderItemCode);
-        if (!"DELIVERED".equals(orderStatus)) return false;
+        try {
+            // 주문 상태 확인
+            String orderStatus = reviewDao.getOrderStatusByOrderItemCode(orderItemCode);
+            if (!"DELIVERED".equals(orderStatus)) {
+                return false;
+            }
 
-        // 2. 이미 리뷰가 작성되었는지 확인
-        int existingCount = reviewDao.countExistingReview(orderItemCode, memCode, guestCode);
-        return existingCount == 0;
+            // 이미 리뷰가 작성되었는지 확인
+            int existingReviewCount = reviewDao.countExistingReview(orderItemCode, memCode, guestCode);
+            return existingReviewCount == 0;
+
+        } catch (Exception e) {
+            log.error("리뷰 작성 자격 확인 중 오류 발생", e);
+            return false;
+        }
     }
 
     @Override
+    @Transactional
     public void writeReview(ReviewDto reviewDto, List<MultipartFile> imageFiles) throws IOException {
-        // 1. 리뷰 저장
+        // 리뷰 저장
         reviewDao.insertReview(reviewDto);
 
-        // 2. 이미지가 있다면 S3 저장 및 DB insert
+        // 이미지가 있다면 업로드 및 저장
         if (imageFiles != null && !imageFiles.isEmpty()) {
-            for (MultipartFile file : imageFiles) {
-                if (!file.isEmpty()) {
-                    String imageUrl = s3Uploader.upload(file, "review");
+            for (MultipartFile imageFile : imageFiles) {
+                if (!imageFile.isEmpty()) {
+                    String imageUrl = s3Uploader.upload(imageFile, "reviews");
 
-                    ReviewImageDto imageDto = new ReviewImageDto();
-                    imageDto.setReviewCode(reviewDto.getReviewCode()); // insert 후 key 반환되어 있어야 함
-                    imageDto.setImageUrl(imageUrl);
+                    ReviewImageDto reviewImageDto = new ReviewImageDto();
+                    reviewImageDto.setReviewCode(reviewDto.getReviewCode());
+                    reviewImageDto.setImageUrl(imageUrl);
 
-                    reviewDao.insertReviewImage(imageDto);
+                    reviewDao.insertReviewImage(reviewImageDto);
                 }
             }
         }
     }
 
-    public int isWroteReview(int orderItemCode){
+    @Override
+    public int isWroteReview(int orderItemCode) {
         return reviewDao.isWroteReview(orderItemCode);
     }
 
-    /**
-     * 전체 베스트 리뷰 조회 (좋아요 수 기준)
-     * @return 베스트 리뷰 목록 (최대 12개)
-     */
-    public List<BestReviewDto> selectBestReviews(){
+    @Override
+    public List<BestReviewDto> selectBestReviews() {
         return reviewDao.selectBestReviews();
     }
 
-    /**
-     * 특정 상품의 베스트 리뷰 조회
-     * @param productCode 상품 코드
-     * @return 해당 상품의 베스트 리뷰 목록 (최대 12개)
-     */
-    public List<BestReviewDto> selectBestReviewsByProduct(@Param("productCode") int productCode){
+    @Override
+    public List<BestReviewDto> selectBestReviewsByProduct(int productCode) {
         return reviewDao.selectBestReviewsByProduct(productCode);
     }
 
-    /**
-     * 회원의 리뷰 통계 조회
-     * memCode 회원 코드
-     * @return Map - totalReviews, photoReviews, textReviews
-     */
-    public Map<String, Object> selectMemberReviewStats(int memberCode){
+    @Override
+    public Map<String, Object> selectMemberReviewStats(int memberCode) {
         return reviewDao.selectMemberReviewStats(memberCode);
     }
 
-    /**
-     * 비회원의 리뷰 통계 조회
-     * 비회원 코드
-     * @return Map - totalReviews, photoReviews, textReviews
-     */
-    public Map<String, Object> selectGuestReviewStats(int guestCode){
+    @Override
+    public Map<String, Object> selectGuestReviewStats(int guestCode) {
         return reviewDao.selectGuestReviewStats(guestCode);
     }
 
-    /**
-     * 리뷰 최신순 조회
-     * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
-     */
-    public List<Map<String, Object>> getPhotoReviewDesc(){
+    // ====== 기존 메서드들 구현 ======
+    @Override
+    public List<Map<String, Object>> getPhotoReviewDesc() {
         return reviewDao.getPhotoReviewDesc();
     }
 
-    /**
-     * 리뷰 평점순 조회
-     * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
-     */
-    public List<Map<String, Object>> getPhotoReviewRating(){
+    @Override
+    public List<Map<String, Object>> getPhotoReviewRating() {
         return reviewDao.getPhotoReviewRating();
     }
 
-    /**
-     * 리뷰 좋아요순 조회
-     * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
-     */
-    public List<Map<String, Object>> getPhotoReviewLike(){
+    @Override
+    public List<Map<String, Object>> getPhotoReviewLike() {
         return reviewDao.getPhotoReviewLike();
     }
 
-    /**
-     * 비회원의 리뷰 통계 조회
-     * guestCode 비회원 코드
-     * @return Map - photoReviews, textReviews
-     */
-    public Map<String, Object> getReviewCount(){
+    @Override
+    public Map<String, Object> getReviewCount() {
         return reviewDao.getReviewCount();
     }
 
+    // ====== 새로 추가된 텍스트리뷰 메서드들 ======
+    @Override
+    public List<Map<String, Object>> getTextReviewDesc() {
+        return reviewDao.getTextReviewDesc();
+    }
+
+    @Override
+    public List<Map<String, Object>> getTextReviewRating() {
+        return reviewDao.getTextReviewRating();
+    }
+
+    @Override
+    public List<Map<String, Object>> getTextReviewLike() {
+        return reviewDao.getTextReviewLike();
+    }
+
+    // ====== 페이지네이션 및 필터링 메서드들 ======
+    @Override
+    public List<Map<String, Object>> getPhotoReviews(String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode) {
+        int offset = (page - 1) * size;
+
+        switch (sort) {
+            case "rating":
+                return reviewDao.getPhotoReviewRatingWithPaging(offset, size, rating, memCode, guestCode);
+            case "likes":
+                return reviewDao.getPhotoReviewLikeWithPaging(offset, size, rating, memCode, guestCode);
+            case "latest":
+            default:
+                return reviewDao.getPhotoReviewDescWithPaging(offset, size, rating, memCode, guestCode);
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> getTextReviews(String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode) {
+        int offset = (page - 1) * size;
+
+        switch (sort) {
+            case "rating":
+                return reviewDao.getTextReviewRatingWithPaging(offset, size, rating, memCode, guestCode);
+            case "likes":
+                return reviewDao.getTextReviewLikeWithPaging(offset, size, rating, memCode, guestCode);
+            case "latest":
+            default:
+                return reviewDao.getTextReviewDescWithPaging(offset, size, rating, memCode, guestCode);
+        }
+    }
+
+    @Override
+    public Map<String, Object> getReviewCount(Integer rating) {
+        return reviewDao.getReviewCountWithFilter(rating);
+    }
+
+    // ====== 좋아요 관련 메서드들 ======
+    @Override
+    @Transactional
+    public boolean toggleReviewLike(int reviewCode, Integer memCode, Integer guestCode) {
+        try {
+            // 현재 좋아요 상태 확인
+            int likeStatus = reviewDao.checkUserLikeStatus(reviewCode, memCode, guestCode);
+
+            if (likeStatus > 0) {
+                // 이미 좋아요 상태면 취소
+                reviewDao.deleteReviewLike(reviewCode, memCode, guestCode);
+                return false;
+            } else {
+                // 좋아요 상태가 아니면 추가
+                reviewDao.insertReviewLike(reviewCode, memCode, guestCode);
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("리뷰 좋아요 토글 중 오류 발생", e);
+            throw new RuntimeException("좋아요 처리 중 오류가 발생했습니다.");
+        }
+    }
+
+    @Override
+    public boolean checkUserLikeStatus(int reviewCode, Integer memCode, Integer guestCode) {
+        return reviewDao.checkUserLikeStatus(reviewCode, memCode, guestCode) > 0;
+    }
+
+    @Override
+    public List<Integer> getUserLikedReviews(List<Integer> reviewCodes, Integer memCode, Integer guestCode) {
+        if (reviewCodes == null || reviewCodes.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return reviewDao.getUserLikedReviews(reviewCodes, memCode, guestCode);
+    }
 }

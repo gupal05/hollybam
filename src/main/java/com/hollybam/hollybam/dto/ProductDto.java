@@ -34,4 +34,7 @@ public class ProductDto {
     private PriceDto priceDto;        // 단일 가격 정보
     private ImageDto imageDto;        // 대표 이미지
     private ProductOptionDto productOptionDto; // 대표 옵션
+
+    private double reviewAvg;
+    private int reviewCount;
 }

@@ -11,61 +11,92 @@ import java.util.Map;
 
 @Mapper
 public interface IF_ReviewDao {
-    String getOrderStatusByOrderItemCode(Integer orderItemCode);
-    int countExistingReview(Integer orderItemCode, Integer memCode, Integer guestCode);
+    // 기존 메서드들
+    String getOrderStatusByOrderItemCode(int orderItemCode);
+    int countExistingReview(@Param("orderItemCode") int orderItemCode,
+                            @Param("memCode") Integer memCode,
+                            @Param("guestCode") Integer guestCode);
     void insertReview(ReviewDto reviewDto);
-    void insertReviewImage(ReviewImageDto imageDto);
+    void insertReviewImage(ReviewImageDto reviewImageDto);
     int isWroteReview(int orderItemCode);
-    /**
-     * 전체 베스트 리뷰 조회 (좋아요 수 기준)
-     * @return 베스트 리뷰 목록 (최대 12개)
-     */
     List<BestReviewDto> selectBestReviews();
-
-    /**
-     * 특정 상품의 베스트 리뷰 조회
-     * @param productCode 상품 코드
-     * @return 해당 상품의 베스트 리뷰 목록 (최대 12개)
-     */
     List<BestReviewDto> selectBestReviewsByProduct(@Param("productCode") int productCode);
-
-    /**
-     * 회원의 리뷰 통계 조회
-     * 회원 코드
-     * @return Map - totalReviews, photoReviews, textReviews
-     */
     Map<String, Object> selectMemberReviewStats(int memberCode);
-
-    /**
-     * 비회원의 리뷰 통계 조회
-     * guestCode 비회원 코드
-     * @return Map - totalReviews, photoReviews, textReviews
-     */
     Map<String, Object> selectGuestReviewStats(int guestCode);
 
-    /**
-     * 리뷰 최신순 조회
-     * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
-     */
+    // ====== 기존 포토리뷰 메서드들 (하위 호환성 유지) ======
     List<Map<String, Object>> getPhotoReviewDesc();
-
-    /**
-     * 리뷰 평점순 조회
-     * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
-     */
     List<Map<String, Object>> getPhotoReviewRating();
-
-    /**
-     * 리뷰 좋아요순 조회
-     * @return Map - reviewCode, memberCode, guestCode, rating, content, reviewDate, writerName, productName, productImage, reviewImage, likeCount
-     */
     List<Map<String, Object>> getPhotoReviewLike();
-
-    /**
-     * 비회원의 리뷰 통계 조회
-     * guestCode 비회원 코드
-     * @return Map - photoReviews, textReviews
-     */
     Map<String, Object> getReviewCount();
 
+    // ====== 새로 추가된 텍스트리뷰 메서드들 ======
+    List<Map<String, Object>> getTextReviewDesc();
+    List<Map<String, Object>> getTextReviewRating();
+    List<Map<String, Object>> getTextReviewLike();
+
+    // ====== 페이지네이션 및 필터링이 적용된 메서드들 ======
+    List<Map<String, Object>> getPhotoReviewDescWithPaging(@Param("offset") int offset,
+                                                           @Param("limit") int limit,
+                                                           @Param("rating") Integer rating,
+                                                           @Param("memCode") Integer memCode,
+                                                           @Param("guestCode") Integer guestCode);
+    List<Map<String, Object>> getPhotoReviewRatingWithPaging(@Param("offset") int offset,
+                                                             @Param("limit") int limit,
+                                                             @Param("rating") Integer rating,
+                                                             @Param("memCode") Integer memCode,
+                                                             @Param("guestCode") Integer guestCode);
+    List<Map<String, Object>> getPhotoReviewLikeWithPaging(@Param("offset") int offset,
+                                                           @Param("limit") int limit,
+                                                           @Param("rating") Integer rating,
+                                                           @Param("memCode") Integer memCode,
+                                                           @Param("guestCode") Integer guestCode);
+
+    List<Map<String, Object>> getTextReviewDescWithPaging(@Param("offset") int offset,
+                                                          @Param("limit") int limit,
+                                                          @Param("rating") Integer rating,
+                                                          @Param("memCode") Integer memCode,
+                                                          @Param("guestCode") Integer guestCode);
+    List<Map<String, Object>> getTextReviewRatingWithPaging(@Param("offset") int offset,
+                                                            @Param("limit") int limit,
+                                                            @Param("rating") Integer rating,
+                                                            @Param("memCode") Integer memCode,
+                                                            @Param("guestCode") Integer guestCode);
+    List<Map<String, Object>> getTextReviewLikeWithPaging(@Param("offset") int offset,
+                                                          @Param("limit") int limit,
+                                                          @Param("rating") Integer rating,
+                                                          @Param("memCode") Integer memCode,
+                                                          @Param("guestCode") Integer guestCode);
+
+    // 필터링이 적용된 리뷰 카운트 조회
+    Map<String, Object> getReviewCountWithFilter(@Param("rating") Integer rating);
+
+    // 좋아요 관련 메서드들
+    /**
+     * 리뷰 좋아요 추가
+     */
+    int insertReviewLike(@Param("reviewCode") int reviewCode,
+                         @Param("memCode") Integer memCode,
+                         @Param("guestCode") Integer guestCode);
+
+    /**
+     * 리뷰 좋아요 삭제
+     */
+    int deleteReviewLike(@Param("reviewCode") int reviewCode,
+                         @Param("memCode") Integer memCode,
+                         @Param("guestCode") Integer guestCode);
+
+    /**
+     * 사용자가 특정 리뷰에 좋아요를 눌렀는지 확인
+     */
+    int checkUserLikeStatus(@Param("reviewCode") int reviewCode,
+                            @Param("memCode") Integer memCode,
+                            @Param("guestCode") Integer guestCode);
+
+    /**
+     * 사용자가 좋아요한 리뷰 목록 조회
+     */
+    List<Integer> getUserLikedReviews(@Param("reviewCodes") List<Integer> reviewCodes,
+                                      @Param("memCode") Integer memCode,
+                                      @Param("guestCode") Integer guestCode);
 }

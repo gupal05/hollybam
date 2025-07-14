@@ -885,7 +885,7 @@
             <th:block th:if="${session.member != null}">
                 <li><a href="/mypage"><i class="fas fa-user"></i>계정 정보</a></li>
                 <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
-                <li><a href="/mypage/reviews" class="active"><i class="fas fa-star"></i>내가 작성한 리뷰</a></li>
+                <li><a href="/mypage/review" class="active"><i class="fas fa-star"></i>작성한 리뷰</a></li>
                 <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
                 <li><a href="/mypage/coupons"><i class="fas fa-ticket-alt"></i>쿠폰함</a></li>
                 <li><a href="/mypage/points"><i class="fas fa-coins"></i>적립금</a></li>
@@ -896,9 +896,9 @@
             <th:block th:unless="${session.member != null}">
                 <li><a href="/mypage"><i class="fas fa-user"></i>비회원 정보</a></li>
                 <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
-                <li><a href="/mypage/reviews" class="active"><i class="fas fa-star"></i>내가 작성한 리뷰</a></li>
+                <li><a href="/mypage/review" class="active"><i class="fas fa-star"></i>작성한 리뷰</a></li>
                 <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
-                <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>세션 종료</a></li>
+                <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i>비회원 로그아웃</a></li>
             </th:block>
         </ul>
     </aside>
@@ -914,15 +914,15 @@
         <!-- 통계 정보 -->
         <div class="stats-container">
             <div class="stat-item">
-                <span class="stat-number">24</span>
+                <span class="stat-number" th:text="${totalReviews}">0</span>
                 <span class="stat-label">총 리뷰 수</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number">18</span>
+                <span class="stat-number" th:text="${photoReviews}">0</span>
                 <span class="stat-label">포토 리뷰</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number">4.8</span>
+                <span class="stat-number" th:text="${avgRating}">0</span>
                 <span class="stat-label">평균 평점</span>
             </div>
         </div>
@@ -930,10 +930,10 @@
         <!-- 탭 메뉴 -->
         <div class="review-tabs">
             <button class="tab-button active" data-tab="photo">
-                포토리뷰 <span class="tab-badge">18</span>
+                포토리뷰 <span class="tab-badge" th:text="${photoReviews}">0</span>
             </button>
             <button class="tab-button" data-tab="text">
-                텍스트리뷰 <span class="tab-badge">6</span>
+                텍스트리뷰 <span class="tab-badge" th:text="${textReviews}">0</span>
             </button>
         </div>
 

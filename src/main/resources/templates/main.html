@@ -1693,6 +1693,23 @@
                 font-size: 16px;
             }
         }
+
+        /* 빈 별 스타일 */
+        .star-rating .star.empty {
+            fill: #e0e0e0;
+        }
+
+        /* 리뷰가 없을 때 스타일 */
+        .no-reviews-message {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+        }
+
+        .no-reviews-message p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -1824,121 +1841,83 @@
         </div>
 
         <!-- 베스트 리뷰 섹션 -->
+        <!-- 베스트 리뷰 섹션 -->
         <div class="best-reviews-section">
             <div class="section-title">베스트 리뷰</div>
             <div class="reviews-slider-container">
                 <div class="reviews-slider" id="reviewsSlider">
-                    <div class="review-card">
+                    <!-- 베스트 리뷰 동적 렌더링 -->
+                    <div class="review-card" th:each="review : ${bestReviews}">
                         <div class="review-header">
-                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png'}" alt="상품 이미지" class="review-product-img">
-                            <div class="review-product-info">
-                                <div class="review-product-name">홀 래빗 진동 흡입기1</div>
-                                <div class="review-rating">
-                                    <div class="star-rating">
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                    </div>
-                                    <span class="rating-text">4.71 (494)</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="review-content">
-                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
-                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
-                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
-                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
-                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
-                        </div>
-                        <div class="review-footer">
-                            <div>
-                                <div class="review-author-info">
-                                    <span class="review-author">윤익**</span>
-                                    <span class="review-age">20대 여성</span>
-                                </div>
-                                <div class="review-date">2025년 05월 1일</div>
-                            </div>
-                            <div class="review-likes">
-                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span>506</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 추가 리뷰 카드들 -->
-                    <div class="review-card">
-                        <div class="review-header">
-                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png'}" alt="상품 이미지" class="review-product-img">
+                            <!-- 상품 이미지 -->
+                            <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${review.imageDto.imageUrl}}"
+                                 th:alt="${review.productDto.productName}"
+                                 class="review-product-img">
 
                             <div class="review-product-info">
-                                <div class="review-product-name">홀 래빗 진동 흡입기2</div>
+                                <!-- 상품명 -->
+                                <div class="review-product-name" th:text="${review.productDto.productName}">상품명</div>
+
                                 <div class="review-rating">
+                                    <!-- 동적 별점 표시 -->
                                     <div class="star-rating">
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <!-- 채워진 별들 -->
+                                        <th:block th:each="i : ${#numbers.sequence(1, review.rating)}">
+                                            <svg class="star" viewBox="0 0 24 24">
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                        </th:block>
+                                        <!-- 빈 별들 -->
+                                        <th:block th:each="i : ${#numbers.sequence(1, 5 - review.rating)}" th:if="${review.rating < 5}">
+                                            <svg class="star empty" viewBox="0 0 24 24">
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                        </th:block>
                                     </div>
-                                    <span class="rating-text">4.71 (494)</span>
+                                    <!-- 평점 텍스트 -->
+                                    <span class="rating-text" th:text="${review.rating} + '.0'">5.0</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="review-content">
-                            제 본으로 진하를 삼어통품을 시 보는 것은 자옵인데 정히 헐 당해 체슴
-                            저처닐을 것은 내강리 잠아 나 지각함 자앤의 것느 갈구어 시간 갈고
-                            정히로부 내 갈슷연아 시 님 집할 구명의 것 멘법 가장 구장 말은가
-                            까지 약심 만즈 도구시겟 가전등을 더것 구짝 아조면 더것 더돌었
-                            답음 이로 안느조 도구 대삽기꾸 더것 갈닌 지무로좋았습니다!
+
+                        <!-- 리뷰 내용 -->
+                        <div class="review-content" th:text="${review.content}">
+                            리뷰 내용이 여기에 표시됩니다.
                         </div>
+
                         <div class="review-footer">
                             <div>
                                 <div class="review-author-info">
-                                    <span class="review-author">김민**</span>
-                                    <span class="review-age">30대 여성</span>
+                                    <!-- 작성자명 (이미 마스킹 처리됨) -->
+                                    <span class="review-author" th:text="${review.writerName}">작성자명</span>
+                                    <!-- 나이대와 성별 - 간단한 조건식으로 수정 -->
+                                    <span class="review-age">
+                                <span th:text="${review.writerAge}">20대</span>
+                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '남자'}">남성</span>
+                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '여자'}">여성</span>
+                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '남자'}">남성</span>
+                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '여자'}">여성</span>
+                            </span>
                                 </div>
-                                <div class="review-date">2025년 04월 28일</div>
+                                <!-- 작성일 -->
+                                <div class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy년 MM월 dd일')}">2025년 05월 1일</div>
                             </div>
+
+                            <!-- 좋아요 수 -->
                             <div class="review-likes">
-                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span>328</span>
+                                <svg class="like-icon" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span th:text="${review.likeCount}">0</span>
                             </div>
                         </div>
                     </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png'}" alt="상품 이미지" class="review-product-img">
-                            <div class="review-product-info">
-                                <div class="review-product-name">홀 래빗 진동 흡입기3</div>
-                                <div class="review-rating">
-                                    <div class="star-rating">
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                    </div>
-                                    <span class="rating-text">4.85 (234)</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="review-content">
-                            처음 구매했는데 정말 만족스러워요! 품질도 좋고 배송도 빨라서
-                            다음에도 여기서 구매하려고 합니다. 추천드려요!
-                        </div>
-                        <div class="review-footer">
-                            <div>
-                                <div class="review-author-info">
-                                    <span class="review-author">박지**</span>
-                                    <span class="review-age">20대 여성</span>
-                                </div>
-                                <div class="review-date">2025년 04월 25일</div>
-                            </div>
-                            <div class="review-likes">
-                                <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span>189</span>
-                            </div>
+
+                    <!-- 리뷰가 없는 경우 -->
+                    <div th:if="${bestReviews == null or bestReviews.isEmpty()}" class="review-card">
+                        <div class="no-reviews-message">
+                            <p>아직 베스트 리뷰가 없습니다.</p>
+                            <p>첫 리뷰를 작성해보세요! ⭐</p>
                         </div>
                     </div>
                 </div>
@@ -2181,64 +2160,160 @@
     });
 
     // 베스트 리뷰 슬라이더
+    // 베스트 리뷰 슬라이더 (완전히 새로운 코드)
     $(document).ready(function() {
-        const $slider = $('#reviewsSlider');
-        const originalCards = $('.review-card');
-        const cardCount = originalCards.length;
-        const cardWidth = 305 + 20; // 카드 너비 + gap
-        let currentPosition = 0;
-        let isTransitioning = false;
+        const $reviewSliderContainer = $('#reviewsSlider');
+        const $allReviewCards = $reviewSliderContainer.find('.review-card');
+        const reviewCardCount = $allReviewCards.length;
+        const reviewCardWidth = 305 + 20; // 카드 너비 + gap
 
-        function setupTrueInfiniteLoop() {
-            // 무한 루프를 위한 복제
-            originalCards.each(function() {
-                $slider.append($(this).clone());
-            });
+        let reviewCurrentPosition = 0;
+        let reviewIsTransitioning = false;
+        let reviewAutoInterval;
+        let reviewDirection = 1; // 1: 오른쪽, -1: 왼쪽
+        let reviewCurrentIndex = 0;
 
-            originalCards.each(function() {
-                $slider.append($(this).clone());
-            });
+        // 베스트 리뷰 슬라이더 초기화
+        function initBestReviewSlider() {
+            // 리뷰가 없거나 1개인 경우 슬라이드 기능 비활성화
+            if (reviewCardCount <= 1) {
+                console.log('베스트 리뷰가 1개 이하이므로 슬라이드를 비활성화합니다.');
+                return;
+            }
 
-            currentPosition = cardCount * cardWidth;
-            $slider.css('transform', 'translateX(' + (-currentPosition) + 'px)');
+            // 리뷰 카드 수에 따라 다른 슬라이드 방식 적용
+            if (reviewCardCount >= 4) {
+                setupBestReviewInfiniteSlider();
+            } else {
+                setupBestReviewBouncingSlider();
+            }
+
+            // 마우스 호버 이벤트
+            $('.best-reviews-section').hover(
+                stopBestReviewSlider,
+                restartBestReviewSlider
+            );
         }
 
-        function moveSlider() {
-            if (isTransitioning) return;
+        // 4개 이상일 때 - 무한 슬라이드
+        function setupBestReviewInfiniteSlider() {
+            console.log('베스트 리뷰 무한 슬라이드 모드 시작');
 
-            isTransitioning = true;
-            currentPosition += cardWidth;
+            // 원본 카드들을 뒤에 한 번 더 복제
+            $allReviewCards.each(function() {
+                $reviewSliderContainer.append($(this).clone());
+            });
 
-            $slider.css({
+            reviewCurrentPosition = 0;
+            $reviewSliderContainer.css('transform', 'translateX(0px)');
+
+            startBestReviewInfiniteSlide();
+        }
+
+        // 2-3개일 때 - 왕복 슬라이드
+        function setupBestReviewBouncingSlider() {
+            console.log('베스트 리뷰 왕복 슬라이드 모드 시작');
+
+            reviewCurrentIndex = 0;
+            reviewDirection = 1;
+            $reviewSliderContainer.css('transform', 'translateX(0px)');
+
+            startBestReviewBouncingSlide();
+        }
+
+        // 무한 슬라이드 동작
+        function moveBestReviewInfinite() {
+            if (reviewIsTransitioning) return;
+
+            reviewIsTransitioning = true;
+            reviewCurrentPosition += reviewCardWidth;
+
+            $reviewSliderContainer.css({
                 'transition': 'transform 0.8s ease',
-                'transform': 'translateX(' + (-currentPosition) + 'px)'
+                'transform': 'translateX(' + (-reviewCurrentPosition) + 'px)'
             });
 
             setTimeout(() => {
-                if (currentPosition >= (cardCount * 2) * cardWidth) {
-                    $slider.css('transition', 'none');
-                    currentPosition = cardCount * cardWidth;
-                    $slider.css('transform', 'translateX(' + (-currentPosition) + 'px)');
+                // 복제된 카드들 끝에 도달하면 처음으로 돌아가기
+                if (reviewCurrentPosition >= reviewCardCount * reviewCardWidth) {
+                    $reviewSliderContainer.css('transition', 'none');
+                    reviewCurrentPosition = 0;
+                    $reviewSliderContainer.css('transform', 'translateX(0px)');
+
+                    // 잠깐 후에 다시 transition 활성화
+                    setTimeout(() => {
+                        $reviewSliderContainer.css('transition', 'transform 0.8s ease');
+                    }, 50);
                 }
-                isTransitioning = false;
+                reviewIsTransitioning = false;
             }, 800);
         }
 
-        let autoSlideInterval;
-        function startAutoSlide() {
-            autoSlideInterval = setInterval(moveSlider, 3000);
+        // 왕복 슬라이드 동작
+        function moveBestReviewBouncing() {
+            if (reviewIsTransitioning) return;
+
+            reviewIsTransitioning = true;
+
+            // 다음 인덱스 계산
+            if (reviewDirection === 1) {
+                reviewCurrentIndex++;
+                if (reviewCurrentIndex >= reviewCardCount - 1) {
+                    reviewDirection = -1; // 방향 전환 (왼쪽으로)
+                }
+            } else {
+                reviewCurrentIndex--;
+                if (reviewCurrentIndex <= 0) {
+                    reviewDirection = 1; // 방향 전환 (오른쪽으로)
+                }
+            }
+
+            reviewCurrentPosition = reviewCurrentIndex * reviewCardWidth;
+
+            $reviewSliderContainer.css({
+                'transition': 'transform 0.8s ease',
+                'transform': 'translateX(' + (-reviewCurrentPosition) + 'px)'
+            });
+
+            setTimeout(() => {
+                reviewIsTransitioning = false;
+            }, 800);
         }
 
-        function stopAutoSlide() {
-            clearInterval(autoSlideInterval);
+        // 무한 슬라이드 자동 실행 시작
+        function startBestReviewInfiniteSlide() {
+            reviewAutoInterval = setInterval(moveBestReviewInfinite, 5000); // 5초마다
         }
 
-        $('.best-reviews-section').hover(stopAutoSlide, startAutoSlide);
-
-        if (cardCount > 0) {
-            setupTrueInfiniteLoop();
-            startAutoSlide();
+        // 왕복 슬라이드 자동 실행 시작
+        function startBestReviewBouncingSlide() {
+            reviewAutoInterval = setInterval(moveBestReviewBouncing, 5000); // 5초마다
         }
+
+        // 슬라이드 정지
+        function stopBestReviewSlider() {
+            if (reviewAutoInterval) {
+                clearInterval(reviewAutoInterval);
+                reviewAutoInterval = null;
+            }
+        }
+
+        // 슬라이드 재시작
+        function restartBestReviewSlider() {
+            stopBestReviewSlider();
+
+            // 1초 후에 재시작
+            setTimeout(() => {
+                if (reviewCardCount >= 4) {
+                    startBestReviewInfiniteSlide();
+                } else if (reviewCardCount >= 2) {
+                    startBestReviewBouncingSlide();
+                }
+            }, 1000);
+        }
+
+        // 베스트 리뷰 슬라이더 초기화 실행
+        initBestReviewSlider();
     });
 </script>
 

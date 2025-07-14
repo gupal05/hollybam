@@ -1,10 +1,9 @@
 package com.hollybam.hollybam.controller;
 
+import com.hollybam.hollybam.dto.BestReviewDto;
 import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.ProductDto;
-import com.hollybam.hollybam.services.GuestService;
-import com.hollybam.hollybam.services.IF_SignupService;
-import com.hollybam.hollybam.services.ProductService;
+import com.hollybam.hollybam.services.*;
 import com.hollybam.hollybam.services.nice.NiceCryptoTokenService;
 import com.hollybam.hollybam.util.NiceCryptoUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,7 +36,9 @@ public class HomeController {
     @Autowired
     private GuestService guestService;
     @Autowired
-    private IF_SignupService signupService;
+    private SignupService signupService;
+    @Autowired
+    private ReviewService reviewService;
 
     @GetMapping("/")
     public String introPage(HttpServletRequest request, Model model) {
@@ -152,6 +153,12 @@ public class HomeController {
         for(int i = 0; i < newProList.size(); i++){
             newProList.get(i).setProductQuantity(productService.getWishCount(newProList.get(i).getProductCode()));
         }
+        List<BestReviewDto> bestReview = reviewService.selectBestReviews();
+        for(int i = 0; i < bestReview.size(); i++){
+            bestReview.get(i).setWriterAge(this.getAgeGroup(bestReview.get(i).getWriterBirth()));
+            bestReview.get(i).setWriterName(bestReview.get(i).getWriterName().charAt(0)+"**");
+        }
+        mav.addObject("bestReviews", bestReview);
         mav.addObject("proList", proList);
         mav.addObject("newProList", newProList);
         mav.setViewName("main");
@@ -229,4 +236,18 @@ public class HomeController {
         session.setAttribute("guest", guestService.getGuestByDi("MC0GCCqGSIb3DQIJAyEACKfBOHYuC7XzJeid99M29aD87Fi8pI9WFEOLJw0IpnI="));
         return "loading";
     }
+
+
+    public String getAgeGroup(LocalDate birthDate) {
+        if (birthDate == null) return "정보 없음";
+
+        int birthYear = birthDate.getYear();
+        int thisYear = LocalDate.now().getYear();
+
+        int age = thisYear - birthYear + 1; // 한국식 나이 계산
+
+        int ageGroup = (age / 10) * 10; // 20, 30, 40...
+        return ageGroup + "대";
+    }
+
 }

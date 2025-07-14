@@ -166,6 +166,19 @@ public class MypageController {
                 if(orders.get(i).getOrderStatus().equals("배송중")){
                     orders.get(i).setDeliveryDto(orderService.getTrackingNumber(orders.get(i).getOrderCode()));
                 }
+                if(orders.get(i).getOrderStatus().equals("배송완료")){
+                    for(int j=0; j<orders.get(i).getOrderItems().size(); j++){
+                        if(reviewService.isWroteReview(orders.get(i).getOrderItems().get(j).getOrderItemCode()) > 0){
+                            orders.get(i).getOrderItems().get(j).setReviewDto(new ReviewDto());
+                            orders.get(i).getOrderItems().get(j).getReviewDto().setIsReview(true);
+                            System.out.println("작성 한 주문 : "+orders.get(i).getOrderItems().get(j));
+                        }else{
+                            orders.get(i).getOrderItems().get(j).setReviewDto(new ReviewDto());
+                            orders.get(i).getOrderItems().get(j).getReviewDto().setIsReview(false);
+                            System.out.println("작성 안 한 주문 : "+orders.get(i).getOrderItems().get(j));
+                        }
+                    }
+                }
             }
 
             // 비회원도 필터링 추가
@@ -393,7 +406,20 @@ public class MypageController {
     }
 
     @GetMapping("/review")
-    public String reviewPage() {
+    public String reviewPage(HttpSession session, Model model) {
+        Map<String,Object> map = new HashMap<>();
+        if(session.getAttribute("member") != null){
+            MemberDto member = (MemberDto)session.getAttribute("member");
+            map = reviewService.selectMemberReviewStats(member.getMemberCode());
+        }else{
+            GuestDto guest = (GuestDto)session.getAttribute("guest");
+            map = reviewService.selectGuestReviewStats(guest.getGuestCode());
+        }
+        System.out.println(map.toString());
+        model.addAttribute("totalReviews",map.get("totalReviews"));
+        model.addAttribute("photoReviews",map.get("photoReviews"));
+        model.addAttribute("textReviews",map.get("textReviews"));
+        model.addAttribute("avgRating",map.get("avgRating"));
         return "mypage/review";
     }
 

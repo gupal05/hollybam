@@ -28,7 +28,12 @@ public class ReviewController {
     private IF_OrderService orderService;
 
     @GetMapping("")
-    public String review(){
+    public String review(HttpSession session, Model model){
+        List<Map<String, Object>> reviewList = reviewService.getPhotoReviewDesc();
+        Map<String,Object> map = reviewService.getReviewCount();
+        model.addAttribute("reviewList",reviewList);
+        model.addAttribute("photoReviews", map.get("photoReviews"));
+        model.addAttribute("textReviews", map.get("textReviews"));
         return "review/reviewList";
     }
 

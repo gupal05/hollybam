@@ -860,7 +860,7 @@
                                 <button class="btn btn-sm cart-btn"
                                         th:attr="data-product-code=${item.productCode}">장바구니</button>
                                 <button class="btn btn-sm btn-primary buy-btn"
-                                        th:attr="data-product-code=${item.productCode}">바로구매</button>
+                                        th:attr="onclick='directBuy(\'' + ${item.productId} + '\')'">바로구매</button>
                             </div>
                         </div>
                     </a>
@@ -879,11 +879,11 @@
 </div>
 
 <!-- 대량 작업 플로팅 버튼 -->
-<div class="bulk-actions" id="bulkActions">
-    <span class="selected-count"><span id="selectedCount">0</span>개 선택됨</span>
-    <button class="btn btn-sm" id="bulkDelete">선택 삭제</button>
-    <button class="btn btn-sm btn-primary" id="bulkAddToCart">선택 구매</button>
-</div>
+<!--<div class="bulk-actions" id="bulkActions">-->
+<!--    <span class="selected-count"><span id="selectedCount">0</span>개 선택됨</span>-->
+<!--    <button class="btn btn-sm" id="bulkDelete">선택 삭제</button>-->
+<!--    <button class="btn btn-sm btn-primary" id="bulkAddToCart">선택 구매</button>-->
+<!--</div>-->
 
 <!-- 푸터 -->
 <div th:replace="~{layout/footer :: footer}"></div>
@@ -965,15 +965,6 @@
 
             const productCode = parseInt($(this).data('product-code'));
             addToCart([productCode]);
-        });
-
-        // 바로구매 (개별) - 수정된 부분
-        $('.buy-btn').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const productCode = parseInt($(this).data('product-code'));
-            directPurchase(productCode);
         });
 
         // 장바구니 담기 (선택)
@@ -1216,6 +1207,10 @@
     // 정보 수정 페이지 이동 (회원용)
     function changePage() {
         window.location.href = '/mypage/profile/edit';
+    }
+
+    function directBuy(id) {
+        window.location.href = '/product/'+id;
     }
 </script>
 </body>

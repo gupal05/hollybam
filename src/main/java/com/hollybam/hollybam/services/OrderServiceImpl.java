@@ -25,7 +25,6 @@ public class OrderServiceImpl implements IF_OrderService {
     private IF_PaymentDao paymentDao;
     @Autowired
     private ProductService productService;
-    @Autowired
 
     @Override
     @Transactional

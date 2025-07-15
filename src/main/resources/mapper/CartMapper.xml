@@ -153,4 +153,48 @@
         </foreach>
     </delete>
 
+    <!-- 회원의 기존 장바구니 아이템 조회 -->
+    <select id="selectExistingMemberCartItem" resultType="com.hollybam.hollybam.dto.CartDto">
+        SELECT
+            cart_code as cartCode,
+            mem_code as memCode,
+            guest_code as guestCode,
+            product_code as productCode,
+            option_code as optionCode,
+            quantity,
+            selected,
+            create_at as createAt,
+            update_at as updateAt
+        FROM cart
+        WHERE mem_code = #{memCode}
+          AND product_code = #{productCode}
+          AND (
+            (#{optionCode} IS NULL AND option_code IS NULL)
+                OR option_code = #{optionCode}
+            )
+        LIMIT 1
+    </select>
+
+    <!-- 비회원의 기존 장바구니 아이템 조회 -->
+    <select id="selectExistingGuestCartItem" resultType="com.hollybam.hollybam.dto.CartDto">
+        SELECT
+            cart_code as cartCode,
+            mem_code as memCode,
+            guest_code as guestCode,
+            product_code as productCode,
+            option_code as optionCode,
+            quantity,
+            selected,
+            create_at as createAt,
+            update_at as updateAt
+        FROM cart
+        WHERE guest_code = #{guestCode}
+          AND product_code = #{productCode}
+          AND (
+            (#{optionCode} IS NULL AND option_code IS NULL)
+                OR option_code = #{optionCode}
+            )
+        LIMIT 1
+    </select>
+
 </mapper>

@@ -254,4 +254,155 @@ public class CartController {
             return false;
         }
     }
+
+    /**
+     * 위시리스트에서 여러 상품을 장바구니에 한번에 추가
+     */
+    @PostMapping("/add-multiple")
+    @ResponseBody
+    public Map<String, Object> addMultipleToCart(@RequestParam List<Integer> productCodes, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 세션에서 사용자 정보 가져오기
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return response;
+            }
+
+            List<CartDto> cartItems = new ArrayList<>();
+
+            // 각 상품을 장바구니에 추가
+            for (Integer productCode : productCodes) {
+                CartDto cartDto = new CartDto();
+                cartDto.setProductCode(productCode);
+                cartDto.setQuantity(1); // 기본 수량 1
+                cartDto.setOptionCode(null); // 위시리스트에서는 기본 옵션
+
+                if (member != null) {
+                    cartDto.setMemCode(member.getMemberCode());
+                    cartDto.setGuestCode(null);
+                } else {
+                    cartDto.setMemCode(null);
+                    cartDto.setGuestCode(guest.getGuestCode());
+                }
+
+                cartItems.add(cartDto);
+            }
+
+            // 서비스에서 중복 체크와 함께 추가
+            int successCount = cartService.addMultipleToCart(cartItems);
+
+            response.put("success", true);
+            response.put("message", successCount + "개 상품이 장바구니에 추가되었습니다.");
+            response.put("addedCount", successCount);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "장바구니 추가 중 오류가 발생했습니다.");
+        }
+
+        return response;
+    }
+
+    /**
+     * 위시리스트에서 단일 상품 바로구매를 위한 주문 페이지 이동
+     */
+    @PostMapping("/direct-purchase")
+    @ResponseBody
+    public Map<String, Object> directPurchaseFromWishlist(@RequestParam int productCode, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 세션에서 사용자 정보 가져오기
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return response;
+            }
+
+            // 상품 정보 조회 (재고 체크 등)
+            // 실제로는 ProductService를 통해 상품 정보를 확인해야 함
+
+            // 세션에 바로구매 정보 저장
+            Map<String, Object> directPurchaseData = new HashMap<>();
+            directPurchaseData.put("type", "direct");
+            directPurchaseData.put("productCode", productCode);
+            directPurchaseData.put("quantity", 1);
+            directPurchaseData.put("optionCode", null);
+
+            session.setAttribute("directPurchaseData", directPurchaseData);
+
+            response.put("success", true);
+            response.put("redirectUrl", "/order/direct");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "주문 처리 중 오류가 발생했습니다.");
+        }
+
+        return response;
+    }
+
+    /**
+     * 위시리스트에서 선택된 여러 상품을 바로구매하기 위한 장바구니 임시 저장 후 주문 페이지 이동
+     */
+    @PostMapping("/bulk-purchase")
+    @ResponseBody
+    public Map<String, Object> bulkPurchaseFromWishlist(@RequestParam List<Integer> productCodes, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 세션에서 사용자 정보 가져오기
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return response;
+            }
+
+            if (productCodes == null || productCodes.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "선택된 상품이 없습니다.");
+                return response;
+            }
+
+            // 임시 장바구니에 추가 (실제 장바구니가 아닌 주문용 임시 데이터)
+            List<Map<String, Object>> tempCartItems = new ArrayList<>();
+
+            for (Integer productCode : productCodes) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("productCode", productCode);
+                item.put("quantity", 1);
+                item.put("optionCode", null);
+                tempCartItems.add(item);
+            }
+
+            // 세션에 임시 주문 데이터 저장
+            session.setAttribute("tempOrderData", tempCartItems);
+
+            response.put("success", true);
+            response.put("redirectUrl", "/order/temp");
+            response.put("message", "선택한 상품들로 주문을 진행합니다.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "주문 처리 중 오류가 발생했습니다.");
+        }
+
+        return response;
+    }
+
 }

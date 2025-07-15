@@ -890,7 +890,7 @@
 
 <script th:inline="javascript">
     // 회원 여부 확인
-    const isMember = [[${session.member != null}]];
+    const isMember = /*[[${session.member != null}]]*/ false;
 
     $(document).ready(function() {
         // 선택된 상품들을 관리하는 Set
@@ -967,6 +967,15 @@
             addToCart([productCode]);
         });
 
+        // 바로구매 (개별) - 수정된 부분
+        $('.buy-btn').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const productCode = parseInt($(this).data('product-code'));
+            directPurchase(productCode);
+        });
+
         // 장바구니 담기 (선택)
         $('#addToCart, #bulkAddToCart').on('click', function() {
             if (selectedItems.size === 0) {
@@ -977,76 +986,61 @@
             addToCart(Array.from(selectedItems));
         });
 
-        // 바로구매 버튼
-        $('.buy-btn').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+        // 선택 구매 기능 추가
+        $('#bulkPurchase').on('click', function() {
+            if (selectedItems.size === 0) {
+                showToast('구매할 상품을 선택해주세요.', 'error');
+                return;
+            }
 
-            const productCode = parseInt($(this).data('product-code'));
-            window.location.href = `/order/direct?productCode=${productCode}`;
+            bulkPurchase(Array.from(selectedItems));
         });
 
-        // 위시리스트에서 제거 함수 (회원/비회원 구분)
-        function removeFromWishlist(productCode, $item = null) {
-            if (isMember) {
-                // 회원의 경우 서버 API 호출
-                $.ajax({
-                    url: '/wishlist/remove',
-                    type: 'DELETE',
-                    data: { productCode: productCode },
-                    success: function(response) {
-                        if (response.success) {
-                            handleRemoveSuccess(productCode, $item);
-                            showToast(response.message, 'success');
-                        } else {
-                            showToast(response.message, 'error');
-                        }
-                    },
-                    error: function() {
-                        showToast('제거 중 오류가 발생했습니다.', 'error');
+        // 위시리스트에서 제거 함수
+        function removeFromWishlist(productCode, $item) {
+            $.ajax({
+                url: '/wishlist/toggle',
+                type: 'POST',
+                data: { productCode: productCode },
+                success: function(response) {
+                    if (response.success) {
+                        // 성공적으로 제거된 경우 UI에서 제거
+                        $item.fadeOut(300, function() {
+                            $(this).remove();
+                            selectedItems.delete(productCode);
+                            updateBulkActions();
+                            updateItemCount();
+                            checkEmptyWishlist();
+                        });
+                        showToast('위시리스트에서 제거되었습니다.', 'success');
+                    } else {
+                        showToast(response.message || '제거 중 오류가 발생했습니다.', 'error');
                     }
-                });
-            } else {
-                // 비회원의 경우 로컬스토리지에서 제거
-                let wishlist = JSON.parse(localStorage.getItem('guest_wishlist')) || [];
-                wishlist = wishlist.filter(code => code !== productCode);
-                localStorage.setItem('guest_wishlist', JSON.stringify(wishlist));
-
-                handleRemoveSuccess(productCode, $item);
-                showToast('위시리스트에서 제거되었습니다.', 'success');
-            }
-        }
-
-        function handleRemoveSuccess(productCode, $item) {
-            if ($item) {
-                $item.fadeOut(300, function() {
-                    $(this).remove();
-                    updateItemCount();
-                    checkEmptyWishlist();
-                });
-            }
-            selectedItems.delete(productCode);
-            updateBulkActions();
+                },
+                error: function() {
+                    showToast('위시리스트 제거 중 오류가 발생했습니다.', 'error');
+                }
+            });
         }
 
         // 여러 상품 위시리스트에서 제거
         function removeMultipleFromWishlist(productCodes) {
+            let completed = 0;
+            let errors = 0;
+
             if (isMember) {
                 // 회원의 경우 서버 API 호출
-                let completed = 0;
-                let errors = 0;
-
-                productCodes.forEach(productCode => {
+                productCodes.forEach(function(productCode) {
                     $.ajax({
-                        url: '/wishlist/remove',
-                        type: 'DELETE',
+                        url: '/wishlist/toggle',
+                        type: 'POST',
                         data: { productCode: productCode },
                         success: function(response) {
                             completed++;
-                            if (response.success) {
-                                fadeOutItem(productCode);
-                            } else {
+                            if (!response.success) {
                                 errors++;
+                            } else {
+                                fadeOutItem(productCode);
                             }
                             if (completed === productCodes.length) {
                                 finishBulkDelete(productCodes.length - errors);
@@ -1094,7 +1088,7 @@
             showToast(`${successCount}개의 상품이 위시리스트에서 제거되었습니다.`, 'success');
         }
 
-        // 장바구니 추가 함수 (회원/비회원 구분)
+        // 장바구니 추가 함수 (수정된 부분)
         function addToCart(productCodes) {
             if (isMember) {
                 // 회원의 경우 서버 API 호출
@@ -1104,7 +1098,7 @@
                     data: { productCodes: productCodes },
                     success: function(response) {
                         if (response.success) {
-                            showToast(`${productCodes.length}개의 상품이 장바구니에 추가되었습니다.`, 'success');
+                            showToast(response.message, 'success');
                         } else {
                             showToast(response.message || '장바구니 추가 중 오류가 발생했습니다.', 'error');
                         }
@@ -1126,6 +1120,44 @@
                 localStorage.setItem('guest_cart', JSON.stringify(cart));
                 showToast(`${productCodes.length}개의 상품이 장바구니에 추가되었습니다.`, 'success');
             }
+        }
+
+        // 바로구매 함수 (새로 추가)
+        function directPurchase(productCode) {
+            $.ajax({
+                url: '/cart/direct-purchase',
+                type: 'POST',
+                data: { productCode: productCode },
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        showToast(response.message || '주문 처리 중 오류가 발생했습니다.', 'error');
+                    }
+                },
+                error: function() {
+                    showToast('주문 처리 중 오류가 발생했습니다.', 'error');
+                }
+            });
+        }
+
+        // 선택 구매 함수 (새로 추가)
+        function bulkPurchase(productCodes) {
+            $.ajax({
+                url: '/cart/bulk-purchase',
+                type: 'POST',
+                data: { productCodes: productCodes },
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        showToast(response.message || '주문 처리 중 오류가 발생했습니다.', 'error');
+                    }
+                },
+                error: function() {
+                    showToast('주문 처리 중 오류가 발생했습니다.', 'error');
+                }
+            });
         }
 
         // 아이템 개수 업데이트

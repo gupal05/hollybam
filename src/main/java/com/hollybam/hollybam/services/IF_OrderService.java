@@ -25,4 +25,12 @@ public interface IF_OrderService {
     int getFinalAmount(int code);
     DeliveryDto getTrackingNumber(int orderCode);
     OrderItemDto getOrderItemDetail(int orderItemCode);
+    // IF_OrderService.java 인터페이스에도 추가해야 할 메서드 선언:
+    /**
+     * 위시리스트에서 선택한 여러 상품으로 임시 주문 생성
+     * @param orderData 주문 데이터 (주문자 정보 + 상품 리스트)
+     * @return 생성된 주문 정보
+     * @throws Exception 주문 생성 실패 시
+     */
+    OrderDto createTempOrder(Map<String, Object> orderData) throws Exception;
 }

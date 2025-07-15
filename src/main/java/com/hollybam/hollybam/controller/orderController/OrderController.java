@@ -477,4 +477,240 @@ public class OrderController {
 
         return ResponseEntity.ok(result);
     }
+
+    /**
+     * 위시리스트에서 바로구매를 위한 주문 페이지
+     */
+    @GetMapping("/direct")
+    public String directOrderPage(HttpSession session, Model model) {
+        try {
+            // 세션에서 바로구매 데이터 확인
+            Map<String, Object> directPurchaseData = (Map<String, Object>) session.getAttribute("directPurchaseData");
+
+            if (directPurchaseData == null) {
+                return "redirect:/main"; // 잘못된 접근
+            }
+
+            // 사용자 정보 확인
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                return "redirect:/intro"; // 로그인 필요
+            }
+
+            // 상품 정보 조회
+            Integer productCode = (Integer) directPurchaseData.get("productCode");
+            Integer quantity = (Integer) directPurchaseData.get("quantity");
+            Integer optionCode = (Integer) directPurchaseData.get("optionCode");
+
+            // ProductService를 통해 상품 정보 조회
+            ProductDto product = productService.getProductByCode(productCode);
+            if (product == null) {
+                session.removeAttribute("directPurchaseData");
+                return "redirect:/main";
+            }
+
+            // 가격 정보 계산
+            PriceDto priceInfo = productService.getProductPrice(productCode);
+            int unitPrice = priceInfo.getPriceSelling();
+            int totalPrice = unitPrice * quantity;
+
+            // 배송비 계산 (예: 50,000원 이상 무료배송)
+            int deliveryFee = totalPrice >= 50000 ? 0 : 3000;
+            int finalAmount = totalPrice + deliveryFee;
+
+            // 모델에 데이터 추가
+            model.addAttribute("product", product);
+            model.addAttribute("quantity", quantity);
+            model.addAttribute("unitPrice", unitPrice);
+            model.addAttribute("totalPrice", totalPrice);
+            model.addAttribute("deliveryFee", deliveryFee);
+            model.addAttribute("finalAmount", finalAmount);
+            model.addAttribute("orderType", "direct");
+
+            // 회원 정보 추가
+            if (member != null) {
+                model.addAttribute("member", member);
+            } else {
+                model.addAttribute("guest", guest);
+            }
+
+            return "order/orderForm"; // 주문 폼 페이지
+
+        } catch (Exception e) {
+            log.error("바로구매 주문 페이지 로드 실패", e);
+            return "redirect:/main";
+        }
+    }
+
+    /**
+     * 위시리스트에서 선택 구매를 위한 임시 주문 페이지
+     */
+    @GetMapping("/temp")
+    public String tempOrderPage(HttpSession session, Model model) {
+        try {
+            // 세션에서 임시 주문 데이터 확인
+            List<Map<String, Object>> tempOrderData = (List<Map<String, Object>>) session.getAttribute("tempOrderData");
+
+            if (tempOrderData == null || tempOrderData.isEmpty()) {
+                return "redirect:/main"; // 잘못된 접근
+            }
+
+            // 사용자 정보 확인
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                return "redirect:/intro"; // 로그인 필요
+            }
+
+            // 상품 정보들 조회
+            List<Map<String, Object>> orderItems = new ArrayList<>();
+            int totalPrice = 0;
+
+            for (Map<String, Object> item : tempOrderData) {
+                Integer productCode = (Integer) item.get("productCode");
+                Integer quantity = (Integer) item.get("quantity");
+
+                // 상품 정보 조회
+                ProductDto product = productService.getProductByCode(productCode);
+                if (product == null) {
+                    throw new Exception("상품을 찾을 수 없습니다. productCode: " + productCode);
+                }
+                if (product == null) continue;
+
+                // 가격 정보 조회
+                PriceDto priceInfo = productService.getProductPrice(productCode);
+                int unitPrice = priceInfo.getPriceSelling();
+                int itemTotal = unitPrice * quantity;
+                totalPrice += itemTotal;
+
+                // 주문 아이템 정보 생성
+                Map<String, Object> orderItem = new HashMap<>();
+                orderItem.put("product", product);
+                orderItem.put("quantity", quantity);
+                orderItem.put("unitPrice", unitPrice);
+                orderItem.put("itemTotal", itemTotal);
+
+                orderItems.add(orderItem);
+            }
+
+            // 배송비 계산
+            int deliveryFee = totalPrice >= 50000 ? 0 : 3000;
+            int finalAmount = totalPrice + deliveryFee;
+
+            // 모델에 데이터 추가
+            model.addAttribute("orderItems", orderItems);
+            model.addAttribute("totalPrice", totalPrice);
+            model.addAttribute("deliveryFee", deliveryFee);
+            model.addAttribute("finalAmount", finalAmount);
+            model.addAttribute("orderType", "temp");
+
+            // 회원 정보 추가
+            if (member != null) {
+                model.addAttribute("member", member);
+            } else {
+                model.addAttribute("guest", guest);
+            }
+
+            return "order/orderForm"; // 주문 폼 페이지
+
+        } catch (Exception e) {
+            log.error("임시 주문 페이지 로드 실패", e);
+            return "redirect:/main";
+        }
+    }
+
+    /**
+     * 바로구매 주문 처리
+     */
+    @PostMapping("/direct/process")
+    @ResponseBody
+    public Map<String, Object> processDirectOrder(@RequestBody Map<String, Object> orderData, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 세션에서 바로구매 데이터 확인
+            Map<String, Object> directPurchaseData = (Map<String, Object>) session.getAttribute("directPurchaseData");
+
+            if (directPurchaseData == null) {
+                response.put("success", false);
+                response.put("message", "주문 정보를 찾을 수 없습니다.");
+                return response;
+            }
+
+            // 주문 데이터에 상품 정보 추가
+            orderData.put("productCode", directPurchaseData.get("productCode"));
+            orderData.put("quantity", directPurchaseData.get("quantity"));
+            orderData.put("optionCode", directPurchaseData.get("optionCode"));
+
+            // 주문 생성
+            OrderDto order = orderService.createDirectOrder(orderData);
+
+            if (order != null) {
+                // 세션 데이터 정리
+                session.removeAttribute("directPurchaseData");
+
+                response.put("success", true);
+                response.put("orderId", order.getOrderId());
+                response.put("message", "주문이 성공적으로 생성되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "주문 생성에 실패했습니다.");
+            }
+
+        } catch (Exception e) {
+            log.error("바로구매 주문 처리 실패", e);
+            response.put("success", false);
+            response.put("message", "주문 처리 중 오류가 발생했습니다.");
+        }
+
+        return response;
+    }
+
+    /**
+     * 임시 주문 처리
+     */
+    @PostMapping("/temp/process")
+    @ResponseBody
+    public Map<String, Object> processTempOrder(@RequestBody Map<String, Object> orderData, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 세션에서 임시 주문 데이터 확인
+            List<Map<String, Object>> tempOrderData = (List<Map<String, Object>>) session.getAttribute("tempOrderData");
+
+            if (tempOrderData == null || tempOrderData.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "주문 정보를 찾을 수 없습니다.");
+                return response;
+            }
+
+            // 주문 데이터에 상품 정보들 추가
+            orderData.put("orderItems", tempOrderData);
+
+            // 주문 생성 (장바구니 주문과 유사한 방식)
+            OrderDto order = orderService.createTempOrder(orderData);
+
+            if (order != null) {
+                // 세션 데이터 정리
+                session.removeAttribute("tempOrderData");
+
+                response.put("success", true);
+                response.put("orderId", order.getOrderId());
+                response.put("message", "주문이 성공적으로 생성되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "주문 생성에 실패했습니다.");
+            }
+
+        } catch (Exception e) {
+            log.error("임시 주문 처리 실패", e);
+            response.put("success", false);
+            response.put("message", "주문 처리 중 오류가 발생했습니다.");
+        }
+
+        return response;
+    }
 }

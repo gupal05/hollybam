@@ -18,4 +18,8 @@ public interface IF_CartService {
     public CartDto getCartOwner(int cartCode);
     public int updateCartSelection(int cartCode, boolean selected);
     public int removeMultipleFromCart(List<Integer> cartCodes);
+    /**
+     * 여러 상품을 장바구니에 한번에 추가 (위시리스트용)
+     */
+    int addMultipleToCart(List<CartDto> cartItems);
 }

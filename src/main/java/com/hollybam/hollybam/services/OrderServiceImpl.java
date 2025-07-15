@@ -19,12 +19,13 @@ import java.util.Map;
 @Slf4j
 @Transactional
 public class OrderServiceImpl implements IF_OrderService {
-
     @Autowired
     private IF_OrderDao orderDao;
-
     @Autowired
     private IF_PaymentDao paymentDao;
+    @Autowired
+    private ProductService productService;
+    @Autowired
 
     @Override
     @Transactional
@@ -408,5 +409,83 @@ public class OrderServiceImpl implements IF_OrderService {
     @Override
     public OrderItemDto getOrderItemDetail(int orderItemCode) {
         return orderDao.selectOrderItemDetail(orderItemCode);
+    }
+
+    @Override
+    @Transactional
+    public OrderDto createTempOrder(Map<String, Object> orderData) throws Exception {
+        try {
+            log.info("임시 주문 생성 시작: {}", orderData);
+
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> orderItems = (List<Map<String, Object>>) orderData.get("orderItems");
+
+            if (orderItems == null || orderItems.isEmpty()) {
+                throw new Exception("주문할 상품이 없습니다.");
+            }
+
+            // 주문 기본 정보 생성
+            OrderDto order = createOrderFromData(orderData, null);
+            orderDao.insertOrder(order);
+            log.info("임시 주문 저장 완료. 주문코드: {}", order.getOrderCode());
+
+            // 주문 아이템들 생성
+            List<OrderItemDto> orderItemList = new ArrayList<>();
+
+            for (Map<String, Object> itemData : orderItems) {
+                Integer productCode = (Integer) itemData.get("productCode");
+                Integer quantity = (Integer) itemData.get("quantity");
+                Integer optionCode = (Integer) itemData.get("optionCode");
+
+                // 상품 가격 정보 조회
+                PriceDto priceDto = productService.getProductPrice(productCode);
+                if (priceDto == null) {
+                    throw new Exception("상품 가격 정보를 찾을 수 없습니다. productCode: " + productCode);
+                }
+
+                // 옵션 정보 조회 (있는 경우)
+                ProductOptionDto optionDto = null;
+                int optionPrice = 0;
+                if (optionCode != null) {
+                    optionDto = productService.getProductOption(optionCode);
+                    if (optionDto != null) {
+                        optionPrice = optionDto.getOptionPrice();
+                    }
+                }
+
+                // 주문 아이템 생성
+                OrderItemDto orderItem = new OrderItemDto();
+                orderItem.setOrderCode(order.getOrderCode());
+                orderItem.setProductCode(productCode);
+                orderItem.setOptionCode(optionCode);
+                orderItem.setQuantity(quantity);
+                orderItem.setUnitPrice(priceDto.getPriceSelling());
+                orderItem.setOptionPrice(optionPrice);
+                orderItem.setTotalPrice((priceDto.getPriceSelling() + optionPrice) * quantity);
+
+                orderItemList.add(orderItem);
+            }
+
+            // 주문 아이템들 저장
+            orderDao.insertOrderItems(orderItemList);
+
+            // 주문 횟수 업데이트
+            for (OrderItemDto orderItem : orderItemList) {
+                orderDao.updateOrderCount(orderItem);
+            }
+
+            // 재고 차감
+            updateInventory(orderItemList);
+
+            // 배송 정보 생성
+            createInitialDelivery(order.getOrderCode());
+
+            log.info("임시 주문 생성 완료: {}", order.getOrderId());
+            return order;
+
+        } catch (Exception e) {
+            log.error("임시 주문 생성 실패", e);
+            throw new Exception("주문 생성에 실패했습니다: " + e.getMessage(), e);
+        }
     }
 }

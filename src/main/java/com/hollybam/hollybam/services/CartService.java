@@ -2,11 +2,13 @@ package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dao.IF_CartDao;
 import com.hollybam.hollybam.dto.CartDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class CartService implements IF_CartService {
     private final IF_CartDao cartDao;
@@ -91,5 +93,30 @@ public class CartService implements IF_CartService {
             return 0;
         }
         return cartDao.removeMultipleFromCart(cartCodes);
+    }
+
+    // CartService.java 구현체에 추가할 메서드
+    @Override
+    @Transactional
+    public int addMultipleToCart(List<CartDto> cartItems) {
+        int successCount = 0;
+
+        for (CartDto cartItem : cartItems) {
+            try {
+                // 기존 addToCart 메서드 활용 (중복 체크 로직 포함)
+                int result = addToCart(cartItem);
+                if (result > 0) {
+                    successCount++;
+                }
+
+            } catch (Exception e) {
+                // 개별 실패는 로그만 남기고 계속 진행
+                System.out.println("장바구니 아이템 추가 실패 - productCode: " + cartItem.getProductCode());
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("다중 장바구니 추가 완료 - 총 " + cartItems.size() + "개 중 " + successCount + "개 성공");
+        return successCount;
     }
 }

@@ -4,7 +4,8 @@ import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.dto.WishlistDto;
 import com.hollybam.hollybam.services.CouponService;
-import com.hollybam.hollybam.services.IF_WishlistService;
+import com.hollybam.hollybam.services.MypageService;
+import com.hollybam.hollybam.services.WishlistService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Controller
@@ -24,9 +27,12 @@ import java.util.Map;
 @Slf4j
 public class WishlistController {
 
-    private final IF_WishlistService wishlistService;
+    @Autowired
+    private WishlistService wishlistService;
     @Autowired
     private CouponService couponService;
+    @Autowired
+    private MypageService mypageService;
 
     /**
      * 위시리스트 페이지
@@ -53,7 +59,10 @@ public class WishlistController {
                 couponCount = couponService.selectCouponCount(memCode);
                 wishlistItems = wishlistService.getMemberWishlist(memCode);
                 totalCount = wishlistService.getMemberWishlistCount(memCode);
+                int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
+                String totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
 
+                model.addAttribute("totalPoint", totalPoint);
                 model.addAttribute("wishlistItems", wishlistItems);
                 model.addAttribute("totalCount", totalCount);
                 model.addAttribute("couponCount", couponCount);

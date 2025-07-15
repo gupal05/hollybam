@@ -1303,18 +1303,6 @@
             });
         });
 
-        // 리뷰 삭제 버튼
-        $(document).on('click', '.action-btn.delete', function(e) {
-            e.stopPropagation();
-
-            if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
-                const reviewCode = $(this).closest('.review-card').data('review-code');
-                const $reviewCard = $(this).closest('.review-card');
-
-                deleteReview(reviewCode, $reviewCard);
-            }
-        });
-
         // 페이지네이션 리셋
         function resetPagination() {
             currentPage = 1;
@@ -1470,8 +1458,8 @@
                             </svg>
                             <span>${review.likeCount}</span>
                         </div>
-                        <button class="action-btn edit">수정</button>
-                        <button class="action-btn delete">삭제</button>
+                        <button class="action-btn edit" onclick="editReview(${review.reviewCode})">수정</button>
+                        <button class="action-btn delete" th:onclick="deleteReview(${review.reviewCode})">삭제</button>
                     </div>
                 </div>
             </div>
@@ -1524,37 +1512,6 @@
         function hideEmptyState() {
             $('.empty-state').remove();
         }
-
-        // 리뷰 삭제 함수
-        function deleteReview(reviewCode, $reviewCard) {
-            $.ajax({
-                url: `/mypage/review/${reviewCode}`,
-                method: 'DELETE',
-                success: function(response) {
-                    if (response.success) {
-                        // 성공시 카드 제거 애니메이션
-                        $reviewCard.fadeOut(300, function() {
-                            $(this).remove();
-
-                            // 카운트 업데이트를 위해 데이터 새로고침
-                            resetPagination();
-                            loadMyReviews(false);
-                        });
-
-                        alert('리뷰가 삭제되었습니다.');
-                    } else {
-                        alert(response.message || '리뷰 삭제에 실패했습니다.');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status === 401) {
-                        alert('로그인이 필요합니다.');
-                    } else {
-                        alert('리뷰 삭제에 실패했습니다. 다시 시도해주세요.');
-                    }
-                }
-            });
-        }
     });
 
     // 마이페이지 관련 함수들
@@ -1565,6 +1522,36 @@
     function logout() {
         if (confirm('로그아웃 하시겠습니까?')) {
             window.location.href = '/auth/logout';
+        }
+    }
+
+    // 리뷰 수정
+    function editReview(reviewCode) {
+        if (confirm('리뷰를 수정하시겠습니까?')) {
+            window.location.href = `/review/edit/${reviewCode}`;
+        }
+    }
+
+    // 리뷰 삭제
+    function deleteReview(reviewCode) {
+        if (confirm('정말로 이 리뷰를 삭제하시겠습니까?\n삭제된 리뷰는 복구할 수 없습니다.')) {
+            $.ajax({
+                url: `/review/delete/${reviewCode}`,
+                type: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        showAlert('success', response.message);
+                        setTimeout(() => {
+                            window.location.href = response.redirectUrl || '/mypage/review';
+                        }, 2000);
+                    } else {
+                        showAlert('error', response.message || '리뷰 삭제에 실패했습니다.');
+                    }
+                },
+                error: function() {
+                    showAlert('error', '리뷰 삭제 중 오류가 발생했습니다.');
+                }
+            });
         }
     }
 </script>

@@ -408,14 +408,21 @@ public class MypageController {
     @GetMapping("/review")
     public String reviewPage(HttpSession session, Model model) {
         Map<String,Object> map = new HashMap<>();
+        String totalPoint = "";
+        int couponCount = 0;
         if(session.getAttribute("member") != null){
             MemberDto member = (MemberDto)session.getAttribute("member");
             map = reviewService.selectMemberReviewStats(member.getMemberCode());
+            couponCount = couponService.selectCouponCount(member.getMemberCode());
+            int totalPoints = mypageService.selectMemberPoint(member.getMemberCode());
+            totalPoint = NumberFormat.getNumberInstance(Locale.KOREA).format(totalPoints);
         }else{
             GuestDto guest = (GuestDto)session.getAttribute("guest");
             map = reviewService.selectGuestReviewStats(guest.getGuestCode());
         }
         System.out.println(map.toString());
+        model.addAttribute("couponCount", couponCount);
+        model.addAttribute("totalPoint", totalPoint);
         model.addAttribute("totalReviews",map.get("totalReviews"));
         model.addAttribute("photoReviews",map.get("photoReviews"));
         model.addAttribute("textReviews",map.get("textReviews"));

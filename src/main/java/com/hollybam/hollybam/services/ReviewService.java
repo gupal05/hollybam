@@ -60,6 +60,7 @@ public class ReviewService implements IF_ReviewService {
             log.info("리뷰 저장 완료. reviewCode: {}", reviewDto.getReviewCode());
 
             if (imageFiles != null && !imageFiles.isEmpty()) {
+                int idx = 0;
                 for (MultipartFile imageFile : imageFiles) {
                     if (!imageFile.isEmpty()) {
                         String imageUrl = s3Uploader.upload(imageFile, "review");
@@ -67,8 +68,9 @@ public class ReviewService implements IF_ReviewService {
                         ReviewImageDto reviewImageDto = new ReviewImageDto();
                         reviewImageDto.setReviewCode(reviewDto.getReviewCode());
                         reviewImageDto.setImageUrl(imageUrl);
-
+                        reviewImageDto.setImageOrder(idx);
                         reviewDao.insertReviewImage(reviewImageDto);
+                        idx++;
                         log.info("리뷰 이미지 저장 완료. imageUrl: {}", imageUrl);
                     }
                 }

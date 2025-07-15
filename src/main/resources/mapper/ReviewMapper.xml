@@ -48,14 +48,8 @@
     </insert>
 
     <insert id="insertReviewImage" parameterType="ReviewImageDto">
-        INSERT INTO review_image (
-            review_code,
-            image_url
-        )
-        VALUES (
-                   #{reviewCode},
-                   #{imageUrl}
-               )
+        INSERT INTO review_image (review_code, image_url, image_order)
+        VALUES (#{reviewCode}, #{imageUrl}, #{imageOrder})
     </insert>
 
     <select id="isWroteReview" parameterType="int" resultType="int">
@@ -555,7 +549,7 @@
         ELSE 0
         END as isLiked
         FROM review r
-        INNER JOIN review_image ri ON r.review_code = ri.review_code
+        INNER JOIN review_image ri ON r.review_code = ri.review_code AND ri.image_order = 0
         INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
         INNER JOIN product p ON oi.product_code = p.product_code
         LEFT JOIN image img ON p.product_code = img.product_code AND img.image_type = 'title'
@@ -607,7 +601,7 @@
         ELSE 0
         END as isLiked
         FROM review r
-        INNER JOIN review_image ri ON r.review_code = ri.review_code
+        INNER JOIN review_image ri ON r.review_code = ri.review_code AND ri.image_order = 0
         INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
         INNER JOIN product p ON oi.product_code = p.product_code
         LEFT JOIN image img ON p.product_code = img.product_code AND img.image_type = 'title'
@@ -659,7 +653,7 @@
         ELSE 0
         END as isLiked
         FROM review r
-        INNER JOIN review_image ri ON r.review_code = ri.review_code
+        INNER JOIN review_image ri ON r.review_code = ri.review_code AND ri.image_order = 0
         INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
         INNER JOIN product p ON oi.product_code = p.product_code
         LEFT JOIN image img ON p.product_code = img.product_code AND img.image_type = 'title'
@@ -1043,7 +1037,7 @@
         FROM review r
         INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
         INNER JOIN product p ON oi.product_code = p.product_code
-        INNER JOIN review_image ri ON r.review_code = ri.review_code
+        INNER JOIN review_image ri ON r.review_code = ri.review_code AND ri.image_order = 0
         LEFT JOIN member m ON r.mem_code = m.mem_code
         LEFT JOIN guest g ON r.guest_code = g.guest_code
         LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'TITLE'
@@ -1340,7 +1334,6 @@
             FROM review_like
             GROUP BY review_code
         ) rl ON r.review_code = rl.review_code
-
         WHERE r.review_code = #{reviewCode}
           AND r.is_active = 1
     </select>

@@ -2,6 +2,7 @@ package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dao.IF_ReviewDao;
 import com.hollybam.hollybam.dto.BestReviewDto;
+import com.hollybam.hollybam.dto.ReviewDetailDto;
 import com.hollybam.hollybam.dto.ReviewDto;
 import com.hollybam.hollybam.dto.ReviewImageDto;
 import com.hollybam.hollybam.util.S3Uploader;
@@ -335,6 +336,145 @@ public class ReviewService implements IF_ReviewService {
                 return true;
             } else {
                 log.warn("리뷰 비활성화 실패 - reviewCode: {}", reviewCode);
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("리뷰 삭제 중 오류 발생 - reviewCode: {}", reviewCode, e);
+            return false;
+        }
+    }
+
+    @Override
+    public ReviewDetailDto getReviewDetail(int reviewCode, Integer memCode, Integer guestCode) {
+        try {
+            log.info("리뷰 상세 조회 - reviewCode: {}, memCode: {}, guestCode: {}", reviewCode, memCode, guestCode);
+
+            // 기본 리뷰 정보 조회
+            ReviewDetailDto reviewDetail = reviewDao.selectReviewDetail(reviewCode);
+            if (reviewDetail == null) {
+                log.warn("리뷰를 찾을 수 없음 - reviewCode: {}", reviewCode);
+                return null;
+            }
+
+            // 리뷰 이미지 목록 조회
+            List<ReviewImageDto> reviewImages = reviewDao.selectReviewImages(reviewCode);
+            reviewDetail.setReviewImages(reviewImages);
+
+            // 현재 사용자의 좋아요 상태 확인
+            int isLiked = reviewDao.selectUserReviewLikeStatus(reviewCode, memCode, guestCode);
+            reviewDetail.setLiked(isLiked > 0);
+
+            // 현재 사용자가 작성자인지 확인 (수정/삭제 권한)
+            int isOwner = reviewDao.checkReviewOwnership(reviewCode, memCode, guestCode);
+            reviewDetail.setCanEdit(isOwner > 0);
+            reviewDetail.setCanDelete(isOwner > 0);
+
+            log.info("리뷰 상세 조회 완료 - reviewCode: {}", reviewCode);
+            return reviewDetail;
+
+        } catch (Exception e) {
+            log.error("리뷰 상세 조회 중 오류 발생 - reviewCode: {}", reviewCode, e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> getRelatedReviews(int productCode, int currentReviewCode, int limit) {
+        try {
+            log.info("관련 리뷰 조회 - productCode: {}, currentReviewCode: {}, limit: {}",
+                    productCode, currentReviewCode, limit);
+
+            return reviewDao.selectRelatedReviews(productCode, currentReviewCode, limit);
+
+        } catch (Exception e) {
+            log.error("관련 리뷰 조회 중 오류 발생", e);
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public boolean canEditReview(int reviewCode, Integer memCode, Integer guestCode) {
+        try {
+            int ownershipCount = reviewDao.checkReviewOwnership(reviewCode, memCode, guestCode);
+            return ownershipCount > 0;
+        } catch (Exception e) {
+            log.error("리뷰 수정 권한 확인 중 오류 발생", e);
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean updateReview(int reviewCode, String content, int rating,
+                                Integer memCode, Integer guestCode,
+                                List<MultipartFile> newImages, List<Integer> removeImageIds) throws IOException {
+        try {
+            log.info("리뷰 수정 시작 - reviewCode: {}", reviewCode);
+
+            // 권한 확인
+            if (!canEditReview(reviewCode, memCode, guestCode)) {
+                log.warn("리뷰 수정 권한 없음 - reviewCode: {}", reviewCode);
+                return false;
+            }
+
+            // 리뷰 내용 및 평점 수정
+            int updatedRows = reviewDao.updateReviewContent(reviewCode, content, rating);
+            if (updatedRows == 0) {
+                log.warn("리뷰 수정 실패 - reviewCode: {}", reviewCode);
+                return false;
+            }
+
+            // 삭제할 이미지가 있다면 삭제
+            if (removeImageIds != null && !removeImageIds.isEmpty()) {
+                reviewDao.deleteReviewImages(removeImageIds);
+                log.info("리뷰 이미지 삭제 완료 - 삭제된 이미지 수: {}", removeImageIds.size());
+            }
+
+            // 새 이미지가 있다면 추가
+            if (newImages != null && !newImages.isEmpty()) {
+                for (MultipartFile imageFile : newImages) {
+                    if (!imageFile.isEmpty()) {
+                        String imageUrl = s3Uploader.upload(imageFile, "review");
+
+                        ReviewImageDto reviewImageDto = new ReviewImageDto();
+                        reviewImageDto.setReviewCode(reviewCode);
+                        reviewImageDto.setImageUrl(imageUrl);
+
+                        reviewDao.insertReviewImage(reviewImageDto);
+                        log.info("새 리뷰 이미지 추가 완료 - imageUrl: {}", imageUrl);
+                    }
+                }
+            }
+
+            log.info("리뷰 수정 완료 - reviewCode: {}", reviewCode);
+            return true;
+
+        } catch (Exception e) {
+            log.error("리뷰 수정 중 오류 발생 - reviewCode: {}", reviewCode, e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteReview(int reviewCode, Integer memCode, Integer guestCode) {
+        try {
+            log.info("리뷰 삭제 시작 - reviewCode: {}", reviewCode);
+
+            // 권한 확인
+            if (!canEditReview(reviewCode, memCode, guestCode)) {
+                log.warn("리뷰 삭제 권한 없음 - reviewCode: {}", reviewCode);
+                return false;
+            }
+
+            // 논리 삭제 (is_active = 0)
+            int deletedRows = reviewDao.deleteReviewLogical(reviewCode);
+            if (deletedRows > 0) {
+                log.info("리뷰 삭제 완료 - reviewCode: {}", reviewCode);
+                return true;
+            } else {
+                log.warn("리뷰 삭제 실패 - reviewCode: {}", reviewCode);
                 return false;
             }
 

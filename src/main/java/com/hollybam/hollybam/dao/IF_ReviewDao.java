@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.dao;
 
 import com.hollybam.hollybam.dto.BestReviewDto;
+import com.hollybam.hollybam.dto.ReviewDetailDto;
 import com.hollybam.hollybam.dto.ReviewDto;
 import com.hollybam.hollybam.dto.ReviewImageDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -150,4 +151,83 @@ public interface IF_ReviewDao {
      * 리뷰 비활성화 (삭제 대신)
      */
     int deactivateReview(@Param("reviewCode") int reviewCode);
+
+    /**
+     * 리뷰 상세 조회 (모든 관련 정보 포함)
+     * @param reviewCode 리뷰 코드
+     * @return 리뷰 상세 정보
+     */
+    ReviewDetailDto selectReviewDetail(@Param("reviewCode") int reviewCode);
+
+    /**
+     * 리뷰 이미지 목록 조회
+     * @param reviewCode 리뷰 코드
+     * @return 리뷰 이미지 목록
+     */
+    List<ReviewImageDto> selectReviewImages(@Param("reviewCode") int reviewCode);
+
+    /**
+     * 리뷰 좋아요 수 조회
+     * @param reviewCode 리뷰 코드
+     * @return 좋아요 수
+     */
+    int selectReviewLikeCount(@Param("reviewCode") int reviewCode);
+
+    /**
+     * 사용자의 리뷰 좋아요 여부 조회
+     * @param reviewCode 리뷰 코드
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 좋아요 여부 (1: 좋아요, 0: 안함)
+     */
+    int selectUserReviewLikeStatus(@Param("reviewCode") int reviewCode,
+                                   @Param("memCode") Integer memCode,
+                                   @Param("guestCode") Integer guestCode);
+
+    /**
+     * 같은 상품의 관련 리뷰 조회
+     * @param productCode 상품 코드
+     * @param currentReviewCode 현재 리뷰 코드 (제외)
+     * @param limit 조회 개수
+     * @return 관련 리뷰 목록
+     */
+    List<Map<String, Object>> selectRelatedReviews(@Param("productCode") int productCode,
+                                                   @Param("currentReviewCode") int currentReviewCode,
+                                                   @Param("limit") int limit);
+
+    /**
+     * 리뷰 작성자 확인
+     * @param reviewCode 리뷰 코드
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 일치 여부 (1: 일치, 0: 불일치)
+     */
+    int checkReviewOwnership(@Param("reviewCode") int reviewCode,
+                             @Param("memCode") Integer memCode,
+                             @Param("guestCode") Integer guestCode);
+
+    /**
+     * 리뷰 내용 및 평점 수정
+     * @param reviewCode 리뷰 코드
+     * @param content 수정할 내용
+     * @param rating 수정할 평점
+     * @return 수정된 행 수
+     */
+    int updateReviewContent(@Param("reviewCode") int reviewCode,
+                            @Param("content") String content,
+                            @Param("rating") int rating);
+
+    /**
+     * 리뷰 논리 삭제 (is_active = 0)
+     * @param reviewCode 리뷰 코드
+     * @return 삭제된 행 수
+     */
+    int deleteReviewLogical(@Param("reviewCode") int reviewCode);
+
+    /**
+     * 리뷰 이미지 삭제
+     * @param imageIds 삭제할 이미지 ID 목록
+     * @return 삭제된 행 수
+     */
+    int deleteReviewImages(@Param("imageIds") List<Integer> imageIds);
 }

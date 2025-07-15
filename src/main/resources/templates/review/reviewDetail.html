@@ -10,6 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/header.css}"/>
     <link rel="stylesheet" th:href="@{/css/footer.css}"/>
     <script type="text/javascript" th:src="@{/js/header.js}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         * {
@@ -55,6 +56,7 @@
             cursor: pointer;
             padding: 8px 0;
             transition: color 0.3s ease;
+            text-decoration: none;
         }
 
         .back-btn:hover {
@@ -63,6 +65,26 @@
 
         .back-btn i {
             font-size: 16px;
+        }
+
+        /* 알림 메시지 */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
 
         /* 리뷰 헤더 */
@@ -90,7 +112,7 @@
             background: #f5f5f5;
         }
 
-        .product-details h3 {
+        .product-details h2 {
             font-size: 18px;
             font-weight: 600;
             color: #333;
@@ -98,14 +120,7 @@
             line-height: 1.3;
         }
 
-        .product-price {
-            font-size: 16px;
-            font-weight: 700;
-            color: #EE386D;
-            margin-bottom: 4px;
-        }
-
-        .product-category {
+        .product-option {
             font-size: 13px;
             color: #888;
         }
@@ -118,45 +133,13 @@
             border-top: 1px solid #f0f0f0;
         }
 
-        .reviewer-info {
+        .rating-section {
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .reviewer-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #EE386D, #ff6b9d);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .reviewer-details h4 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #333;
-            margin: 0 0 4px 0;
-        }
-
-        .reviewer-details .review-date {
-            font-size: 12px;
-            color: #888;
-        }
-
-        .rating-likes {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
             gap: 8px;
         }
 
-        .rating-stars {
+        .star-rating {
             display: flex;
             gap: 3px;
             align-items: center;
@@ -165,39 +148,43 @@
         .star {
             width: 18px;
             height: 18px;
+        }
+
+        .star.filled {
             fill: #ffd700;
         }
 
-        .rating-number {
+        .star.empty {
+            fill: #e0e0e0;
+        }
+
+        .rating-text {
             font-size: 14px;
             color: #666;
             margin-left: 6px;
             font-weight: 600;
         }
 
-        .like-section {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .author-info {
+            text-align: right;
         }
 
-        .like-section:hover {
-            transform: scale(1.05);
-        }
-
-        .like-icon {
-            width: 20px;
-            height: 20px;
-            fill: #EE386D;
-            transition: fill 0.3s ease;
-        }
-
-        .like-count {
-            font-size: 14px;
-            color: #666;
+        .author-name {
+            font-size: 15px;
             font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .author-details {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .review-date {
+            font-size: 12px;
+            color: #888;
         }
 
         /* 이미지 갤러리 */
@@ -216,55 +203,11 @@
             object-fit: cover;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        .image-counter {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            backdrop-filter: blur(4px);
-        }
-
-        .gallery-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            background: rgba(255,255,255,0.9);
-            border: none;
-            border-radius: 50%;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(4px);
         }
 
-        .gallery-nav:hover {
-            background: #EE386D;
-            color: white;
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .gallery-nav.prev {
-            left: 16px;
-        }
-
-        .gallery-nav.next {
-            right: 16px;
-        }
-
-        .gallery-nav i {
-            font-size: 16px;
+        .thumbnail-container {
+            margin-top: 16px;
         }
 
         .thumbnail-list {
@@ -317,6 +260,105 @@
             color: #444;
             margin: 0;
             white-space: pre-wrap;
+        }
+
+        /* 좋아요 및 액션 버튼 */
+        .review-actions-container {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid #f0f0f0;
+        }
+
+        .like-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .like-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: 2px solid #f0f0f0;
+            border-radius: 25px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .like-btn:hover {
+            border-color: #EE386D;
+            color: #EE386D;
+            transform: scale(1.05);
+        }
+
+        .like-btn.liked {
+            border-color: #EE386D;
+            background: #fff5f8;
+            color: #EE386D;
+        }
+
+        .like-icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            transition: all 0.3s ease;
+        }
+
+        .like-count {
+            font-weight: 600;
+        }
+
+        /* 수정/삭제 버튼 */
+        .review-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn-edit, .btn-delete {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #EE386D;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #d42c5a;
+            transform: translateY(-1px);
+        }
+
+        .btn-delete {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-delete:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            transform: translateY(-1px);
         }
 
         /* 관련 리뷰 섹션 */
@@ -447,16 +489,34 @@
             position: absolute;
             top: 20px;
             right: 30px;
-            color: white;
-            font-size: 36px;
-            font-weight: bold;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             z-index: 1001;
-            transition: opacity 0.3s ease;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
         }
 
         .modal-close:hover {
-            opacity: 0.7;
+            background: rgba(238, 56, 109, 0.9);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .modal-close i {
+            font-size: 18px;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover i {
+            color: white;
         }
 
         /* 반응형 디자인 */
@@ -485,7 +545,8 @@
             }
 
             .review-header,
-            .review-content {
+            .review-content,
+            .review-actions-container {
                 padding: 20px;
             }
 
@@ -500,7 +561,7 @@
                 height: 60px;
             }
 
-            .product-details h3 {
+            .product-details h2 {
                 font-size: 16px;
             }
 
@@ -511,23 +572,8 @@
                 text-align: center;
             }
 
-            .rating-likes {
-                flex-direction: row;
-                align-items: center;
-                gap: 20px;
-            }
-
             .main-image {
                 max-height: 400px;
-            }
-
-            .gallery-nav {
-                width: 36px;
-                height: 36px;
-            }
-
-            .gallery-nav i {
-                font-size: 14px;
             }
 
             .thumbnail {
@@ -555,7 +601,8 @@
             }
 
             .review-header,
-            .review-content {
+            .review-content,
+            .review-actions-container {
                 padding: 16px;
             }
 
@@ -564,51 +611,13 @@
                 height: 50px;
             }
 
-            .product-details h3 {
+            .product-details h2 {
                 font-size: 15px;
-            }
-
-            .product-price {
-                font-size: 14px;
-            }
-
-            .reviewer-avatar {
-                width: 40px;
-                height: 40px;
-                font-size: 14px;
-            }
-
-            .reviewer-details h4 {
-                font-size: 14px;
             }
 
             .main-image {
                 max-height: 300px;
                 border-radius: 12px;
-            }
-
-            .image-counter {
-                top: 12px;
-                right: 12px;
-                padding: 4px 8px;
-                font-size: 11px;
-            }
-
-            .gallery-nav {
-                width: 32px;
-                height: 32px;
-            }
-
-            .gallery-nav.prev {
-                left: 12px;
-            }
-
-            .gallery-nav.next {
-                right: 12px;
-            }
-
-            .gallery-nav i {
-                font-size: 12px;
             }
 
             .thumbnail {
@@ -641,7 +650,21 @@
             .modal-close {
                 top: 10px;
                 right: 20px;
-                font-size: 28px;
+                width: 35px;
+                height: 35px;
+            }
+
+            .modal-close i {
+                font-size: 16px;
+            }
+
+            .review-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .btn-edit, .btn-delete {
+                justify-content: center;
             }
         }
     </style>
@@ -653,151 +676,153 @@
 <!-- 메인 콘텐츠 -->
 <div class="content">
     <div class="inner-box">
-        <!-- 뒤로가기 버튼 -->
+        <!-- 알림 메시지 -->
+        <div class="alert success" id="successAlert">
+            <span id="successMessage">작업이 성공적으로 완료되었습니다.</span>
+        </div>
+        <div class="alert error" id="errorAlert">
+            <span id="errorMessage">오류가 발생했습니다.</span>
+        </div>
+
+        <!-- 뒤로가기 -->
         <div class="back-navigation">
-            <button class="back-btn" onclick="window.location.href='/review'">
-                <i class="fas fa-chevron-left"></i>
-                <span>리뷰 목록으로 돌아가기</span>
-            </button>
+            <a href="#" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                뒤로가기
+            </a>
         </div>
 
         <!-- 리뷰 헤더 -->
         <div class="review-header">
+            <!-- 상품 정보 -->
             <div class="product-info">
-                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png"
+                <img th:if="${review.productImageDto != null}"
+                     th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${review.productImageDto.imageUrl}}"
                      alt="상품 이미지" class="product-image">
                 <div class="product-details">
-                    <h3>홀 래빗 진동 흡입기 프리미엄 에디션</h3>
-                    <div class="product-price">₩259,000</div>
-                    <div class="product-category">진동기 • 리얼돌</div>
+                    <h2 class="product-name" th:text="${review.productDto.productName}">상품명</h2>
+                    <div class="product-option"
+                         th:if="${review.productOptionDto != null}"
+                         th:text="${review.productOptionDto.optionName + ': ' + review.productOptionDto.optionValue}">
+                        옵션: 블랙
+                    </div>
                 </div>
             </div>
 
+            <!-- 리뷰 기본 정보 -->
             <div class="review-meta">
-                <div class="reviewer-info">
-                    <div class="reviewer-avatar">윤</div>
-                    <div class="reviewer-details">
-                        <h4>윤익**</h4>
-                        <div class="review-date">2025년 7월 10일</div>
+                <div class="rating-section">
+                    <div class="star-rating">
+                        <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                            <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : 'empty'" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </th:block>
                     </div>
+                    <span class="rating-text" th:text="${review.rating + '.0'}">5.0</span>
                 </div>
-                <div class="rating-likes">
-                    <div class="rating-stars">
-                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        <span class="rating-number">5.0</span>
+
+                <div class="author-info">
+                    <div class="author-name" th:text="${review.writerName}">작성자명</div>
+                    <div class="author-details">
+                        <span th:text="${review.writerAge}">20대</span>
+                        <span th:text="${review.writerGender}">남성</span>
                     </div>
-                    <div class="like-section" id="likeButton">
-                        <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        <span class="like-count">127</span>
-                    </div>
+                    <div class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy년 MM월 dd일')}">2025년 01월 15일</div>
                 </div>
             </div>
         </div>
 
-        <!-- 이미지 갤러리 -->
-        <div class="image-gallery">
+        <!-- 리뷰 이미지 갤러리 (포토리뷰인 경우만) -->
+        <div class="image-gallery" th:if="${review.reviewImages != null and !review.reviewImages.isEmpty()}">
+            <!-- 메인 이미지 -->
             <div class="main-image-container">
-                <img id="mainImage"
-                     src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png"
-                     alt="리뷰 이미지" class="main-image">
-                <div class="image-counter">
-                    <span id="currentImageIndex">1</span> / <span id="totalImages">4</span>
-                </div>
-                <button class="gallery-nav prev" id="prevImage">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="gallery-nav next" id="nextImage">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                <img th:src="${review.reviewImages[0].imageUrl}"
+                     alt="리뷰 이미지" class="main-image" id="mainImage">
             </div>
 
-            <div class="thumbnail-list">
-                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png"
-                     alt="리뷰 이미지 1" class="thumbnail active" data-index="0">
-                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png"
-                     alt="리뷰 이미지 2" class="thumbnail" data-index="1">
-                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png"
-                     alt="리뷰 이미지 3" class="thumbnail" data-index="2">
-                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png"
-                     alt="리뷰 이미지 4" class="thumbnail" data-index="3">
+            <!-- 썸네일 이미지들 (이미지가 2개 이상인 경우만) -->
+            <div class="thumbnail-container" th:if="${review.reviewImages.size() > 1}">
+                <div class="thumbnail-list">
+                    <img th:each="img, iterStat : ${review.reviewImages}"
+                         th:src="${img.imageUrl}"
+                         th:alt="'리뷰 이미지 ' + ${iterStat.index + 1}"
+                         th:data-index="${iterStat.index}"
+                         th:classappend="${iterStat.index == 0} ? 'active' : ''"
+                         class="thumbnail">
+                </div>
             </div>
         </div>
 
         <!-- 리뷰 내용 -->
         <div class="review-content">
-            <div class="review-text">정말 만족스러운 제품이에요! 🔥
+            <p class="review-text" th:text="${review.content}">리뷰 내용이 여기에 표시됩니다.</p>
+        </div>
 
-                처음 주문할 때는 조금 걱정됐는데 생각했던 것보다 훨씬 좋네요.
+        <!-- 좋아요 및 액션 -->
+        <div class="review-actions-container">
+            <div class="like-section">
+                <button class="like-btn"
+                        th:id="'likeButton-' + ${review.reviewCode}"
+                        th:data-review-code="${review.reviewCode}"
+                        th:classappend="${review.isLiked} ? 'liked' : ''"
+                        id="likeButton">
+                    <svg class="like-icon" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span class="like-count" th:text="${review.likeCount}">12</span>
+                </button>
+            </div>
 
-                🌟 좋은 점들:
-                - 품질이 정말 좋아요. 실리콘 소재가 부드럽고 안전한 느낌입니다
-                - 배송도 빨랐고 포장도 정말 신경써서 해주셨어요 (완전 신중하게!)
-                - 사용법 설명서도 자세하게 나와있어서 초보자도 쉽게 사용할 수 있어요
-                - 소음도 생각보다 조용해서 좋습니다
-
-                사진으로는 크기를 가늠하기 어려웠는데 실제로 받아보니 딱 적당한 사이즈네요.
-
-                관리용품까지 같이 주셔서 오래 사용할 수 있을 것 같아요.
-
-                다음에도 여기서 구매하려고 합니다! 강력 추천드려요 💕</div>
+            <!-- 수정/삭제 버튼 (본인 리뷰인 경우만) -->
+            <div class="review-actions" th:if="${review.canEdit}">
+                <button class="btn-edit" th:onclick="'editReview(' + ${review.reviewCode} + ')'">
+                    <i class="fas fa-edit"></i> 수정
+                </button>
+                <button class="btn-delete" th:onclick="'deleteReview(' + ${review.reviewCode} + ')'">
+                    <i class="fas fa-trash"></i> 삭제
+                </button>
+            </div>
         </div>
 
         <!-- 관련 리뷰 섹션 -->
-        <div class="related-reviews">
-            <h2 class="section-title">이 상품의 다른 포토리뷰</h2>
+        <div class="related-reviews" th:if="${relatedReviews != null and !relatedReviews.isEmpty()}">
+            <h3 class="section-title">같은 상품의 다른 리뷰</h3>
             <div class="related-grid">
-                <div class="related-card">
-                    <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png"
-                         alt="관련 리뷰" class="related-image">
-                    <div class="related-info">
-                        <div class="related-product">홀 래빗 진동 흡입기</div>
-                        <div class="related-rating">
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
-                            <span class="related-rating-text">4.0</span>
-                        </div>
-                        <div class="related-excerpt">품질이 예상보다 훨씬 좋네요. 포장도 깔끔하고...</div>
-                    </div>
-                </div>
+                <div class="related-card" th:each="relatedReview : ${relatedReviews}"
+                     th:onclick="'location.href=\'/review/detail/' + ${relatedReview['review_code']} + '\''">
 
-                <div class="related-card">
-                    <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png"
-                         alt="관련 리뷰" class="related-image">
-                    <div class="related-info">
-                        <div class="related-product">홀 래빗 진동 흡입기</div>
-                        <div class="related-rating">
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span class="related-rating-text">5.0</span>
-                        </div>
-                        <div class="related-excerpt">퀄리티가 정말 좋아요. 소재도 부드럽고...</div>
-                    </div>
-                </div>
+                    <!-- 리뷰 이미지가 있고 비어있지 않은 경우 -->
+                    <img th:if="${relatedReview.containsKey('reviewImage') and relatedReview['reviewImage'] != null and relatedReview['reviewImage'] != ''}"
+                         th:src="${relatedReview['reviewImage']}"
+                         th:alt="'리뷰 이미지'"
+                         class="related-image">
 
-                <div class="related-card">
-                    <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png"
-                         alt="관련 리뷰" class="related-image">
+                    <!-- 리뷰 이미지가 없는 경우 상품 이미지 표시 -->
+                    <img th:unless="${relatedReview.containsKey('reviewImage') and relatedReview['reviewImage'] != null and relatedReview['reviewImage'] != ''}"
+                         th:if="${relatedReview.containsKey('productImage') and relatedReview['productImage'] != null}"
+                         th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${relatedReview['productImage']}}"
+                         th:alt="'상품 이미지'"
+                         class="related-image">
+
+                    <!-- 아무 이미지도 없는 경우 기본 이미지 -->
+                    <div th:unless="${(relatedReview.containsKey('reviewImage') and relatedReview['reviewImage'] != null and relatedReview['reviewImage'] != '') or (relatedReview.containsKey('productImage') and relatedReview['productImage'] != null)}"
+                         class="related-image"
+                         style="background: #f5f5f5; display: flex; align-items: center; justify-content: center; color: #999;">
+                        <i class="fas fa-image" style="font-size: 24px;"></i>
+                    </div>
+
                     <div class="related-info">
-                        <div class="related-product">홀 래빗 진동 흡입기</div>
+                        <div class="related-product" th:text="${relatedReview['productName']}">상품명</div>
                         <div class="related-rating">
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#ffd700" stroke-width="1"/></svg>
-                            <span class="related-rating-text">4.0</span>
+                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                <svg class="star" th:classappend="${i <= relatedReview['rating']} ? 'filled' : 'empty'" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </th:block>
+                            <span class="related-rating-text" th:text="${relatedReview['rating'] + '.0'}">5.0</span>
                         </div>
-                        <div class="related-excerpt">배송도 빠르고 제품 상태도 완벽해요...</div>
+                        <div class="related-excerpt" th:text="${#strings.abbreviate(relatedReview['content'], 50)}">리뷰 내용 미리보기...</div>
                     </div>
                 </div>
             </div>
@@ -805,57 +830,35 @@
     </div>
 </div>
 
-<!-- 이미지 확대 모달 -->
+<!-- 이미지 모달 -->
 <div class="image-modal" id="imageModal">
-    <span class="modal-close" id="modalClose">&times;</span>
     <div class="modal-content">
-        <img id="modalImage" class="modal-image" src="" alt="확대 이미지">
+        <button class="modal-close" id="modalClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="modalImage" class="modal-image" alt="확대된 리뷰 이미지">
     </div>
 </div>
 
-<!-- 푸터 -->
-<div th:replace="~{layout/footer :: footer}"></div>
+<!-- JavaScript -->
+<script th:inline="javascript">
+    // 리뷰 이미지 배열
+    const reviewImages = /*[[${review.reviewImages}]]*/ [];
+    let currentImageIndex = 0;
 
-<script>
-    $(document).ready(function() {
-        // 이미지 데이터 (실제 구현시 서버에서 가져옴)
-        const reviewImages = [
-            'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png',
-            'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png',
-            'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png',
-            'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/홀 래빗 진동 흡입기.png'
-        ];
-
-        let currentImageIndex = 0;
-
-        // 이미지 갤러리 초기화
-        function initGallery() {
-            $('#totalImages').text(reviewImages.length);
-            updateMainImage();
-        }
-
-        // 메인 이미지 업데이트
-        function updateMainImage() {
-            $('#mainImage').attr('src', reviewImages[currentImageIndex]);
-            $('#currentImageIndex').text(currentImageIndex + 1);
+    // 메인 이미지 업데이트 함수
+    function updateMainImage() {
+        if (reviewImages.length > 0) {
+            $('#mainImage').attr('src', reviewImages[currentImageIndex].imageUrl);
 
             // 썸네일 활성화 상태 업데이트
             $('.thumbnail').removeClass('active');
             $(`.thumbnail[data-index="${currentImageIndex}"]`).addClass('active');
         }
+    }
 
-        // 이전 이미지
-        $('#prevImage').on('click', function() {
-            currentImageIndex = currentImageIndex === 0 ? reviewImages.length - 1 : currentImageIndex - 1;
-            updateMainImage();
-        });
-
-        // 다음 이미지
-        $('#nextImage').on('click', function() {
-            currentImageIndex = currentImageIndex === reviewImages.length - 1 ? 0 : currentImageIndex + 1;
-            updateMainImage();
-        });
-
+    // 이미지 갤러리 기능 (이미지가 있는 경우만)
+    if (reviewImages.length > 0) {
         // 썸네일 클릭
         $('.thumbnail').on('click', function() {
             currentImageIndex = parseInt($(this).data('index'));
@@ -864,112 +867,125 @@
 
         // 메인 이미지 클릭 시 모달 열기
         $('#mainImage').on('click', function() {
-            $('#modalImage').attr('src', reviewImages[currentImageIndex]);
+            $('#modalImage').attr('src', reviewImages[currentImageIndex].imageUrl);
             $('#imageModal').fadeIn(300);
         });
 
-        // 모달 닫기
-        $('#modalClose, #imageModal').on('click', function(e) {
+        // 모달 닫기 - X 버튼 클릭
+        $('#modalClose').on('click', function(e) {
+            e.stopPropagation();
+            $('#imageModal').fadeOut(300);
+        });
+
+        // 모달 배경 클릭 시 닫기
+        $('#imageModal').on('click', function(e) {
             if (e.target === this) {
                 $('#imageModal').fadeOut(300);
             }
         });
 
-        // 키보드 이벤트
+        // ESC 키로 모달 닫기
         $(document).on('keydown', function(e) {
-            if ($('#imageModal').is(':visible')) {
-                if (e.key === 'Escape') {
-                    $('#imageModal').fadeOut(300);
-                } else if (e.key === 'ArrowLeft') {
-                    $('#prevImage').click();
-                } else if (e.key === 'ArrowRight') {
-                    $('#nextImage').click();
-                }
-            } else {
-                if (e.key === 'ArrowLeft') {
-                    $('#prevImage').click();
-                } else if (e.key === 'ArrowRight') {
-                    $('#nextImage').click();
-                }
+            if (e.key === 'Escape' && $('#imageModal').is(':visible')) {
+                $('#imageModal').fadeOut(300);
             }
         });
+    }
 
-        // 좋아요 기능
-        $('#likeButton').on('click', function() {
-            const $likeCount = $(this).find('.like-count');
-            const $likeIcon = $(this).find('.like-icon');
-            const currentLikes = parseInt($likeCount.text());
+    // 좋아요 기능
+    $('[id^="likeButton"]').on('click', function() {
+        const reviewCode = $(this).data('review-code');
+        const $likeButton = $(this);
+        const $likeCount = $likeButton.find('.like-count');
+        const $likeIcon = $likeButton.find('.like-icon');
 
-            // 좋아요 애니메이션
-            $(this).addClass('liked');
-            $likeCount.text(currentLikes + 1);
+        $.ajax({
+            url: `/review/toggle-like/${reviewCode}`,
+            type: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    $likeCount.text(response.likeCount);
 
-            // 하트 펄스 애니메이션
-            $likeIcon.css({
-                'transform': 'scale(1.3)',
-                'fill': '#ff4757'
-            });
+                    if (response.isLiked) {
+                        $likeButton.addClass('liked');
+                    } else {
+                        $likeButton.removeClass('liked');
+                    }
 
-            setTimeout(() => {
-                $likeIcon.css({
-                    'transform': 'scale(1)',
-                    'fill': '#EE386D'
-                });
-            }, 200);
-        });
-
-        // 관련 리뷰 카드 클릭
-        $('.related-card').on('click', function() {
-            // 실제 구현시 해당 리뷰의 상세 페이지로 이동
-            window.location.href = '/review/detail/2';
-        });
-
-        // 뒤로가기 버튼
-        $('.back-btn').on('click', function(e) {
-            e.preventDefault();
-            if (document.referrer && document.referrer.includes('/review')) {
-                history.back();
-            } else {
-                window.location.href = '/review/list';
-            }
-        });
-
-        // 갤러리 초기화
-        initGallery();
-
-        // 터치 스와이프 지원 (모바일)
-        let startX = 0;
-        let startY = 0;
-
-        $('#mainImage').on('touchstart', function(e) {
-            startX = e.originalEvent.touches[0].clientX;
-            startY = e.originalEvent.touches[0].clientY;
-        });
-
-        $('#mainImage').on('touchend', function(e) {
-            if (!startX || !startY) return;
-
-            const endX = e.originalEvent.changedTouches[0].clientX;
-            const endY = e.originalEvent.changedTouches[0].clientY;
-
-            const diffX = startX - endX;
-            const diffY = startY - endY;
-
-            // 수평 스와이프가 수직 스와이프보다 클 때만 처리
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-                if (diffX > 0) {
-                    // 왼쪽으로 스와이프 (다음 이미지)
-                    $('#nextImage').click();
+                    // 하트 펄스 애니메이션
+                    $likeIcon.css('transform', 'scale(1.3)');
+                    setTimeout(() => {
+                        $likeIcon.css('transform', 'scale(1)');
+                    }, 200);
                 } else {
-                    // 오른쪽으로 스와이프 (이전 이미지)
-                    $('#prevImage').click();
+                    showAlert('error', response.message || '좋아요 처리 중 오류가 발생했습니다.');
                 }
+            },
+            error: function() {
+                showAlert('error', '좋아요 처리 중 오류가 발생했습니다.');
             }
-
-            startX = 0;
-            startY = 0;
         });
     });
+
+    // 리뷰 수정
+    function editReview(reviewCode) {
+        if (confirm('리뷰를 수정하시겠습니까?')) {
+            window.location.href = `/review/edit/${reviewCode}`;
+        }
+    }
+
+    // 리뷰 삭제
+    function deleteReview(reviewCode) {
+        if (confirm('정말로 이 리뷰를 삭제하시겠습니까?\n삭제된 리뷰는 복구할 수 없습니다.')) {
+            $.ajax({
+                url: `/review/delete/${reviewCode}`,
+                type: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        showAlert('success', response.message);
+                        setTimeout(() => {
+                            window.location.href = response.redirectUrl || '/mypage/review';
+                        }, 2000);
+                    } else {
+                        showAlert('error', response.message || '리뷰 삭제에 실패했습니다.');
+                    }
+                },
+                error: function() {
+                    showAlert('error', '리뷰 삭제 중 오류가 발생했습니다.');
+                }
+            });
+        }
+    }
+
+    // 알림 메시지 표시
+    function showAlert(type, message) {
+        const $alert = type === 'success' ? $('#successAlert') : $('#errorAlert');
+        const $messageSpan = type === 'success' ? $('#successMessage') : $('#errorMessage');
+
+        $messageSpan.text(message);
+        $alert.fadeIn();
+
+        setTimeout(() => {
+            $alert.fadeOut();
+        }, 5000);
+    }
+
+    // 뒤로가기 버튼
+    $('.back-btn').on('click', function(e) {
+        e.preventDefault();
+        if (document.referrer && document.referrer.includes('/review')) {
+            history.back();
+        } else {
+            window.location.href = '/review';
+        }
+    });
+
+    // URL 파라미터 확인 (에러 메시지 표시)
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    if (error === 'permission') {
+        showAlert('error', '해당 리뷰를 수정/삭제할 권한이 없습니다.');
+    }
 </script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dto.BestReviewDto;
+import com.hollybam.hollybam.dto.ReviewDetailDto;
 import com.hollybam.hollybam.dto.ReviewDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
@@ -193,4 +194,55 @@ public interface IF_ReviewService {
      * @return 삭제 성공 여부
      */
     boolean deleteMyReview(int reviewCode, Integer memCode, Integer guestCode);
+
+    /**
+     * 리뷰 상세 조회 (권한 체크 포함)
+     * @param reviewCode 리뷰 코드
+     * @param memCode 현재 접속 회원 코드 (권한 체크용)
+     * @param guestCode 현재 접속 비회원 코드 (권한 체크용)
+     * @return 리뷰 상세 정보
+     */
+    ReviewDetailDto getReviewDetail(int reviewCode, Integer memCode, Integer guestCode);
+
+    /**
+     * 같은 상품의 관련 리뷰 조회 (현재 리뷰 제외)
+     * @param productCode 상품 코드
+     * @param currentReviewCode 현재 리뷰 코드 (제외)
+     * @param limit 조회할 개수
+     * @return 관련 리뷰 목록
+     */
+    List<Map<String, Object>> getRelatedReviews(int productCode, int currentReviewCode, int limit);
+
+    /**
+     * 리뷰 수정 가능 여부 체크
+     * @param reviewCode 리뷰 코드
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 수정 가능 여부
+     */
+    boolean canEditReview(int reviewCode, Integer memCode, Integer guestCode);
+
+    /**
+     * 리뷰 수정
+     * @param reviewCode 리뷰 코드
+     * @param content 수정할 내용
+     * @param rating 수정할 평점
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @param newImages 새로 추가할 이미지
+     * @param removeImageIds 삭제할 이미지 ID 목록
+     * @return 수정 성공 여부
+     */
+    boolean updateReview(int reviewCode, String content, int rating,
+                         Integer memCode, Integer guestCode,
+                         List<MultipartFile> newImages, List<Integer> removeImageIds) throws IOException;
+
+    /**
+     * 리뷰 삭제 (논리 삭제)
+     * @param reviewCode 리뷰 코드
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 삭제 성공 여부
+     */
+    boolean deleteReview(int reviewCode, Integer memCode, Integer guestCode);
 }

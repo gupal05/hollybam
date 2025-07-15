@@ -111,4 +111,43 @@ public interface IF_ReviewDao {
     List<Integer> getUserLikedReviews(@Param("reviewCodes") List<Integer> reviewCodes,
                                       @Param("memCode") Integer memCode,
                                       @Param("guestCode") Integer guestCode);
+
+    /**
+     * 내 포토리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     */
+    List<Map<String, Object>> getMyPhotoReviews(@Param("sort") String sort,
+                                                @Param("offset") int offset,
+                                                @Param("limit") int limit,
+                                                @Param("rating") Integer rating,
+                                                @Param("memCode") Integer memCode,
+                                                @Param("guestCode") Integer guestCode);
+
+    /**
+     * 내 텍스트리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     */
+    List<Map<String, Object>> getMyTextReviews(@Param("sort") String sort,
+                                               @Param("offset") int offset,
+                                               @Param("limit") int limit,
+                                               @Param("rating") Integer rating,
+                                               @Param("memCode") Integer memCode,
+                                               @Param("guestCode") Integer guestCode);
+
+    /**
+     * 내 리뷰 카운트 조회 (필터링 적용)
+     */
+    Map<String, Object> getMyReviewCount(@Param("rating") Integer rating,
+                                         @Param("memCode") Integer memCode,
+                                         @Param("guestCode") Integer guestCode);
+
+    /**
+     * 본인 리뷰인지 확인
+     */
+    boolean checkIsMyReview(@Param("reviewCode") int reviewCode,
+                            @Param("memCode") Integer memCode,
+                            @Param("guestCode") Integer guestCode);
+
+    /**
+     * 리뷰 비활성화 (삭제 대신)
+     */
+    int deactivateReview(@Param("reviewCode") int reviewCode);
 }

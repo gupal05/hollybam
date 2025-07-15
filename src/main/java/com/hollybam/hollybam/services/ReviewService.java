@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -224,5 +225,122 @@ public class ReviewService implements IF_ReviewService {
             return new ArrayList<>();
         }
         return reviewDao.getUserLikedReviews(reviewCodes, memCode, guestCode);
+    }
+
+    @Override
+    public List<Map<String, Object>> getMyPhotoReviews(String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode) {
+        try {
+            log.info("내 포토리뷰 조회 - sort: {}, page: {}, size: {}, rating: {}, memCode: {}, guestCode: {}",
+                    sort, page, size, rating, memCode, guestCode);
+
+            // page를 offset으로 변환 (1부터 시작하는 페이지를 0부터 시작하는 offset으로)
+            int offset = (page - 1) * size;
+
+            List<Map<String, Object>> result = reviewDao.getMyPhotoReviews(sort, offset, size, rating, memCode, guestCode);
+
+            // ⭐ writerName 디버깅 - 여기에 추가하세요
+            System.out.println("=== 포토리뷰 writerName 확인 ===");
+            for (int i = 0; i < result.size(); i++) {
+                Map<String, Object> review = result.get(i);
+                System.out.println("리뷰 " + i + ":");
+                System.out.println("  - reviewCode: " + review.get("reviewCode"));
+                System.out.println("  - writerName: " + review.get("writerName"));
+                System.out.println("  - guestWriterName: " + review.get("guestWriterName"));
+                System.out.println("  - memberCode: " + review.get("memberCode"));
+                System.out.println("  - guestCode: " + review.get("guestCode"));
+                System.out.println("  - productName: " + review.get("productName"));
+                System.out.println("---");
+            }
+            System.out.println("=== 포토리뷰 디버깅 끝 ===");
+
+            return result;
+        } catch (Exception e) {
+            log.error("내 포토리뷰 조회 중 오류 발생", e);
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> getMyTextReviews(String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode) {
+        try {
+            log.info("내 텍스트리뷰 조회 - sort: {}, page: {}, size: {}, rating: {}, memCode: {}, guestCode: {}",
+                    sort, page, size, rating, memCode, guestCode);
+
+            // page를 offset으로 변환 (1부터 시작하는 페이지를 0부터 시작하는 offset으로)
+            int offset = (page - 1) * size;
+
+            List<Map<String, Object>> result = reviewDao.getMyTextReviews(sort, offset, size, rating, memCode, guestCode);
+
+            // ⭐ writerName 디버깅 - 여기에 추가하세요
+            System.out.println("=== 텍스트리뷰 writerName 확인 ===");
+            for (int i = 0; i < result.size(); i++) {
+                Map<String, Object> review = result.get(i);
+                System.out.println("리뷰 " + i + ":");
+                System.out.println("  - reviewCode: " + review.get("reviewCode"));
+                System.out.println("  - writerName: " + review.get("writerName"));
+                System.out.println("  - guestWriterName: " + review.get("guestWriterName"));
+                System.out.println("  - memberCode: " + review.get("memberCode"));
+                System.out.println("  - guestCode: " + review.get("guestCode"));
+                System.out.println("  - productName: " + review.get("productName"));
+                System.out.println("---");
+            }
+            System.out.println("=== 텍스트리뷰 디버깅 끝 ===");
+
+            return result;
+        } catch (Exception e) {
+            log.error("내 텍스트리뷰 조회 중 오류 발생", e);
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public Map<String, Object> getMyReviewCount(Integer rating, Integer memCode, Integer guestCode) {
+        try {
+            log.info("내 리뷰 카운트 조회 - rating: {}, memCode: {}, guestCode: {}", rating, memCode, guestCode);
+
+            Map<String, Object> result = reviewDao.getMyReviewCount(rating, memCode, guestCode);
+
+            // null 처리
+            if (result.get("photoReviews") == null) result.put("photoReviews", 0);
+            if (result.get("textReviews") == null) result.put("textReviews", 0);
+
+            return result;
+        } catch (Exception e) {
+            log.error("내 리뷰 카운트 조회 중 오류 발생", e);
+            Map<String, Object> result = new HashMap<>();
+            result.put("photoReviews", 0);
+            result.put("textReviews", 0);
+            return result;
+        }
+    }
+
+    @Override
+    public boolean deleteMyReview(int reviewCode, Integer memCode, Integer guestCode) {
+        try {
+            log.info("내 리뷰 삭제 - reviewCode: {}, memCode: {}, guestCode: {}", reviewCode, memCode, guestCode);
+
+            // 본인 리뷰인지 확인
+            boolean isMyReview = reviewDao.checkIsMyReview(reviewCode, memCode, guestCode);
+
+            if (!isMyReview) {
+                log.warn("본인 리뷰가 아님 - reviewCode: {}", reviewCode);
+                return false;
+            }
+
+            // 리뷰 비활성화 (실제 삭제 대신)
+            int updated = reviewDao.deactivateReview(reviewCode);
+
+            if (updated > 0) {
+                log.info("리뷰 비활성화 완료 - reviewCode: {}", reviewCode);
+                return true;
+            } else {
+                log.warn("리뷰 비활성화 실패 - reviewCode: {}", reviewCode);
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("리뷰 삭제 중 오류 발생 - reviewCode: {}", reviewCode, e);
+            return false;
+        }
     }
 }

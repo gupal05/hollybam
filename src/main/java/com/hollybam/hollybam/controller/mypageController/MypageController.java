@@ -423,4 +423,123 @@ public class MypageController {
         return "mypage/review";
     }
 
+    /**
+     * 마이페이지 리뷰 AJAX 조회 (페이지네이션 + 필터링)
+     */
+    @GetMapping("/review/api")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getMyReviews(
+            @RequestParam(value = "type", defaultValue = "photo") String type,
+            @RequestParam(value = "sort", defaultValue = "latest") String sort,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "rating", required = false) Integer rating,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 현재 사용자 정보 조회
+            Integer memCode = null;
+            Integer guestCode = null;
+
+            Object memberObj = session.getAttribute("member");
+            Object guestObj = session.getAttribute("guest");
+
+            if (memberObj != null) {
+                MemberDto member = (MemberDto) memberObj;
+                memCode = member.getMemberCode();
+            } else if (guestObj != null) {
+                GuestDto guest = (GuestDto) guestObj;
+                guestCode = guest.getGuestCode();
+            } else {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+
+            List<Map<String, Object>> reviewList = new ArrayList<>();
+
+            // 리뷰 타입에 따라 데이터 조회
+            if ("photo".equals(type)) {
+                reviewList = reviewService.getMyPhotoReviews(sort, page, size, rating, memCode, guestCode);
+            } else if ("text".equals(type)) {
+                reviewList = reviewService.getMyTextReviews(sort, page, size, rating, memCode, guestCode);
+            }
+
+            // 리뷰 카운트 정보 (필터링 적용)
+            Map<String, Object> reviewCount = reviewService.getMyReviewCount(rating, memCode, guestCode);
+
+            response.put("success", true);
+            response.put("reviewList", reviewList);
+            response.put("photoReviews", reviewCount.get("photoReviews"));
+            response.put("textReviews", reviewCount.get("textReviews"));
+            response.put("currentType", type);
+            response.put("currentSort", sort);
+            response.put("currentPage", page);
+            response.put("currentRating", rating);
+            response.put("hasMore", reviewList.size() == size); // 더 있는지 여부
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "리뷰 데이터를 불러오는 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * 리뷰 삭제 API
+     */
+    @DeleteMapping("/review/{reviewCode}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteMyReview(
+            @PathVariable int reviewCode,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 현재 사용자 정보 조회
+            Integer memCode = null;
+            Integer guestCode = null;
+
+            Object memberObj = session.getAttribute("member");
+            Object guestObj = session.getAttribute("guest");
+
+            if (memberObj != null) {
+                MemberDto member = (MemberDto) memberObj;
+                memCode = member.getMemberCode();
+            } else if (guestObj != null) {
+                GuestDto guest = (GuestDto) guestObj;
+                guestCode = guest.getGuestCode();
+            } else {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+
+            // 본인 리뷰인지 확인 및 삭제 처리
+            boolean deleted = reviewService.deleteMyReview(reviewCode, memCode, guestCode);
+
+            if (deleted) {
+                response.put("success", true);
+                response.put("message", "리뷰가 삭제되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "삭제할 수 없는 리뷰입니다.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "리뷰 삭제 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }

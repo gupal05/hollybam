@@ -151,4 +151,46 @@ public interface IF_ReviewService {
      * @return 좋아요한 리뷰 코드 목록
      */
     List<Integer> getUserLikedReviews(List<Integer> reviewCodes, Integer memCode, Integer guestCode);
+
+    /**
+     * 내 포토리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     * @param sort 정렬 방식 (latest, rating, likes)
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param rating 평점 필터
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 내 포토리뷰 목록
+     */
+    List<Map<String, Object>> getMyPhotoReviews(String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode);
+
+    /**
+     * 내 텍스트리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     * @param sort 정렬 방식 (latest, rating, likes)
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param rating 평점 필터
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 내 텍스트리뷰 목록
+     */
+    List<Map<String, Object>> getMyTextReviews(String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode);
+
+    /**
+     * 내 리뷰 카운트 조회 (필터링 적용)
+     * @param rating 평점 필터 (null이면 전체)
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return Map - photoReviews, textReviews
+     */
+    Map<String, Object> getMyReviewCount(Integer rating, Integer memCode, Integer guestCode);
+
+    /**
+     * 내 리뷰 삭제 (본인 확인 후)
+     * @param reviewCode 리뷰 코드
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 삭제 성공 여부
+     */
+    boolean deleteMyReview(int reviewCode, Integer memCode, Integer guestCode);
 }

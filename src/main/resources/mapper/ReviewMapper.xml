@@ -281,7 +281,7 @@
             ROUND(SUM(r.rating) / COUNT(*), 2) AS avgRating
         FROM review r
                  LEFT JOIN review_image ri ON r.review_code = ri.review_code
-        WHERE r.mem_code = #{memCode}
+        WHERE r.mem_code = #{memberCode}
           AND r.is_active = 1
     </select>
 
@@ -1017,4 +1017,193 @@
         -- 베스트 리뷰 12개
         LIMIT 12
     </select>
+
+    <!-- 내 포토리뷰 조회 쿼리 수정 -->
+    <select id="getMyPhotoReviews" resultType="map">
+        SELECT
+        r.review_code as reviewCode,
+        r.mem_code as memberCode,
+        r.guest_code as guestCode,
+        r.rating,
+        r.content,
+        r.created_at as reviewDate,
+        p.product_name as productName,
+        -- ⭐ writerName 수정: 회원/비회원에 따라 다르게 처리
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN CONCAT(SUBSTRING(m.mem_name, 1, 1), '***')
+        ELSE CONCAT(SUBSTRING(g.guest_name, 1, 1), '***')
+        END as writerName,
+        i.image_url as productImage,
+        ri.image_url as reviewImage,
+        COALESCE(rl.like_count, 0) as likeCount,
+        CASE
+        WHEN user_likes.review_code IS NOT NULL THEN 1
+        ELSE 0
+        END as isLiked
+        FROM review r
+        INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        INNER JOIN product p ON oi.product_code = p.product_code
+        INNER JOIN review_image ri ON r.review_code = ri.review_code
+        LEFT JOIN member m ON r.mem_code = m.mem_code
+        LEFT JOIN guest g ON r.guest_code = g.guest_code
+        LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'TITLE'
+        LEFT JOIN (
+        SELECT review_code, COUNT(*) as like_count
+        FROM review_like
+        GROUP BY review_code
+        ) rl ON r.review_code = rl.review_code
+        LEFT JOIN (
+        SELECT review_code
+        FROM review_like
+        WHERE (#{memCode} IS NOT NULL AND mem_code = #{memCode})
+        OR (#{guestCode} IS NOT NULL AND guest_code = #{guestCode})
+        ) user_likes ON r.review_code = user_likes.review_code
+        WHERE r.is_active = 1
+        AND (
+        (#{memCode} IS NOT NULL AND r.mem_code = #{memCode})
+        OR
+        (#{guestCode} IS NOT NULL AND r.guest_code = #{guestCode})
+        )
+        <if test="rating != null">
+            <choose>
+                <when test="rating == 5">AND r.rating = 5</when>
+                <when test="rating == 4">AND r.rating = 4</when>
+                <when test="rating == 3">AND r.rating &lt;= 3</when>
+            </choose>
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sort == 'latest'">r.created_at DESC</when>
+            <when test="sort == 'rating'">r.rating DESC, r.created_at DESC</when>
+            <when test="sort == 'likes'">COALESCE(rl.like_count, 0) DESC, r.created_at DESC</when>
+            <otherwise>r.created_at DESC</otherwise>
+        </choose>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 내 텍스트리뷰 조회 쿼리도 동일하게 수정 -->
+    <select id="getMyTextReviews" resultType="map">
+        SELECT
+        r.review_code as reviewCode,
+        r.mem_code as memberCode,
+        r.guest_code as guestCode,
+        r.rating,
+        r.content,
+        r.created_at as reviewDate,
+        p.product_name as productName,
+        -- ⭐ writerName 수정: 회원/비회원에 따라 다르게 처리
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN CONCAT(SUBSTRING(m.mem_name, 1, 1), '***')
+        ELSE CONCAT(SUBSTRING(g.guest_name, 1, 1), '***')
+        END as writerName,
+        i.image_url as productImage,
+        COALESCE(rl.like_count, 0) as likeCount,
+        CASE
+        WHEN user_likes.review_code IS NOT NULL THEN 1
+        ELSE 0
+        END as isLiked
+        FROM review r
+        INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        INNER JOIN product p ON oi.product_code = p.product_code
+        LEFT JOIN member m ON r.mem_code = m.mem_code
+        LEFT JOIN guest g ON r.guest_code = g.guest_code
+        LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'TITLE'
+        LEFT JOIN (
+        SELECT review_code, COUNT(*) as like_count
+        FROM review_like
+        GROUP BY review_code
+        ) rl ON r.review_code = rl.review_code
+        LEFT JOIN (
+        SELECT review_code
+        FROM review_like
+        WHERE (#{memCode} IS NOT NULL AND mem_code = #{memCode})
+        OR (#{guestCode} IS NOT NULL AND guest_code = #{guestCode})
+        ) user_likes ON r.review_code = user_likes.review_code
+        WHERE r.is_active = 1
+        AND r.review_code NOT IN (
+        SELECT DISTINCT review_code FROM review_image
+        )
+        AND (
+        (#{memCode} IS NOT NULL AND r.mem_code = #{memCode})
+        OR
+        (#{guestCode} IS NOT NULL AND r.guest_code = #{guestCode})
+        )
+        <if test="rating != null">
+            <choose>
+                <when test="rating == 5">AND r.rating = 5</when>
+                <when test="rating == 4">AND r.rating = 4</when>
+                <when test="rating == 3">AND r.rating &lt;= 3</when>
+            </choose>
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sort == 'latest'">r.created_at DESC</when>
+            <when test="sort == 'rating'">r.rating DESC, r.created_at DESC</when>
+            <when test="sort == 'likes'">COALESCE(rl.like_count, 0) DESC, r.created_at DESC</when>
+            <otherwise>r.created_at DESC</otherwise>
+        </choose>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 내 리뷰 카운트 조회 -->
+    <select id="getMyReviewCount" resultType="map">
+        SELECT
+        (SELECT COUNT(DISTINCT r.review_code)
+        FROM review r
+        INNER JOIN review_image ri ON r.review_code = ri.review_code
+        WHERE r.is_active = 1
+        AND (
+        (#{memCode} IS NOT NULL AND r.mem_code = #{memCode})
+        OR
+        (#{guestCode} IS NOT NULL AND r.guest_code = #{guestCode})
+        )
+        <if test="rating != null">
+            <choose>
+                <when test="rating == 5">AND r.rating = 5</when>
+                <when test="rating == 4">AND r.rating = 4</when>
+                <when test="rating == 3">AND r.rating &lt;= 3</when>
+            </choose>
+        </if>
+        ) as photoReviews,
+        (SELECT COUNT(*)
+        FROM review r
+        WHERE r.is_active = 1
+        AND r.review_code NOT IN (
+        SELECT DISTINCT review_code FROM review_image
+        )
+        AND (
+        (#{memCode} IS NOT NULL AND r.mem_code = #{memCode})
+        OR
+        (#{guestCode} IS NOT NULL AND r.guest_code = #{guestCode})
+        )
+        <if test="rating != null">
+            <choose>
+                <when test="rating == 5">AND r.rating = 5</when>
+                <when test="rating == 4">AND r.rating = 4</when>
+                <when test="rating == 3">AND r.rating &lt;= 3</when>
+            </choose>
+        </if>
+        ) as textReviews
+    </select>
+
+    <!-- 본인 리뷰인지 확인 -->
+    <select id="checkIsMyReview" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM review
+        WHERE review_code = #{reviewCode}
+          AND is_active = 1
+          AND (
+            (#{memCode} IS NOT NULL AND mem_code = #{memCode})
+                OR
+            (#{guestCode} IS NOT NULL AND guest_code = #{guestCode})
+            )
+    </select>
+
+    <!-- 리뷰 비활성화 -->
+    <update id="deactivateReview">
+        UPDATE review
+        SET is_active = 0, updated_at = NOW()
+        WHERE review_code = #{reviewCode}
+          AND is_active = 1
+    </update>
 </mapper>

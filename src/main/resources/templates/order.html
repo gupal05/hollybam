@@ -615,6 +615,216 @@
             text-transform: uppercase !important;
         }
 
+        /* 🆕 적립금 섹션 스타일 - 기존 CSS 마지막에 추가 */
+        .points-section {
+            border: 2px dashed #ff6b35;
+            border-radius: 16px;
+            padding: 24px;
+            background: linear-gradient(135deg, #fff9f5 0%, #fff 100%);
+            margin-bottom: 20px;
+        }
+
+        .points-section .section-title {
+            border-bottom: none;
+            margin-bottom: 20px;
+            color: #ff6b35;
+        }
+
+        .points-section .section-title::before {
+            display: none;
+        }
+
+        .points-section .section-title::after {
+            content: '🪙';
+            margin-left: 8px;
+        }
+
+        .points-balance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .balance-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .balance-amount {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ff6b35;
+        }
+
+        .btn-all-use {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-all-use:hover {
+            background: #e55a2b;
+            transform: translateY(-1px);
+        }
+
+        .points-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .points-input {
+            width: 100%;
+            padding: 14px 40px 14px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: right;
+            transition: all 0.3s ease;
+        }
+
+        .points-input:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .currency {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 14px;
+        }
+
+        .points-result {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            color: #0369a1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .result-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .result-value {
+            font-weight: 600;
+        }
+
+        .use-amount {
+            color: #dc3545;
+        }
+
+        .remain-amount {
+            color: #28a745;
+        }
+
+        .points-reward {
+            text-align: center;
+            padding: 12px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+        }
+
+        .reward-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .reward-info i {
+            color: #ffc107;
+        }
+
+        .reward-amount {
+            font-weight: 600;
+            color: #ff6b35;
+        }
+
+        /* 주문 요약 적립금 관련 스타일 */
+        .points-discount-row .price-label {
+            color: #ff6b35;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .points-discount-row .price-label i {
+            font-size: 12px;
+        }
+
+        .points-discount {
+            color: #ff6b35 !important;
+            font-weight: 600;
+        }
+
+        .reward-info-summary {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff9e6;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .reward-info-summary i {
+            color: #ffc107;
+            font-size: 14px;
+        }
+
+        .reward-info-summary strong {
+            color: #ff6b35;
+            font-weight: 600;
+        }
+
         /* 반응형 */
         @media (max-width: 1024px) {
             .checkout-layout {
@@ -681,6 +891,32 @@
 
             .discount-section .section-title {
                 width: 100%;
+            }
+
+            /* 🆕 적립금 모바일 반응형 추가 */
+            .points-balance {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .points-input-group {
+                flex-direction: column;
+            }
+
+            .points-input-group .btn-apply {
+                width: 100%;
+            }
+
+            .reward-info {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .reward-info-summary {
+                flex-direction: column;
+                gap: 5px;
+                font-size: 12px;
             }
         }
 
@@ -799,6 +1035,68 @@
                         <button type="button" class="remove-discount" onclick="removeDiscount()">
                             <i class="fas fa-times"></i>
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🆕 적립금 섹션 (회원만 표시) - 할인/쿠폰 섹션 다음에 추가 -->
+            <div class="form-section" th:if="${session.member != null}">
+                <div class="points-section">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                        <h2 class="section-title" style="margin-bottom: 0;">적립금 사용</h2>
+                        <span class="discount-notice">할인과 적립금은 중복 사용 가능</span>
+                    </div>
+
+                    <div class="points-content">
+                        <!-- 보유 적립금 표시 -->
+                        <div class="points-balance">
+                            <div class="balance-info">
+                                <span class="balance-label">보유 적립금</span>
+                                <span class="balance-amount" id="currentPoints">0원</span>
+                            </div>
+                            <button type="button" class="btn-all-use" id="useAllPointsBtn">
+                                전액 사용
+                            </button>
+                        </div>
+
+                        <!-- 적립금 사용 입력 -->
+                        <div class="points-input-group">
+                            <div class="input-wrapper">
+                                <input type="number"
+                                       id="usePointsInput"
+                                       name="usePoints"
+                                       value="0"
+                                       min="0"
+                                       max="0"
+                                       placeholder="사용할 적립금 입력"
+                                       class="points-input">
+                                <span class="currency">원</span>
+                            </div>
+                            <button type="button" class="btn-apply" id="applyPointsBtn">
+                                적용
+                            </button>
+                        </div>
+
+                        <!-- 적립금 사용 후 잔액 -->
+                        <div class="points-result" id="pointsResult" style="display: none;">
+                            <div class="result-row">
+                                <span class="result-label">사용 적립금</span>
+                                <span class="result-value use-amount" id="useAmount">0원</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">사용 후 잔액</span>
+                                <span class="result-value remain-amount" id="remainAmount">0원</span>
+                            </div>
+                        </div>
+
+                        <!-- 적립 예정 금액 -->
+                        <div class="points-reward">
+                            <div class="reward-info">
+                                <i class="fas fa-gift"></i>
+                                <span class="reward-text">이번 구매 시 적립 예정</span>
+                                <span class="reward-amount" id="rewardAmount">0원 (1.5%)</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -934,6 +1232,14 @@
                     <span class="price-label" id="discountLabel">할인</span>
                     <span class="price-value discount" id="discountAmount">-₩0</span>
                 </div>
+                <!-- 🆕 적립금 할인 항목 - 기존 할인 항목 다음에 추가 -->
+                <div class="price-row points-discount-row" style="display: none;">
+                    <span class="price-label">
+                        <i class="fas fa-coins"></i>
+                        적립금 사용
+                    </span>
+                    <span class="price-value points-discount" id="pointsDiscountAmount">-₩0</span>
+                </div>
                 <div class="price-row">
                     <span class="price-label">기본 할인</span>
                     <span class="price-value" th:text="'-₩' + ${#numbers.formatInteger(paymentInfo.discountAmount, 0, 'COMMA')}">₩0</span>
@@ -945,6 +1251,11 @@
                 <div class="price-row total-row">
                     <span class="price-label">총 결제 금액</span>
                     <span class="price-value" id="finalAmount" th:text="'₩' + ${#numbers.formatInteger(paymentInfo.finalAmount, 0, 'COMMA')}">₩0</span>
+                </div>
+                <!-- 🆕 적립 예정 안내 - 최종 결제 금액 다음에 추가 -->
+                <div class="reward-info-summary" th:if="${session.member != null}">
+                    <i class="fas fa-gift"></i>
+                    <span>구매 완료 시 <strong id="summaryRewardAmount">0원</strong> 적립 예정</span>
                 </div>
             </div>
 
@@ -987,6 +1298,10 @@
     let originalAmount = paymentInfo.totalAmount || 0;
     let currentTotalAmount = paymentInfo.finalAmount || 0;
 
+    // 🆕 적립금 관련 변수들 - 기존 JavaScript에 추가
+    let currentUsePoints = 0;
+    let currentPoints = 0;
+
     // 유효성 검사 상태 추적
     const validationState = {
         ordererName: false,
@@ -1010,9 +1325,189 @@
         // 초기 주소 필드 상태 설정
         updateAddressFields();
 
+        // 🆕 적립금 초기화 (회원인 경우만)
+        if ($('#currentPoints').length > 0) {
+            loadCurrentPoints();
+        }
+
+        // 🆕 초기 적립 예정 금액 계산
+        updateRewardAmount();
+
         console.log("Payment Info:", paymentInfo);
         console.log("Cart Items:", cartItems);
     });
+
+    // 🆕 적립금 관련 함수들 - 기존 JavaScript 마지막에 추가
+    function loadCurrentPoints() {
+        $.ajax({
+            url: '/order/api/points',
+            type: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    currentPoints = response.currentPoints;
+                    updatePointsDisplay();
+                    updateRewardAmount();
+                } else {
+                    console.error('적립금 조회 실패:', response.message);
+                }
+            },
+            error: function() {
+                console.error('적립금 조회 중 오류 발생');
+            }
+        });
+    }
+
+    function updatePointsDisplay() {
+        $('#currentPoints').text(formatCurrency(currentPoints) + '원');
+        $('#usePointsInput').attr('max', currentPoints);
+
+        if (currentPoints <= 0) {
+            $('#usePointsInput').prop('disabled', true);
+            $('#useAllPointsBtn').prop('disabled', true);
+            $('#applyPointsBtn').prop('disabled', true);
+        }
+    }
+
+    function updateRewardAmount() {
+        const rewardPoints = Math.floor(originalAmount * 0.015);
+
+        // 2) 화면에 찍어주기 (적립 예상 영역과 요약 영역 모두)
+        $('#rewardAmount').text(formatCurrency(rewardPoints) + '원 (1.5%)');
+        $('#summaryRewardAmount').text(formatCurrency(rewardPoints) + '원');
+    }
+
+    // 최종 금액 계산 (기존 함수들과 연동)
+    function calculateCurrentFinalAmount() {
+        const baseAmount = originalAmount || 0;
+        const discountAmount = activeDiscount ? activeDiscount.amount : 0;
+        const deliveryFee = paymentInfo.deliveryFee || 0;
+
+        return Math.max(0, baseAmount - discountAmount - currentUsePoints + deliveryFee);
+    }
+
+    // 적립금 버튼 이벤트
+    $('#useAllPointsBtn').click(function() {
+        if (currentPoints > 0) {
+            const totalAmount = originalAmount || 0;
+            const maxUsable = Math.min(currentPoints, totalAmount);
+            $('#usePointsInput').val(maxUsable);
+            applyPoints();
+        }
+    });
+
+    $('#applyPointsBtn').click(function() {
+        applyPoints();
+    });
+
+    $('#usePointsInput').on('input', function() {
+        const inputValue = parseInt($(this).val()) || 0;
+        const totalAmount = originalAmount || 0;
+        const maxUsable = Math.min(currentPoints, totalAmount);
+
+        if (inputValue > maxUsable) {
+            $(this).val(maxUsable);
+        }
+
+        if (inputValue < 0) {
+            $(this).val(0);
+        }
+    });
+
+    function applyPoints() {
+        const inputPoints = parseInt($('#usePointsInput').val()) || 0;
+
+        if (inputPoints <= 0) {
+            resetPointsUsage();
+            return;
+        }
+
+        if (inputPoints > currentPoints) {
+            alert('보유 적립금을 초과할 수 없습니다.');
+            $('#usePointsInput').val(currentPoints);
+            return;
+        }
+
+        const totalAmount = originalAmount || 0;
+        if (inputPoints > totalAmount) {
+            alert('주문 금액을 초과해서 사용할 수 없습니다.');
+            $('#usePointsInput').val(totalAmount);
+            return;
+        }
+
+        // 서버 검증
+        $.ajax({
+            url: '/order/api/points/validate',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ usePoints: inputPoints }),
+            success: function(response) {
+                if (response.success && response.available) {
+                    currentUsePoints = inputPoints;
+                    updatePointsResult();
+                    updatePointsOrderSummary();
+                    updateRewardAmount();
+                } else {
+                    alert(response.message || '적립금 사용이 불가능합니다.');
+                    resetPointsUsage();
+                }
+            },
+            error: function() {
+                alert('적립금 검증 중 오류가 발생했습니다.');
+                resetPointsUsage();
+            }
+        });
+    }
+
+    function updatePointsResult() {
+        if (currentUsePoints > 0) {
+            $('#useAmount').text(formatCurrency(currentUsePoints) + '원');
+            $('#remainAmount').text(formatCurrency(currentPoints - currentUsePoints) + '원');
+            $('#pointsResult').show();
+        } else {
+            $('#pointsResult').hide();
+        }
+    }
+
+    function resetPointsUsage() {
+        currentUsePoints = 0;
+        $('#usePointsInput').val(0);
+        $('#pointsResult').hide();
+        updatePointsOrderSummary();
+        updateRewardAmount();
+    }
+
+    function updatePointsOrderSummary() {
+        // 적립금 할인 표시
+        if (currentUsePoints > 0) {
+            $('#pointsDiscountAmount').text('-₩' + formatCurrency(currentUsePoints));
+            $('.points-discount-row').show();
+        } else {
+            $('.points-discount-row').hide();
+        }
+
+        // 최종 금액 업데이트 (기존 함수가 있다면 활용)
+        const finalAmount = calculateCurrentFinalAmount();
+        $('#finalAmount').text('₩' + formatCurrency(finalAmount));
+
+        // 결제 버튼 업데이트
+        $('#paymentButtonText').text('₩' + formatCurrency(finalAmount) + ' 결제하기');
+
+        // currentTotalAmount 업데이트
+        currentTotalAmount = finalAmount;
+    }
+
+    // 숫자 포맷팅 함수 (기존에 없다면 추가)
+    function formatCurrency(amount) {
+        return parseInt(amount).toLocaleString();
+    }
+
+    // 기존 주문 데이터 수집 함수에 적립금 정보 추가하는 함수
+    function addPointsToOrderData(orderData) {
+        if (typeof orderData === 'object') {
+            orderData.usePoints = currentUsePoints;
+        }
+        return orderData;
+    }
 
     function setupEventListeners() {
         // 결제 방법 선택
@@ -1098,20 +1593,6 @@
             validateField(this.id);
         });
 
-        // $('#ordererPhone, #receiverPhone').on('input', function() {
-        //     const value = $(this).val().replace(/[^0-9]/g, '');
-        //     if (value.length <= 11) {
-        //         let formatted = value;
-        //         if (value.length > 6) {
-        //             formatted = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7);
-        //         } else if (value.length > 3) {
-        //             formatted = value.slice(0, 3) + '-' + value.slice(3);
-        //         }
-        //         $(this).val(formatted);
-        //     }
-        //     validateField(this.id);
-        // });
-
         $('#ordererEmail').on('input', function() {
             validateField(this.id);
         });
@@ -1119,11 +1600,6 @@
         $('#receiverAddrDetail').on('input', function() {
             validateField('receiverAddr');
         });
-
-        // // 결제 버튼 클릭
-        // $('#paymentButton').click(function() {
-        //     alert("결제 기능 준비 중");
-        // });
     }
 
     // 할인코드 적용 (백엔드 검증)
@@ -1156,7 +1632,7 @@
 
         // 백엔드로 할인코드 검증 요청
         $.ajax({
-            url: '/order/discount/validate',              // ← 여기를 변경
+            url: '/order/discount/validate',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
@@ -1342,14 +1818,17 @@
             $('#discountRow').hide();
         }
 
-        // 최종 금액 계산
+        // 최종 금액 계산 (적립금 포함)
         const originalFinalAmount = paymentInfo.finalAmount || 0;
         const totalDiscount = activeDiscount ? activeDiscount.amount : 0;
-        currentTotalAmount = Math.max(0, originalFinalAmount - totalDiscount);
+        currentTotalAmount = Math.max(0, originalFinalAmount - totalDiscount - currentUsePoints);
 
         // 최종 금액 표시 업데이트
         $('#finalAmount').text(`₩${currentTotalAmount.toLocaleString()}`);
         $('#paymentButtonText').text(`₩${currentTotalAmount.toLocaleString()} 결제하기`);
+
+        // 적립금 관련 업데이트
+        updateRewardAmount();
     }
 
     // 쿠폰 정보 업데이트
@@ -1643,12 +2122,6 @@
         }
     });
 
-    // $('#paymentButton').click(function() {
-    //     if (isFormValid()) {
-    //         isPaymentProcessing = true;
-    //     }
-    // });
-
     // 글로벌 함수 노출
     window.forceResetPaymentButton = forceResetPaymentButton;
     window.removeDiscount = removeDiscount;
@@ -1659,7 +2132,6 @@
         button.classList.remove('processing');  // 'processing' 클래스 제거
         button.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="paymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;  // 버튼 텍스트 복원
     }
-
 
     // 테스트 함수들 (개발자 도구에서 사용 가능)
     window.testResetButton = function() {
@@ -1705,6 +2177,8 @@
         console.log('Active Discount:', activeDiscount);
         console.log('Original Amount:', originalAmount.toLocaleString());
         console.log('Current Total Amount:', currentTotalAmount.toLocaleString());
+        console.log('Current Use Points:', currentUsePoints.toLocaleString());
+        console.log('Current Points:', currentPoints.toLocaleString());
         console.log('Validation State:', validationState);
         console.log('Form Valid:', isFormValid());
         console.log('Payment Processing:', isPaymentProcessing);
@@ -1716,6 +2190,9 @@
         console.log('서버 최종 금액:', (paymentInfo.finalAmount || 0).toLocaleString());
         if (activeDiscount) {
             console.log('적용된 할인:', activeDiscount.type, '-', activeDiscount.amount.toLocaleString());
+        }
+        if (currentUsePoints > 0) {
+            console.log('사용 적립금:', currentUsePoints.toLocaleString());
         }
         console.log('최종 결제 금액:', currentTotalAmount.toLocaleString());
         console.log('=====================');
@@ -1777,7 +2254,7 @@
         const receiverAddr = document.getElementById('receiverAddr').value.trim();
         const receiverAddrDetail = document.getElementById('receiverAddrDetail').value.trim();
         const deliveryRequest = document.getElementById('deliveryRequest').value.trim();
-        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'card';
+        const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'card';
         const agreeTerms = document.getElementById('agree-terms').checked;
         const agreePrivacy = document.getElementById('agree-privacy').checked;
         const agreeAdult = document.getElementById('agree-adult').checked;
@@ -1796,6 +2273,7 @@
             quantity = null;
         }
 
+        // 🆕 적립금 정보 추가
         return {
             ordererName, ordererPhone, ordererEmail,
             receiverName, receiverPhone, receiverZip, receiverAddr, receiverAddrDetail, deliveryRequest,
@@ -1805,8 +2283,9 @@
             deliveryFee: paymentInfo.deliveryFee,
             finalAmount: currentTotalAmount,
             cartCodes: isDirect ? [] : cartCodes,
-            productCode, optionCode, quantity,         // Thymeleaf 표현식
-            couponCode, discountCode, agreeTerms, agreePrivacy, agreeAdult
+            productCode, optionCode, quantity,
+            couponCode, discountCode, agreeTerms, agreePrivacy, agreeAdult,
+            usePoints: currentUsePoints  // 🆕 적립금 사용 정보 추가
         };
     }
 
@@ -1869,7 +2348,6 @@
 
         if (!data.agreePrivacy) {
             alert('개인정보 처리방침에 동의해주세요.');
-            alert(data.agreePrivacy);
             return false;
         }
 
@@ -1934,6 +2412,24 @@
         button.classList.remove('processing');
         button.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="paymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
     }
+
+    // 🆕 적립금 관련 글로벌 함수 노출
+    window.getCurrentUsePoints = function() {
+        return currentUsePoints;
+    };
+
+    window.addPointsToPaymentForm = function() {
+        // 기존 결제 폼에 적립금 사용 정보 추가
+        if ($('input[name="usePoints"]').length === 0) {
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'usePoints',
+                value: currentUsePoints
+            }).appendTo('#paymentForm, form');
+        } else {
+            $('input[name="usePoints"]').val(currentUsePoints);
+        }
+    };
 </script>
 </body>
 </html>

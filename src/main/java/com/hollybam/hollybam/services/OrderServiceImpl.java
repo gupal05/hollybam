@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,8 @@ public class OrderServiceImpl implements IF_OrderService {
     private IF_PaymentDao paymentDao;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private IF_PointService pointService;
 
     @Override
     @Transactional
@@ -35,6 +38,9 @@ public class OrderServiceImpl implements IF_OrderService {
             @SuppressWarnings("unchecked")
             List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
             List<CartDto> cartItems = paymentDao.selectCartItemsWithDetails(cartCodes);
+            // 적립금 사용 정보 추출
+            Integer usePoints = (Integer) orderData.get("usePoints");
+            if (usePoints == null) usePoints = 0;
 
             if (cartItems.isEmpty()) {
                 throw new Exception("주문할 상품이 없습니다.");
@@ -55,6 +61,15 @@ public class OrderServiceImpl implements IF_OrderService {
 
             orderDao.deleteCartItems(cartCodes);
             createInitialDelivery(order.getOrderCode());
+            // 적립금 처리 (회원인 경우만)
+            if (order.getMemCode() != null && usePoints >= 0) {
+                processOrderPoints(
+                        order.getOrderCode(),
+                        order.getMemCode(),
+                        usePoints,
+                        (int)orderData.get("totalAmount")
+                );
+            }
 
             log.info("장바구니 주문 생성 완료: {}", order.getOrderId());
             return order;
@@ -74,6 +89,9 @@ public class OrderServiceImpl implements IF_OrderService {
             int productCode = (Integer) orderData.get("productCode");
             Integer optionCode = (Integer) orderData.get("optionCode");
             int quantity = (Integer) orderData.get("quantity");
+            // 적립금 사용 정보 추출
+            Integer usePoints = (Integer) orderData.get("usePoints");
+            if (usePoints == null) usePoints = 0;
 
             PriceDto priceDto = paymentDao.selectProductPrice(productCode);
             ProductOptionDto optionDto = null;
@@ -84,6 +102,15 @@ public class OrderServiceImpl implements IF_OrderService {
             OrderDto order = createOrderFromData(orderData, null);
             orderDao.insertOrder(order);
             log.info("바로 구매 주문 저장 완료. 주문코드: {}", order.getOrderCode());
+            // 적립금 처리 (회원인 경우만)
+            if (order.getMemCode() != null && usePoints >= 0) {
+                processOrderPoints(
+                        order.getOrderCode(),
+                        order.getMemCode(),
+                        usePoints,
+                        (int)orderData.get("totalAmount")
+                );
+            }
 
             List<OrderItemDto> orderItems = createDirectOrderItems(order.getOrderCode(), productCode, optionCode, quantity, priceDto, optionDto);
             orderDao.insertOrderItems(orderItems);
@@ -485,6 +512,58 @@ public class OrderServiceImpl implements IF_OrderService {
         } catch (Exception e) {
             log.error("임시 주문 생성 실패", e);
             throw new Exception("주문 생성에 실패했습니다: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 주문 완료 후 적립금 처리 (사용 + 적립)
+     * @param orderCode 주문 코드
+     * @param memCode 회원 코드 (회원 주문인 경우만)
+     * @param usePoints 사용한 적립금
+     * @param finalAmount 최종 결제 금액
+     */
+    @Override
+    @Transactional
+    public void processOrderPoints(int orderCode, Integer memCode, int usePoints, int finalAmount) {
+        if (memCode == null) {
+            return; // 비회원은 적립금 처리 불가
+        }
+
+        try {
+            // 1. 적립금 사용 처리
+            if (usePoints > 0) {
+                boolean useResult = pointService.usePoints(
+                        memCode,
+                        usePoints,
+                        orderCode,
+                        "주문 결제 시 적립금 사용"
+                );
+
+                if (!useResult) {
+                    throw new RuntimeException("적립금 사용 처리 실패");
+                }
+            }
+
+            // 2. 구매 적립금 추가 (결제 금액의 1.5%)
+            int rewardPoints = pointService.calculateRewardPoints(finalAmount);
+            if (rewardPoints > 0) {
+                boolean saveResult = pointService.savePoints(
+                        memCode,
+                        rewardPoints,
+                        orderCode,
+                        "구매 적립 (1.5%)"
+                );
+
+                if (!saveResult) {
+                    log.warn("구매 적립금 지급 실패 - memCode: {}, orderCode: {}", memCode, orderCode);
+                }
+            }
+
+            log.info("적립금 처리 완료 - 주문: {}, 사용: {}, 적립: {}", orderCode, usePoints, rewardPoints);
+
+        } catch (Exception e) {
+            log.error("적립금 처리 중 오류 발생 - orderCode: {}, memCode: {}", orderCode, memCode, e);
+            throw new RuntimeException("적립금 처리 실패", e);
         }
     }
 }

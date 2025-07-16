@@ -35,6 +35,8 @@ public class OrderController {
     private DiscountService discountService;
     @Autowired
     private IF_OrderService orderService;
+    @Autowired
+    private IF_PointService pointService;
 
     @PostMapping("/checkout")
     public ModelAndView introPage(@RequestParam("cartCodes") List<String> cartCodes,
@@ -712,5 +714,78 @@ public class OrderController {
         }
 
         return response;
+    }
+
+    /**
+     * 회원 적립금 조회 API
+     */
+    @GetMapping("/api/points")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getMemberPoints(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            if (member == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.ok(response);
+            }
+
+            int currentPoints = pointService.getCurrentPoints(member.getMemberCode());
+
+            response.put("success", true);
+            response.put("currentPoints", currentPoints);
+
+        } catch (Exception e) {
+            log.error("적립금 조회 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "적립금 조회 중 오류가 발생했습니다.");
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 적립금 사용 가능 여부 검증 API
+     */
+    @PostMapping("/api/points/validate")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> validatePointUsage(
+            @RequestBody Map<String, Object> requestData,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            if (member == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.ok(response);
+            }
+
+            int usePoints = (Integer) requestData.get("usePoints");
+            int currentPoints = pointService.getCurrentPoints(member.getMemberCode());
+
+            if (currentPoints >= usePoints) {
+                response.put("success", true);
+                response.put("available", true);
+                response.put("remainPoints", currentPoints - usePoints);
+            } else {
+                response.put("success", true);
+                response.put("available", false);
+                response.put("message", "보유 적립금이 부족합니다.");
+                response.put("currentPoints", currentPoints);
+                response.put("shortfall", usePoints - currentPoints);
+            }
+
+        } catch (Exception e) {
+            log.error("적립금 검증 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "적립금 검증 중 오류가 발생했습니다.");
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

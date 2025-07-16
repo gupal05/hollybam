@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.IF_PointDao">
+
+    <!-- 회원의 현재 적립금 조회 (모든 변동 내역 합계) -->
+    <select id="getCurrentPoints" parameterType="int" resultType="int">
+        SELECT COALESCE(SUM(point_change), 0) AS current_points
+        FROM point
+        WHERE mem_code = #{memberCode}
+    </select>
+
+    <!-- 적립금 변동 로그 삽입 -->
+    <insert id="insertPointLog" parameterType="com.hollybam.hollybam.dto.PointDto"
+            useGeneratedKeys="true" keyProperty="pointCode">
+        INSERT INTO point (
+            mem_code,
+            point_change,
+            point_type,
+            description,
+            related_order_code
+        ) VALUES (
+                     #{memberCode},
+                     #{pointChange},
+                     #{pointType},
+                     #{description},
+                     #{relatedOrderCode}
+                 )
+    </insert>
+
+</mapper>

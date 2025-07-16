@@ -33,4 +33,12 @@ public interface IF_OrderService {
      * @throws Exception 주문 생성 실패 시
      */
     OrderDto createTempOrder(Map<String, Object> orderData) throws Exception;
+    /**
+     * 주문 완료 후 적립금 처리 (사용 + 적립)
+     * @param orderCode 주문 코드
+     * @param memCode 회원 코드 (회원 주문인 경우만)
+     * @param usePoints 사용한 적립금
+     * @param finalAmount 최종 결제 금액
+     */
+    void processOrderPoints(int orderCode, Integer memCode, int usePoints, int finalAmount) throws Exception;
 }

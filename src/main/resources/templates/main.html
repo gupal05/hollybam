@@ -2260,6 +2260,14 @@
         const categoryName = $(this).find('.category-label').text().trim();
         if (categoryName === '리얼돌') {
             window.location.href = `/product/list?categoryCode=06`;
+        } else if(categoryName === 'SM용품') {
+            window.location.href = `/product/list?categoryCode=04`;
+        } else if(categoryName === '뜨밤 패키지') {
+            window.location.href = `/product/list?categoryCode=03&detailCode=01`;
+        } else if(categoryName === '콘돔') {
+            window.location.href = `/product/list?categoryCode=02&detailCode=06`;
+        } else if(categoryName === '러브젤') {
+            window.location.href = `/product/list?categoryCode=02&detailCode=07`;
         }
 
         // 홀리밤 소식 클릭 시에만 스크롤

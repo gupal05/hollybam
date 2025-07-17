@@ -1606,15 +1606,6 @@
     // 할인코드 적용 (백엔드 검증)
     function applyDiscountCode(code) {
         // 쿠폰이 이미 적용된 경우 경고
-        if (activeDiscount && activeDiscount.type === 'coupon') {
-            showUserMessage('쿠폰이 이미 적용되어 있습니다. 쿠폰을 해제하고 할인코드를 적용하시겠습니까?', 'warning');
-            if (confirm('쿠폰이 이미 적용되어 있습니다. 쿠폰을 해제하고 할인코드를 적용하시겠습니까?')) {
-                removeActiveDiscount();
-            } else {
-                $('#discountCode').val('');
-                return;
-            }
-        }
 
         // 입력값 검증
         if (!code || code.trim().length === 0) {
@@ -2263,6 +2254,7 @@
         const agreeAdult = document.getElementById('agree-adult').checked;
         const couponCode = document.getElementById('couponSelect').value;
         const discountCode = document.getElementById('discountCode').value;
+        alert(discountCode);
 
         let productCode, optionCode, quantity;
 

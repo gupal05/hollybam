@@ -143,9 +143,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * 할인코드 검증 API (🆕 중복 사용 방지 로직 포함)
+     */
     @PostMapping("/discount/validate")
     public ResponseEntity<Map<String, Object>> validateDiscountCode(
-            @RequestBody Map<String, Object> request) {
+            @RequestBody Map<String, Object> request, HttpSession session) {
 
         Map<String, Object> response = new HashMap<>();
 
@@ -153,18 +156,23 @@ public class OrderController {
             String discountId = (String) request.get("discountId");
             Long orderAmount = Long.valueOf(request.get("orderAmount").toString());
 
-            log.info("할인코드 검증 요청: discountId={}, orderAmount={}", discountId, orderAmount);
+            // 🆕 세션에서 회원 정보 가져오기
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            Integer memCode = member != null ? member.getMemberCode() : null;
 
-            // 할인코드 검증
-            Map<String, Object> validationResult = discountService.validateDiscountCode(discountId, orderAmount);
+            log.info("할인코드 검증 요청: discountId={}, orderAmount={}, memCode={}",
+                    discountId, orderAmount, memCode);
+
+            // 🆕 회원 코드를 포함한 할인코드 검증 (중복 사용 체크 포함)
+            Map<String, Object> validationResult = discountService.validateDiscountCode(discountId, orderAmount, memCode);
 
             response.put("success", true);
             response.put("data", validationResult.get("discountInfo"));
             response.put("discountAmount", validationResult.get("discountAmount"));
             response.put("message", "할인코드가 성공적으로 적용되었습니다.");
 
-            log.info("할인코드 검증 성공: discountId={}, discountAmount={}",
-                    discountId, validationResult.get("discountAmount"));
+            log.info("할인코드 검증 성공: discountId={}, memCode={}, discountAmount={}",
+                    discountId, memCode, validationResult.get("discountAmount"));
 
             return ResponseEntity.ok(response);
 

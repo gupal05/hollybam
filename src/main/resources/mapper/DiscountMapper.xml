@@ -53,4 +53,39 @@
         ORDER BY created_at DESC
     </select>
 
+    <!-- ===== 🆕 할인코드 사용 내역 관련 쿼리 추가 ===== -->
+
+    <!-- 회원의 특정 할인코드 사용 여부 확인 -->
+    <select id="checkDiscountCodeUsage" resultType="int">
+        SELECT COUNT(*)
+        FROM discount_code_usage
+        WHERE discount_code = #{discountCode}
+          AND mem_code = #{memCode}
+    </select>
+
+    <!-- 할인코드 사용 내역 저장 -->
+    <insert id="insertDiscountCodeUsage" parameterType="com.hollybam.hollybam.dto.DiscountCodeUsageDto" useGeneratedKeys="true" keyProperty="usageCode">
+        INSERT INTO discount_code_usage (
+            discount_code,
+            mem_code,
+            used_at
+        ) VALUES (
+                     #{discountCode},
+                     #{memCode},
+                     #{usedAt}
+                 )
+    </insert>
+
+    <!-- 회원의 할인코드 사용 내역 조회 (할인코드 정보 포함) -->
+    <select id="selectDiscountUsageByMember" parameterType="Integer" resultType="com.hollybam.hollybam.dto.DiscountCodeUsageDto">
+        SELECT
+            dcu.usage_code,
+            dcu.discount_code,
+            dcu.mem_code,
+            dcu.used_at
+        FROM discount_code_usage dcu
+        WHERE dcu.mem_code = #{memCode}
+        ORDER BY dcu.used_at DESC
+    </select>
+
 </mapper>

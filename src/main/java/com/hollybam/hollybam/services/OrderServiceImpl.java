@@ -4,6 +4,7 @@ package com.hollybam.hollybam.services;
 import com.hollybam.hollybam.dao.IF_OrderDao;
 import com.hollybam.hollybam.dao.IF_PaymentDao;
 import com.hollybam.hollybam.dto.*;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ import java.util.Map;
 @Transactional
 public class OrderServiceImpl implements IF_OrderService {
     @Autowired
+    HttpSession session;
+    @Autowired
     private IF_OrderDao orderDao;
     @Autowired
     private IF_PaymentDao paymentDao;
@@ -30,6 +33,8 @@ public class OrderServiceImpl implements IF_OrderService {
     private IF_PointService pointService;
     @Autowired
     private CouponService couponService;
+    @Autowired
+    private DiscountService discountService;
 
     @Override
     @Transactional
@@ -63,6 +68,7 @@ public class OrderServiceImpl implements IF_OrderService {
 
             orderDao.deleteCartItems(cartCodes);
             createInitialDelivery(order.getOrderCode());
+
             // 적립금 처리 (회원인 경우만)
             if (order.getMemCode() != null && usePoints >= 0) {
                 processOrderPoints(
@@ -72,6 +78,9 @@ public class OrderServiceImpl implements IF_OrderService {
                         (int)orderData.get("totalAmount")
                 );
             }
+
+            // 🆕 할인코드 사용 내역 저장 (회원인 경우만)
+            recordDiscountCodeUsageIfApplied(orderData, order.getMemCode());
 
             log.info("장바구니 주문 생성 완료: {}", order.getOrderId());
             return order;
@@ -104,11 +113,17 @@ public class OrderServiceImpl implements IF_OrderService {
             OrderDto order = createOrderFromData(orderData, null);
             orderDao.insertOrder(order);
             log.info("바로 구매 주문 저장 완료. 주문코드: {}", order.getOrderCode());
-            // 쿠폰 처리
-            int memCode    = Integer.parseInt(orderData.get("memCode").toString());
-            int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
-            int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
-            couponService.useCoupon(couponMemberCode, order.getOrderCode());
+
+            // 쿠폰 처리 (기존 로직 유지)
+            if(order.getMemCode() != null) {
+                if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
+                    int memCode = Integer.parseInt(orderData.get("memCode").toString());
+                    int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
+                    int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
+                    couponService.useCoupon(couponMemberCode, order.getOrderCode());
+                }
+            }
+
             // 적립금 처리 (회원인 경우만)
             if (order.getMemCode() != null && usePoints >= 0) {
                 processOrderPoints(
@@ -129,6 +144,8 @@ public class OrderServiceImpl implements IF_OrderService {
             updateInventory(orderItems);
 
             createInitialDelivery(order.getOrderCode());
+            // 🆕 할인코드 사용 내역 저장 (회원인 경우만)
+            recordDiscountCodeUsageIfApplied(orderData, order.getMemCode());
 
             log.info("바로 구매 주문 생성 완료: {}", order.getOrderId());
             return order;
@@ -138,7 +155,6 @@ public class OrderServiceImpl implements IF_OrderService {
             throw new Exception("주문 생성에 실패했습니다: " + e.getMessage(), e);
         }
     }
-
     // 수정된 재고 차감 로직
     private void updateInventory(List<OrderItemDto> orderItems) throws Exception {
         for (OrderItemDto item : orderItems) {
@@ -571,6 +587,38 @@ public class OrderServiceImpl implements IF_OrderService {
         } catch (Exception e) {
             log.error("적립금 처리 중 오류 발생 - orderCode: {}, memCode: {}", orderCode, memCode, e);
             throw new RuntimeException("적립금 처리 실패", e);
+        }
+    }
+
+    /**
+     * 주문 완료 시 할인코드 사용 내역 저장
+     * @param orderData 주문 데이터
+     * @param memCode 회원 코드 (비회원인 경우 null)
+     */
+    private void recordDiscountCodeUsageIfApplied(Map<String, Object> orderData, Integer memCode) {
+        try {
+            // 주문 데이터에서 할인코드 정보 추출
+            String discountCodeId = (String) orderData.get("discountCode");
+
+            // 할인코드가 사용되고 회원인 경우에만 처리
+            if (discountCodeId != null && !discountCodeId.trim().isEmpty() && memCode != null) {
+                discountCodeId = discountCodeId.trim().toUpperCase();
+
+                // 할인코드 정보 조회
+                DiscountDto discountDto = discountService.getDiscountByCode(discountCodeId);
+
+                if (discountDto != null) {
+                    // 사용 내역 저장
+                    discountService.recordDiscountCodeUsage(discountDto.getDiscountCode(), memCode);
+                    log.info("할인코드 사용 내역 저장 완료: discountCode={} ({}), memCode={}",
+                            discountDto.getDiscountCode(), discountDto.getDiscountId(), memCode);
+                } else {
+                    log.warn("할인코드 정보를 찾을 수 없음: discountCodeId={}", discountCodeId);
+                }
+            }
+        } catch (Exception e) {
+            // 할인코드 사용 내역 저장 실패가 주문 전체를 실패시키지 않도록 함
+            log.error("할인코드 사용 내역 저장 중 오류 발생 (주문은 정상 진행)", e);
         }
     }
 }

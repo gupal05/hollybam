@@ -69,6 +69,16 @@ public class OrderServiceImpl implements IF_OrderService {
             orderDao.deleteCartItems(cartCodes);
             createInitialDelivery(order.getOrderCode());
 
+            // 쿠폰 처리 (기존 로직 유지)
+            if(order.getMemCode() != null) {
+                if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
+                    int memCode = Integer.parseInt(orderData.get("memCode").toString());
+                    int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
+                    int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
+                    couponService.useCoupon(couponMemberCode, order.getOrderCode());
+                }
+            }
+
             // 적립금 처리 (회원인 경우만)
             if (order.getMemCode() != null && usePoints >= 0) {
                 processOrderPoints(

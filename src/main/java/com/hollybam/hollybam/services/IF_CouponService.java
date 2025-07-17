@@ -27,4 +27,6 @@ public interface IF_CouponService {
      * @return 성공 여부
      */
     boolean useCoupon(int couponMemberCode, int orderCode);
+
+    int getCouponMemberCode(int memberCode, int couponCode);
 }

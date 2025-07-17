@@ -994,10 +994,11 @@
 
                             <!-- DB에서 가져온 쿠폰 리스트 표시 -->
                             <option th:each="coupon : ${couponList}"
-                                    th:value="${coupon.couponId}"
+                                    th:value="${coupon.couponCode}"
                                     th:data-type="${coupon.discountType}"
                                     th:data-value="${coupon.discountValue}"
                                     th:data-min-amount="${coupon.minOrderPrice}"
+                                    th:data-coupon-id="${coupon.couponId}"
                                     th:text="${coupon.couponName} + ' (' + ${#numbers.formatInteger(coupon.minOrderPrice, 0, 'COMMA')} + '원 이상)'">
                             </option>
                         </select>
@@ -1742,7 +1743,8 @@
             }
         }
 
-        const couponCode = selectedOption.val();
+        const couponCode = selectedOption.val(); // 이제 couponCode가 됨
+        const couponId = selectedOption.data('coupon-id'); // 필요시 couponId도 사용 가능
         const discountType = selectedOption.data('type');
         const discountValue = selectedOption.data('value');
         const minAmount = selectedOption.data('min-amount');
@@ -1768,7 +1770,8 @@
         // 쿠폰 적용
         activeDiscount = {
             type: 'coupon',
-            code: couponCode,
+            code: couponCode, // 이제 couponCode 사용
+            couponId: couponId, // 필요시 ID도 보관
             discountType: discountType,
             value: discountValue,
             amount: discountAmount,

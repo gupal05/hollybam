@@ -33,6 +33,7 @@
 
     <select id="getUsePossibleCoupon" parameterType="int" resultType="com.hollybam.hollybam.dto.CouponDto">
         SELECT
+            c.coupon_code as couponCode,
             c.coupon_id as couponId,
             c.discount_type as discountType,
             c.discount_value as discountValue,
@@ -139,5 +140,10 @@
         WHERE coupon_member_code = #{couponMemberCode}
           AND used = 0
     </update>
-    
+
+    <select id="getCouponMemberCode" resultType="int">
+        select coupon_member_code
+        from coupon_member
+        where mem_code = #{memberCode} and coupon_code = #{couponCode}
+    </select>
 </mapper>

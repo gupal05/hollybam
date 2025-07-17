@@ -61,4 +61,10 @@ public class CouponService implements IF_CouponService {
             return false;
         }
     }
+
+    @Override
+    @Transactional
+    public int getCouponMemberCode(int memberCode, int couponCode){
+        return couponDao.getCouponMemberCode(memberCode, couponCode);
+    }
 }

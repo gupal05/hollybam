@@ -28,6 +28,8 @@ public class OrderServiceImpl implements IF_OrderService {
     private ProductService productService;
     @Autowired
     private IF_PointService pointService;
+    @Autowired
+    private CouponService couponService;
 
     @Override
     @Transactional
@@ -102,6 +104,11 @@ public class OrderServiceImpl implements IF_OrderService {
             OrderDto order = createOrderFromData(orderData, null);
             orderDao.insertOrder(order);
             log.info("바로 구매 주문 저장 완료. 주문코드: {}", order.getOrderCode());
+            // 쿠폰 처리
+            int memCode    = Integer.parseInt(orderData.get("memCode").toString());
+            int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
+            int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
+            couponService.useCoupon(couponMemberCode, order.getOrderCode());
             // 적립금 처리 (회원인 경우만)
             if (order.getMemCode() != null && usePoints >= 0) {
                 processOrderPoints(

@@ -340,7 +340,7 @@
     </div>
 
     <!-- 소셜 로그인 -->
-    <div class="social-login">
+    <div class="social-login" style="display: none">
         <div class="social-title">간편 로그인</div>
         <div class="social-buttons">
             <button class="social-btn kakao" onclick="socialLogin('kakao')"><span>카카오</span></button>
@@ -351,7 +351,7 @@
 
     <!-- 로그인 폼 -->
     <div class="login-form">
-        <div class="divider"><span>또는</span></div>
+        <div class="divider"><span style="display: none">또는</span></div>
 
         <form id="loginForm" th:action="@{/auth/loginResult}" method="post">
             <div class="form-group">

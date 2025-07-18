@@ -643,7 +643,7 @@
       <div th:each="coupon : ${couponList}"
            class="coupon-item"
            th:data-status="${coupon.coupon_status}"
-           th:style="${coupon.coupon_status == 'used' || coupon.coupon_status == 'expired'} ? 'display: none;' : ''">
+           >
 
         <!-- 쿠폰 상태 배지 -->
         <div class="coupon-status"

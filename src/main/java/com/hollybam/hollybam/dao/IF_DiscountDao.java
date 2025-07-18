@@ -34,12 +34,21 @@ public interface IF_DiscountDao {
      */
     int checkDiscountCodeUsage(@Param("discountCode") Integer discountCode, @Param("memCode") Integer memCode);
 
+    int checkDiscountCodeUsageForGuest(@Param("discountCode") Integer discountCode, @Param("guestCode") Integer guestCode);
+
     /**
      * 할인코드 사용 내역 저장
      * @param usageDto 사용 내역 정보
      * @return 저장 결과 (1: 성공, 0: 실패)
      */
     int insertDiscountCodeUsage(DiscountCodeUsageDto usageDto);
+
+    /**
+     * 할인코드 사용 내역 저장
+     * @param usageDto 사용 내역 정보
+     * @return 저장 결과 (1: 성공, 0: 실패)
+     */
+    int insertDiscountCodeUsageForGuest(DiscountCodeUsageDto usageDto);
 
     /**
      * 회원의 할인코드 사용 내역 조회

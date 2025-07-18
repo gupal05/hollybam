@@ -9,6 +9,7 @@
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
 
 
   <style>
@@ -257,6 +258,8 @@
     </p>
   </div>
 </div>
+
+<div th:replace="~{layout/footer :: footer}"></div>
 <script>
   window.onload = function () {
     google.accounts.id.initialize({

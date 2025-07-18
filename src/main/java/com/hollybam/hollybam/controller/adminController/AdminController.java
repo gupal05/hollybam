@@ -278,9 +278,14 @@ public class AdminController {
     // 쿠폰/할인코드 생성 페이지 진입
     @GetMapping("/discount/create")
     public String showCreateForm(Model model) {
-        model.addAttribute("coupon", new CouponDto());
         model.addAttribute("discount", new DiscountDto()); // 할인코드 폼에 바인딩
         return "admin/discount/discountCreate"; // ← 여기서 쿠폰/할인코드 둘 다 있는 폼
+    }
+
+    @GetMapping("/coupon/create")
+    public String moveCreteCoupon(Model model) {
+        model.addAttribute("coupon", new CouponDto());
+        return "admin/discount/createCoupon";
     }
 
     // 쿠폰 생성 처리

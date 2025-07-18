@@ -63,6 +63,13 @@
           AND mem_code = #{memCode}
     </select>
 
+    <select id="checkDiscountCodeUsageForGuest" resultType="int">
+        SELECT COUNT(*)
+        FROM discount_code_usage
+        WHERE discount_code = #{discountCode}
+          AND guest_code = #{guestCode}
+    </select>
+
     <!-- 할인코드 사용 내역 저장 -->
     <insert id="insertDiscountCodeUsage" parameterType="com.hollybam.hollybam.dto.DiscountCodeUsageDto" useGeneratedKeys="true" keyProperty="usageCode">
         INSERT INTO discount_code_usage (
@@ -72,6 +79,19 @@
         ) VALUES (
                      #{discountCode},
                      #{memCode},
+                     #{usedAt}
+                 )
+    </insert>
+
+    <!-- 할인코드 사용 내역 저장 -->
+    <insert id="insertDiscountCodeUsageForGuest" parameterType="com.hollybam.hollybam.dto.DiscountCodeUsageDto" useGeneratedKeys="true" keyProperty="usageCode">
+        INSERT INTO discount_code_usage (
+            discount_code,
+            guest_code,
+            used_at
+        ) VALUES (
+                     #{discountCode},
+                     #{guestCode},
                      #{usedAt}
                  )
     </insert>

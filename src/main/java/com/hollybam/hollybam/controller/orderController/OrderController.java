@@ -156,26 +156,44 @@ public class OrderController {
             String discountId = (String) request.get("discountId");
             Long orderAmount = Long.valueOf(request.get("orderAmount").toString());
 
-            // 🆕 세션에서 회원 정보 가져오기
-            MemberDto member = (MemberDto) session.getAttribute("member");
-            Integer memCode = member != null ? member.getMemberCode() : null;
+            if(session.getAttribute("member") != null){
+                // 🆕 세션에서 회원 정보 가져오기
+                MemberDto member = (MemberDto) session.getAttribute("member");
+                Integer memCode = member != null ? member.getMemberCode() : null;
 
-            log.info("할인코드 검증 요청: discountId={}, orderAmount={}, memCode={}",
-                    discountId, orderAmount, memCode);
+                log.info("할인코드 검증 요청: discountId={}, orderAmount={}, memCode={}",
+                        discountId, orderAmount, memCode);
 
-            // 🆕 회원 코드를 포함한 할인코드 검증 (중복 사용 체크 포함)
-            Map<String, Object> validationResult = discountService.validateDiscountCode(discountId, orderAmount, memCode);
+                // 🆕 회원 코드를 포함한 할인코드 검증 (중복 사용 체크 포함)
+                Map<String, Object> validationResult = discountService.validateDiscountCode(discountId, orderAmount, memCode);
 
-            response.put("success", true);
-            response.put("data", validationResult.get("discountInfo"));
-            response.put("discountAmount", validationResult.get("discountAmount"));
-            response.put("message", "할인코드가 성공적으로 적용되었습니다.");
+                response.put("success", true);
+                response.put("data", validationResult.get("discountInfo"));
+                response.put("discountAmount", validationResult.get("discountAmount"));
+                response.put("message", "할인코드가 성공적으로 적용되었습니다.");
 
-            log.info("할인코드 검증 성공: discountId={}, memCode={}, discountAmount={}",
-                    discountId, memCode, validationResult.get("discountAmount"));
+                log.info("할인코드 검증 성공: discountId={}, memCode={}, discountAmount={}",
+                        discountId, memCode, validationResult.get("discountAmount"));
+            } else if(session.getAttribute("guest") != null){
+                // 🆕 세션에서 회원 정보 가져오기
+                GuestDto guest = (GuestDto) session.getAttribute("guest");
+                Integer guestCode = guest != null ? guest.getGuestCode() : null;
 
+                log.info("할인코드 검증 요청: discountId={}, orderAmount={}, guestCode={}",
+                        discountId, orderAmount, guestCode);
+
+                // 🆕 회원 코드를 포함한 할인코드 검증 (중복 사용 체크 포함)
+                Map<String, Object> validationResult = discountService.validateDiscountCode(discountId, orderAmount, guestCode);
+
+                response.put("success", true);
+                response.put("data", validationResult.get("discountInfo"));
+                response.put("discountAmount", validationResult.get("discountAmount"));
+                response.put("message", "할인코드가 성공적으로 적용되었습니다.");
+
+                log.info("할인코드 검증 성공: discountId={}, memCode={}, discountAmount={}",
+                        discountId, guestCode, validationResult.get("discountAmount"));
+            }
             return ResponseEntity.ok(response);
-
         } catch (IllegalArgumentException e) {
             log.warn("잘못된 요청: {}", e.getMessage());
             response.put("success", false);

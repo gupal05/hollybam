@@ -90,7 +90,11 @@ public class OrderServiceImpl implements IF_OrderService {
             }
 
             // 🆕 할인코드 사용 내역 저장 (회원인 경우만)
-            recordDiscountCodeUsageIfApplied(orderData, order.getMemCode());
+            if(session.getAttribute("member") != null){
+                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode());
+            } else if(session.getAttribute("guest") != null){
+                recordDiscountCodeUsageIfApplied(orderData, order.getGuestCode());
+            }
 
             log.info("장바구니 주문 생성 완료: {}", order.getOrderId());
             return order;
@@ -155,7 +159,11 @@ public class OrderServiceImpl implements IF_OrderService {
 
             createInitialDelivery(order.getOrderCode());
             // 🆕 할인코드 사용 내역 저장 (회원인 경우만)
-            recordDiscountCodeUsageIfApplied(orderData, order.getMemCode());
+            if(session.getAttribute("member") != null){
+                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode());
+            } else if(session.getAttribute("guest") != null){
+                recordDiscountCodeUsageIfApplied(orderData, order.getGuestCode());
+            }
 
             log.info("바로 구매 주문 생성 완료: {}", order.getOrderId());
             return order;
@@ -603,27 +611,45 @@ public class OrderServiceImpl implements IF_OrderService {
     /**
      * 주문 완료 시 할인코드 사용 내역 저장
      * @param orderData 주문 데이터
-     * @param memCode 회원 코드 (비회원인 경우 null)
+     * @param code 회원 코드 (비회원인 경우 null)
      */
-    private void recordDiscountCodeUsageIfApplied(Map<String, Object> orderData, Integer memCode) {
+    private void recordDiscountCodeUsageIfApplied(Map<String, Object> orderData, Integer code) {
         try {
             // 주문 데이터에서 할인코드 정보 추출
             String discountCodeId = (String) orderData.get("discountCode");
 
             // 할인코드가 사용되고 회원인 경우에만 처리
-            if (discountCodeId != null && !discountCodeId.trim().isEmpty() && memCode != null) {
-                discountCodeId = discountCodeId.trim().toUpperCase();
+            if(session.getAttribute("member") != null){
+                if (discountCodeId != null && !discountCodeId.trim().isEmpty() && code != null) {
+                    discountCodeId = discountCodeId.trim().toUpperCase();
 
-                // 할인코드 정보 조회
-                DiscountDto discountDto = discountService.getDiscountByCode(discountCodeId);
+                    // 할인코드 정보 조회
+                    DiscountDto discountDto = discountService.getDiscountByCode(discountCodeId);
 
-                if (discountDto != null) {
-                    // 사용 내역 저장
-                    discountService.recordDiscountCodeUsage(discountDto.getDiscountCode(), memCode);
-                    log.info("할인코드 사용 내역 저장 완료: discountCode={} ({}), memCode={}",
-                            discountDto.getDiscountCode(), discountDto.getDiscountId(), memCode);
-                } else {
-                    log.warn("할인코드 정보를 찾을 수 없음: discountCodeId={}", discountCodeId);
+                    if (discountDto != null) {
+                        // 사용 내역 저장
+                        discountService.recordDiscountCodeUsage(discountDto.getDiscountCode(), code);
+                        log.info("할인코드 사용 내역 저장 완료: discountCode={} ({}), memberCode={}",
+                                discountDto.getDiscountCode(), discountDto.getDiscountId(), code);
+                    } else {
+                        log.warn("할인코드 정보를 찾을 수 없음: discountCodeId={}", discountCodeId);
+                    }
+                }
+            } else if(session.getAttribute("guest") != null){
+                if (discountCodeId != null && !discountCodeId.trim().isEmpty() && code != null) {
+                    discountCodeId = discountCodeId.trim().toUpperCase();
+
+                    // 할인코드 정보 조회
+                    DiscountDto discountDto = discountService.getDiscountByCode(discountCodeId);
+
+                    if (discountDto != null) {
+                        // 사용 내역 저장
+                        discountService.recordDiscountCodeUsageForGuest(discountDto.getDiscountCode(), code);
+                        log.info("할인코드 사용 내역 저장 완료: discountCode={} ({}), guestCode={}",
+                                discountDto.getDiscountCode(), discountDto.getDiscountId(), code);
+                    } else {
+                        log.warn("할인코드 정보를 찾을 수 없음: discountCodeId={}", discountCodeId);
+                    }
                 }
             }
         } catch (Exception e) {

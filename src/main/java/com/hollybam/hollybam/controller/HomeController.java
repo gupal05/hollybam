@@ -288,4 +288,9 @@ public class HomeController {
         return ageGroup + "대";
     }
 
+    @GetMapping("/brand")
+    public String brand() {
+        return "404";
+    }
+
 }

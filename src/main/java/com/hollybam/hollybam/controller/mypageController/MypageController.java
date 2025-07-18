@@ -353,6 +353,39 @@ public class MypageController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 쿠폰 등록 API
+     */
+    @PostMapping("/coupons/register")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> registerCoupon(
+            @RequestParam("couponNumber") String couponNumber,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 로그인 확인
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            if (member == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.ok(response);
+            }
+            System.out.println(couponNumber);
+            // 쿠폰 등록 처리
+            Map<String, Object> result = couponService.registerCoupon(couponNumber, member.getMemberCode());
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "쿠폰 등록 중 오류가 발생했습니다.");
+            return ResponseEntity.ok(response);
+        }
+    }
+
     @GetMapping("/points")
     public String pointsPage(HttpSession session, Model model,
                              @RequestParam(defaultValue = "1") int page) {

@@ -26,4 +26,19 @@ public interface IF_CouponDao {
     int useCoupon(@Param("couponMemberCode") int couponMemberCode, @Param("orderCode") int orderCode);
 
     int getCouponMemberCode(@Param("memberCode") int memberCode,  @Param("couponCode") int couponCode);
+
+    /**
+     * 쿠폰 ID로 쿠폰 정보 조회
+     */
+    CouponDto findCouponByCouponId(@Param("couponId") String couponId);
+
+    /**
+     * 회원이 해당 쿠폰을 이미 가지고 있는지 확인
+     */
+    int checkMemberHasCoupon(@Param("memberCode") int memberCode, @Param("couponCode") int couponCode);
+
+    /**
+     * 회원에게 쿠폰 발급
+     */
+    int giveCouponToMember(@Param("memberCode") int memberCode, @Param("couponCode") int couponCode);
 }

@@ -29,4 +29,12 @@ public interface IF_CouponService {
     boolean useCoupon(int couponMemberCode, int orderCode);
 
     int getCouponMemberCode(int memberCode, int couponCode);
+
+    /**
+     * 쿠폰 번호로 쿠폰 등록
+     * @param couponId 쿠폰 번호 (사용자가 입력한 쿠폰 ID)
+     * @param memberCode 회원 코드
+     * @return 등록 결과 맵 (success, message 포함)
+     */
+    Map<String, Object> registerCoupon(String couponId, int memberCode);
 }

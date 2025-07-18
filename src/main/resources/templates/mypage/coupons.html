@@ -145,16 +145,24 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
 
+    /* 🆕 페이지 헤더 수정 */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      position: relative;
+    }
+
     .page-title {
       font-size: 28px;
       font-weight: 700;
       color: #1a1a1a;
-      margin-bottom: 30px;
-      position: relative;
-      padding-bottom: 15px;
+      margin: 0;
     }
 
-    .page-title::after {
+    .page-header::after {
       content: '';
       position: absolute;
       bottom: 0;
@@ -163,6 +171,29 @@
       height: 3px;
       background: linear-gradient(135deg, #EE386D, #ff6b9d);
       border-radius: 2px;
+    }
+
+    /* 🆕 쿠폰 등록 버튼 */
+    .register-coupon-btn {
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
+    }
+
+    .register-coupon-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(238, 56, 109, 0.4);
+    }
+
+    .register-coupon-btn i {
+      margin-right: 8px;
     }
 
     /* 쿠폰 통계 */
@@ -472,6 +503,185 @@
       color: #0c5460;
     }
 
+    /* 🆕 모달 스타일 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .modal-subtitle {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .modal-body {
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 2px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #EE386D;
+      box-shadow: 0 0 0 3px rgba(238, 56, 109, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: #999;
+      letter-spacing: normal;
+      font-weight: normal;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-btn.cancel {
+      background: #f8f9fa;
+      color: #666;
+      border: 2px solid #e0e0e0;
+    }
+
+    .modal-btn.cancel:hover {
+      background: #e9ecef;
+    }
+
+    .modal-btn.submit {
+      background: linear-gradient(135deg, #EE386D, #ff6b9d);
+      color: white;
+      box-shadow: 0 4px 15px rgba(238, 56, 109, 0.3);
+    }
+
+    .modal-btn.submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(238, 56, 109, 0.4);
+    }
+
+    .modal-btn.submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .alert {
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert i {
+      margin-right: 8px;
+    }
+
     /* 반응형 */
     @media (max-width: 1024px) {
       .mypage-container {
@@ -486,6 +696,12 @@
 
       .coupon-stats {
         grid-template-columns: repeat(2, 1fr);
+      }
+
+      .page-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
       }
     }
 
@@ -535,6 +751,16 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
+      }
+
+      .modal-content {
+        padding: 30px 20px;
+        margin: 20px;
+        width: calc(100% - 40px);
+      }
+
+      .modal-actions {
+        flex-direction: column;
       }
     }
 
@@ -595,7 +821,14 @@
 
   <!-- 메인 콘텐츠 -->
   <main class="main-content">
-    <h1 class="page-title">쿠폰함 🎫</h1>
+    <!-- 🆕 페이지 헤더 (쿠폰 등록 버튼 추가) -->
+    <div class="page-header">
+      <h1 class="page-title">쿠폰함 🎫</h1>
+      <button class="register-coupon-btn" onclick="openCouponModal()">
+        <i class="fas fa-plus"></i>
+        쿠폰 등록
+      </button>
+    </div>
 
     <!-- 쿠폰 통계 -->
     <div class="coupon-stats">
@@ -643,7 +876,7 @@
       <div th:each="coupon : ${couponList}"
            class="coupon-item"
            th:data-status="${coupon.coupon_status}"
-           >
+      >
 
         <!-- 쿠폰 상태 배지 -->
         <div class="coupon-status"
@@ -678,23 +911,15 @@
                 <strong>최소주문:</strong>
                 <span th:text="${#numbers.formatInteger(coupon.min_order_price, 3, 'COMMA') + '원'}">50,000원</span>
               </div>
-              <!-- max_discount는 실제 데이터에 없으므로 제거하거나 조건부로 처리 -->
-              <div class="coupon-detail" th:if="${coupon.containsKey('max_discount') and coupon.max_discount != null}">
-                <strong>최대할인:</strong>
-                <span th:text="${#numbers.formatInteger(coupon.max_discount, 3, 'COMMA') + '원'}">30,000원</span>
-              </div>
               <div class="coupon-detail">
                 <strong th:if="${coupon.coupon_status == 'used'}">사용일:</strong>
                 <strong th:if="${coupon.coupon_status == 'expired'}">만료일:</strong>
                 <strong th:if="${coupon.coupon_status == 'available'}">유효기간:</strong>
 
-                <!-- 날짜 필드들이 실제 데이터에 없으므로 간단한 텍스트로 처리 -->
                 <span th:if="${coupon.coupon_status == 'used'}">사용됨</span>
                 <span th:if="${coupon.coupon_status == 'expired'}">만료됨</span>
                 <span th:if="${coupon.coupon_status == 'available'}">사용 가능</span>
               </div>
-
-              <!-- 사용된 주문 정보도 실제 데이터에 없으므로 제거 -->
             </div>
 
             <div class="coupon-actions">
@@ -736,13 +961,241 @@
   </main>
 </div>
 
+<!-- 🆕 쿠폰 등록 모달 -->
+<div class="modal-overlay" id="couponModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">쿠폰 등록</h2>
+      <p class="modal-subtitle">쿠폰 번호를 입력하여 새로운 쿠폰을 받아보세요</p>
+    </div>
+
+    <div class="modal-body">
+      <!-- 알림 메시지 -->
+      <div class="alert success" id="successAlert">
+        <i class="fas fa-check-circle"></i>
+        <span id="successMessage"></span>
+      </div>
+
+      <div class="alert error" id="errorAlert">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorMessage"></span>
+      </div>
+
+      <form id="couponForm">
+        <div class="form-group">
+          <label class="form-label" for="couponNumber">
+            <i class="fas fa-ticket-alt"></i>
+            쿠폰 번호
+          </label>
+          <input
+                  type="text"
+                  id="couponNumber"
+                  name="couponNumber"
+                  class="form-input"
+                  placeholder="예: AbCd-EfGh-IjKl"
+                  maxlength="14"
+                  required>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="modal-btn cancel" onclick="closeCouponModal()">
+        취소
+      </button>
+      <button type="button" class="modal-btn submit" id="submitBtn" onclick="submitCoupon()">
+        <span id="submitText">등록하기</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- 푸터 -->
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
-  // 필터 기능
+  // 🆕 쿠폰 등록 모달 관련 JavaScript 함수들
+
+  /**
+   * 쿠폰 등록 모달 열기
+   */
+  function openCouponModal() {
+    $('#couponModal').fadeIn(300);
+    $('#couponNumber').focus();
+    resetModal();
+  }
+
+  /**
+   * 쿠폰 등록 모달 닫기
+   */
+  function closeCouponModal() {
+    $('#couponModal').fadeOut(300);
+    resetModal();
+  }
+
+  /**
+   * 모달 초기화
+   */
+  function resetModal() {
+    $('#couponForm')[0].reset();
+    $('#successAlert, #errorAlert').hide();
+    $('#submitBtn').prop('disabled', false);
+    $('#submitText').text('등록하기');
+  }
+
+  /**
+   * 쿠폰 등록 처리
+   */
+  function submitCoupon() {
+    const couponNumber = $('#couponNumber').val().trim();
+    // '-' 제거하여 순수한 쿠폰 번호만 추출
+
+    // 입력값 검증
+    if (!couponNumber) {
+      showError('쿠폰 번호를 입력해주세요.');
+      $('#couponNumber').focus();
+      return;
+    }
+
+    // 쿠폰 번호 길이 확인 (12글자)
+    if (couponNumber.length !== 14) {
+      showError('쿠폰 번호는 12글자여야 합니다. (예: AbCd-EfGh-IjKl)');
+      $('#couponNumber').focus();
+      return;
+    }
+
+    // 로딩 상태 시작
+    setSubmitLoading(true);
+    hideAlerts();
+
+    // AJAX 요청
+    $.ajax({
+      url: '/mypage/coupons/register',
+      type: 'POST',
+      data: {
+        couponNumber: couponNumber  // '-' 제거된 순수한 쿠폰 번호 전송
+      },
+      success: function(response) {
+        setSubmitLoading(false);
+
+        if (response.success) {
+          showSuccess(response.message);
+
+          // 2초 후 페이지 새로고침
+          setTimeout(() => {
+            location.reload();
+          }, 2000);
+
+        } else {
+          showError(response.message || '쿠폰 등록에 실패했습니다.');
+        }
+      },
+      error: function(xhr, status, error) {
+        setSubmitLoading(false);
+
+        let errorMessage = '쿠폰 등록 중 오류가 발생했습니다.';
+
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMessage = xhr.responseJSON.message;
+        } else if (xhr.status === 401) {
+          errorMessage = '로그인이 필요합니다.';
+        } else if (xhr.status === 400) {
+          errorMessage = '잘못된 요청입니다.';
+        }
+
+        showError(errorMessage);
+        console.error('쿠폰 등록 오류:', error);
+      }
+    });
+  }
+
+  /**
+   * 성공 메시지 표시
+   */
+  function showSuccess(message) {
+    $('#successMessage').text(message);
+    $('#successAlert').fadeIn(300);
+    $('#errorAlert').hide();
+  }
+
+  /**
+   * 에러 메시지 표시
+   */
+  function showError(message) {
+    $('#errorMessage').text(message);
+    $('#errorAlert').fadeIn(300);
+    $('#successAlert').hide();
+  }
+
+  /**
+   * 알림 메시지 숨기기
+   */
+  function hideAlerts() {
+    $('#successAlert, #errorAlert').hide();
+  }
+
+  /**
+   * 제출 버튼 로딩 상태 관리
+   */
+  function setSubmitLoading(isLoading) {
+    const $submitBtn = $('#submitBtn');
+    const $submitText = $('#submitText');
+
+    if (isLoading) {
+      $submitBtn.prop('disabled', true);
+      $submitText.html('<span class="loading-spinner"></span>등록 중...');
+    } else {
+      $submitBtn.prop('disabled', false);
+      $submitText.text('등록하기');
+    }
+  }
+
+  // 🆕 기존 JavaScript 함수들과 통합
+
   $(document).ready(function() {
-    // 필터 기능 - AJAX로 변경
+    // 🆕 쿠폰 번호 자동 포맷팅
+    $('#couponNumber').on('input', function(e) {
+      formatCouponNumber(this);
+    });
+
+    // 🆕 쿠폰 번호 키 입력 처리
+    $('#couponNumber').on('keydown', function(e) {
+      // 백스페이스, 딜리트, 탭, 화살표 키는 허용
+      if (e.keyCode === 8 || e.keyCode === 46 || e.keyCode === 9 ||
+              (e.keyCode >= 37 && e.keyCode <= 40)) {
+        return;
+      }
+
+      // 영문자, 숫자만 허용
+      const char = String.fromCharCode(e.keyCode);
+      if (!/[A-Za-z0-9]/.test(char)) {
+        e.preventDefault();
+      }
+    });
+
+    // Enter 키 처리
+    $('#couponNumber').on('keypress', function(e) {
+      if (e.which === 13) { // Enter 키
+        e.preventDefault();
+        submitCoupon();
+      }
+    });
+
+    // 모달 배경 클릭 시 닫기
+    $('#couponModal').on('click', function(e) {
+      if (e.target === this) {
+        closeCouponModal();
+      }
+    });
+
+    // ESC 키로 모달 닫기
+    $(document).on('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeCouponModal();
+      }
+    });
+
+    // 기존 필터 기능
     $('.filter-btn').on('click', function() {
       const filter = $(this).data('filter');
 
@@ -750,21 +1203,16 @@
       $('.filter-btn').removeClass('active');
       $(this).addClass('active');
 
-      // AJAX로 필터된 쿠폰 목록 요청
-      $.ajax({
-        url: '/mypage/coupons/filter',
-        type: 'GET',
-        data: { status: filter },
-        dataType: 'json',
-        success: function(data) {
-          renderCouponList(data, filter);
-          updateStats();
-        },
-        error: function(xhr, status, error) {
-          console.error('쿠폰 목록 조회 실패:', error);
-          showToast('쿠폰 목록을 불러오는데 실패했습니다.', 'error');
-        }
-      });
+      // 간단한 클라이언트 사이드 필터링
+      if (filter === 'all') {
+        $('.coupon-item').show();
+      } else {
+        $('.coupon-item').hide();
+        $('.coupon-item[data-status="' + filter + '"]').show();
+      }
+
+      // 빈 상태 확인
+      checkEmptyState(filter);
     });
 
     // 초기 로드 시 설정
@@ -772,15 +1220,35 @@
     checkCouponExpiry();
   });
 
-  // 쿠폰 목록 렌더링 함수
-  function renderCouponList(coupons, filter) {
-    const $couponList = $('#couponList');
+  // 🆕 쿠폰 번호 포맷팅 함수
+  function formatCouponNumber(input) {
+    // 현재 값에서 '-'를 제거하고 영문자와 숫자만 남김
+    let value = input.value.replace(/[^A-Za-z0-9]/g, '');
+
+    // 최대 12글자까지만 허용 (포맷팅 후 14글자)
+    if (value.length > 12) {
+      value = value.substr(0, 12);
+    }
+
+    // 4글자마다 '-' 추가
+    let formatted = '';
+    for (let i = 0; i < value.length; i++) {
+      if (i > 0 && i % 4 === 0) {
+        formatted += '-';
+      }
+      formatted += value[i];
+    }
+
+    // 입력 필드에 포맷팅된 값 설정
+    input.value = formatted;
+  }
+
+  // 빈 상태 확인
+  function checkEmptyState(filter) {
+    const visibleCoupons = $('.coupon-item:visible');
     const $emptyCoupons = $('#emptyCoupons');
 
-    // 기존 쿠폰 아이템들 제거 (empty-coupons 제외)
-    $couponList.find('.coupon-item').remove();
-
-    if (coupons.length === 0) {
+    if (visibleCoupons.length === 0) {
       $emptyCoupons.show();
       if (filter !== 'all') {
         $emptyCoupons.find('.empty-title').text('해당하는 쿠폰이 없습니다');
@@ -789,62 +1257,9 @@
         $emptyCoupons.find('.empty-title').text('보유한 쿠폰이 없습니다');
         $emptyCoupons.find('.empty-description').text('다양한 혜택의 쿠폰을 받아보세요!');
       }
-      return;
-    }
-
-    $emptyCoupons.hide();
-
-    // 쿠폰 목록 렌더링
-    coupons.forEach(function(coupon) {
-      const couponHtml = createCouponItemHtml(coupon);
-      $couponList.prepend(couponHtml);
-    });
-  }
-
-  // 쿠폰 아이템 HTML 생성 함수
-  function createCouponItemHtml(coupon) {
-    const statusClass = coupon.coupon_status === 'available' ? 'active' : coupon.coupon_status;
-    const statusText = coupon.coupon_status === 'available' ? '사용가능' :
-            (coupon.coupon_status === 'used' ? '사용완료' : '만료됨');
-
-    const discountAmount = coupon.discount_type === 'per' ?
-            coupon.discount_value + '%' :
-            new Intl.NumberFormat().format(coupon.discount_value) + '원';
-
-    const minOrderPrice = new Intl.NumberFormat().format(coupon.min_order_price);
-
-    let buttonHtml = '';
-    if (coupon.coupon_status === 'available') {
-      buttonHtml = `<button class="use-coupon-btn" data-coupon-id="${coupon.coupon_id}" data-coupon-member-code="${coupon.coupon_member_code}" onclick="useCouponFromData(this)">쿠폰 사용하기</button>`;
-    } else if (coupon.coupon_status === 'used') {
-      buttonHtml = `<button class="use-coupon-btn" disabled>사용 완료</button>`;
     } else {
-      buttonHtml = `<button class="use-coupon-btn" disabled>만료됨</button>`;
+      $emptyCoupons.hide();
     }
-
-    return `
-      <div class="coupon-item ${coupon.coupon_status === 'expired' ? 'expired' : ''}" data-status="${coupon.coupon_status}">
-          <div class="coupon-status ${statusClass}">${statusText}</div>
-          <div class="coupon-content">
-              <div class="coupon-discount" ${coupon.coupon_status === 'used' || coupon.coupon_status === 'expired' ? 'style="background: #6c757d;"' : ''}>
-                  <div class="discount-amount">${discountAmount}</div>
-                  <div class="discount-type">할인</div>
-              </div>
-              <div class="coupon-info">
-                  <div class="coupon-name">${coupon.coupon_name}</div>
-                  <div class="coupon-description">${coupon.coupon_discription}</div>
-                  <div class="coupon-details">
-                      <div class="coupon-detail"><strong>최소주문:</strong> ${minOrderPrice}원</div>
-                      <div class="coupon-detail"><strong>상태:</strong> ${statusText}</div>
-                  </div>
-                  <div class="coupon-actions">
-                      ${buttonHtml}
-                      <span class="coupon-code">${coupon.coupon_id}</span>
-                  </div>
-              </div>
-          </div>
-      </div>
-  `;
   }
 
   // 쿠폰 사용 함수
@@ -937,97 +1352,11 @@
     }, 3000);
   }
 
-  // 페이지 로드 시 초기화
-  $(document).ready(function() {
-    // 쿠폰 만료일 체크
-    checkCouponExpiry();
-
-    // 스크롤 애니메이션
-    $('.coupon-item').each(function(index) {
-      $(this).css({
-        'opacity': '0',
-        'transform': 'translateY(30px)'
-      });
-
-      setTimeout(() => {
-        $(this).css({
-          'opacity': '1',
-          'transform': 'translateY(0)',
-          'transition': 'all 0.5s ease'
-        });
-      }, index * 100);
-    });
-
-    // 쿠폰 아이템 hover 효과
-    $(document).on('mouseenter', '.coupon-item', function() {
-      $(this).find('.use-coupon-btn').not(':disabled').css({
-        'transform': 'translateY(-2px)',
-        'box-shadow': '0 4px 15px rgba(238, 56, 109, 0.4)'
-      });
-    }).on('mouseleave', '.coupon-item', function() {
-      $(this).find('.use-coupon-btn').not(':disabled').css({
-        'transform': 'translateY(0)',
-        'box-shadow': 'none'
-      });
-    });
-
-    // 쿠폰 코드 클릭 시 복사 기능
-    $(document).on('click', '.coupon-code', function() {
-      const couponCode = $(this).text();
-
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(couponCode).then(function() {
-          showToast('쿠폰 코드가 복사되었습니다!', 'success');
-        }).catch(function() {
-          // 폴백 함수 호출
-          fallbackCopyTextToClipboard(couponCode);
-        });
-      } else {
-        fallbackCopyTextToClipboard(couponCode);
-      }
-
-      // 클릭 효과
-      $(this).css({
-        'background': '#EE386D',
-        'color': 'white',
-        'transform': 'scale(1.05)'
-      });
-
-      setTimeout(() => {
-        $(this).css({
-          'background': '#f8f9fa',
-          'color': '#999',
-          'transform': 'scale(1)'
-        });
-      }, 200);
-    });
-  });
-
-  // 폴백 복사 함수
-  function fallbackCopyTextToClipboard(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.top = "0";
-    textArea.style.left = "0";
-    textArea.style.position = "fixed";
-    textArea.style.opacity = "0";
-
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    try {
-      const successful = document.execCommand('copy');
-      if (successful) {
-        showToast('쿠폰 코드가 복사되었습니다!', 'success');
-      } else {
-        showToast('복사에 실패했습니다.', 'error');
-      }
-    } catch (err) {
-      showToast('복사에 실패했습니다.', 'error');
+  // 로그아웃 함수
+  function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+      window.location.href = '/auth/logout';
     }
-
-    document.body.removeChild(textArea);
   }
 </script>
 </body>

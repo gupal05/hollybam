@@ -146,4 +146,32 @@
         from coupon_member
         where mem_code = #{memberCode} and coupon_code = #{couponCode}
     </select>
+
+    <!-- 쿠폰 ID로 쿠폰 정보 조회 -->
+    <select id="findCouponByCouponId" parameterType="String" resultType="com.hollybam.hollybam.dto.CouponDto">
+        SELECT
+            coupon_code as couponCode,
+            coupon_id as couponId,
+            coupon_name as couponName,
+            coupon_discription as couponDescription,
+            discount_type as discountType,
+            discount_value as discountValue,
+            min_order_price as minOrderPrice
+        FROM coupon
+        WHERE coupon_id = #{couponId}
+    </select>
+
+    <!-- 회원이 해당 쿠폰을 이미 가지고 있는지 확인 -->
+    <select id="checkMemberHasCoupon" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM coupon_member
+        WHERE mem_code = #{memberCode}
+          AND coupon_code = #{couponCode}
+    </select>
+
+    <!-- 회원에게 쿠폰 발급 -->
+    <insert id="giveCouponToMember" parameterType="map">
+        INSERT INTO coupon_member (mem_code, coupon_code, used, issued_at)
+        VALUES (#{memberCode}, #{couponCode}, 0, now())
+    </insert>
 </mapper>

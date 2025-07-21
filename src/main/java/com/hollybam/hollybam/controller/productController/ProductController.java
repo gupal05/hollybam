@@ -72,6 +72,16 @@ public class ProductController {
             Map<String, Object> reviewCount = reviewService.getProductReviewCount(productCode, null);
             Map<String, Object> reviewRatingCount = reviewService.getProductRatingCounts(productCode);
 
+            // ⭐ 추가 방어 코드: reviewRatingCount가 null인 경우 기본값 설정
+            if (reviewRatingCount == null) {
+                reviewRatingCount = new HashMap<>();
+                reviewRatingCount.put("cnt1", 0);
+                reviewRatingCount.put("cnt2", 0);
+                reviewRatingCount.put("cnt3", 0);
+                reviewRatingCount.put("cnt4", 0);
+                reviewRatingCount.put("cnt5", 0);
+            }
+
             // 베스트 리뷰 (기존 메서드 활용)
             List<BestReviewDto> bestReviews = reviewService.selectBestReviewsByProduct(productCode);
 
@@ -83,11 +93,12 @@ public class ProductController {
             Number n4 = (Number) reviewRatingCount.getOrDefault("cnt4", 0);
             Number n5 = (Number) reviewRatingCount.getOrDefault("cnt5", 0);
 
-            int cnt1 = n1.intValue();
-            int cnt2 = n2.intValue();
-            int cnt3 = n3.intValue();
-            int cnt4 = n4.intValue();
-            int cnt5 = n5.intValue();
+            // ⭐ 추가 방어 코드: Number가 null인 경우 처리
+            int cnt1 = (n1 != null) ? n1.intValue() : 0;
+            int cnt2 = (n2 != null) ? n2.intValue() : 0;
+            int cnt3 = (n3 != null) ? n3.intValue() : 0;
+            int cnt4 = (n4 != null) ? n4.intValue() : 0;
+            int cnt5 = (n5 != null) ? n5.intValue() : 0;
 
             // 총 리뷰 수 계산
             int totalReviews = cnt1 + cnt2 + cnt3 + cnt4 + cnt5;

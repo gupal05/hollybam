@@ -1350,35 +1350,35 @@
                         <div class="rating-bar">
                             <div class="rating-fill" th:style="'width: ' + ${rating5Percent} + '%'"></div>
                         </div>
-                        <span class="rating-count" th:text="${reviewRatingCount.cnt5}+'명'">0명</span>
+                        <span class="rating-count" th:text="${reviewRatingCount?.cnt5 ?: 0} + '명'">0명</span>
                     </div>
                     <div class="rating-row">
                         <span class="rating-label">4점</span>
                         <div class="rating-bar">
                             <div class="rating-fill" th:style="'width: ' + ${rating4Percent} + '%'"></div>
                         </div>
-                        <span class="rating-count" th:text="${reviewRatingCount.cnt4}+'명'">0명</span>
+                        <span class="rating-count" th:text="${reviewRatingCount?.cnt4 ?: 0} + '명'">0명</span>
                     </div>
                     <div class="rating-row">
                         <span class="rating-label">3점</span>
                         <div class="rating-bar">
                             <div class="rating-fill" th:style="'width: ' + ${rating3Percent} + '%'"></div>
                         </div>
-                        <span class="rating-count" th:text="${reviewRatingCount.cnt3}+'명'">0명</span>
+                        <span class="rating-count" th:text="${reviewRatingCount?.cnt3 ?: 0} + '명'">0명</span>
                     </div>
                     <div class="rating-row">
                         <span class="rating-label">2점</span>
                         <div class="rating-bar">
                             <div class="rating-fill" th:style="'width: ' + ${rating2Percent} + '%'"></div>
                         </div>
-                        <span class="rating-count" th:text="${reviewRatingCount.cnt2}+'명'">0명</span>
+                        <span class="rating-count" th:text="${reviewRatingCount?.cnt2 ?: 0} + '명'">0명</span>
                     </div>
                     <div class="rating-row">
                         <span class="rating-label">1점</span>
                         <div class="rating-bar">
                             <div class="rating-fill" th:style="'width: ' + ${rating1Percent} + '%'"></div>
                         </div>
-                        <span class="rating-count" th:text="${reviewRatingCount.cnt1}+'명'">0명</span>
+                        <span class="rating-count" th:text="${reviewRatingCount?.cnt1 ?: 0} + '명'">0명</span>
                     </div>
                 </div>
             </div>

@@ -550,7 +550,41 @@ public class ReviewService implements IF_ReviewService {
         }
     }
 
-    public Map<String, Object> getProductRatingCounts(int productCode){
-        return reviewDao.getProductRatingCounts(productCode);
+    @Override
+    public Map<String, Object> getProductRatingCounts(int productCode) {
+        try {
+            log.info("상품별 평점 카운트 조회 - productCode: {}", productCode);
+
+            Map<String, Object> result = reviewDao.getProductRatingCounts(productCode);
+
+            // null 처리 및 기본값 설정
+            if (result == null) {
+                result = new HashMap<>();
+            }
+
+            // 각 평점별 카운트가 null인 경우 0으로 설정
+            if (result.get("cnt1") == null) result.put("cnt1", 0);
+            if (result.get("cnt2") == null) result.put("cnt2", 0);
+            if (result.get("cnt3") == null) result.put("cnt3", 0);
+            if (result.get("cnt4") == null) result.put("cnt4", 0);
+            if (result.get("cnt5") == null) result.put("cnt5", 0);
+
+            log.info("상품별 평점 카운트 조회 완료 - productCode: {}, cnt1: {}, cnt2: {}, cnt3: {}, cnt4: {}, cnt5: {}",
+                    productCode, result.get("cnt1"), result.get("cnt2"), result.get("cnt3"), result.get("cnt4"), result.get("cnt5"));
+
+            return result;
+
+        } catch (Exception e) {
+            log.error("상품별 평점 카운트 조회 중 오류 발생 - productCode: {}", productCode, e);
+
+            // 에러 발생 시 기본값으로 반환
+            Map<String, Object> result = new HashMap<>();
+            result.put("cnt1", 0);
+            result.put("cnt2", 0);
+            result.put("cnt3", 0);
+            result.put("cnt4", 0);
+            result.put("cnt5", 0);
+            return result;
+        }
     }
 }

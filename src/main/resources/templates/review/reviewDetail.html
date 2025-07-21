@@ -695,7 +695,7 @@
         <!-- 리뷰 헤더 -->
         <div class="review-header">
             <!-- 상품 정보 -->
-            <div class="product-info">
+            <div class="product-info" th:onclick="|window.location.href='@{/product/{id}(id=${review.productDto.productId})}'|" style="cursor: pointer">
                 <img th:if="${review.productImageDto != null}"
                      th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${review.productImageDto.imageUrl}}"
                      alt="상품 이미지" class="product-image">

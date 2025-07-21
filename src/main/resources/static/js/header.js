@@ -397,3 +397,261 @@ if ('ontouchstart' in window) {
         }
     });
 }
+
+// 검색창 위치 동적 조정 함수
+function updateSearchBarPosition() {
+    const searchBar = document.getElementById('searchSlideDown');
+    if (!searchBar) return;
+
+    const header = document.querySelector('.header');
+    if (!header) return;
+
+    // 현재 화면 크기에 따른 기본 위치 계산
+    let baseTop = 95.8; // 기본값
+
+    if (window.innerWidth <= 320) {
+        baseTop = 55; // 초소형 모바일
+    } else if (window.innerWidth <= 599) {
+        baseTop = 65; // 모바일
+    } else if (window.innerWidth <= 900) {
+        baseTop = 75; // 태블릿
+    } else if (window.innerWidth <= 1199) {
+        baseTop = 85; // 작은 데스크톱
+    } else {
+        baseTop = 95.8; // 기본 PC
+    }
+
+    // 헤더 스크롤 상태 확인 (PC만)
+    if (window.innerWidth > 900 && header.classList.contains('header-scrolled')) {
+        baseTop = 58.5; // 스크롤 시 헤더 높이
+    }
+
+    // 검색창 위치 업데이트
+    searchBar.style.top = baseTop + 'px';
+}
+
+// 검색창 토글 함수
+function toggleSearchBar() {
+    const searchBar = document.getElementById('searchSlideDown');
+    const searchIcon = document.querySelector('.search-toggle');
+
+    if (searchBar.classList.contains('active')) {
+        closeSearchBar();
+    } else {
+        openSearchBar();
+    }
+}
+
+// 검색창 열기
+function openSearchBar() {
+    const searchBar = document.getElementById('searchSlideDown');
+    const searchIcon = document.querySelector('.search-toggle');
+    const searchInput = document.getElementById('searchInput');
+
+    // 위치 업데이트
+    updateSearchBarPosition();
+
+    searchBar.classList.add('active');
+    if (searchIcon) searchIcon.classList.add('active');
+
+    // 검색창에 포커스
+    setTimeout(() => {
+        if (searchInput) {
+            searchInput.focus();
+        }
+    }, 200);
+
+    // 최근 검색어 로드
+    loadRecentKeywords();
+
+    // 외부 클릭 감지를 위한 이벤트 리스너 추가 (조금 지연시켜서 즉시 닫히는 것 방지)
+    setTimeout(() => {
+        document.addEventListener('click', handleOutsideClick, true);
+        document.addEventListener('touchstart', handleOutsideClick, true);
+    }, 100);
+
+    console.log('검색창 열림');
+}
+
+// 검색창 닫기
+function closeSearchBar() {
+    const searchBar = document.getElementById('searchSlideDown');
+    const searchIcon = document.querySelector('.search-toggle');
+    const searchInput = document.getElementById('searchInput');
+
+    searchBar.classList.remove('active');
+    if (searchIcon) searchIcon.classList.remove('active');
+
+    if (searchInput) {
+        searchInput.value = '';
+        searchInput.blur();
+    }
+
+    // 이벤트 리스너 제거
+    document.removeEventListener('click', handleOutsideClick, true);
+    document.removeEventListener('touchstart', handleOutsideClick, true);
+
+    console.log('검색창 닫힘');
+}
+
+// 외부 클릭 처리 (개선된 버전)
+function handleOutsideClick(event) {
+    const searchBar = document.getElementById('searchSlideDown');
+    const searchIcon = document.querySelector('.search-toggle');
+
+    // 검색창이 활성화되어 있지 않으면 무시
+    if (!searchBar || !searchBar.classList.contains('active')) {
+        return;
+    }
+
+    // 클릭된 요소가 검색창 내부이거나 검색 아이콘인지 확인
+    const isClickInsideSearchBar = searchBar.contains(event.target);
+    const isClickOnSearchIcon = searchIcon && (
+        searchIcon.contains(event.target) ||
+        searchIcon === event.target
+    );
+
+    // 검색창 외부를 클릭했을 때만 닫기
+    if (!isClickInsideSearchBar && !isClickOnSearchIcon) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeSearchBar();
+    }
+}
+
+// 빠른 검색
+function quickSearch(keyword) {
+    saveToRecentKeywords(keyword);
+    window.location.href = '/search?keyword=' + encodeURIComponent(keyword);
+}
+
+// 최근 검색어 저장
+function saveToRecentKeywords(keyword) {
+    if (!keyword || !keyword.trim()) return;
+
+    try {
+        let recent = JSON.parse(localStorage.getItem('recentKeywords') || '[]');
+        recent = recent.filter(item => item !== keyword);
+        recent.unshift(keyword);
+        recent = recent.slice(0, 8); // 최대 8개
+        localStorage.setItem('recentKeywords', JSON.stringify(recent));
+    } catch (error) {
+        console.error('최근 검색어 저장 실패:', error);
+    }
+}
+
+// 최근 검색어 로드
+function loadRecentKeywords() {
+    try {
+        const recent = JSON.parse(localStorage.getItem('recentKeywords') || '[]');
+        const container = document.getElementById('recentKeywords');
+
+        if (!container) return;
+
+        if (recent.length === 0) {
+            container.innerHTML = '<span style="color: #999; font-size: 13px;">최근 검색어가 없습니다</span>';
+            return;
+        }
+
+        container.innerHTML = recent.map(keyword => `
+            <span class="keyword-tag recent-keyword" onclick="quickSearch('${keyword}')">
+                ${keyword}
+                <span class="remove-btn" onclick="event.stopPropagation(); removeRecentKeyword('${keyword}')">&times;</span>
+            </span>
+        `).join('');
+    } catch (error) {
+        console.error('최근 검색어 로드 실패:', error);
+    }
+}
+
+// 최근 검색어 개별 삭제
+function removeRecentKeyword(keyword) {
+    try {
+        let recent = JSON.parse(localStorage.getItem('recentKeywords') || '[]');
+        recent = recent.filter(item => item !== keyword);
+        localStorage.setItem('recentKeywords', JSON.stringify(recent));
+        loadRecentKeywords();
+    } catch (error) {
+        console.error('최근 검색어 삭제 실패:', error);
+    }
+}
+
+// 검색 폼 제출 처리
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.querySelector('.search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            const keyword = document.getElementById('searchInput');
+            if (keyword && keyword.value.trim()) {
+                saveToRecentKeywords(keyword.value.trim());
+            }
+        });
+    }
+
+    // ESC 키로 검색창 닫기
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const searchBar = document.getElementById('searchSlideDown');
+            if (searchBar && searchBar.classList.contains('active')) {
+                closeSearchBar();
+            }
+        }
+    });
+
+    // 스크롤 및 리사이즈 시 위치 업데이트
+    let resizeTimeout;
+    function handlePositionUpdate() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(updateSearchBarPosition, 100);
+    }
+
+    window.addEventListener('scroll', handlePositionUpdate);
+    window.addEventListener('resize', handlePositionUpdate);
+
+    // 헤더 상태 변화 감지 (MutationObserver 사용)
+    const header = document.querySelector('.header');
+    if (header) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    updateSearchBarPosition();
+                }
+            });
+        });
+
+        observer.observe(header, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+
+    // 초기 위치 설정
+    updateSearchBarPosition();
+
+    // 모바일에서 화면 방향 변경 시 검색창 닫기
+    window.addEventListener('orientationchange', function() {
+        const searchBar = document.getElementById('searchSlideDown');
+        if (searchBar && searchBar.classList.contains('active')) {
+            setTimeout(() => {
+                closeSearchBar();
+            }, 500); // 화면 회전 완료 후 닫기
+        }
+    });
+
+    // 페이지 가시성 변화 시 검색창 닫기 (탭 전환 등)
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            const searchBar = document.getElementById('searchSlideDown');
+            if (searchBar && searchBar.classList.contains('active')) {
+                closeSearchBar();
+            }
+        }
+    });
+});
+
+// 전역 함수로 설정
+window.toggleSearchBar = toggleSearchBar;
+window.closeSearchBar = closeSearchBar;
+window.quickSearch = quickSearch;
+window.removeRecentKeyword = removeRecentKeyword;
+window.updateSearchBarPosition = updateSearchBarPosition;

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hollybam.hollybam.dao.IF_SearchDao">
+
+    <select id="countByKeyword" parameterType="string" resultType="int">
+        SELECT
+            COUNT(*) AS total_matches
+        FROM
+            product p
+        WHERE
+            p.product_name LIKE CONCAT('%', #{keyword}, '%')
+           -- 상세카테고리 매칭
+           OR (p.cate_code, p.cd_code) IN (
+            SELECT
+                cate_code, cd_code
+            FROM
+                category_detail
+            WHERE
+                cd_name LIKE CONCAT('%', #{keyword}, '%')
+        )
+           -- (선택) 카테고리명 매칭
+           OR p.cate_code IN (
+            SELECT
+                cate_code
+            FROM
+                category
+            WHERE
+                cate_name LIKE CONCAT('%', #{keyword}, '%')
+        )
+    </select>
+
+    <select id="searchProductsByPage" parameterType="map" resultType="map">
+        SELECT
+            p.product_code          AS productCode,
+            p.product_name          AS productName,
+            p.product_description   AS productDescription,
+            p.product_quantity      AS productQuantity,
+            img.image_url           AS title_image_url,
+            pr.price_original       AS priceOriginal,
+            pr.price_selling        AS priceSelling,
+            IF(pr.price_original > 0,
+               ROUND((pr.price_original - pr.price_selling)/pr.price_original*100,2),
+               0
+            )                        AS discount_rate,
+            COALESCE(AVG(rv.rating),0)    AS avg_rating,
+            COUNT(rv.review_code)         AS review_count,
+            COALESCE(wl.wish_count,0)     AS wishlist_count
+        FROM product p
+                 LEFT JOIN image img
+                           ON p.product_code = img.product_code AND img.image_type='title'
+                 LEFT JOIN price pr
+                           ON p.product_code = pr.product_code
+                 LEFT JOIN order_items oi
+                           ON p.product_code = oi.product_code
+                 LEFT JOIN review rv
+                           ON oi.order_item_code = rv.order_item_code AND rv.is_active=1
+                 LEFT JOIN (
+            SELECT product_code, COUNT(*) AS wish_count
+            FROM wishlist
+            GROUP BY product_code
+        ) wl ON p.product_code = wl.product_code
+        WHERE
+            p.product_name    LIKE CONCAT('%',#{keyword},'%')
+           OR EXISTS (
+            SELECT 1
+            FROM category_detail cd
+            WHERE cd.cate_code=p.cate_code
+              AND cd.cd_code=p.cd_code
+              AND cd.cd_name LIKE CONCAT('%',#{keyword},'%')
+        )
+           OR p.cate_code IN (
+            SELECT cate_code
+            FROM category
+            WHERE cate_name LIKE CONCAT('%',#{keyword},'%')
+        )
+        GROUP BY
+            p.product_code, p.product_name, p.product_description,
+            p.product_quantity, img.image_url, pr.price_original, pr.price_selling
+        ORDER BY p.product_code DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+
+</mapper>

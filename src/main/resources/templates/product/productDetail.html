@@ -1478,7 +1478,7 @@
                             <h4 th:text="${review.writerName}">김○○</h4>
                             <p>
                                 <span th:text="${review.writerAge}">20대</span>
-                                <span th:text="${review.writerGender == 'M' ? '남성' : '여성'}">여성</span>
+                                <span th:text="${review.writerGender == '남자' ? '남성' : '여성'}">여성</span>
                                 ·
                                 <span th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2024.07.15</span> 구매
                             </p>

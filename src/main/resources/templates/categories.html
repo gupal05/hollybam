@@ -593,7 +593,8 @@
             }
 
             .product-row {
-                grid-template-columns: 1fr;
+                /* 두 개씩 보이도록 수정 */
+                grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
                 width: 100%;
                 overflow-x: hidden;

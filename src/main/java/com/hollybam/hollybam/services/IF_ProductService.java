@@ -40,4 +40,8 @@ public interface IF_ProductService {
     ImageDto getProductTitleImage(int productCode);
 
     int getWishCount(int productCode);
+
+    Double getProductReviewAvg(int productCode);
+
+    int getProductReviewCount(int productCode);
 }

@@ -36,13 +36,6 @@ public interface IF_DiscountService {
      */
     void recordDiscountCodeUsage(Integer discountCode, Integer memCode) throws Exception;
 
-    /**
-     * 할인코드 사용 내역 저장
-     * @param discountCode 할인코드 번호 (discount 테이블의 PK)
-     * @param guestCode 회원 코드
-     * @throws Exception 저장 실패 시
-     */
-    void recordDiscountCodeUsageForGuest(Integer discountCode, Integer guestCode) throws Exception;
 
     /**
      * 회원의 할인코드 사용 내역 조회

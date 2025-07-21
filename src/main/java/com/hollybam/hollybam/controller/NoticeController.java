@@ -46,16 +46,6 @@ public class NoticeController {
 
             // 중요공지 목록 조회
             List<NoticeDto> importantNotices = noticeService.getImportantNoticeList();
-            for(int i = 0; i < noticeList.size(); i++){
-                System.out.println("공지사항 목록 : "+noticeList.get(i));
-            }
-            for(int i = 0; i < importantNotices.size(); i++){
-                System.out.println("중요 공지 목록 : "+importantNotices.get(i));
-            }
-            System.out.println(page);
-            System.out.println(totalPages);
-            System.out.println(totalCount);
-            System.out.println(size);
 
             mav.addObject("noticeList", noticeList);
             mav.addObject("importantNotices", importantNotices);

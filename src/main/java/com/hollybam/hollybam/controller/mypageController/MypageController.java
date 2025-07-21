@@ -64,6 +64,7 @@ public class MypageController {
                         orders.get(i).setDeliveryDto(orderService.getTrackingNumber(orders.get(i).getOrderCode()));
                     }
                 }
+                System.out.println(orders);
                 model.addAttribute("recentOrders", orders);
                 model.addAttribute("paidCount", mypageService.getMemberPaidCount(member.getMemberCode()));
                 model.addAttribute("shippedCount", mypageService.getMemberShippedCount(member.getMemberCode()));

@@ -73,6 +73,18 @@ public class ProductService implements IF_ProductService{
 
     @Override
     @Transactional
+    public Double getProductReviewAvg(int productCode){
+        return productDao.getProductReviewAvg(productCode);
+    }
+
+    @Override
+    @Transactional
+    public int getProductReviewCount(int productCode){
+        return productDao.getProductReviewCount(productCode);
+    }
+
+    @Override
+    @Transactional
     public List<ImageDto> getProductInfoThumbnail(int productCode){
         return productDao.getProductInfoThumbnail(productCode);
     }

@@ -609,17 +609,17 @@ public class OrderServiceImpl implements IF_OrderService {
     }
 
     /**
-     * 주문 완료 시 할인코드 사용 내역 저장
+     * 주문 완료 시 할인코드 사용 내역 저장 (회원 전용)
      * @param orderData 주문 데이터
-     * @param code 회원 코드 (비회원인 경우 null)
+     * @param code 회원 코드 (회원인 경우에만 전달)
      */
     private void recordDiscountCodeUsageIfApplied(Map<String, Object> orderData, Integer code) {
         try {
             // 주문 데이터에서 할인코드 정보 추출
             String discountCodeId = (String) orderData.get("discountCode");
 
-            // 할인코드가 사용되고 회원인 경우에만 처리
-            if(session.getAttribute("member") != null){
+            // ===== 🆕 회원인 경우에만 할인코드 처리 =====
+            if (session.getAttribute("member") != null) {
                 if (discountCodeId != null && !discountCodeId.trim().isEmpty() && code != null) {
                     discountCodeId = discountCodeId.trim().toUpperCase();
 
@@ -627,29 +627,20 @@ public class OrderServiceImpl implements IF_OrderService {
                     DiscountDto discountDto = discountService.getDiscountByCode(discountCodeId);
 
                     if (discountDto != null) {
-                        // 사용 내역 저장
+                        // 회원 할인코드 사용 내역 저장 (중복 사용 허용)
                         discountService.recordDiscountCodeUsage(discountDto.getDiscountCode(), code);
-                        log.info("할인코드 사용 내역 저장 완료: discountCode={} ({}), memberCode={}",
+                        log.info("할인코드 사용 내역 저장 완료 (회원 전용): discountCode={} ({}), memberCode={}",
                                 discountDto.getDiscountCode(), discountDto.getDiscountId(), code);
                     } else {
                         log.warn("할인코드 정보를 찾을 수 없음: discountCodeId={}", discountCodeId);
                     }
                 }
-            } else if(session.getAttribute("guest") != null){
-                if (discountCodeId != null && !discountCodeId.trim().isEmpty() && code != null) {
-                    discountCodeId = discountCodeId.trim().toUpperCase();
-
-                    // 할인코드 정보 조회
-                    DiscountDto discountDto = discountService.getDiscountByCode(discountCodeId);
-
-                    if (discountDto != null) {
-                        // 사용 내역 저장
-                        discountService.recordDiscountCodeUsageForGuest(discountDto.getDiscountCode(), code);
-                        log.info("할인코드 사용 내역 저장 완료: discountCode={} ({}), guestCode={}",
-                                discountDto.getDiscountCode(), discountDto.getDiscountId(), code);
-                    } else {
-                        log.warn("할인코드 정보를 찾을 수 없음: discountCodeId={}", discountCodeId);
-                    }
+            } else if (session.getAttribute("guest") != null) {
+                // ===== 🆕 비회원이 할인코드를 사용하려고 하는 경우 경고 로그 =====
+                if (discountCodeId != null && !discountCodeId.trim().isEmpty()) {
+                    log.warn("비회원 할인코드 사용 시도 감지 및 차단: discountCodeId={}, guestCode={}",
+                            discountCodeId, code);
+                    // 비회원 할인코드 사용은 허용하지 않으므로 아무것도 하지 않음
                 }
             }
         } catch (Exception e) {

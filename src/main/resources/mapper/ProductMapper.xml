@@ -82,6 +82,7 @@
         <id property="productCode" column="product_code" />
         <result property="productId" column="product_id"/>
         <result property="productName" column="product_name" />
+        <result property="productQuantity" column="product_quantity" />
         <result property="productDescription" column="product_description" />
         <result property="productOrderCount" column="product_order_count" />
         <result property="reviewAvg" column="avg_rating" />
@@ -106,6 +107,7 @@
             p.product_code,
             p.product_id,
             p.product_name,
+            p.product_quantity,
             p.product_description,
             p.product_order_count,
             pr.price_original,
@@ -149,6 +151,7 @@
             p.product_code,
             p.product_id,
             p.product_name,
+            p.product_quantity,
             p.product_description,
             p.product_order_count,
             pr.price_original,
@@ -192,6 +195,7 @@
             p.product_code,
             p.product_id,
             p.product_name,
+            p.product_quantity,
             p.product_description,
             p.product_order_count,
             pr.price_original,
@@ -235,6 +239,7 @@
             p.product_code,
             p.product_id,
             p.product_name,
+            p.product_quantity,
             p.product_description,
             pr.price_original,
             pr.price_selling,
@@ -456,5 +461,29 @@
         select count(*)
         from wishlist
         where product_code = #{productCode}
+    </select>
+
+    <select id="getProductReviewAvg"
+            parameterType="int"
+            resultType="java.lang.Double">
+        SELECT
+            IFNULL( ROUND(AVG(r.rating), 1), 0.0 )
+        FROM review r
+                 JOIN order_items oi
+                      ON r.order_item_code = oi.order_item_code
+        WHERE oi.product_code = #{productCode}
+          AND r.is_active = 1
+    </select>
+
+    <select id="getProductReviewCount"
+            parameterType="int"
+            resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM review r
+                 JOIN order_items oi
+                      ON r.order_item_code = oi.order_item_code
+        WHERE oi.product_code = #{productCode}
+          AND r.is_active = 1
     </select>
 </mapper>

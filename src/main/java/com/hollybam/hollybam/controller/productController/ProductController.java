@@ -38,9 +38,13 @@ public class ProductController {
                 .map(ProductOptionDto::getOptionName)
                 .collect(Collectors.toSet());
 
+        productDto = productService.getProductDetailInfo_first(productId);
+        productDto.setReviewAvg(productService.getProductReviewAvg(productDto.getProductCode()));
+        productDto.setReviewCount(productService.getProductReviewCount(productDto.getProductCode()));
+        System.out.println(productDto);
         mav.addObject("thumbnails", thumbnails);
         mav.addObject("contents", contents);
-        mav.addObject("product", productService.getProductDetailInfo_first(productId));
+        mav.addObject("product", productDto);
         mav.addObject("options", options);
         mav.addObject("optionNames", optionNames); // 추가
         mav.setViewName("product/productDetail");

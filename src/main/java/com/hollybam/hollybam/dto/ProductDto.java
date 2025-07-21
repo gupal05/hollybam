@@ -37,4 +37,5 @@ public class ProductDto {
 
     private double reviewAvg;
     private int reviewCount;
+    private int wishCount;
 }

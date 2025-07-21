@@ -1311,9 +1311,6 @@
                                 <button class="btn" th:if="${order.orderStatus == '배송완료'}"
                                         th:attr="data-order-id=${order.orderId}"
                                         onclick="requestExchange(this)">교환/반품</button>
-                                <button class="btn btn-primary"
-                                        th:attr="data-order-id=${order.orderId}"
-                                        onclick="reorder(this)">재주문</button>
                             </div>
                         </div>
                     </div>
@@ -1517,9 +1514,6 @@
                         <button class="mypage-modal-btn" onclick="requestExchangeFromModal()">
                             교환/반품
                         </button>
-                        <button class="mypage-modal-btn" onclick="reorderFromModal()">
-                            재주문
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1638,18 +1632,6 @@
         alert('교환/반품 신청은 고객센터(1588-0000)로 연락주세요.');
     }
 
-    // 재주문
-    function reorder(button) {
-        const orderId = button.getAttribute('data-order-id');
-        alert('재주문 기능을 준비중입니다.');
-        // 실제 구현 시 장바구니에 상품 추가 후 결제 페이지로 이동
-    }
-
-    // 재주문 (모달에서)
-    function reorderFromModal() {
-        alert('재주문 기능을 준비중입니다.');
-    }
-
     // 정보 수정 페이지 이동 (회원용)
     function changePage() {
         window.location.href = '/mypage/profile/edit';
@@ -1761,19 +1743,13 @@
         <i class="fas fa-truck"></i> 배송조회
       </button>
       <button class="mypage-modal-btn" onclick="requestExchangeFromModal()">
-        교환/반품
-      </button>
-      <button class="mypage-modal-btn" onclick="reorderFromModal()">
-        재주문
+        주문 취소/반품
       </button>
     </div>
   ` : `
     <div class="mypage-modal-actions">
       <button class="mypage-modal-btn" onclick="requestExchangeFromModal()">
-        교환/반품
-      </button>
-      <button class="mypage-modal-btn" onclick="reorderFromModal()">
-        재주문
+        주문 취소/반품
       </button>
     </div>
   `;

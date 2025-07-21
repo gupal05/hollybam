@@ -23,6 +23,7 @@ public class WishlistDto {
     private ProductDto productDto;  // 상품 정보
     private String productName;     // 상품명
     private String productId;       // 상품 아이디
+    private int productQuantity;
     private String productImage;    // 상품 대표 이미지
     private int sellingPrice;       // 판매가
     private int originalPrice;      // 정가

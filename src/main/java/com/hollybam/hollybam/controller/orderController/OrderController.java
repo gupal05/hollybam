@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -147,6 +148,7 @@ public class OrderController {
      * 할인코드 검증 API (🆕 중복 사용 방지 로직 포함)
      */
     @PostMapping("/discount/validate")
+    @ResponseBody
     public ResponseEntity<Map<String, Object>> validateDiscountCode(
             @RequestBody Map<String, Object> request, HttpSession session) {
 
@@ -154,46 +156,48 @@ public class OrderController {
 
         try {
             String discountId = (String) request.get("discountId");
-            Long orderAmount = Long.valueOf(request.get("orderAmount").toString());
+            Long orderAmount = ((Number) request.get("orderAmount")).longValue();
 
-            if(session.getAttribute("member") != null){
-                // 🆕 세션에서 회원 정보 가져오기
-                MemberDto member = (MemberDto) session.getAttribute("member");
-                Integer memCode = member != null ? member.getMemberCode() : null;
+            // ===== 🆕 회원 여부 확인 먼저 처리 =====
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
 
-                log.info("할인코드 검증 요청: discountId={}, orderAmount={}, memCode={}",
-                        discountId, orderAmount, memCode);
-
-                // 🆕 회원 코드를 포함한 할인코드 검증 (중복 사용 체크 포함)
-                Map<String, Object> validationResult = discountService.validateDiscountCode(discountId, orderAmount, memCode);
-
-                response.put("success", true);
-                response.put("data", validationResult.get("discountInfo"));
-                response.put("discountAmount", validationResult.get("discountAmount"));
-                response.put("message", "할인코드가 성공적으로 적용되었습니다.");
-
-                log.info("할인코드 검증 성공: discountId={}, memCode={}, discountAmount={}",
-                        discountId, memCode, validationResult.get("discountAmount"));
-            } else if(session.getAttribute("guest") != null){
-                // 🆕 세션에서 회원 정보 가져오기
-                GuestDto guest = (GuestDto) session.getAttribute("guest");
-                Integer guestCode = guest != null ? guest.getGuestCode() : null;
-
-                log.info("할인코드 검증 요청: discountId={}, orderAmount={}, guestCode={}",
-                        discountId, orderAmount, guestCode);
-
-                // 🆕 회원 코드를 포함한 할인코드 검증 (중복 사용 체크 포함)
-                Map<String, Object> validationResult = discountService.validateDiscountCode(discountId, orderAmount, guestCode);
-
-                response.put("success", true);
-                response.put("data", validationResult.get("discountInfo"));
-                response.put("discountAmount", validationResult.get("discountAmount"));
-                response.put("message", "할인코드가 성공적으로 적용되었습니다.");
-
-                log.info("할인코드 검증 성공: discountId={}, memCode={}, discountAmount={}",
-                        discountId, guestCode, validationResult.get("discountAmount"));
+            // 비회원인 경우 즉시 차단
+            if (member == null && guest != null) {
+                log.warn("비회원 할인코드 사용 시도 차단: discountId={}, guestCode={}",
+                        discountId, guest.getGuestCode());
+                response.put("success", false);
+                response.put("message", "할인코드는 회원만 사용할 수 있습니다. 회원가입 후 이용해주세요.");
+                return ResponseEntity.badRequest().body(response);
             }
+
+            // 로그인하지 않은 경우
+            if (member == null) {
+                log.warn("로그인하지 않은 사용자의 할인코드 사용 시도: discountId={}", discountId);
+                response.put("success", false);
+                response.put("message", "로그인 후 할인코드를 사용할 수 있습니다.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // ===== 회원인 경우만 할인코드 검증 진행 =====
+            Integer memCode = member.getMemberCode();
+
+            log.info("할인코드 검증 요청 (회원 전용): discountId={}, orderAmount={}, memCode={}",
+                    discountId, orderAmount, memCode);
+
+            // 할인코드 검증 (중복 사용 허용)
+            Map<String, Object> validationResult = discountService.validateDiscountCode(discountId, orderAmount, memCode);
+
+            response.put("success", true);
+            response.put("data", validationResult.get("discountInfo"));
+            response.put("discountAmount", validationResult.get("discountAmount"));
+            response.put("message", "할인코드가 성공적으로 적용되었습니다.");
+
+            log.info("할인코드 검증 성공 (회원 전용): discountId={}, memCode={}, discountAmount={}",
+                    discountId, memCode, validationResult.get("discountAmount"));
+
             return ResponseEntity.ok(response);
+
         } catch (IllegalArgumentException e) {
             log.warn("잘못된 요청: {}", e.getMessage());
             response.put("success", false);
@@ -210,7 +214,7 @@ public class OrderController {
             log.error("할인코드 검증 중 오류 발생", e);
             response.put("success", false);
             response.put("message", "할인코드 확인 중 오류가 발생했습니다.");
-            return ResponseEntity.status(500).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 

@@ -2244,19 +2244,13 @@
         <i class="fas fa-truck"></i> 배송조회
       </button>
       <button class="mypage-modal-btn" onclick="requestExchangeFromModal()">
-        교환/반품
-      </button>
-      <button class="mypage-modal-btn" onclick="reorderFromModal()">
-        재주문
+        주문 취소/반품
       </button>
     </div>
   ` : `
     <div class="mypage-modal-actions">
       <button class="mypage-modal-btn" onclick="requestExchangeFromModal()">
-        교환/반품
-      </button>
-      <button class="mypage-modal-btn" onclick="reorderFromModal()">
-        재주문
+        주문 취소/반품
       </button>
     </div>
   `;
@@ -2380,11 +2374,6 @@
   // 교환/반품 신청 (모달에서)
   function requestExchangeFromModal() {
     alert('교환/반품 신청은 고객센터(1588-0000)로 연락주세요.');
-  }
-
-  // 재주문 (모달에서)
-  function reorderFromModal() {
-    alert('재주문 기능을 준비중입니다.');
   }
 
   // ESC 키로 모달 닫기

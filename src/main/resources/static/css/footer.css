@@ -14,7 +14,7 @@
 
 .footer-content {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 40px;
     margin-bottom: 30px;
 }
@@ -138,6 +138,13 @@
     text-decoration: none;
 }
 
+@media (max-width: 1024px) {
+    .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+}
+
 @media (max-width: 768px) {
     .footer-content {
         grid-template-columns: 1fr;
@@ -155,5 +162,9 @@
     .customer-service,
     .bank-info {
         padding: 20px;
+    }
+
+    .footer-container {
+        padding: 0 15px;
     }
 }

@@ -351,6 +351,15 @@
             transform: translateY(-3px);
         }
 
+        /* 품절 상품 스타일 */
+        .wishlist-item.sold-out {
+            opacity: 0.7;
+        }
+
+        .wishlist-item.sold-out:hover {
+            transform: none;
+        }
+
         .item-checkbox {
             position: absolute;
             top: 15px;
@@ -359,6 +368,11 @@
             width: 20px;
             height: 20px;
             accent-color: #EE386D;
+        }
+
+        .item-checkbox:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .card-product-widget {
@@ -387,6 +401,32 @@
 
         .wishlist-item:hover .card-product-img img {
             transform: scale(1.05);
+        }
+
+        .wishlist-item.sold-out .card-product-img img {
+            filter: grayscale(50%);
+        }
+
+        .wishlist-item.sold-out:hover .card-product-img img {
+            transform: none;
+        }
+
+        /* Sold Out 뱃지 */
+        .sold-out-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
         }
 
         .remove-item {
@@ -433,6 +473,10 @@
             overflow: hidden;
         }
 
+        .sold-out .card-product-title {
+            color: #999;
+        }
+
         .card-product-price {
             margin-bottom: 10px;
         }
@@ -455,6 +499,10 @@
             margin-right: 8px;
         }
 
+        .sold-out .sale_price {
+            color: #999;
+        }
+
         .regular_price {
             font-size: 12px;
             color: #999;
@@ -470,6 +518,10 @@
             color: #666;
         }
 
+        .sold-out .product_review_container {
+            color: #999;
+        }
+
         .product_review_container svg {
             width: 14px;
             height: 14px;
@@ -482,6 +534,11 @@
 
         .product_review_container .star-icon {
             fill: #ffc107;
+        }
+
+        .sold-out .product_review_container .heart-icon,
+        .sold-out .product_review_container .star-icon {
+            fill: #ccc;
         }
 
         .item-actions {
@@ -500,6 +557,20 @@
         .btn-sm {
             padding: 8px 12px;
             font-size: 12px;
+        }
+
+        /* 품절 상품 버튼 비활성화 */
+        .item-actions .btn:disabled {
+            background: #f5f5f5;
+            color: #ccc;
+            border-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        .item-actions .btn:disabled:hover {
+            background: #f5f5f5;
+            color: #ccc;
+            border-color: #e9ecef;
         }
 
         /* 비어있는 위시리스트 */
@@ -816,20 +887,33 @@
             <!-- 위시리스트가 있는 경우 -->
             <div class="wishlist-grid" id="wishlistGrid" th:if="${wishlistItems != null and !wishlistItems.isEmpty()}">
                 <!-- 위시리스트 아이템 반복 -->
-                <article class="wishlist-item" th:each="item : ${wishlistItems}">
+                <article class="wishlist-item"
+                         th:each="item : ${wishlistItems}"
+                         th:classappend="${item.productQuantity == 0} ? 'sold-out' : ''">
+
+                    <!-- 체크박스 - 품절 상품은 비활성화 -->
                     <input type="checkbox" class="item-checkbox"
-                           th:attr="data-product-code=${item.productCode}">
-                    <a class="card-product-widget" th:href="@{/product/detail/{id}(id=${item.productCode})}">
+                           th:attr="data-product-code=${item.productCode}"
+                           th:disabled="${item.productQuantity == 0}">
+
+                    <a class="card-product-widget" th:href="@{/product/{id}(id=${item.productId})}">
                         <button class="remove-item"
                                 th:attr="data-product-code=${item.productCode}"
                                 type="button"
                                 title="위시리스트에서 제거">
                             <i class="fas fa-times"></i>
                         </button>
+
                         <div class="card-product-img">
+                            <!-- Sold Out 뱃지 - productQuantity가 0일 때만 표시 -->
+                            <div class="sold-out-badge" th:if="${item.productQuantity == 0}">
+                                Sold Out
+                            </div>
+
                             <img th:src="${item.productImage != null ? 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + item.productImage : 'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/no-image.png'}"
                                  th:alt="${item.productName}" />
                         </div>
+
                         <div class="card-product-info">
                             <p class="card-product-title" th:text="${item.productName}">상품명</p>
                             <div class="card-product-price">
@@ -856,11 +940,17 @@
                                 </svg>
                                 <span>4.9 (23)</span>
                             </div>
+
+                            <!-- 아이템 액션 버튼들 - 품절 상품은 비활성화 -->
                             <div class="item-actions">
                                 <button class="btn btn-sm cart-btn"
-                                        th:attr="data-product-code=${item.productCode}">장바구니</button>
+                                        th:attr="data-product-code=${item.productCode}"
+                                        th:disabled="${item.productQuantity == 0}"
+                                        th:text="${item.productQuantity == 0} ? '품절' : '장바구니'">장바구니</button>
                                 <button class="btn btn-sm btn-primary buy-btn"
-                                        th:attr="onclick='directBuy(\'' + ${item.productId} + '\')'">바로구매</button>
+                                        th:attr="onclick=${item.productQuantity > 0} ? 'directBuy(\'' + ${item.productId} + '\')' : 'void(0)'"
+                                        th:disabled="${item.productQuantity == 0}"
+                                        th:text="${item.productQuantity == 0} ? '품절' : '바로구매'">바로구매</button>
                             </div>
                         </div>
                     </a>
@@ -898,6 +988,11 @@
 
         // 개별 체크박스 이벤트
         $('.item-checkbox').on('change', function() {
+            // 품절 상품은 선택 불가
+            if ($(this).is(':disabled')) {
+                return;
+            }
+
             const productCode = parseInt($(this).data('product-code'));
             if ($(this).is(':checked')) {
                 selectedItems.add(productCode);
@@ -907,14 +1002,16 @@
             updateBulkActions();
         });
 
-        // 전체 선택 버튼
+        // 전체 선택 버튼 (품절 상품 제외)
         $('#selectAll').on('click', function() {
-            const isAllSelected = $('.item-checkbox:checked').length === $('.item-checkbox').length;
-            $('.item-checkbox').prop('checked', !isAllSelected);
+            const availableCheckboxes = $('.item-checkbox:not(:disabled)');
+            const isAllSelected = availableCheckboxes.filter(':checked').length === availableCheckboxes.length;
+
+            availableCheckboxes.prop('checked', !isAllSelected);
 
             selectedItems.clear();
             if (!isAllSelected) {
-                $('.item-checkbox').each(function() {
+                availableCheckboxes.each(function() {
                     selectedItems.add(parseInt($(this).data('product-code')));
                 });
             }
@@ -958,23 +1055,56 @@
             }
         });
 
-        // 장바구니 담기 (개별)
+        // 장바구니 담기 (개별) - 품절 상품 처리
         $('.cart-btn').on('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
+
+            if ($(this).is(':disabled')) {
+                showToast('품절된 상품은 장바구니에 담을 수 없습니다.', 'error');
+                return;
+            }
 
             const productCode = parseInt($(this).data('product-code'));
             addToCart([productCode]);
         });
 
-        // 장바구니 담기 (선택)
+        // 장바구니 담기 (선택) - 품절 상품 필터링
         $('#addToCart, #bulkAddToCart').on('click', function() {
             if (selectedItems.size === 0) {
                 showToast('장바구니에 담을 상품을 선택해주세요.', 'error');
                 return;
             }
 
-            addToCart(Array.from(selectedItems));
+            // 선택된 상품 중 품절이 아닌 상품만 필터링
+            const availableItems = Array.from(selectedItems).filter(productCode => {
+                const $checkbox = $(`.item-checkbox[data-product-code="${productCode}"]`);
+                return !$checkbox.is(':disabled');
+            });
+
+            if (availableItems.length === 0) {
+                showToast('선택한 상품이 모두 품절되었습니다.', 'error');
+                return;
+            }
+
+            if (availableItems.length < selectedItems.size) {
+                const soldOutCount = selectedItems.size - availableItems.length;
+                if (!confirm(`선택한 상품 중 ${soldOutCount}개는 품절되어 제외됩니다. 계속하시겠습니까?`)) {
+                    return;
+                }
+            }
+
+            addToCart(availableItems);
+        });
+
+        // 바로구매 버튼 클릭 이벤트 (품절 상품 처리)
+        $('.buy-btn').on('click', function(e) {
+            if ($(this).is(':disabled')) {
+                e.preventDefault();
+                e.stopPropagation();
+                showToast('품절된 상품은 구매할 수 없습니다.', 'error');
+                return false;
+            }
         });
 
         // 선택 구매 기능 추가
@@ -984,7 +1114,25 @@
                 return;
             }
 
-            bulkPurchase(Array.from(selectedItems));
+            // 선택된 상품 중 품절이 아닌 상품만 필터링
+            const availableItems = Array.from(selectedItems).filter(productCode => {
+                const $checkbox = $(`.item-checkbox[data-product-code="${productCode}"]`);
+                return !$checkbox.is(':disabled');
+            });
+
+            if (availableItems.length === 0) {
+                showToast('선택한 상품이 모두 품절되었습니다.', 'error');
+                return;
+            }
+
+            if (availableItems.length < selectedItems.size) {
+                const soldOutCount = selectedItems.size - availableItems.length;
+                if (!confirm(`선택한 상품 중 ${soldOutCount}개는 품절되어 제외됩니다. 계속하시겠습니까?`)) {
+                    return;
+                }
+            }
+
+            bulkPurchase(availableItems);
         });
 
         // 위시리스트에서 제거 함수

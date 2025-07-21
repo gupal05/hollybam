@@ -41,6 +41,7 @@
         <association property="productDto" javaType="com.hollybam.hollybam.dto.ProductDto">
             <result property="productName" column="product_name"/>
             <result property="productId" column="product_id"/>
+            <result property="productQuantity" column="product_quantity" />
         </association>
 
         <association property="productOptionDto" javaType="com.hollybam.hollybam.dto.ProductOptionDto">
@@ -63,7 +64,7 @@
     <select id="getCartItemsByMember" parameterType="int" resultMap="CartResultMap">
         SELECT c.cart_code, c.mem_code, c.guest_code, c.product_code, c.option_code,
                c.quantity, c.selected, c.create_at, c.update_at,
-               p.product_name, p.product_id, pr.price_selling,
+               p.product_name, p.product_id, p.product_quantity, pr.price_selling,
                po.option_name, po.option_value, po.option_price,
                i.image_url, pr.price_original
         FROM cart c
@@ -79,7 +80,7 @@
     <select id="getCartItemsByGuest" parameterType="int" resultMap="CartResultMap">
         SELECT c.cart_code, c.mem_code, c.guest_code, c.product_code, c.option_code,
                c.quantity, c.selected, c.create_at, c.update_at,
-               p.product_name, p.product_id, pr.price_selling,
+               p.product_name, p.product_id, p.product_quantity,pr.price_selling,
                po.option_name, po.option_value, po.option_price,
                i.image_url, pr.price_original
         FROM cart c

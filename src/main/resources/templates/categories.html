@@ -192,6 +192,15 @@
             transform: translateY(-3px);
         }
 
+        /* 품절 상품 스타일 */
+        .v4-product.sold-out {
+            opacity: 0.7;
+        }
+
+        .v4-product.sold-out:hover {
+            transform: none;
+        }
+
         .card-product-widget {
             display: flex;
             flex-direction: column;
@@ -232,6 +241,32 @@
             transform: scale(1.05);
         }
 
+        .v4-product.sold-out .card-product-img img {
+            filter: grayscale(50%);
+        }
+
+        .v4-product.sold-out:hover .card-product-img img {
+            transform: none;
+        }
+
+        /* Sold Out 뱃지 */
+        .sold-out-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+        }
+
         .card-product-info {
             padding: 0;
             display: flex;
@@ -250,6 +285,10 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             min-height: 38px;
+        }
+
+        .sold-out .card-product-title {
+            color: #999;
         }
 
         .card-product-price {
@@ -276,6 +315,10 @@
             letter-spacing: -0.3px;
         }
 
+        .sold-out .sale_price {
+            color: #999;
+        }
+
         .regular_price {
             font-size: 12px;
             color: #888888;
@@ -289,6 +332,10 @@
             margin-bottom: 8px;
         }
 
+        .sold-out .card-product-description {
+            color: #ccc;
+        }
+
         .product_review_container {
             display: flex;
             align-items: center;
@@ -296,6 +343,10 @@
             font-size: 11px;
             color: #888888;
             font-weight: 600;
+        }
+
+        .sold-out .product_review_container {
+            color: #ccc;
         }
 
         .heart-icon, .star-icon {
@@ -306,6 +357,11 @@
 
         .star-icon {
             fill: #FFD600;
+        }
+
+        .sold-out .heart-icon,
+        .sold-out .star-icon {
+            fill: #ccc;
         }
 
         .wishlist-wrap {
@@ -686,7 +742,9 @@
 
                     <!-- 상품 리스트 -->
                     <div class="product-row" th:if="${productList != null and !productList.isEmpty()}">
-                        <article class="v4-product" th:each="product : ${productList}">
+                        <article class="v4-product"
+                                 th:each="product : ${productList}"
+                                 th:classappend="${product.productQuantity == 0} ? 'sold-out' : ''">
                             <a class="card-product-widget" th:href="@{'/product/' + ${product.productId}}">
                                 <!-- 할인율 표시 (할인이 있을 때만) -->
                                 <div class="card-product-top-text"
@@ -695,6 +753,11 @@
                                 </div>
 
                                 <div class="card-product-img">
+                                    <!-- Sold Out 뱃지 - productQuantity가 0일 때만 표시 -->
+                                    <div class="sold-out-badge" th:if="${product.productQuantity == 0}">
+                                        Sold Out
+                                    </div>
+
                                     <!-- 타이틀 이미지 표시 -->
                                     <th:block th:if="${product.imageDtoList != null and !product.imageDtoList.isEmpty()}">
                                         <th:block th:each="image : ${product.imageDtoList}">

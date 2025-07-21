@@ -274,7 +274,7 @@
             oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
             oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
 
-            p.product_name, p.product_code, p.product_order_count,
+            p.product_name, p.product_code, p.product_order_count, p.product_quantity,
 
             po.option_name, po.option_value,
 
@@ -309,7 +309,7 @@
             oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
             oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
 
-            p.product_name, p.product_code, p.product_order_count,
+            p.product_name, p.product_code, p.product_order_count, p.product_quantity,
 
             po.option_name, po.option_value,
 
@@ -361,6 +361,7 @@
                 <id property="productCode" column="product_code"/>
                 <result property="productName" column="product_name"/>
                 <result property="productOrderCount" column="product_order_count"/>
+                <result property="productQuantity" column="product_quantity"/>
 
                 <!-- 단일 가격 정보 -->
                 <association property="priceDto" javaType="com.hollybam.hollybam.dto.PriceDto">

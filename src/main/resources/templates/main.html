@@ -1851,6 +1851,55 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        .v4-product.sold-out {
+            opacity: 0.7;
+        }
+
+        .v4-product.sold-out:hover {
+            transform: none;
+        }
+
+        .v4-product.sold-out .card-product-img img {
+            filter: grayscale(50%);
+        }
+
+        .v4-product.sold-out:hover .card-product-img img {
+            transform: none;
+        }
+
+        /* Sold Out 뱃지 */
+        .sold-out-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+        }
+
+        .sold-out .card-product-title,
+        .sold-out .sale_price {
+            color: #999;
+        }
+
+        .sold-out .card-product-description,
+        .sold-out .product_review_container {
+            color: #ccc;
+        }
+
+        .sold-out .heart-icon,
+        .sold-out .star-icon {
+            fill: #ccc;
+        }
     </style>
 </head>
 <body>
@@ -1951,10 +2000,16 @@
     <div class="inner-box">
         <div class="section-title">베스트 상품</div>
         <div class="product-row">
-            <article class="v4-product" th:each="product : ${proList}">
+            <article class="v4-product"
+                     th:each="product : ${proList}"
+                     th:classappend="${product.productQuantity == null or product.productQuantity == 0} ? 'sold-out' : ''">
                 <a class="card-product-widget" th:href="@{'/product/' + ${product.productId}}">
-<!--                    <div class="card-product-top-text">HOT🔥</div>-->
                     <div class="card-product-img">
+                        <!-- Sold Out 뱃지 -->
+                        <div class="sold-out-badge"
+                             th:if="${product.productQuantity == null or product.productQuantity == 0}">
+                            Sold Out
+                        </div>
                         <img class="product-img"
                              th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
                              th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
@@ -1977,7 +2032,7 @@
                         </div>
                         <div class="product_review_container">
                             <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span th:text="${product.productQuantity}">0</span>
+                            <span th:text="${product.wishCount}">0</span>
                             <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                             <span th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + ')'">0.0 (0)</span>
                         </div>
@@ -2068,10 +2123,16 @@
 
         <div class="section-title">신상품</div>
         <div class="product-row">
-            <article class="v4-product" th:each="product : ${newProList}">
+            <article class="v4-product"
+                     th:each="product : ${newProList}"
+                     th:classappend="${product.productQuantity == null or product.productQuantity == 0} ? 'sold-out' : ''">
                 <a class="card-product-widget" th:href="@{'/product/' + ${product.productId}}">
-                    <div class="card-product-top-text">New✨</div>
                     <div class="card-product-img">
+                        <!-- Sold Out 뱃지 -->
+                        <div class="sold-out-badge"
+                             th:if="${product.productQuantity == null or product.productQuantity == 0}">
+                            Sold Out
+                        </div>
                         <img class="product-img"
                              th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
                              th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
@@ -2095,7 +2156,7 @@
                         </div>
                         <div class="product_review_container">
                             <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span th:text="${product.productQuantity}">0</span>
+                            <span th:text="${product.wishCount}">0</span>
                             <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                             <span th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + ')'">0.0 (0)</span>
                         </div>

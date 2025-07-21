@@ -238,7 +238,6 @@ public class AdminController {
         categoryDetailDtoList.add(categoryDetailDto);
         categoryDto.setCategoryDetailDto(categoryDetailDtoList);
 
-        System.out.println(categoryDto);
 
         if(productService.insertProduct(categoryDto) > 0){
             categoryDto.getCategoryDetailDto().get(0).getProductList().get(0).setProductCode(productService.getProductCode(productDto));

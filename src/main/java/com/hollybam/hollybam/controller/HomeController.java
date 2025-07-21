@@ -152,11 +152,11 @@ public class HomeController {
             proList = productService.selectBestProductsForMobile();
         }
         for(int i = 0; i < proList.size(); i++){
-            proList.get(i).setProductQuantity(productService.getWishCount(proList.get(i).getProductCode()));
+            proList.get(i).setWishCount(productService.getWishCount(proList.get(i).getProductCode()));
         }
         List<ProductDto> newProList = productService.selectNewProducts();
         for(int i = 0; i < newProList.size(); i++){
-            newProList.get(i).setProductQuantity(productService.getWishCount(newProList.get(i).getProductCode()));
+            newProList.get(i).setWishCount(productService.getWishCount(newProList.get(i).getProductCode()));
         }
 
         // ⭐ 기존 코드를 최소 수정: 베스트 리뷰 조회 시 사용자별 좋아요 상태 포함

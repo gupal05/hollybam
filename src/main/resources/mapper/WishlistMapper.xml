@@ -51,6 +51,7 @@
             p.product_name,
             p.product_active,
             p.product_id,
+            p.product_quantity,
             pr.price_selling as sellingPrice,
             pr.price_original as originalPrice,
             (SELECT i.image_url
@@ -78,6 +79,8 @@
             w.update_at,
             p.product_name,
             p.product_active,
+            p.product_id,
+            p.product_quantity,
             pr.price_selling as sellingPrice,
             pr.price_original as originalPrice,
             (SELECT i.image_url

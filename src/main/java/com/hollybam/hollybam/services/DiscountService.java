@@ -4,6 +4,7 @@ import com.hollybam.hollybam.dao.IF_DiscountDao;
 import com.hollybam.hollybam.dto.DiscountDto;
 import com.hollybam.hollybam.dto.DiscountCodeUsageDto;
 import com.hollybam.hollybam.dto.GuestDto;
+import com.hollybam.hollybam.dto.MemberDto;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,12 @@ public class DiscountService implements IF_DiscountService {
     @Transactional(readOnly = true)
     public Map<String, Object> validateDiscountCode(String discountId, Long orderAmount, Integer code) throws Exception {
 
+        // ===== 🆕 회원 여부 확인 (비회원은 할인코드 사용 불가) =====
+        MemberDto member = (MemberDto) httpSession.getAttribute("member");
+        if (member == null) {
+            throw new RuntimeException("할인코드는 회원만 사용할 수 있습니다. 회원가입 후 이용해주세요.");
+        }
+
         // 입력값 검증
         if (discountId == null || discountId.trim().isEmpty()) {
             throw new IllegalArgumentException("할인코드를 입력해주세요.");
@@ -60,23 +67,9 @@ public class DiscountService implements IF_DiscountService {
             discount.setMinOrderPrice(0);
         }
 
-        // 🆕 중복 사용 여부 확인 (회원인 경우만)
-        if(httpSession.getAttribute("member") != null){
-            int usageCount = discountDao.checkDiscountCodeUsage(discount.getDiscountCode(), code);
-            if (usageCount > 0) {
-                throw new RuntimeException("이미 사용한 할인코드입니다. 할인코드는 회원당 1회만 사용 가능합니다.");
-            }
-            log.info("할인코드 중복 사용 체크 완료: discountId={}, memCode={}, usageCount={}",
-                    discountId, code, usageCount);
-        } else {
-            GuestDto guest = (GuestDto)httpSession.getAttribute("guest");
-            int usageCount = discountDao.checkDiscountCodeUsageForGuest(discount.getDiscountCode(), guest.getGuestCode());
-            if (usageCount > 0) {
-                throw new RuntimeException("이미 사용한 할인코드입니다. 할인코드는 회원당 1회만 사용 가능합니다.");
-            }
-            log.info("할인코드 중복 사용 체크 완료: discountId={}, guestCode={}, usageCount={}",
-                    discountId, guest.getGuestCode(), usageCount);
-        }
+        // ===== 🆕 중복 사용 체크 제거 (중복 사용 허용) =====
+        log.info("할인코드 검증 진행 중: discountId={}, memCode={} (중복 사용 허용)",
+                discountId, member.getMemberCode());
 
         // 최소 주문금액 확인
         if (orderAmount < discount.getMinOrderPrice()) {
@@ -92,15 +85,8 @@ public class DiscountService implements IF_DiscountService {
         result.put("discountInfo", discount);
         result.put("discountAmount", discountAmount);
 
-        if(httpSession.getAttribute("member") != null) {
-            log.info("할인코드 검증 완료: discountId={}, memCode={}, discountAmount={}",
-                    discountId, code, discountAmount);
-        } else {
-            GuestDto guest = (GuestDto)httpSession.getAttribute("guest");
-            log.info("할인코드 검증 완료: discountId={}, guestCode={}, discountAmount={}",
-                    discountId, guest.getGuestCode(), discountAmount);
-        }
-
+        log.info("할인코드 검증 완료: discountId={}, memCode={}, discountAmount={} (중복 사용 허용)",
+                discountId, member.getMemberCode(), discountAmount);
 
         return result;
     }
@@ -123,13 +109,7 @@ public class DiscountService implements IF_DiscountService {
         }
 
         try {
-            // 중복 사용 체크 (안전장치)
-            int existingUsage = discountDao.checkDiscountCodeUsage(discountCode, memCode);
-            if (existingUsage > 0) {
-                log.warn("이미 사용한 할인코드 사용 내역 저장 시도: discountCode={}, memCode={}", discountCode, memCode);
-                return;
-            }
-
+            // ===== 🆕 중복 사용 체크 제거 (이력은 계속 저장) =====
             DiscountCodeUsageDto usageDto = new DiscountCodeUsageDto();
             usageDto.setDiscountCode(discountCode);
             usageDto.setMemCode(memCode);
@@ -138,7 +118,7 @@ public class DiscountService implements IF_DiscountService {
             int result = discountDao.insertDiscountCodeUsage(usageDto);
 
             if (result > 0) {
-                log.info("할인코드 사용 내역 저장 완료: discountCode={}, memCode={}, usageCode={}",
+                log.info("할인코드 사용 내역 저장 완료: discountCode={}, memCode={}, usageCode={} (중복 사용 허용)",
                         discountCode, memCode, usageDto.getUsageCode());
             } else {
                 log.error("할인코드 사용 내역 저장 실패: discountCode={}, memCode={}", discountCode, memCode);
@@ -146,59 +126,11 @@ public class DiscountService implements IF_DiscountService {
 
         } catch (Exception e) {
             log.error("할인코드 사용 내역 저장 중 오류 발생: discountCode={}, memCode={}", discountCode, memCode, e);
-            // 중복 키 제약 조건 위반인 경우 무시 (이미 사용한 할인코드)
-            if (e.getMessage() != null &&
-                    (e.getMessage().contains("Duplicate entry") || e.getMessage().contains("duplicate key"))) {
-                log.warn("할인코드 중복 사용 시도 감지: discountCode={}, memCode={}", discountCode, memCode);
-            } else {
-                // 다른 오류는 상위로 전파하지 않음 (주문 실패 방지)
-                log.error("할인코드 사용 내역 저장 예상치 못한 오류", e);
-            }
+            // 모든 오류를 로그로만 기록하고 주문은 진행
+            log.error("할인코드 사용 내역 저장 오류 (주문 진행)", e);
         }
     }
 
-    @Override
-    @Transactional
-    public void recordDiscountCodeUsageForGuest(Integer discountCode, Integer guestCode) throws Exception {
-        if (discountCode == null || guestCode == null) {
-            log.warn("할인코드 사용 내역 저장 건너뜀: discountCode={}, memCode={}", discountCode, guestCode);
-            return;
-        }
-
-        try {
-            // 중복 사용 체크 (안전장치)
-            int existingUsage = discountDao.checkDiscountCodeUsage(discountCode, guestCode);
-            if (existingUsage > 0) {
-                log.warn("이미 사용한 할인코드 사용 내역 저장 시도: discountCode={}, guestCode={}", discountCode, guestCode);
-                return;
-            }
-
-            DiscountCodeUsageDto usageDto = new DiscountCodeUsageDto();
-            usageDto.setDiscountCode(discountCode);
-            usageDto.setGuestCode(guestCode);
-            usageDto.setUsedAt(LocalDateTime.now());
-
-            int result = discountDao.insertDiscountCodeUsageForGuest(usageDto);
-
-            if (result > 0) {
-                log.info("할인코드 사용 내역 저장 완료: discountCode={}, memCode={}, usageCode={}",
-                        discountCode, guestCode, usageDto.getUsageCode());
-            } else {
-                log.error("할인코드 사용 내역 저장 실패: discountCode={}, memCode={}", discountCode, guestCode);
-            }
-
-        } catch (Exception e) {
-            log.error("할인코드 사용 내역 저장 중 오류 발생: discountCode={}, guestCode={}", discountCode, guestCode, e);
-            // 중복 키 제약 조건 위반인 경우 무시 (이미 사용한 할인코드)
-            if (e.getMessage() != null &&
-                    (e.getMessage().contains("Duplicate entry") || e.getMessage().contains("duplicate key"))) {
-                log.warn("할인코드 중복 사용 시도 감지: discountCode={}, guestCode={}", discountCode, guestCode);
-            } else {
-                // 다른 오류는 상위로 전파하지 않음 (주문 실패 방지)
-                log.error("할인코드 사용 내역 저장 예상치 못한 오류", e);
-            }
-        }
-    }
 
     @Override
     @Transactional(readOnly = true)

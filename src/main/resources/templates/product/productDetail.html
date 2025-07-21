@@ -424,102 +424,137 @@
             transform: none;
         }
 
-        /* 상품 정보 탭 */
-        .product-tabs {
-            margin-bottom: 40px;
+        /* 네비게이션 탭 */
+        .product-navigation {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            margin: 60px 0 20px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
         }
 
-        .tab-buttons {
+        .nav-buttons {
             display: flex;
-            border-bottom: 2px solid #f0f0f0;
-            margin-bottom: 40px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+            justify-content: center;
+            gap: 80px;
         }
 
-        .tab-btn {
-            padding: 16px 24px;
+        .nav-btn {
+            padding: 28px 0;
             background: none;
             border: none;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 600;
-            color: #888;
+            color: #777;
             cursor: pointer;
             position: relative;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            letter-spacing: -0.2px;
         }
 
-        .tab-btn.active {
+        .nav-btn:hover {
             color: #EE386D;
+            transform: translateY(-1px);
         }
 
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: #EE386D;
-            border-radius: 2px;
+        .nav-btn.active {
+            color: #EE386D;
+            border-bottom-color: #EE386D;
+            transform: translateY(-1px);
         }
 
-        .tab-content {
-            display: none;
+        /* 섹션 스타일 */
+        .content-section {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 50px 20px 60px;
+            scroll-margin-top: 100px; /* 일반 헤더 높이만 고려 */
         }
 
-        .tab-content.active {
-            display: block;
+        .content-section:first-of-type {
+            padding-top: 20px;
         }
 
-        /* 상세 이미지 */
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #EE386D;
+            display: inline-block;
+        }
+
+        /* 상세정보 섹션 */
         .detail-images {
             display: flex;
             flex-direction: column;
-            gap: 0px; /* 20px에서 0px로 변경 */
+            gap: 0px;
             align-items: center;
         }
 
         .detail-images img {
             max-width: 100%;
             height: auto;
-            border-radius: 0px; /* 12px에서 0px로 변경 */
-            box-shadow: none; /* 그림자 제거 */
-            display: block; /* 이미지 간격 완전 제거 */
-            margin: 0; /* 마진 제거 */
+            border-radius: 0px;
+            box-shadow: none;
+            display: block;
+            margin: 0;
         }
 
         /* 리뷰 섹션 */
         .review-summary {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid #e5e5e5;
         }
 
         .review-stats {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 40px;
         }
 
         .rating-score {
-            font-size: 48px;
+            font-size: 64px;
             font-weight: 700;
             color: #EE386D;
+            text-shadow: 0 2px 4px rgba(238, 56, 109, 0.1);
         }
 
         .rating-details {
             flex: 1;
         }
 
+        .rating-details h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 16px 0;
+        }
+
         .rating-breakdown {
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .rating-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 5px;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .rating-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            width: 30px;
         }
 
         .rating-bar {
@@ -532,8 +567,167 @@
 
         .rating-fill {
             height: 100%;
-            background: #EE386D;
+            background: linear-gradient(90deg, #EE386D 0%, #ff6b9d 100%);
             transition: width 0.3s ease;
+        }
+
+        .rating-count {
+            font-size: 14px;
+            color: #666;
+            width: 40px;
+            text-align: right;
+        }
+
+        /* 개별 리뷰 */
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .review-item {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid #e5e5e5;
+            transition: all 0.3s ease;
+        }
+
+        .review-item:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .reviewer-details h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .reviewer-details p {
+            font-size: 12px;
+            color: #888;
+            margin: 0;
+        }
+
+        .review-rating {
+            display: flex;
+            gap: 4px;
+        }
+
+        .review-rating .star {
+            width: 16px;
+            height: 16px;
+        }
+
+        .review-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 16px;
+        }
+
+        .review-images {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .review-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .review-image:hover {
+            transform: scale(1.05);
+        }
+
+        /* 배송정보 섹션 */
+        .shipping-info {
+            background: #f8f9fa;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .shipping-section {
+            padding: 32px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .shipping-section:last-child {
+            border-bottom: none;
+        }
+
+        .shipping-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .shipping-section h3 i {
+            color: #EE386D;
+        }
+
+        .shipping-details {
+            display: grid;
+            gap: 12px;
+        }
+
+        .shipping-row {
+            display: flex;
+            padding: 12px 0;
+        }
+
+        .shipping-label {
+            font-weight: 600;
+            color: #666;
+            width: 120px;
+            flex-shrink: 0;
+        }
+
+        .shipping-value {
+            color: #333;
+            flex: 1;
+        }
+
+        .highlight {
+            color: #EE386D;
+            font-weight: 600;
         }
 
         /* 재고 없음 표시 */
@@ -543,6 +737,40 @@
 
         .out-of-stock:after {
             content: " (품절)";
+        }
+
+        /* 품절 상품 스타일 */
+        .main-image-container.sold-out .main-image {
+            filter: grayscale(50%);
+            opacity: 0.8;
+        }
+
+        .sold-out-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #e74c3c;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 3;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }
+
+        .sold-out .product-title,
+        .sold-out .price-current {
+            color: #999;
+        }
+
+        .sold-out .btn:disabled {
+            background: #ccc !important;
+            cursor: not-allowed !important;
+            transform: none !important;
         }
 
         /* 반응형 */
@@ -568,19 +796,57 @@
                 flex-direction: column;
             }
 
-            .tab-buttons {
-                overflow-x: auto;
-                white-space: nowrap;
+            .nav-buttons {
+                padding: 0 16px;
+                gap: 50px;
             }
 
-            .tab-btn {
-                flex-shrink: 0;
+            .nav-btn {
+                padding: 24px 0;
+                font-size: 15px;
+            }
+
+            .content-section {
+                padding: 40px 16px 50px;
+            }
+
+            .content-section:first-of-type {
+                padding-top: 15px;
+            }
+
+            .section-title {
+                font-size: 24px;
             }
 
             .review-stats {
                 flex-direction: column;
                 text-align: center;
-                gap: 15px;
+                gap: 20px;
+            }
+
+            .rating-score {
+                font-size: 48px;
+            }
+
+            .review-summary {
+                padding: 24px;
+            }
+
+            .review-item {
+                padding: 20px;
+            }
+
+            .shipping-section {
+                padding: 24px;
+            }
+
+            .shipping-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .shipping-label {
+                width: auto;
             }
 
             .thumbnail-gallery {
@@ -632,7 +898,11 @@
         <div class="product-image">
             <div class="image-gallery">
                 <!-- 메인 이미지 -->
-                <div class="main-image-container">
+                <div class="main-image-container" th:classappend="${product.productQuantity == 0} ? 'sold-out' : ''">
+                    <!-- Sold Out 뱃지 -->
+                    <div class="sold-out-badge" th:if="${product.productQuantity == 0}">
+                        Sold Out
+                    </div>
                     <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + thumbnails[0].imageUrl}" class="main-image" id="mainImage"/>
                     <div class="wishlist-wrap">
                         <button class="wishlist-btn"
@@ -654,7 +924,6 @@
                              th:alt="'대표이미지 ' + ${stat.index + 1}"
                              class="thumbnail-image"/>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -681,7 +950,7 @@
                     <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 </div>
-                <span class="rating-text">4.8 (15개 리뷰)</span>
+                <span class="rating-text" th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + '개 리뷰)'">4.8 (15개 리뷰)</span>
             </div>
 
             <!-- 옵션 선택 -->
@@ -735,63 +1004,226 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- 상품 탭 (상품정보 탭 제거) -->
-    <div class="product-tabs">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="showTab('detail')">상세정보</button>
-            <button class="tab-btn" onclick="showTab('review')">리뷰 (15)</button>
-            <button class="tab-btn" onclick="showTab('qna')">문의</button>
+<!-- 스티키 네비게이션 -->
+<div class="product-navigation">
+    <div class="nav-buttons">
+        <button class="nav-btn active" onclick="scrollToSection('detail')">상세정보</button>
+        <button class="nav-btn" onclick="scrollToSection('review')">리뷰 <span th:text="'(' + ${product.reviewCount} + ')'"></span></button>
+        <button class="nav-btn" onclick="scrollToSection('shipping')">배송정보</button>
+    </div>
+</div>
+
+<!-- 상세정보 섹션 -->
+<section class="content-section" id="detail">
+    <h2 class="section-title">상세정보</h2>
+    <div class="detail-images">
+        <div th:each="img : ${contents}">
+            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + img.imageUrl}"
+                 th:alt="'상세 이미지 ' + ${img.imageOrder + 1}" />
         </div>
+    </div>
+</section>
 
-        <div class="tab-content active" id="detail">
-            <div class="detail-images">
-                <div th:each="img : ${contents}">
-                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + img.imageUrl}"
-                         th:alt="'상세 이미지 ' + ${img.imageOrder + 1}" />
+<!-- 리뷰 섹션 -->
+<section class="content-section" id="review">
+    <h2 class="section-title">리뷰</h2>
+
+    <div class="review-summary">
+        <div class="review-stats">
+            <div class="rating-score" th:text="${product.reviewAvg}">4.8</div>
+            <div class="rating-details">
+                <h3>구매 고객 리뷰</h3>
+                <div class="star-rating">
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 </div>
-            </div>
-        </div>
-
-        <div class="tab-content" id="review">
-            <div class="review-summary">
-                <div class="review-stats">
-                    <div class="rating-score">4.8</div>
-                    <div class="rating-details">
-                        <div class="star-rating">
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <p th:text="${product.reviewCount} + '개의 리뷰'">15개의 리뷰</p>
+                <div class="rating-breakdown">
+                    <div class="rating-row">
+                        <span class="rating-label">5점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 80%"></div>
                         </div>
-                        <p>15개의 리뷰</p>
-                        <div class="rating-breakdown">
-                            <div class="rating-row">
-                                <span>5점</span>
-                                <div class="rating-bar">
-                                    <div class="rating-fill" style="width: 80%"></div>
-                                </div>
-                                <span>12명</span>
-                            </div>
-                            <div class="rating-row">
-                                <span>4점</span>
-                                <div class="rating-bar">
-                                    <div class="rating-fill" style="width: 20%"></div>
-                                </div>
-                                <span>3명</span>
-                            </div>
+                        <span class="rating-count">12명</span>
+                    </div>
+                    <div class="rating-row">
+                        <span class="rating-label">4점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 20%"></div>
                         </div>
+                        <span class="rating-count">3명</span>
+                    </div>
+                    <div class="rating-row">
+                        <span class="rating-label">3점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="rating-count">0명</span>
+                    </div>
+                    <div class="rating-row">
+                        <span class="rating-label">2점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="rating-count">0명</span>
+                    </div>
+                    <div class="rating-row">
+                        <span class="rating-label">1점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="rating-count">0명</span>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="tab-content" id="qna">
-            <p>상품에 대한 문의사항이 있으시면 고객센터(1533-4965)로 연락해주세요.</p>
+    <div class="review-list">
+        <!-- 리뷰 아이템 1 -->
+        <div class="review-item">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">김</div>
+                    <div class="reviewer-details">
+                        <h4>김○○</h4>
+                        <p>2024.07.15 구매</p>
+                    </div>
+                </div>
+                <div class="review-rating">
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+            </div>
+            <div class="review-content">
+                배송이 빠르고 포장도 깔끔하게 잘 되어있어요. 제품 품질도 기대 이상이었습니다. 가격 대비 정말 만족스러운 구매였어요. 다음에도 또 구매할 의향이 있습니다.
+            </div>
+        </div>
+
+        <!-- 리뷰 아이템 2 -->
+        <div class="review-item">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">박</div>
+                    <div class="reviewer-details">
+                        <h4>박○○</h4>
+                        <p>2024.07.12 구매</p>
+                    </div>
+                </div>
+                <div class="review-rating">
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+            </div>
+            <div class="review-content">
+                사이트에서 본 것과 실제 받은 제품이 똑같아요. 사진과 차이가 없어서 좋았습니다. 비밀포장도 잘 되어있고, 고객센터 응대도 친절해서 만족합니다.
+            </div>
+        </div>
+
+        <!-- 리뷰 아이템 3 -->
+        <div class="review-item">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">이</div>
+                    <div class="reviewer-details">
+                        <h4>이○○</h4>
+                        <p>2024.07.10 구매</p>
+                    </div>
+                </div>
+                <div class="review-rating">
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#EE386D" stroke-width="1"/></svg>
+                </div>
+            </div>
+            <div class="review-content">
+                생각보다 크기가 작아서 조금 아쉬웠지만, 품질은 나쁘지 않아요. 다음에는 사이즈를 더 꼼꼼히 확인하고 구매할게요. 전체적으로는 만족합니다.
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- 배송정보 섹션 -->
+<section class="content-section" id="shipping">
+    <h2 class="section-title">배송정보</h2>
+
+    <div class="shipping-info">
+        <div class="shipping-section">
+            <h3><i class="fas fa-truck"></i> 배송 안내</h3>
+            <div class="shipping-details">
+                <div class="shipping-row">
+                    <span class="shipping-label">배송업체</span>
+                    <span class="shipping-value">CJ대한통운</span>
+                </div>
+                <div class="shipping-row">
+                    <span class="shipping-label">배송비</span>
+                    <span class="shipping-value"><span class="highlight">무료배송</span> (3만원 이상 구매시)</span>
+                </div>
+                <div class="shipping-row">
+                    <span class="shipping-label">배송기간</span>
+                    <span class="shipping-value">주문 후 <span class="highlight">1-2일</span> 내 발송</span>
+                </div>
+                <div class="shipping-row">
+                    <span class="shipping-label">배송지역</span>
+                    <span class="shipping-value">전국 (제주/도서산간 지역 배송비 별도)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="shipping-section">
+            <h3><i class="fas fa-box"></i> 포장 안내</h3>
+            <div class="shipping-details">
+                <div class="shipping-row">
+                    <span class="shipping-label">포장방식</span>
+                    <span class="shipping-value"><span class="highlight">무표시 박스</span>로 안전하게 포장</span>
+                </div>
+                <div class="shipping-row">
+                    <span class="shipping-label">개인정보보호</span>
+                    <span class="shipping-value">제품명 표시 없이 발송</span>
+                </div>
+                <div class="shipping-row">
+                    <span class="shipping-label">택배함 이용</span>
+                    <span class="shipping-value">무인택배함 배송 가능</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="shipping-section">
+            <h3><i class="fas fa-undo"></i> 교환/반품 안내</h3>
+            <div class="shipping-details">
+                <div class="shipping-row">
+                    <span class="shipping-label">교환/반품 기간</span>
+                    <span class="shipping-value">수령일로부터 <span class="highlight">7일 이내</span></span>
+                </div>
+                <div class="shipping-row">
+                    <span class="shipping-label">교환/반품 비용</span>
+                    <span class="shipping-value">고객변심시 왕복배송비 고객부담</span>
+                </div>
+                <div class="shipping-row">
+                    <span class="shipping-label">교환/반품 불가</span>
+                    <span class="shipping-value">포장 개봉 후 사용한 제품</span>
+                </div>
+                <div class="shipping-row">
+                    <span class="shipping-label">A/S 문의</span>
+                    <span class="shipping-value">고객센터 1533-4965 (평일 9시-18시)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <div th:replace="~{layout/footer :: footer}"></div>
 
@@ -799,24 +1231,32 @@
     /*<![CDATA[*/
     const options = /*[[${options}]]*/ [];
     const basePrice = /*[[${product.priceDtoList[0].priceSelling}]]*/ 0;
-    const productCode = /*[[${product.productCode}]]*/ 0; // 이 부분 추가
+    const productCode = /*[[${product.productCode}]]*/ 0;
+    const productQuantity = /*[[${product.productQuantity}]]*/ 0;
     /*]]>*/
 </script>
 
 <script>
     let selectedOptions = new Map(); // 선택된 옵션들을 저장
 
-    function showTab(tabName) {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+    // 스크롤 네비게이션 함수
+    function scrollToSection(sectionId) {
+        // 모든 네비게이션 버튼에서 active 클래스 제거
+        document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.classList.remove('active');
         });
 
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-
+        // 클릭된 버튼에 active 클래스 추가
         event.target.classList.add('active');
-        document.getElementById(tabName).classList.add('active');
+
+        // 해당 섹션으로 스무스 스크롤
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     }
 
     // 옵션이 없는 경우 수량 조절
@@ -989,8 +1429,15 @@
             canPurchase = quantityInput && parseInt(quantityInput.value) > 0;
         }
 
+        // 장바구니는 항상 활성화 (품절 상품도 담기 가능)
         cartBtn.disabled = !canPurchase;
-        buyBtn.disabled = !canPurchase;
+
+        // 바로구매는 품절 상품일 때 비활성화
+        const isOutOfStock = productQuantity === 0;
+        buyBtn.disabled = !canPurchase || isOutOfStock;
+
+        // 버튼 텍스트는 항상 동일하게 유지 (품절 상태와 옵션 미선택 상태 구분 없이)
+        buyBtn.innerHTML = '<i class="fas fa-credit-card"></i> 바로구매';
     }
 
     // 페이지 로드 시 초기 설정
@@ -1051,6 +1498,12 @@
     // 바로 구매
     document.getElementById('buyBtn').addEventListener('click', function() {
         if (this.disabled) return;
+
+        // 품절 상품 체크
+        if (productQuantity === 0) {
+            alert('품절된 상품은 바로구매할 수 없습니다.');
+            return;
+        }
 
         // 옵션이 있는 상품인지 확인
         if (options && options.length > 0) {
@@ -1124,49 +1577,6 @@
         // 폼 제출
         document.body.appendChild(form);
         form.submit();
-    }
-
-    // 옵션 선택 시 바로 구매 버튼 상태 업데이트 함수도 수정
-    function updatePurchaseButtons() {
-        const cartBtn = document.getElementById('cartBtn');
-        const buyBtn = document.getElementById('buyBtn');
-
-        if (options && options.length > 0) {
-            // 옵션이 있는 상품
-            const hasValidSelections = selectedOptions.size > 0;
-            const allValidQuantity = Array.from(selectedOptions.values()).every(option => option.quantity > 0);
-
-            if (hasValidSelections && allValidQuantity) {
-                cartBtn.disabled = false;
-                buyBtn.disabled = false;
-
-                // 바로 구매는 하나의 옵션만 선택 가능하다는 힌트
-                if (selectedOptions.size > 1) {
-                    buyBtn.title = '바로 구매는 하나의 옵션만 선택 가능합니다.';
-                    buyBtn.style.opacity = '0.7';
-                } else {
-                    buyBtn.title = '';
-                    buyBtn.style.opacity = '1';
-                }
-            } else {
-                cartBtn.disabled = true;
-                buyBtn.disabled = true;
-                buyBtn.style.opacity = '0.5';
-            }
-        } else {
-            // 옵션이 없는 상품
-            const quantity = parseInt(document.getElementById('quantity').value) || 0;
-
-            if (quantity > 0) {
-                cartBtn.disabled = false;
-                buyBtn.disabled = false;
-                buyBtn.style.opacity = '1';
-            } else {
-                cartBtn.disabled = true;
-                buyBtn.disabled = true;
-                buyBtn.style.opacity = '0.5';
-            }
-        }
     }
 </script>
 </body>

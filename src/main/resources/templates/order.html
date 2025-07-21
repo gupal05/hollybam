@@ -1059,7 +1059,7 @@
             </div>
 
             <!-- 쿠폰 및 할인 코드 섹션 -->
-            <div class="form-section">
+            <div class="form-section" th:if="${session.member != null}">
                 <div class="discount-section">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
                         <h2 class="section-title" style="margin-bottom: 0;">쿠폰 & 할인코드</h2>

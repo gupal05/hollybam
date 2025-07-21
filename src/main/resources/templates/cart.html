@@ -524,6 +524,55 @@
                 padding: 4px 8px;
             }
         }
+
+        .cart-item.sold-out {
+            opacity: 0.6;
+            background: #f9f9f9 !important;
+        }
+
+        .cart-item.sold-out:hover {
+            background: #f9f9f9 !important;
+        }
+
+        .cart-item.sold-out .item-image {
+            filter: grayscale(50%);
+            position: relative;
+        }
+
+        /* Sold Out 뱃지 - 상품 이미지 위에 */
+        .sold-out-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+        }
+
+        .cart-item.sold-out .item-name,
+        .cart-item.sold-out .current-price {
+            color: #999;
+        }
+
+        .cart-item.sold-out .item-checkbox:disabled,
+        .cart-item.sold-out .qty-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 이미지 컨테이너 */
+        .item-image-container {
+            position: relative;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -554,12 +603,24 @@
 
             <!-- 상품 목록 -->
             <div class="cart-content">
-                <div class="cart-item" th:each="item : ${cartItems}" th:data-cart-code="${item.cartCode}">
-                    <input type="checkbox" class="item-checkbox" th:checked="${item.selected}">
-                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + (item.imageDto != null ? item.imageDto.imageUrl : '')}"
-                         th:alt="${item.productDto.productName}"
-                         class="item-image"
-                         onerror="this.src='https://via.placeholder.com/100x100/f0f0f0/999?text=No+Image'">
+                <div class="cart-item"
+                     th:each="item : ${cartItems}"
+                     th:data-cart-code="${item.cartCode}"
+                     th:classappend="${item.productDto.productQuantity == 0} ? 'sold-out' : ''">
+                    <input type="checkbox" class="item-checkbox"
+                           th:checked="${item.productDto.productQuantity > 0 and item.selected}"
+                           th:disabled="${item.productDto.productQuantity == 0}">
+                    <div class="item-image-container">
+                        <!-- Sold Out 뱃지 -->
+                        <div class="sold-out-badge" th:if="${item.productDto.productQuantity == 0}">
+                            Sold Out
+                        </div>
+
+                        <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + (item.imageDto != null ? item.imageDto.imageUrl : '')}"
+                             th:alt="${item.productDto.productName}"
+                             class="item-image"
+                             onerror="this.src='https://via.placeholder.com/100x100/f0f0f0/999?text=No+Image'">
+                    </div>
                     <div class="item-info">
                         <div class="item-name" th:text="${item.productDto.productName}">상품명</div>
                         <div class="item-options" th:if="${item.productOptionDto != null}"
@@ -579,9 +640,13 @@
 
                     <div class="item-controls">
                         <div class="quantity-control">
-                            <button class="qty-btn" onclick="changeQuantity(this, -1)">-</button>
+                            <button class="qty-btn"
+                                    onclick="changeQuantity(this, -1)"
+                                    th:disabled="${item.productDto.productQuantity == 0}">-</button>
                             <input type="number" class="qty-input" th:value="${item.quantity}" min="1" max="99" readonly>
-                            <button class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                            <button class="qty-btn"
+                                    onclick="changeQuantity(this, 1)"
+                                    th:disabled="${item.productDto.productQuantity == 0}">+</button>
                         </div>
                         <button class="remove-btn" onclick="removeItem(this)" th:data-cart-code="${item.cartCode}">
                             <i class="fas fa-times"></i>
@@ -761,7 +826,7 @@
 
     // 전체 선택/해제
     document.getElementById('select-all').addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const checkboxes = document.querySelectorAll('.item-checkbox:not(:disabled)');
         checkboxes.forEach(checkbox => {
             checkbox.checked = this.checked;
         });
@@ -772,10 +837,10 @@
     document.addEventListener('change', function(e) {
         if (e.target.classList.contains('item-checkbox')) {
             const selectAll = document.getElementById('select-all');
-            const checkboxes = document.querySelectorAll('.item-checkbox');
-            const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
+            const checkboxes = document.querySelectorAll('.item-checkbox:not(:disabled)');
+            const checkedBoxes = document.querySelectorAll('.item-checkbox:checked:not(:disabled)');
 
-            selectAll.checked = checkboxes.length === checkedBoxes.length;
+            selectAll.checked = checkboxes.length === checkedBoxes.length && checkboxes.length > 0;
             updatePrice();
         }
     });

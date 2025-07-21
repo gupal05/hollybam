@@ -87,6 +87,7 @@ public class CartController {
         } else if (guest != null) {
             cartItems = cartService.getCartItemsByGuest(guest.getGuestCode());
         }
+        System.out.println("cartItems = " + cartItems);
         mav.addObject("cartItems", cartItems);
         mav.setViewName("cart");
         return mav;

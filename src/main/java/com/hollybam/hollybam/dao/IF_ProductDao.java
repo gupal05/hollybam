@@ -45,4 +45,8 @@ public interface IF_ProductDao {
     ImageDto selectProductTitleImage(int productCode);
 
     int getWishCount(int productCode);
+
+    Double getProductReviewAvg(int productCode);
+
+    int getProductReviewCount(int productCode);
 }

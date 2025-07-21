@@ -485,4 +485,72 @@ public class ReviewService implements IF_ReviewService {
             return false;
         }
     }
+
+    @Override
+    public List<Map<String, Object>> getProductPhotoReviews(int productCode, String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode) {
+        try {
+            log.info("상품별 포토리뷰 조회 - productCode: {}, sort: {}, page: {}, size: {}, rating: {}, memCode: {}, guestCode: {}",
+                    productCode, sort, page, size, rating, memCode, guestCode);
+
+            // page를 offset으로 변환 (1부터 시작하는 페이지를 0부터 시작하는 offset으로)
+            int offset = (page - 1) * size;
+
+            List<Map<String, Object>> result = reviewDao.getProductPhotoReviews(productCode, sort, offset, size, rating, memCode, guestCode);
+
+            log.info("상품별 포토리뷰 조회 완료 - productCode: {}, 결과 개수: {}", productCode, result.size());
+            return result;
+
+        } catch (Exception e) {
+            log.error("상품별 포토리뷰 조회 중 오류 발생 - productCode: {}", productCode, e);
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> getProductTextReviews(int productCode, String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode) {
+        try {
+            log.info("상품별 텍스트리뷰 조회 - productCode: {}, sort: {}, page: {}, size: {}, rating: {}, memCode: {}, guestCode: {}",
+                    productCode, sort, page, size, rating, memCode, guestCode);
+
+            // page를 offset으로 변환 (1부터 시작하는 페이지를 0부터 시작하는 offset으로)
+            int offset = (page - 1) * size;
+
+            List<Map<String, Object>> result = reviewDao.getProductTextReviews(productCode, sort, offset, size, rating, memCode, guestCode);
+
+            log.info("상품별 텍스트리뷰 조회 완료 - productCode: {}, 결과 개수: {}", productCode, result.size());
+            return result;
+
+        } catch (Exception e) {
+            log.error("상품별 텍스트리뷰 조회 중 오류 발생 - productCode: {}", productCode, e);
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public Map<String, Object> getProductReviewCount(int productCode, Integer rating) {
+        try {
+            log.info("상품별 리뷰 카운트 조회 - productCode: {}, rating: {}", productCode, rating);
+
+            Map<String, Object> result = reviewDao.getProductReviewCount(productCode, rating);
+
+            // null 처리
+            if (result.get("photoReviews") == null) result.put("photoReviews", 0);
+            if (result.get("textReviews") == null) result.put("textReviews", 0);
+
+            log.info("상품별 리뷰 카운트 조회 완료 - productCode: {}, photoReviews: {}, textReviews: {}",
+                    productCode, result.get("photoReviews"), result.get("textReviews"));
+            return result;
+
+        } catch (Exception e) {
+            log.error("상품별 리뷰 카운트 조회 중 오류 발생 - productCode: {}", productCode, e);
+            Map<String, Object> result = new HashMap<>();
+            result.put("photoReviews", 0);
+            result.put("textReviews", 0);
+            return result;
+        }
+    }
+
+    public Map<String, Object> getProductRatingCounts(int productCode){
+        return reviewDao.getProductRatingCounts(productCode);
+    }
 }

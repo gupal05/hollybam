@@ -230,4 +230,34 @@ public interface IF_ReviewDao {
      * @return 삭제된 행 수
      */
     int deleteReviewImages(@Param("imageIds") List<Integer> imageIds);
+
+    /**
+     * 상품별 포토리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     */
+    List<Map<String, Object>> getProductPhotoReviews(@Param("productCode") int productCode,
+                                                     @Param("sort") String sort,
+                                                     @Param("offset") int offset,
+                                                     @Param("limit") int limit,
+                                                     @Param("rating") Integer rating,
+                                                     @Param("memCode") Integer memCode,
+                                                     @Param("guestCode") Integer guestCode);
+
+    /**
+     * 상품별 텍스트리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     */
+    List<Map<String, Object>> getProductTextReviews(@Param("productCode") int productCode,
+                                                    @Param("sort") String sort,
+                                                    @Param("offset") int offset,
+                                                    @Param("limit") int limit,
+                                                    @Param("rating") Integer rating,
+                                                    @Param("memCode") Integer memCode,
+                                                    @Param("guestCode") Integer guestCode);
+
+    /**
+     * 상품별 리뷰 카운트 조회 (필터링 적용)
+     */
+    Map<String, Object> getProductReviewCount(@Param("productCode") int productCode,
+                                              @Param("rating") Integer rating);
+
+    Map<String, Object> getProductRatingCounts(int productCode);
 }

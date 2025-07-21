@@ -245,4 +245,40 @@ public interface IF_ReviewService {
      * @return 삭제 성공 여부
      */
     boolean deleteReview(int reviewCode, Integer memCode, Integer guestCode);
+
+    /**
+     * 상품별 포토리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     * @param productCode 상품 코드
+     * @param sort 정렬 방식 (latest, rating, likes)
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param rating 평점 필터
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 상품별 포토리뷰 목록
+     */
+    List<Map<String, Object>> getProductPhotoReviews(int productCode, String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode);
+
+    /**
+     * 상품별 텍스트리뷰 조회 (페이지네이션 + 필터링 + 좋아요 상태)
+     * @param productCode 상품 코드
+     * @param sort 정렬 방식 (latest, rating, likes)
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param rating 평점 필터
+     * @param memCode 회원 코드
+     * @param guestCode 비회원 코드
+     * @return 상품별 텍스트리뷰 목록
+     */
+    List<Map<String, Object>> getProductTextReviews(int productCode, String sort, int page, int size, Integer rating, Integer memCode, Integer guestCode);
+
+    /**
+     * 상품별 리뷰 카운트 조회 (필터링 적용)
+     * @param productCode 상품 코드
+     * @param rating 평점 필터 (null이면 전체)
+     * @return Map - photoReviews, textReviews
+     */
+    Map<String, Object> getProductReviewCount(int productCode, Integer rating);
+
+    Map<String, Object> getProductRatingCounts(int productCode);
 }

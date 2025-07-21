@@ -1450,4 +1450,230 @@
         </foreach>
     </delete>
 
+    <!-- 상품별 포토리뷰 조회 (기존 getPhotoReviews 패턴 + 상품 조건 추가) -->
+    <select id="getProductPhotoReviews" resultType="map">
+        SELECT DISTINCT
+        r.review_code,
+        r.mem_code as memberCode,
+        r.guest_code as guestCode,
+        r.rating,
+        r.content,
+        r.created_at as reviewDate,
+        p.product_name as productName,
+        img.image_url as productImage,
+        ri.image_url as reviewImage,
+        COALESCE(rl.like_count, 0) as likeCount,
+
+        <!-- 작성자 정보 (기존 패턴 그대로) -->
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN CONCAT(LEFT(m.mem_name, 1), REPEAT('○', CHAR_LENGTH(m.mem_name) - 1))
+        WHEN r.guest_code IS NOT NULL THEN CONCAT(LEFT(g.guest_name, 1), REPEAT('○', CHAR_LENGTH(g.guest_name) - 1))
+        ELSE 'Unknown'
+        END as writerName,
+
+        <!-- 작성자 연령대 -->
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN CONCAT(FLOOR((YEAR(CURDATE()) - YEAR(m.mem_birth)) / 10) * 10, '대')
+        WHEN r.guest_code IS NOT NULL THEN CONCAT(FLOOR((YEAR(CURDATE()) - YEAR(g.guest_birth)) / 10) * 10, '대')
+        ELSE ''
+        END as writerAge,
+
+        <!-- 성별 -->
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN m.mem_gender
+        WHEN r.guest_code IS NOT NULL THEN g.guest_gender
+        ELSE ''
+        END as writerGender,
+
+        <!-- 현재 사용자의 좋아요 상태 -->
+        CASE
+        WHEN user_likes.review_code IS NOT NULL THEN 1
+        ELSE 0
+        END as isLiked
+
+        FROM review r
+        INNER JOIN review_image ri ON r.review_code = ri.review_code
+        INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        INNER JOIN product p ON oi.product_code = p.product_code
+        LEFT JOIN image img ON p.product_code = img.product_code AND img.image_type = 'title'
+        LEFT JOIN member m ON r.mem_code = m.mem_code
+        LEFT JOIN guest g ON r.guest_code = g.guest_code
+
+        <!-- 리뷰별 좋아요 수 계산 -->
+        LEFT JOIN (
+        SELECT review_code, COUNT(*) as like_count
+        FROM review_like
+        GROUP BY review_code
+        ) rl ON r.review_code = rl.review_code
+
+        <!-- 현재 사용자의 좋아요 상태 확인 -->
+        LEFT JOIN review_like user_likes ON r.review_code = user_likes.review_code
+        AND (
+        (#{memCode} IS NOT NULL AND user_likes.mem_code = #{memCode})
+        OR
+        (#{guestCode} IS NOT NULL AND user_likes.guest_code = #{guestCode})
+        )
+
+        WHERE r.is_active = 1
+        AND p.product_code = #{productCode}  <!-- 상품별 조건 추가 -->
+
+        <!-- 평점 필터 -->
+        <if test="rating != null">
+            AND r.rating = #{rating}
+        </if>
+
+        <!-- 정렬 조건 (기존 패턴 그대로) -->
+        <choose>
+            <when test="sort == 'latest'">
+                ORDER BY r.created_at DESC
+            </when>
+            <when test="sort == 'rating'">
+                ORDER BY r.rating DESC, r.created_at DESC
+            </when>
+            <when test="sort == 'likes'">
+                ORDER BY COALESCE(rl.like_count, 0) DESC, r.created_at DESC
+            </when>
+            <otherwise>
+                ORDER BY r.created_at DESC
+            </otherwise>
+        </choose>
+
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 상품별 텍스트리뷰 조회 (기존 getTextReviews 패턴 + 상품 조건 추가) -->
+    <select id="getProductTextReviews" resultType="map">
+        SELECT
+        r.review_code,
+        r.mem_code as memberCode,
+        r.guest_code as guestCode,
+        r.rating,
+        r.content,
+        r.created_at as reviewDate,
+        p.product_name as productName,
+        img.image_url as productImage,
+        COALESCE(rl.like_count, 0) as likeCount,
+
+        <!-- 작성자 정보 (기존 패턴 그대로) -->
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN CONCAT(LEFT(m.mem_name, 1), REPEAT('○', CHAR_LENGTH(m.mem_name) - 1))
+        WHEN r.guest_code IS NOT NULL THEN CONCAT(LEFT(g.guest_name, 1), REPEAT('○', CHAR_LENGTH(g.guest_name) - 1))
+        ELSE 'Unknown'
+        END as writerName,
+
+        <!-- 작성자 연령대 -->
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN CONCAT(FLOOR((YEAR(CURDATE()) - YEAR(m.mem_birth)) / 10) * 10, '대')
+        WHEN r.guest_code IS NOT NULL THEN CONCAT(FLOOR((YEAR(CURDATE()) - YEAR(g.guest_birth)) / 10) * 10, '대')
+        ELSE ''
+        END as writerAge,
+
+        <!-- 성별 -->
+        CASE
+        WHEN r.mem_code IS NOT NULL THEN m.mem_gender
+        WHEN r.guest_code IS NOT NULL THEN g.guest_gender
+        ELSE ''
+        END as writerGender,
+
+        <!-- 현재 사용자의 좋아요 상태 -->
+        CASE
+        WHEN user_likes.review_code IS NOT NULL THEN 1
+        ELSE 0
+        END as isLiked
+
+        FROM review r
+        INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        INNER JOIN product p ON oi.product_code = p.product_code
+        LEFT JOIN image img ON p.product_code = img.product_code AND img.image_type = 'title'
+        LEFT JOIN member m ON r.mem_code = m.mem_code
+        LEFT JOIN guest g ON r.guest_code = g.guest_code
+
+        <!-- 리뷰별 좋아요 수 계산 -->
+        LEFT JOIN (
+        SELECT review_code, COUNT(*) as like_count
+        FROM review_like
+        GROUP BY review_code
+        ) rl ON r.review_code = rl.review_code
+
+        <!-- 현재 사용자의 좋아요 상태 확인 -->
+        LEFT JOIN review_like user_likes ON r.review_code = user_likes.review_code
+        AND (
+        (#{memCode} IS NOT NULL AND user_likes.mem_code = #{memCode})
+        OR
+        (#{guestCode} IS NOT NULL AND user_likes.guest_code = #{guestCode})
+        )
+
+        WHERE r.is_active = 1
+        AND p.product_code = #{productCode}  <!-- 상품별 조건 추가 -->
+        AND r.review_code NOT IN (
+        SELECT DISTINCT review_code FROM review_image
+        )
+
+        <!-- 평점 필터 -->
+        <if test="rating != null">
+            AND r.rating = #{rating}
+        </if>
+
+        <!-- 정렬 조건 (기존 패턴 그대로) -->
+        <choose>
+            <when test="sort == 'latest'">
+                ORDER BY r.created_at DESC
+            </when>
+            <when test="sort == 'rating'">
+                ORDER BY r.rating DESC, r.created_at DESC
+            </when>
+            <when test="sort == 'likes'">
+                ORDER BY COALESCE(rl.like_count, 0) DESC, r.created_at DESC
+            </when>
+            <otherwise>
+                ORDER BY r.created_at DESC
+            </otherwise>
+        </choose>
+
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 상품별 리뷰 카운트 조회 (기존 getReviewCount 패턴 + 상품 조건 추가) -->
+    <select id="getProductReviewCount" resultType="map">
+        SELECT
+        (SELECT COUNT(DISTINCT r.review_code)
+        FROM review r
+        INNER JOIN review_image ri ON r.review_code = ri.review_code
+        INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        WHERE r.is_active = 1
+        AND oi.product_code = #{productCode}  <!-- 상품별 조건 추가 -->
+        <if test="rating != null">
+            AND r.rating = #{rating}
+        </if>
+        ) as photoReviews,
+
+        (SELECT COUNT(*)
+        FROM review r
+        INNER JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        WHERE r.is_active = 1
+        AND oi.product_code = #{productCode}  <!-- 상품별 조건 추가 -->
+        AND r.review_code NOT IN (
+        SELECT DISTINCT review_code FROM review_image
+        )
+        <if test="rating != null">
+            AND r.rating = #{rating}
+        </if>
+        ) as textReviews
+    </select>
+
+    <select id="getProductRatingCounts"
+            parameterType="int"
+            resultType="java.util.Map">
+        SELECT
+            SUM(r.rating = 5) AS cnt5,
+            SUM(r.rating = 4) AS cnt4,
+            SUM(r.rating = 3) AS cnt3,
+            SUM(r.rating = 2) AS cnt2,
+            SUM(r.rating = 1) AS cnt1
+        FROM review r
+                 JOIN order_items oi
+                      ON r.order_item_code = oi.order_item_code
+        WHERE oi.product_code = #{productCode}
+          AND r.is_active = 1
+    </select>
 </mapper>

@@ -1491,61 +1491,59 @@
 <section class="content-section" id="review">
     <h2 class="section-title">리뷰</h2>
 
-    <!-- 리뷰 요약 통계 (기존 코드 약간 수정) -->
+    <!-- 리뷰 요약 통계 -->
     <div class="review-summary">
         <div class="review-stats">
-            <div class="rating-score" th:text="${product.reviewAvg != null ? product.reviewAvg : '0.0'}">0.0</div>
-            <div class="rating-details">
-                <h3>구매 고객 리뷰</h3>
-                <div class="star-rating">
-                    <!-- 평균 평점에 따른 별 표시 -->
-                    <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                        <svg class="star"
-                             th:classappend="${product.reviewAvg != null && i <= product.reviewAvg} ? 'filled' : 'empty'"
-                             viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                    </th:block>
-                </div>
-                <div class="rating-count" th:text="'총 ' + ${product.reviewCount} + '개의 리뷰'">총 0개의 리뷰</div>
+            <div class="rating-score" th:text="${product.reviewAvg != null ?
+                #numbers.formatDecimal(product.reviewAvg, 1, 1) : '0.0'}">4.5</div>
+            <div class="rating-stars">
+                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                    <svg class="star"
+                         th:classappend="${product.reviewAvg != null && i <= product.reviewAvg} ? 'filled' : 'empty'"
+                         viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </th:block>
+            </div>
+            <div class="total-reviews" th:text="'총 ' + ${product.reviewCount} + '개의 리뷰'">총 15개의 리뷰</div>
+        </div>
 
-                <!-- 평점별 분포 (일단 기존 정적 코드 유지) -->
-                <div class="rating-breakdown">
-                    <div class="rating-row">
-                        <span class="rating-label">5점</span>
-                        <div class="rating-bar">
-                            <div class="rating-fill" th:style="'width: ' + ${rating5Percent} + '%'"></div>
-                        </div>
-                        <span class="rating-count" th:text="${reviewRatingCount?.cnt5 ?: 0} + '명'">0명</span>
+        <div class="rating-breakdown">
+            <div class="rating-details">
+                <div class="rating-row">
+                    <span class="rating-label">5점</span>
+                    <div class="rating-bar">
+                        <div class="rating-fill" th:style="'width: ' + ${rating5Percent} + '%'"></div>
                     </div>
-                    <div class="rating-row">
-                        <span class="rating-label">4점</span>
-                        <div class="rating-bar">
-                            <div class="rating-fill" th:style="'width: ' + ${rating4Percent} + '%'"></div>
-                        </div>
-                        <span class="rating-count" th:text="${reviewRatingCount?.cnt4 ?: 0} + '명'">0명</span>
+                    <span class="rating-count" th:text="${reviewRatingCount?.cnt5 ?: 0} + '명'">0명</span>
+                </div>
+                <div class="rating-row">
+                    <span class="rating-label">4점</span>
+                    <div class="rating-bar">
+                        <div class="rating-fill" th:style="'width: ' + ${rating4Percent} + '%'"></div>
                     </div>
-                    <div class="rating-row">
-                        <span class="rating-label">3점</span>
-                        <div class="rating-bar">
-                            <div class="rating-fill" th:style="'width: ' + ${rating3Percent} + '%'"></div>
-                        </div>
-                        <span class="rating-count" th:text="${reviewRatingCount?.cnt3 ?: 0} + '명'">0명</span>
+                    <span class="rating-count" th:text="${reviewRatingCount?.cnt4 ?: 0} + '명'">0명</span>
+                </div>
+                <div class="rating-row">
+                    <span class="rating-label">3점</span>
+                    <div class="rating-bar">
+                        <div class="rating-fill" th:style="'width: ' + ${rating3Percent} + '%'"></div>
                     </div>
-                    <div class="rating-row">
-                        <span class="rating-label">2점</span>
-                        <div class="rating-bar">
-                            <div class="rating-fill" th:style="'width: ' + ${rating2Percent} + '%'"></div>
-                        </div>
-                        <span class="rating-count" th:text="${reviewRatingCount?.cnt2 ?: 0} + '명'">0명</span>
+                    <span class="rating-count" th:text="${reviewRatingCount?.cnt3 ?: 0} + '명'">0명</span>
+                </div>
+                <div class="rating-row">
+                    <span class="rating-label">2점</span>
+                    <div class="rating-bar">
+                        <div class="rating-fill" th:style="'width: ' + ${rating2Percent} + '%'"></div>
                     </div>
-                    <div class="rating-row">
-                        <span class="rating-label">1점</span>
-                        <div class="rating-bar">
-                            <div class="rating-fill" th:style="'width: ' + ${rating1Percent} + '%'"></div>
-                        </div>
-                        <span class="rating-count" th:text="${reviewRatingCount?.cnt1 ?: 0} + '명'">0명</span>
+                    <span class="rating-count" th:text="${reviewRatingCount?.cnt2 ?: 0} + '명'">0명</span>
+                </div>
+                <div class="rating-row">
+                    <span class="rating-label">1점</span>
+                    <div class="rating-bar">
+                        <div class="rating-fill" th:style="'width: ' + ${rating1Percent} + '%'"></div>
                     </div>
+                    <span class="rating-count" th:text="${reviewRatingCount?.cnt1 ?: 0} + '명'">0명</span>
                 </div>
             </div>
         </div>
@@ -1680,17 +1678,18 @@
     </div>
 
     <!-- 더보기 버튼 -->
-    <div class="review-load-more">
-        <button id="loadMoreReviews" class="load-more-btn" onclick="loadMoreReviews()">
+    <div class="review-load-more" style="text-align: center; margin-top: 20px;">
+        <button id="loadMoreReviews" class="load-more-btn" onclick="loadMoreReviews()"
+                style="display: none; padding: 12px 24px; background: #EE386D; color: white; border: none; border-radius: 5px; cursor: pointer;">
             더보기
         </button>
     </div>
 
     <!-- 빈 상태 -->
-    <div class="empty-state" id="emptyReviewState" style="display: none;">
-        <i class="fas fa-comment-slash"></i>
-        <h3>등록된 리뷰가 없습니다</h3>
-        <p>이 상품에 대한 첫 리뷰를 작성해보세요!</p>
+    <div class="empty-state" id="emptyReviewState" style="display: none; text-align: center; padding: 40px;">
+        <i class="fas fa-comment-slash" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
+        <h3 style="margin-bottom: 8px; color: #666;">등록된 리뷰가 없습니다</h3>
+        <p style="color: #999;">이 상품에 대한 첫 리뷰를 작성해보세요!</p>
     </div>
 </section>
 
@@ -1770,7 +1769,20 @@
     const options = /*[[${options}]]*/ [];
     const basePrice = /*[[${product.priceDtoList[0].priceSelling}]]*/ 0;
     const productCode = /*[[${product.productCode}]]*/ 0;
+    // Thymeleaf에서 전달받은 데이터
+    const productId = /*[[${product.productId}]]*/ '';
     const productQuantity = /*[[${product.productQuantity}]]*/ 0;
+
+    // 디버깅용 - 값 확인
+    console.log('=== Thymeleaf 변수 확인 ===');
+    console.log('productId from Thymeleaf:', productId);
+    console.log('productCode from Thymeleaf:', productCode);
+
+    // 값이 비어있는 경우 경고
+    if (!productId || productId === '') {
+        console.error('❌ productId가 비어있습니다!');
+        alert('상품 정보를 불러올 수 없습니다. 페이지를 새로고침해주세요.');
+    }
     /*]]>*/
 </script>
 
@@ -2117,8 +2129,6 @@
         form.submit();
     }
 
-    // Thymeleaf에서 전달받은 데이터
-    const productId = /*[[${product.productId}]]*/ '';
 
     // 현재 상태 변수들
     let currentTab = 'photo';
@@ -2195,7 +2205,11 @@
         if (isLoading || !hasMore) return;
 
         isLoading = true;
-        document.getElementById('loadMoreReviews').textContent = '로딩 중...';
+        const loadMoreBtn = document.getElementById('loadMoreReviews');
+        if (loadMoreBtn) {
+            loadMoreBtn.textContent = '로딩 중...';
+            loadMoreBtn.disabled = true;
+        }
 
         const params = new URLSearchParams({
             type: currentTab,
@@ -2209,7 +2223,12 @@
         }
 
         fetch(`/product/${productId}/reviews?${params}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('네트워크 응답이 좋지 않습니다');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     appendReviews(data.reviewList);
@@ -2217,22 +2236,35 @@
                     currentPage++;
 
                     // 카운트 업데이트
-                    document.getElementById('photoReviewCount').textContent = `(${data.photoReviews})`;
-                    document.getElementById('textReviewCount').textContent = `(${data.textReviews})`;
+                    const photoCountEl = document.getElementById('photoReviewCount');
+                    const textCountEl = document.getElementById('textReviewCount');
 
-                    if (!hasMore) {
-                        document.getElementById('loadMoreReviews').style.display = 'none';
+                    if (photoCountEl) photoCountEl.textContent = `(${data.photoReviews})`;
+                    if (textCountEl) textCountEl.textContent = `(${data.textReviews})`;
+
+                    // 더보기 버튼 상태 업데이트
+                    if (loadMoreBtn) {
+                        if (!hasMore) {
+                            loadMoreBtn.style.display = 'none';
+                        } else {
+                            loadMoreBtn.style.display = 'block';
+                        }
                     }
                 } else {
                     console.error('리뷰 로드 실패:', data.message);
+                    alert('리뷰를 불러오는데 실패했습니다.');
                 }
             })
             .catch(error => {
                 console.error('리뷰 로드 오류:', error);
+                alert('리뷰를 불러오는 중 오류가 발생했습니다.');
             })
             .finally(() => {
                 isLoading = false;
-                document.getElementById('loadMoreReviews').textContent = '더보기';
+                if (loadMoreBtn) {
+                    loadMoreBtn.textContent = '더보기';
+                    loadMoreBtn.disabled = false;
+                }
             });
     }
 
@@ -2241,17 +2273,24 @@
         const section = currentTab === 'photo' ? 'photoReviewSection' : 'textReviewSection';
         const container = document.getElementById(section);
 
+        if (!container) {
+            console.error('리뷰 컨테이너를 찾을 수 없습니다:', section);
+            return;
+        }
+
         reviews.forEach(review => {
             const reviewElement = createReviewElement(review);
             container.appendChild(reviewElement);
         });
 
         // 빈 상태 처리
+        const emptyState = document.getElementById('emptyReviewState');
         if (container.children.length === 0) {
-            document.getElementById('emptyReviewState').style.display = 'block';
-            document.getElementById('loadMoreReviews').style.display = 'none';
+            if (emptyState) emptyState.style.display = 'block';
+            const loadMoreBtn = document.getElementById('loadMoreReviews');
+            if (loadMoreBtn) loadMoreBtn.style.display = 'none';
         } else {
-            document.getElementById('emptyReviewState').style.display = 'none';
+            if (emptyState) emptyState.style.display = 'none';
         }
     }
 
@@ -2259,7 +2298,7 @@
     function createReviewElement(review) {
         const reviewDiv = document.createElement('div');
         reviewDiv.className = 'review-item';
-        reviewDiv.setAttribute('data-review-code', review.review_code);
+        reviewDiv.setAttribute('data-review-code', review.review_code || review.reviewCode);
 
         // 별점 생성
         let starsHtml = '';
@@ -2272,54 +2311,68 @@
         let imageHtml = '';
         if (review.reviewImage) {
             imageHtml = `
-                <div class="review-images">
-                    <img src="${review.reviewImage}"
-                         alt="리뷰 이미지" onclick="showImageModal(this.src)">
-                </div>
-            `;
+            <div class="review-images">
+                <img src="${review.reviewImage}"
+                     alt="리뷰 이미지" onclick="showImageModal('${review.reviewImage}')">
+            </div>
+        `;
         }
+
+        // 날짜 포맷팅
+        const reviewDate = new Date(review.reviewDate).toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).replace(/\. /g, '.').replace(/\.$/, '');
+
+        // 좋아요 상태 클래스
+        const likedClass = (review.isLiked == 1) ? 'liked' : '';
 
         // 리뷰 HTML 구성
         reviewDiv.innerHTML = `
-            <div class="review-header">
-                <div class="reviewer-info">
-                    <div class="reviewer-avatar">${review.writerName.charAt(0)}</div>
-                    <div class="reviewer-details">
-                        <h4>${review.writerName}</h4>
-                        <p>
-                            <span>${review.writerAge}</span>
-                            <span>${review.writerGender === '남자' ? '남성' : '여성'}</span>
-                            ·
-                            <span>${new Date(review.reviewDate).toLocaleDateString('ko-KR')}</span> 구매
-                        </p>
-                    </div>
-                </div>
-                <div class="review-rating">
-                    ${starsHtml}
+        <div class="review-header">
+            <div class="reviewer-info">
+                <div class="reviewer-avatar">${review.writerName ? review.writerName.charAt(0) : '익'}</div>
+                <div class="reviewer-details">
+                    <h4>${review.writerName || '익명'}</h4>
+                    <p>
+                        <span>${review.writerAge || '20대'}</span>
+                        <span>${review.writerGender === '남자' ? '남성' : '여성'}</span>
+                        ·
+                        <span>${reviewDate}</span> 구매
+                    </p>
                 </div>
             </div>
-
-            <div class="review-content">
-                <p>${review.content}</p>
-                ${imageHtml}
+            <div class="review-rating">
+                ${starsHtml}
             </div>
+        </div>
 
-            <div class="review-footer">
-                <button class="like-btn ${review.isLiked == 1 ? 'liked' : ''}"
-                        onclick="toggleReviewLike(${review.review_code}, this)">
-                    <svg class="heart-icon" viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                    <span class="like-count">${review.likeCount}</span>
-                </button>
-            </div>
-        `;
+        <div class="review-content">
+            <p>${review.content || ''}</p>
+            ${imageHtml}
+        </div>
+
+        <div class="review-footer">
+            <button class="like-btn ${likedClass}"
+                    onclick="toggleReviewLike(${review.review_code || review.reviewCode}, this)">
+                <svg class="heart-icon" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span class="like-count">${review.likeCount || 0}</span>
+            </button>
+        </div>
+    `;
 
         return reviewDiv;
     }
 
     // 리뷰 좋아요 토글 (기존 ReviewController API 활용)
-    function toggleReviewLike(reviewCode, button) {
+    function toggleReviewLike(reviewCode, buttonElement) {
+        if (!reviewCode || buttonElement.disabled) return;
+
+        buttonElement.disabled = true;
+
         fetch('/review/api/like', {
             method: 'POST',
             headers: {
@@ -2330,36 +2383,70 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const likeCount = button.querySelector('.like-count');
-                    likeCount.textContent = data.likeCount || 0;
+                    const likeCountSpan = buttonElement.querySelector('.like-count');
+                    const currentCount = parseInt(likeCountSpan.textContent);
 
                     if (data.isLiked) {
-                        button.classList.add('liked');
+                        buttonElement.classList.add('liked');
+                        likeCountSpan.textContent = currentCount + 1;
                     } else {
-                        button.classList.remove('liked');
+                        buttonElement.classList.remove('liked');
+                        likeCountSpan.textContent = Math.max(0, currentCount - 1);
                     }
-
-                    // 하트 애니메이션
-                    const heartIcon = button.querySelector('.heart-icon');
-                    heartIcon.style.transform = 'scale(1.3)';
-                    setTimeout(() => {
-                        heartIcon.style.transform = 'scale(1)';
-                    }, 200);
                 } else {
-                    alert(data.message || '좋아요 처리 중 오류가 발생했습니다.');
+                    alert(data.message || '좋아요 처리에 실패했습니다.');
                 }
             })
             .catch(error => {
-                console.error('좋아요 처리 오류:', error);
+                console.error('좋아요 오류:', error);
                 alert('좋아요 처리 중 오류가 발생했습니다.');
+            })
+            .finally(() => {
+                buttonElement.disabled = false;
             });
     }
 
     // 이미지 모달 함수 (기존 코드가 있다면 그대로 사용)
     function showImageModal(imageSrc) {
-        // 이미지 모달 구현 (기존 코드 활용)
-        console.log('이미지 모달:', imageSrc);
+        // 간단한 이미지 모달 구현
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        cursor: pointer;
+    `;
+
+        const img = document.createElement('img');
+        img.src = imageSrc;
+        img.style.cssText = `
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+    `;
+
+        modal.appendChild(img);
+        modal.onclick = () => document.body.removeChild(modal);
+
+        document.body.appendChild(modal);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('리뷰 JavaScript 초기화 완료');
+
+        // 더보기 버튼이 있는지 확인하고 표시
+        const loadMoreBtn = document.getElementById('loadMoreReviews');
+        if (loadMoreBtn && hasMore) {
+            loadMoreBtn.style.display = 'block';
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
         updateDeliveryNotice();

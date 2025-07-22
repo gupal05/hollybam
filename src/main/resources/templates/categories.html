@@ -610,6 +610,81 @@
                 overflow-x: hidden;
             }
         }
+
+        /* 페이지네이션 스타일 */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            padding: 20px 0;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 10px 16px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: inline-block;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .page-btn:hover {
+            border-color: #EE386D;
+            color: #EE386D;
+            background-color: #fef7f7;
+        }
+
+        .page-btn.active {
+            background: #EE386D;
+            border-color: #EE386D;
+            color: white;
+            cursor: default;
+        }
+
+        .page-btn.active:hover {
+            background: #EE386D;
+            border-color: #EE386D;
+            color: white;
+        }
+
+        .prev-btn, .next-btn {
+            font-weight: 600;
+            padding: 10px 20px;
+        }
+
+        /* 모바일에서 페이지네이션 숨김 */
+        @media (max-width: 768px) {
+            .pagination-container {
+                display: none;
+            }
+        }
+
+        /* 태블릿에서도 페이지네이션 숨김 */
+        @media (max-width: 1024px) {
+            .pagination-container {
+                display: none;
+            }
+        }
+
+        /* PC에서만 페이지네이션 표시 */
+        @media (min-width: 1025px) {
+            .pagination-container {
+                display: flex;
+            }
+        }
     </style>
     <script>
         // 헤더 높이에 따라 상단 여백 동적으로 조절
@@ -835,6 +910,44 @@
                         <h3>등록된 상품이 없습니다</h3>
                         <p>현재 이 카테고리에는 상품이 등록되어 있지 않습니다.<br>다른 카테고리를 확인해보세요.</p>
                     </div>
+                    <div class="pagination-container" th:if="${totalPages > 1}">
+                        <nav class="pagination">
+                            <!-- 이전 페이지 버튼 -->
+                            <a th:if="${currentPage > 1}"
+                               th:href="@{/product/list(categoryCode=${cate.categoryCode},
+                                      detailCode=${active.detailCode},
+                                      sort=${currentSort},
+                                      page=${currentPage - 1})}"
+                               class="page-btn prev-btn">
+                                이전
+                            </a>
+
+                            <!-- 페이지 번호들 -->
+                            <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+            <a th:if="${pageNum != currentPage}"
+               th:href="@{/product/list(categoryCode=${cate.categoryCode},
+                                          detailCode=${active.detailCode},
+                                          sort=${currentSort},
+                                          page=${pageNum})}"
+               class="page-btn"
+               th:text="${pageNum}">1</a>
+
+            <span th:if="${pageNum == currentPage}"
+                  class="page-btn active"
+                  th:text="${pageNum}">1</span>
+        </span>
+
+                            <!-- 다음 페이지 버튼 -->
+                            <a th:if="${currentPage < totalPages}"
+                               th:href="@{/product/list(categoryCode=${cate.categoryCode},
+                                      detailCode=${active.detailCode},
+                                      sort=${currentSort},
+                                      page=${currentPage + 1})}"
+                               class="page-btn next-btn">
+                                다음
+                            </a>
+                        </nav>
+                    </div>
                 </section>
             </div>
         </section>
@@ -876,6 +989,22 @@
                 const sortValue = this.value;
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('sort', sortValue);
+                window.location.href = currentUrl.toString();
+            });
+        }
+    });
+
+    // 정렬 변경 시 페이지네이션 처리
+    document.addEventListener('DOMContentLoaded', function() {
+        const sortSelect = document.querySelector('.product-sort-select');
+        if (sortSelect) {
+            // 현재 정렬 옵션 설정
+            sortSelect.value = '[[${currentSort}]]';
+
+            sortSelect.addEventListener('change', function() {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('sort', this.value);
+                currentUrl.searchParams.set('page', '1'); // 정렬 변경 시 첫 페이지로
                 window.location.href = currentUrl.toString();
             });
         }

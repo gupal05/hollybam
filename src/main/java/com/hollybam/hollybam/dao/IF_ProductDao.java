@@ -49,4 +49,15 @@ public interface IF_ProductDao {
     Double getProductReviewAvg(int productCode);
 
     int getProductReviewCount(int productCode);
+
+    List<ProductDto> selectProductsByCategoryAndDetailWithPaging(@Param("categoryCode") String categoryCode, @Param("detailCode") String detailCode,
+                                                                 @Param("sort") String sort, @Param("offset") int offset,
+                                                                 @Param("size") int size);
+
+    List<ProductDto> selectProductsByCategoryCodeWithPaging(@Param("categoryCode") String categoryCode,
+                                                                 @Param("sort") String sort, @Param("offset") int offset, @Param("size") int size);
+
+    int selectProductCountByCategoryAndDetail(@Param("categoryCode") String categoryCode, @Param("detailCode") String detailCode);
+
+    int selectProductCountByCategory(@Param("categoryCode") String categoryCode);
 }

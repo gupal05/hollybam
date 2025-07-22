@@ -149,4 +149,28 @@ public class ProductService implements IF_ProductService{
         return productDao.getWishCount(productCode);
     }
 
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsByCategoryAndDetailWithPaging(String categoryCode, String detailCode, String sort, int offset, int size){
+        return productDao.selectProductsByCategoryAndDetailWithPaging(categoryCode, detailCode, sort, offset, size);
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsByCategoryCodeWithPaging(String categoryCode, String sort, int offset, int size){
+        return productDao.selectProductsByCategoryCodeWithPaging(categoryCode, sort, offset, size);
+    }
+
+    @Override
+    @Transactional
+    public int getProductCountByCategoryAndDetail(String categoryCode, String detailCode){
+        return productDao.selectProductCountByCategoryAndDetail(categoryCode, detailCode);
+    }
+
+    @Override
+    @Transactional
+    public int getProductCountByCategory(String categoryCode){
+        return productDao.selectProductCountByCategory(categoryCode);
+    }
+
 }

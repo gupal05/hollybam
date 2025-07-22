@@ -44,4 +44,12 @@ public interface IF_ProductService {
     Double getProductReviewAvg(int productCode);
 
     int getProductReviewCount(int productCode);
+
+    List<ProductDto> getProductsByCategoryAndDetailWithPaging(String categoryCode, String detailCode, String sort, int offset, int size);
+
+    List<ProductDto> getProductsByCategoryCodeWithPaging(String categoryCode, String sort, int offset, int size);
+
+    int getProductCountByCategoryAndDetail(String categoryCode, String detailCode);
+
+    int getProductCountByCategory(String categoryCode);
 }

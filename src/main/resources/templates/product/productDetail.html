@@ -193,7 +193,8 @@
         .star {
             width: 20px;
             height: 20px;
-            fill: #EE386D;
+            fill: #ddd; /* 기본색을 회색으로 변경 */
+            transition: fill 0.3s ease;
         }
 
         .rating-text {
@@ -1134,11 +1135,11 @@
         }
 
         .star.filled {
-            fill: #ffc107;
+            fill: #ffc107; /* 노란색으로 채움 */
         }
 
         .star.empty {
-            fill: #ddd;
+            fill: #ddd; /* 회색 */
         }
 
         /* 반응형 */
@@ -1169,6 +1170,155 @@
 
             .review-rating {
                 align-self: flex-start;
+            }
+        }
+
+        /* 배송 안내 컨테이너 */
+        .delivery-notice {
+            margin: 24px 0;
+            padding: 0;
+        }
+
+        .delivery-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+            border: 2px solid #EE386D;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .delivery-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 40%, rgba(238, 56, 109, 0.05) 50%, transparent 60%);
+            animation: shine 4s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .delivery-icon {
+            font-size: 24px;
+            color: #EE386D;
+            animation: bounce 2s infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-3px); }
+            60% { transform: translateY(-2px); }
+        }
+
+        .delivery-content {
+            flex: 1;
+        }
+
+        .delivery-main-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .highlight-time {
+            color: #EE386D;
+            font-weight: 700;
+            background: linear-gradient(45deg, #EE386D, #ff6b9d);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .delivery-sub-text {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* 시간대별 스타일 변경 */
+        .delivery-info.today {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+        }
+
+        .delivery-info.today .delivery-icon {
+            color: #28a745;
+        }
+
+        .delivery-info.today .highlight-time {
+            color: #28a745;
+            background: linear-gradient(45deg, #28a745, #4caf50);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .delivery-info.tomorrow {
+            border-color: #ffc107;
+            background: linear-gradient(135deg, #fffef8 0%, #fefbe8 100%);
+        }
+
+        .delivery-info.tomorrow .delivery-icon {
+            color: #ffc107;
+        }
+
+        .delivery-info.weekend {
+            border-color: #6c757d;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .delivery-info.weekend .delivery-icon {
+            color: #6c757d;
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .delivery-notice {
+                margin: 20px 0;
+            }
+
+            .delivery-info {
+                padding: 14px 16px;
+                gap: 10px;
+            }
+
+            .delivery-icon {
+                font-size: 20px;
+            }
+
+            .delivery-main-text {
+                font-size: 14px;
+            }
+
+            .delivery-sub-text {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .delivery-info {
+                padding: 12px 14px;
+                gap: 8px;
+            }
+
+            .delivery-main-text {
+                font-size: 13px;
+            }
+
+            .delivery-sub-text {
+                font-size: 11px;
             }
         }
     </style>
@@ -1239,13 +1389,29 @@
 
             <div class="product-rating">
                 <div class="star-rating">
-                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <!-- 평점에 따라 동적으로 별 채우기 -->
+                    <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                        <svg class="star"
+                             th:classappend="${product.reviewAvg != null && i <= product.reviewAvg} ? 'filled' : 'empty'"
+                             viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </th:block>
                 </div>
                 <span class="rating-text" th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + '개 리뷰)'">4.8 (15개 리뷰)</span>
+            </div>
+
+            <!-- 🌟 당일 발송 안내 - 여기에 추가! -->
+            <div class="delivery-notice">
+                <div class="delivery-info">
+                    <i class="fas fa-shipping-fast delivery-icon"></i>
+                    <div class="delivery-content">
+                        <div class="delivery-main-text" id="deliveryMainText">
+                            <span class="highlight-time">오후 1시 이전</span> 주문 시 당일 발송
+                        </div>
+                        <div class="delivery-sub-text">빠르고 안전한 무료배송 (5만원 이상)</div>
+                    </div>
+                </div>
             </div>
 
             <!-- 옵션 선택 -->
@@ -1548,10 +1714,10 @@
                     <span class="shipping-label">배송기간</span>
                     <span class="shipping-value">주문 후 <span class="highlight">1-2일</span> 내 발송</span>
                 </div>
-                <div class="shipping-row">
-                    <span class="shipping-label">배송지역</span>
-                    <span class="shipping-value">전국 (제주/도서산간 지역 배송비 별도)</span>
-                </div>
+<!--                <div class="shipping-row">-->
+<!--                    <span class="shipping-label">배송지역</span>-->
+<!--                    <span class="shipping-value">전국 (제주/도서산간 지역 배송비 별도)</span>-->
+<!--                </div>-->
             </div>
         </div>
 
@@ -2194,6 +2360,76 @@
         // 이미지 모달 구현 (기존 코드 활용)
         console.log('이미지 모달:', imageSrc);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateDeliveryNotice();
+    });
+
+    function updateDeliveryNotice() {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const isWeekend = now.getDay() === 0 || now.getDay() === 6; // 0: 일요일, 6: 토요일
+
+        const deliveryInfo = document.querySelector('.delivery-info');
+        const deliveryMainText = document.getElementById('deliveryMainText');
+
+        if (!deliveryInfo || !deliveryMainText) return;
+
+        // 기존 클래스 제거
+        deliveryInfo.classList.remove('today', 'tomorrow', 'weekend');
+
+        if (isWeekend) {
+            // 주말인 경우
+            deliveryInfo.classList.add('weekend');
+            deliveryMainText.innerHTML = `
+            <span class="highlight-time">주말/공휴일</span>로 인해 월요일 발송
+        `;
+        } else if (currentHour >= 13) {
+            // 오후 1시 이후인 경우
+            deliveryInfo.classList.add('tomorrow');
+            deliveryMainText.innerHTML = `
+            <span class="highlight-time">내일 발송</span> 예정 (오후 1시 이후 주문)
+        `;
+        } else {
+            // 오후 1시 이전인 경우
+            deliveryInfo.classList.add('today');
+            deliveryMainText.innerHTML = `
+            <span class="highlight-time">오늘 발송!</span> 빠른 배송 가능
+        `;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 평점 정보 가져오기 (Thymeleaf에서 전달받은 값)
+        const reviewAvg = /*[[${product.reviewAvg}]]*/ 0;
+
+        if (reviewAvg > 0) {
+            updateStarRating(reviewAvg);
+        }
+    });
+
+    function updateStarRating(rating) {
+        const stars = document.querySelectorAll('.product-rating .star');
+
+        stars.forEach((star, index) => {
+            const starNumber = index + 1;
+
+            // 기존 클래스 제거
+            star.classList.remove('filled', 'empty', 'half');
+
+            if (rating >= starNumber) {
+                // 완전히 채워진 별
+                star.classList.add('filled');
+            } else if (rating >= starNumber - 0.5) {
+                // 반별 (예: 4.5점일 때 5번째 별)
+                star.classList.add('half');
+            } else {
+                // 빈 별
+                star.classList.add('empty');
+            }
+        });
+    }
+
 </script>
 </body>
 </html>

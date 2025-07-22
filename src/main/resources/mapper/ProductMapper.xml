@@ -486,4 +486,112 @@
         WHERE oi.product_code = #{productCode}
           AND r.is_active = 1
     </select>
+
+    <select id="selectProductsByCategoryCodeWithPaging" resultMap="productMap">
+        SELECT
+        p.product_code,
+        p.product_id,
+        p.product_name,
+        p.product_description,
+        p.product_order_count,
+        p.product_quantity,
+        p.product_active,
+        p.create_at,
+        p.update_at,
+        pr.price_code,
+        pr.price_original,
+        pr.price_cost,
+        pr.price_selling,
+        pr.price_margin,
+        pr.create_at as price_create_at,
+        pr.update_at as price_update_at,
+        i.image_code,
+        i.image_url,
+        i.image_type,
+        i.image_order,
+        i.create_at as image_create_at,
+        i.update_at as image_update_at,
+        CASE
+        WHEN i.image_type = 'webp' THEN i.image_url
+        ELSE NULL
+        END as image_webp
+        FROM product p
+        LEFT JOIN price pr ON p.product_code = pr.product_code
+        LEFT JOIN image i ON p.product_code = i.product_code
+        WHERE p.cate_code = #{categoryCode}
+        AND p.product_active = 1
+        AND (i.image_type = 'title' OR i.image_type = 'webp' OR i.image_code IS NULL)
+        ORDER BY
+        <choose>
+            <when test="sort == 'latest'">p.create_at DESC</when>
+            <when test="sort == 'popular'">p.product_order_count DESC, p.create_at DESC</when>
+            <when test="sort == 'highprice'">pr.price_selling DESC</when>
+            <when test="sort == 'lowprice'">pr.price_selling ASC</when>
+            <otherwise>p.product_order_count DESC, p.create_at DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="selectProductsByCategoryAndDetailWithPaging" resultMap="productMap">
+        SELECT
+        p.product_code,
+        p.product_id,
+        p.product_name,
+        p.product_description,
+        p.product_order_count,
+        p.product_quantity,
+        p.product_active,
+        p.create_at,
+        p.update_at,
+        pr.price_code,
+        pr.price_original,
+        pr.price_cost,
+        pr.price_selling,
+        pr.price_margin,
+        pr.create_at as price_create_at,
+        pr.update_at as price_update_at,
+        i.image_code,
+        i.image_url,
+        i.image_type,
+        i.image_order,
+        i.create_at as image_create_at,
+        i.update_at as image_update_at,
+        CASE
+        WHEN i.image_type = 'webp' THEN i.image_url
+        ELSE NULL
+        END as image_webp
+        FROM product p
+        LEFT JOIN price pr ON p.product_code = pr.product_code
+        LEFT JOIN image i ON p.product_code = i.product_code
+        WHERE p.cate_code = #{categoryCode}
+        AND p.cd_code = #{detailCode}
+        AND p.product_active = 1
+        AND (i.image_type = 'title' OR i.image_type = 'webp' OR i.image_code IS NULL)
+        ORDER BY
+        <choose>
+            <when test="sort == 'latest'">p.create_at DESC</when>
+            <when test="sort == 'popular'">p.product_order_count DESC, p.create_at DESC</when>
+            <when test="sort == 'highprice'">pr.price_selling DESC</when>
+            <when test="sort == 'lowprice'">pr.price_selling ASC</when>
+            <otherwise>p.product_order_count DESC, p.create_at DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 카테고리별 상품 개수 조회 -->
+    <select id="selectProductCountByCategory" resultType="int">
+        SELECT COUNT(*)
+        FROM product p
+        WHERE p.cate_code = #{categoryCode}
+          AND p.product_active = 1
+    </select>
+
+    <!-- 카테고리 + 상세카테고리별 상품 개수 조회 -->
+    <select id="selectProductCountByCategoryAndDetail" resultType="int">
+        SELECT COUNT(*)
+        FROM product p
+        WHERE p.cate_code = #{categoryCode}
+          AND p.cd_code = #{detailCode}
+          AND p.product_active = 1
+    </select>
 </mapper>

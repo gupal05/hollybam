@@ -312,47 +312,47 @@ public class MypageController {
         return ResponseEntity.ok(couponList);
     }
 
-    /**
-     * 쿠폰 사용 처리 (장바구니에서 사용할 때)
-     */
-    @PostMapping("/coupons/use")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> useCoupon(
-            HttpSession session,
-            @RequestParam("couponMemberCode") int couponMemberCode,
-            @RequestParam(value = "orderCode", required = false) Integer orderCode) {
-
-        Map<String, Object> result = new HashMap<>();
-
-        if(session.getAttribute("member") == null) {
-            result.put("success", false);
-            result.put("message", "로그인이 필요합니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
-        }
-
-        try {
-            // 주문 코드가 없으면 임시로 0 설정 (장바구니에서 선택만 하는 경우)
-            if(orderCode == null) {
-                orderCode = 0;
-            }
-
-            boolean success = couponService.useCoupon(couponMemberCode, orderCode);
-
-            if(success) {
-                result.put("success", true);
-                result.put("message", "쿠폰이 선택되었습니다.");
-            } else {
-                result.put("success", false);
-                result.put("message", "쿠폰 사용에 실패했습니다.");
-            }
-
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", "오류가 발생했습니다: " + e.getMessage());
-        }
-
-        return ResponseEntity.ok(result);
-    }
+//    /**
+//     * 쿠폰 사용 처리 (장바구니에서 사용할 때)
+//     */
+//    @PostMapping("/coupons/use")
+//    @ResponseBody
+//    public ResponseEntity<Map<String, Object>> useCoupon(
+//            HttpSession session,
+//            @RequestParam("couponMemberCode") int couponMemberCode,
+//            @RequestParam(value = "orderCode", required = false) Integer orderCode) {
+//
+//        Map<String, Object> result = new HashMap<>();
+//
+//        if(session.getAttribute("member") == null) {
+//            result.put("success", false);
+//            result.put("message", "로그인이 필요합니다.");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+//        }
+//
+//        try {
+//            // 주문 코드가 없으면 임시로 0 설정 (장바구니에서 선택만 하는 경우)
+//            if(orderCode == null) {
+//                orderCode = 0;
+//            }
+//
+//            boolean success = couponService.useCoupon(couponMemberCode, orderCode);
+//
+//            if(success) {
+//                result.put("success", true);
+//                result.put("message", "쿠폰이 선택되었습니다.");
+//            } else {
+//                result.put("success", false);
+//                result.put("message", "쿠폰 사용에 실패했습니다.");
+//            }
+//
+//        } catch (Exception e) {
+//            result.put("success", false);
+//            result.put("message", "오류가 발생했습니다: " + e.getMessage());
+//        }
+//
+//        return ResponseEntity.ok(result);
+//    }
 
     /**
      * 쿠폰 등록 API

@@ -68,11 +68,15 @@
         INSERT INTO discount_code_usage (
             discount_code,
             mem_code,
-            used_at
+            used_at,
+            order_code,
+            discount_amount
         ) VALUES (
                      #{discountCode},
                      #{memCode},
-                     #{usedAt}
+                     #{usedAt},
+                     #{orderCode},
+                     #{discountAmount}
                  )
     </insert>
 

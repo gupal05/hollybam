@@ -26,7 +26,7 @@ public interface IF_CouponService {
      * @param orderCode 주문 코드
      * @return 성공 여부
      */
-    boolean useCoupon(int couponMemberCode, int orderCode);
+    boolean useCoupon(int couponMemberCode, int orderCode, int discountAmount);
 
     int getCouponMemberCode(int memberCode, int couponCode);
 

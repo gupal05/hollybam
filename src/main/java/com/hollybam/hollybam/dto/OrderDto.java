@@ -35,6 +35,7 @@ public class OrderDto {
     private int discountAmount;
     private int deliveryFee;
     private int finalAmount;
+    private int usePoint;
 
     // PG 결제 정보
     private String pgProvider;

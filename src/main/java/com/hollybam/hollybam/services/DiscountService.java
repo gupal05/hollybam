@@ -102,9 +102,9 @@ public class DiscountService implements IF_DiscountService {
 
     @Override
     @Transactional
-    public void recordDiscountCodeUsage(Integer discountCode, Integer memCode) throws Exception {
-        if (discountCode == null || memCode == null) {
-            log.warn("할인코드 사용 내역 저장 건너뜀: discountCode={}, memCode={}", discountCode, memCode);
+    public void recordDiscountCodeUsage(Integer discountCode, Integer memCode, Integer orderCode, Integer discountAmount) throws Exception {
+        if (discountCode == null || memCode == null || orderCode == null) {
+            log.warn("할인코드 사용 내역 저장 건너뜀: discountCode={}, memCode={}, orderCode={}", discountCode, memCode, orderCode);
             return;
         }
 
@@ -113,7 +113,9 @@ public class DiscountService implements IF_DiscountService {
             DiscountCodeUsageDto usageDto = new DiscountCodeUsageDto();
             usageDto.setDiscountCode(discountCode);
             usageDto.setMemCode(memCode);
+            usageDto.setOrderCode(orderCode);
             usageDto.setUsedAt(LocalDateTime.now());
+            usageDto.setDiscountAmount(discountAmount);
 
             int result = discountDao.insertDiscountCodeUsage(usageDto);
 

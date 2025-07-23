@@ -435,8 +435,9 @@ public class OrderController {
             OrderDto order = orderService.getOrderDetail(orderId);
             List<Map<String, Object>> orderDetails = orderService.getOrderDetails(order.getOrderCode());
             mav.addObject("orderDetails", orderDetails);
-            System.out.println(orderDetails);
+            System.out.println("주문 후 디테일 : "+orderDetails);
             mav.addObject("order", order);
+            System.out.println("주문 후 주문 : "+order);
             mav.setViewName("paymentResult");
 
         } catch (Exception e) {

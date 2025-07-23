@@ -54,6 +54,7 @@ public class OrderServiceImpl implements IF_OrderService {
             }
 
             OrderDto order = createOrderFromData(orderData, cartItems);
+            order.setDiscountAmount(order.getDiscountAmount() + usePoints);
             orderDao.insertOrder(order);
             log.info("주문 저장 완료. 주문코드: {}", order.getOrderCode());
 
@@ -75,7 +76,8 @@ public class OrderServiceImpl implements IF_OrderService {
                     int memCode = Integer.parseInt(orderData.get("memCode").toString());
                     int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
                     int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
-                    couponService.useCoupon(couponMemberCode, order.getOrderCode());
+                    int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
+                    couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
                 }
             }
 
@@ -91,9 +93,7 @@ public class OrderServiceImpl implements IF_OrderService {
 
             // 🆕 할인코드 사용 내역 저장 (회원인 경우만)
             if(session.getAttribute("member") != null){
-                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode());
-            } else if(session.getAttribute("guest") != null){
-                recordDiscountCodeUsageIfApplied(orderData, order.getGuestCode());
+                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
             }
 
             log.info("장바구니 주문 생성 완료: {}", order.getOrderId());
@@ -125,6 +125,7 @@ public class OrderServiceImpl implements IF_OrderService {
             }
 
             OrderDto order = createOrderFromData(orderData, null);
+            order.setDiscountAmount(order.getDiscountAmount() + usePoints);
             orderDao.insertOrder(order);
             log.info("바로 구매 주문 저장 완료. 주문코드: {}", order.getOrderCode());
 
@@ -134,7 +135,8 @@ public class OrderServiceImpl implements IF_OrderService {
                     int memCode = Integer.parseInt(orderData.get("memCode").toString());
                     int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
                     int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
-                    couponService.useCoupon(couponMemberCode, order.getOrderCode());
+                    int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
+                    couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
                 }
             }
 
@@ -160,9 +162,7 @@ public class OrderServiceImpl implements IF_OrderService {
             createInitialDelivery(order.getOrderCode());
             // 🆕 할인코드 사용 내역 저장 (회원인 경우만)
             if(session.getAttribute("member") != null){
-                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode());
-            } else if(session.getAttribute("guest") != null){
-                recordDiscountCodeUsageIfApplied(orderData, order.getGuestCode());
+                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
             }
 
             log.info("바로 구매 주문 생성 완료: {}", order.getOrderId());
@@ -613,8 +613,9 @@ public class OrderServiceImpl implements IF_OrderService {
      * @param orderData 주문 데이터
      * @param code 회원 코드 (회원인 경우에만 전달)
      */
-    private void recordDiscountCodeUsageIfApplied(Map<String, Object> orderData, Integer code) {
+    private void recordDiscountCodeUsageIfApplied(Map<String, Object> orderData, Integer code, Integer orderCode) {
         try {
+            System.out.println("확인 : "+orderData);
             // 주문 데이터에서 할인코드 정보 추출
             String discountCodeId = (String) orderData.get("discountCode");
 
@@ -628,7 +629,7 @@ public class OrderServiceImpl implements IF_OrderService {
 
                     if (discountDto != null) {
                         // 회원 할인코드 사용 내역 저장 (중복 사용 허용)
-                        discountService.recordDiscountCodeUsage(discountDto.getDiscountCode(), code);
+                        discountService.recordDiscountCodeUsage(discountDto.getDiscountCode(), code, orderCode, (Integer)orderData.get("discountAmount"));
                         log.info("할인코드 사용 내역 저장 완료 (회원 전용): discountCode={} ({}), memberCode={}",
                                 discountDto.getDiscountCode(), discountDto.getDiscountId(), code);
                     } else {

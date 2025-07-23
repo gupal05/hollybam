@@ -23,7 +23,7 @@ public interface IF_CouponDao {
     /**
      * 쿠폰 사용 처리
      */
-    int useCoupon(@Param("couponMemberCode") int couponMemberCode, @Param("orderCode") int orderCode);
+    int useCoupon(@Param("couponMemberCode") int couponMemberCode, @Param("orderCode") int orderCode, @Param("discountAmount") int discountAmount);
 
     int getCouponMemberCode(@Param("memberCode") int memberCode,  @Param("couponCode") int couponCode);
 

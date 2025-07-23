@@ -56,9 +56,9 @@ public class CouponService implements IF_CouponService {
 
     @Override
     @Transactional
-    public boolean useCoupon(int couponMemberCode, int orderCode) {
+    public boolean useCoupon(int couponMemberCode, int orderCode, int discountAmount) {
         try {
-            return couponDao.useCoupon(couponMemberCode, orderCode) > 0;
+            return couponDao.useCoupon(couponMemberCode, orderCode, discountAmount) > 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

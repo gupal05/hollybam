@@ -1427,6 +1427,44 @@
         console.log("Cart Items:", cartItems);
     });
 
+    // 🆕 HTML에 최대 할인 금액 안내 추가를 위한 CSS
+    const additionalCSS = `
+.discount-limit-info {
+    font-size: 12px;
+    color: #666;
+    background: rgba(238, 56, 109, 0.1);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(238, 56, 109, 0.2);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.discount-limit-info i {
+    color: #EE386D;
+}
+`;
+
+    // CSS 추가
+    const style = document.createElement('style');
+    style.textContent = additionalCSS;
+    document.head.appendChild(style);
+
+    // 🆕 초기 로드 시 최대 할인 금액 안내 표시
+    $(document).ready(function() {
+        // 할인 섹션에 최대 할인 금액 안내 추가
+        if ($('.discount-section').length > 0) {
+            $('.discount-section .form-section').first().after(`
+            <div class="discount-limit-info">
+                <i class="fas fa-info-circle"></i>
+                <span>쿠폰 및 할인코드 최대 할인 금액: ${MAX_DISCOUNT_AMOUNT.toLocaleString()}원</span>
+            </div>
+        `);
+        }
+    });
+
     // 🆕 적립금 관련 함수들 - 기존 JavaScript 마지막에 추가
     function loadCurrentPoints() {
         $.ajax({
@@ -1694,24 +1732,19 @@
 
     // 할인코드 적용 (백엔드 검증)
     function applyDiscountCode(code) {
-        // 쿠폰이 이미 적용된 경우 경고
-
-        // 입력값 검증
+        // 기존 검증 로직...
         if (!code || code.trim().length === 0) {
             showUserMessage('할인코드를 입력해주세요.', 'error');
             return;
         }
 
-        // 할인코드 길이 제한
         if (code.trim().length > 20) {
             showDiscountCodeMessage('할인코드는 20자 이하로 입력해주세요.', 'error');
             return;
         }
 
-        // 버튼 로딩 상태로 변경
         setDiscountButtonLoading(true);
 
-        // 백엔드로 할인코드 검증 요청
         $.ajax({
             url: '/order/discount/validate',
             method: 'POST',
@@ -1724,65 +1757,62 @@
                 setDiscountButtonLoading(false);
 
                 if (response.success) {
-                    // 할인코드 적용 성공
                     const discountInfo = response.data;
+                    let discountAmount = response.discountAmount;
+
+                    // 🆕 최대 할인 금액 제한 적용
+                    let isDiscountLimited = false;
+                    if (discountAmount > MAX_DISCOUNT_AMOUNT) {
+                        discountAmount = MAX_DISCOUNT_AMOUNT;
+                        isDiscountLimited = true;
+                    }
 
                     activeDiscount = {
                         type: 'code',
                         code: discountInfo.discountId,
                         discountType: discountInfo.discountType,
                         value: discountInfo.discountValue,
-                        amount: response.discountAmount,
+                        amount: discountAmount, // 제한된 할인 금액 사용
                         name: discountInfo.discountDescription || discountInfo.discountId,
-                        serverData: discountInfo
+                        serverData: discountInfo,
+                        isLimited: isDiscountLimited
                     };
 
-                    // 쿠폰 섹션 비활성화
                     disableCouponSection();
-
                     updatePriceDisplay();
                     showAppliedDiscount();
 
+                    // 할인 메시지 생성
                     const discountTypeText = discountInfo.discountType === 'per'
                         ? `${discountInfo.discountValue}% 할인`
-                        : `${response.discountAmount.toLocaleString()}원 할인`;
+                        : `${discountAmount.toLocaleString()}원 할인`;
 
-                    showDiscountCodeMessage(`할인코드가 적용되었습니다. ${discountTypeText}!`, 'success');;
+                    let message = `할인코드가 적용되었습니다. ${discountTypeText}!`;
 
-                    // 입력 필드 비우기
+                    // 🆕 할인 금액이 제한된 경우 추가 메시지
+                    if (isDiscountLimited) {
+                        message += ` (최대 할인 금액 ${MAX_DISCOUNT_AMOUNT.toLocaleString()}원이 적용되었습니다)`;
+                    }
+
+                    showDiscountCodeMessage(message, 'success');
+
                     $('#discountCode').prop('readonly', true).addClass('readonly-field');
                     $('#applyDiscountCode').prop('disabled', true).addClass('disabled-button').text('적용됨');
 
                     console.log('할인코드 적용 성공:', activeDiscount);
                 } else {
-                    // 할인코드 검증 실패
                     showDiscountCodeMessage(response.message || '유효하지 않은 할인코드입니다.', 'error');
                     $('#discountCode').focus();
                 }
             },
             error: function(xhr, status, error) {
                 setDiscountButtonLoading(false);
-
+                // 기존 에러 처리 로직...
                 let errorMessage = '할인코드 확인 중 오류가 발생했습니다.';
-
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
-                } else if (xhr.status === 404) {
-                    errorMessage = '유효하지 않은 할인코드입니다.';
-                } else if (xhr.status === 400) {
-                    errorMessage = '잘못된 요청입니다. 할인코드를 다시 확인해주세요.';
-                } else if (xhr.status === 500) {
-                    errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
                 }
-
-                console.error('할인코드 검증 오류:', {
-                    status: xhr.status,
-                    response: xhr.responseText,
-                    error: error
-                });
-
                 showDiscountCodeMessage(errorMessage, 'error');
-                $('#discountCode').focus();
             }
         });
     }
@@ -1800,6 +1830,9 @@
             $input.prop('disabled', false);
         }
     }
+
+    // 최대 할인 금액 상수 (쿠폰/할인코드만 적용)
+    const MAX_DISCOUNT_AMOUNT = 50000; // 5만원
 
     // 쿠폰 적용 (단독 사용)
     function applyCoupon(selectedOption) {
@@ -1824,8 +1857,8 @@
             }
         }
 
-        const couponCode = selectedOption.val(); // 이제 couponCode가 됨
-        const couponId = selectedOption.data('coupon-id'); // 필요시 couponId도 사용 가능
+        const couponCode = selectedOption.val();
+        const couponId = selectedOption.data('coupon-id');
         const discountType = selectedOption.data('type');
         const discountValue = selectedOption.data('value');
         const minAmount = selectedOption.data('min-amount');
@@ -1848,15 +1881,23 @@
             console.warn('알 수 없는 할인 타입:', discountType, '- 고정 금액으로 처리합니다.');
         }
 
+        // 🆕 최대 할인 금액 제한 적용
+        let isDiscountLimited = false;
+        if (discountAmount > MAX_DISCOUNT_AMOUNT) {
+            discountAmount = MAX_DISCOUNT_AMOUNT;
+            isDiscountLimited = true;
+        }
+
         // 쿠폰 적용
         activeDiscount = {
             type: 'coupon',
-            code: couponCode, // 이제 couponCode 사용
-            couponId: couponId, // 필요시 ID도 보관
+            code: couponCode,
+            couponId: couponId,
             discountType: discountType,
             value: discountValue,
             amount: discountAmount,
-            name: selectedOption.text()
+            name: selectedOption.text(),
+            isLimited: isDiscountLimited
         };
 
         // 할인코드 섹션 비활성화
@@ -1865,8 +1906,16 @@
         updatePriceDisplay();
         updateCouponInfo(selectedOption.text());
 
+        // 할인 메시지 생성
         const discountTypeText = discountType === 'per' ? `${discountValue}% 할인` : `${discountAmount.toLocaleString()}원 할인`;
-        showCouponMessage(`쿠폰이 적용되었습니다. ${discountTypeText}!`, 'success');
+        let message = `쿠폰이 적용되었습니다. ${discountTypeText}!`;
+
+        // 🆕 할인 금액이 제한된 경우 추가 메시지
+        if (isDiscountLimited) {
+            message += ` (최대 할인 금액 ${MAX_DISCOUNT_AMOUNT.toLocaleString()}원이 적용되었습니다)`;
+        }
+
+        showCouponMessage(message, 'success');
     }
 
     // 활성화된 할인 제거
@@ -1879,12 +1928,17 @@
         updatePriceDisplay();
 
         if (wasCode) {
+            // 할인코드 제거 시
             hideAppliedDiscount();
             enableCouponSection();
+            enableDiscountCodeSection();  // 🆕 할인코드 제거 시에도 할인코드 섹션 복원
             showUserMessage('할인코드가 제거되었습니다.', 'info');
         } else {
+            // 쿠폰 제거 시
             $('#couponSelect').val('');
             $('#couponInfo').removeClass('active').html('<i class="fas fa-info-circle"></i><span>사용 가능한 쿠폰을 선택하면 할인이 적용됩니다</span>');
+            hideAppliedDiscount();
+            enableCouponSection();  // 🆕 쿠폰 제거 시에도 쿠폰 섹션 활성화
             enableDiscountCodeSection();
             showUserMessage('쿠폰이 제거되었습니다.', 'info');
         }
@@ -1943,7 +1997,12 @@
         const hasValidCoupons = $('#couponSelect option[value!=""]').length > 0;
 
         if (hasValidCoupons) {
-            $('#couponSelect').prop('disabled', false).removeClass('disabled-coupon');
+            $('#couponSelect')
+                .prop('disabled', false)
+                .removeClass('disabled-coupon')
+                .css('background-color', '')  // 배경색 초기화
+                .css('cursor', '');  // 커서 초기화
+
             $('.coupon-info').first().html('<i class="fas fa-info-circle"></i><span>사용 가능한 쿠폰을 선택하면 할인이 적용됩니다</span>');
         }
     }
@@ -1955,10 +2014,25 @@
         $('.coupon-info').last().html('<i class="fas fa-gift"></i><span style="color: #999;">쿠폰이 적용된 상태에서는 할인코드를 사용할 수 없습니다</span>');
     }
 
-    // 할인코드 섹션 활성화
+    // 기존 함수를 이 코드로 교체하세요
     function enableDiscountCodeSection() {
-        $('#discountCode').prop('disabled', false).removeClass('disabled-input');
-        $('#applyDiscountCode').prop('disabled', false).removeClass('disabled-button');
+        $('#discountCode')
+            .prop('disabled', false)
+            .prop('readonly', false)
+            .removeClass('disabled-input')
+            .removeClass('readonly-field')
+            .val('')  // 입력값 초기화
+            .css('background-color', '')  // 배경색 초기화
+            .css('cursor', '');  // 커서 초기화
+
+        $('#applyDiscountCode')
+            .prop('disabled', false)
+            .removeClass('disabled-button')
+            .removeClass('loading')
+            .html('<span class="btn-text">적용</span><span class="btn-loading"><i class="fas fa-spinner fa-spin"></i> 확인중</span>')
+            .css('background', '')  // 배경색 초기화
+            .css('cursor', '');  // 커서 초기화
+
         $('.coupon-info').last().html('<i class="fas fa-gift"></i><span>할인코드는 대소문자를 구분합니다</span>');
     }
 

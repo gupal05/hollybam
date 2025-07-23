@@ -34,7 +34,7 @@ public interface IF_DiscountService {
      * @param memCode 회원 코드
      * @throws Exception 저장 실패 시
      */
-    void recordDiscountCodeUsage(Integer discountCode, Integer memCode) throws Exception;
+    void recordDiscountCodeUsage(Integer discountCode, Integer memCode, Integer orderCode, Integer discountAmount) throws Exception;
 
 
     /**

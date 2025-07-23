@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.admin.IF_AdminSalesAmountDao">
+    <!-- 전체 조회 -->
+    <select id="selectSummaryAll" resultType="map">
+    <![CDATA[
+        SELECT
+            /* 총 결제 금액 */
+            (SELECT SUM(o.final_amount)
+             FROM hollybam.orders o
+            ) AS `총 결제 금액`,
+
+            /* 취소/환불 금액 */
+            (SELECT COALESCE(SUM(o.final_amount),0)
+             FROM hollybam.orders o
+             WHERE o.payment_status IN ('REFUNDED','CANCELLED')
+            ) AS `취소/환불 금액`,
+
+            /* 순 매출(배송비 포함) */
+            (
+                (SELECT SUM(o.final_amount) FROM hollybam.orders o)
+                    -
+                (SELECT COALESCE(SUM(o.final_amount),0)
+                 FROM hollybam.orders o
+                 WHERE o.payment_status IN ('REFUNDED','CANCELLED')
+                )
+                ) AS `순 매출(배송비 포함)`,
+
+            /* 쿠폰 할인 금액 */
+            (SELECT COALESCE(SUM(cm.discount_amount),0)
+             FROM hollybam.coupon_member cm
+            ) AS `쿠폰 할인 금액`,
+
+            /* 할인코드 할인 금액 */
+            (SELECT COALESCE(SUM(dcu.discount_amount),0)
+             FROM hollybam.discount_code_usage dcu
+            ) AS `할인코드 할인 금액`,
+
+            /* 포인트 할인 금액 */
+            (SELECT COALESCE(SUM(-p.point_change),0)
+             FROM hollybam.point p
+             WHERE p.point_type = 'USE'
+            ) AS `포인트 할인 금액`,
+
+            /* 총 할인 금액 */
+            (
+                (SELECT COALESCE(SUM(cm.discount_amount),0) FROM hollybam.coupon_member cm)
+                    +
+                (SELECT COALESCE(SUM(dcu.discount_amount),0) FROM hollybam.discount_code_usage dcu)
+                    +
+                (SELECT COALESCE(SUM(-p.point_change),0)
+                 FROM hollybam.point p
+                 WHERE p.point_type = 'USE'
+                )
+                ) AS `총 할인 금액`,
+
+            /* 순수익(할인 미제외) */
+            (SELECT
+                 SUM(oi.total_price)
+                     - SUM(pr.price_cost * oi.quantity)
+                     + SUM(o.delivery_fee)
+             FROM hollybam.orders o
+                      JOIN hollybam.order_items oi ON o.order_code = oi.order_code
+                      JOIN hollybam.price       pr ON oi.product_code = pr.product_code
+            ) AS `순수익(할인 미제외)`,
+
+            /* 순수익(할인 제외) */
+            (
+                (SELECT
+                     SUM(oi.total_price)
+                         - SUM(pr.price_cost * oi.quantity)
+                         + SUM(o.delivery_fee)
+                 FROM hollybam.orders o
+                          JOIN hollybam.order_items oi ON o.order_code = oi.order_code
+                          JOIN hollybam.price       pr ON oi.product_code = pr.product_code
+                )
+                    -
+                (
+                    (SELECT COALESCE(SUM(cm.discount_amount),0) FROM hollybam.coupon_member cm)
+                        +
+                    (SELECT COALESCE(SUM(dcu.discount_amount),0) FROM hollybam.discount_code_usage dcu)
+                        +
+                    (SELECT COALESCE(SUM(-p.point_change),0)
+                     FROM hollybam.point p
+                     WHERE p.point_type = 'USE'
+                    )
+                    )
+                ) AS `순수익(할인 제외)`
+        ]]>
+  </select>
+
+
+    <!-- 기간 조회 -->
+    <select id="selectSummaryByPeriod" parameterType="map" resultType="map">
+    <![CDATA[
+        SELECT
+            /* 총 결제 금액 */
+            (SELECT SUM(o.final_amount)
+             FROM hollybam.orders o
+             WHERE o.create_at BETWEEN #{startDate} AND #{endDate}
+            ) AS `총 결제 금액`,
+
+            /* 취소/환불 금액 */
+            (SELECT COALESCE(SUM(o.final_amount),0)
+             FROM hollybam.orders o
+             WHERE o.payment_status IN ('REFUNDED','CANCELLED')
+               AND o.create_at BETWEEN #{startDate} AND #{endDate}
+            ) AS `취소/환불 금액`,
+
+            /* 순 매출(배송비 포함) */
+            (
+                (SELECT SUM(o.final_amount)
+                 FROM hollybam.orders o
+                 WHERE o.create_at BETWEEN #{startDate} AND #{endDate}
+                )
+                    -
+                (SELECT COALESCE(SUM(o.final_amount),0)
+                 FROM hollybam.orders o
+                 WHERE o.payment_status IN ('REFUNDED','CANCELLED')
+                   AND o.create_at BETWEEN #{startDate} AND #{endDate}
+                )
+                ) AS `순 매출(배송비 포함)`,
+
+            /* 쿠폰 할인 금액 */
+            (SELECT COALESCE(SUM(cm.discount_amount),0)
+             FROM hollybam.coupon_member cm
+                      JOIN hollybam.orders o ON cm.order_code = o.order_code
+             WHERE cm.used = 1
+               AND o.create_at BETWEEN #{startDate} AND #{endDate}
+            ) AS `쿠폰 할인 금액`,
+
+            /* 할인코드 할인 금액 */
+            (SELECT COALESCE(SUM(dcu.discount_amount),0)
+             FROM hollybam.discount_code_usage dcu
+                      JOIN hollybam.orders o ON dcu.order_code = o.order_code
+             WHERE o.create_at BETWEEN #{startDate} AND #{endDate}
+            ) AS `할인코드 할인 금액`,
+
+            /* 포인트 할인 금액 */
+            (SELECT COALESCE(SUM(-p.point_change),0)
+             FROM hollybam.point p
+                      JOIN hollybam.orders o ON p.related_order_code = o.order_code
+             WHERE p.point_type = 'USE'
+               AND o.create_at BETWEEN #{startDate} AND #{endDate}
+            ) AS `포인트 할인 금액`,
+
+            /* 총 할인 금액 */
+            (
+                (SELECT COALESCE(SUM(cm.discount_amount),0)
+                 FROM hollybam.coupon_member cm
+                          JOIN hollybam.orders o ON cm.order_code = o.order_code
+                 WHERE cm.used = 1
+                   AND o.create_at BETWEEN #{startDate} AND #{endDate}
+                )
+                    +
+                (SELECT COALESCE(SUM(dcu.discount_amount),0)
+                 FROM hollybam.discount_code_usage dcu
+                          JOIN hollybam.orders o ON dcu.order_code = o.order_code
+                 WHERE o.create_at BETWEEN #{startDate} AND #{endDate}
+                )
+                    +
+                (SELECT COALESCE(SUM(-p.point_change),0)
+                 FROM hollybam.point p
+                          JOIN hollybam.orders o ON p.related_order_code = o.order_code
+                 WHERE p.point_type = 'USE'
+                   AND o.create_at BETWEEN #{startDate} AND #{endDate}
+                )
+                ) AS `총 할인 금액`,
+
+            /* 순수익(할인 미제외) */
+            (SELECT
+                 SUM(oi.total_price)
+                     - SUM(pr.price_cost * oi.quantity)
+                     + SUM(o.delivery_fee)
+             FROM hollybam.orders o
+                      JOIN hollybam.order_items oi ON o.order_code = oi.order_code
+                      JOIN hollybam.price       pr ON oi.product_code = pr.product_code
+             WHERE o.create_at BETWEEN #{startDate} AND #{endDate}
+            ) AS `순수익(할인 미제외)`,
+
+            /* 순수익(할인 제외) */
+            (
+                (SELECT
+                     SUM(oi.total_price)
+                         - SUM(pr.price_cost * oi.quantity)
+                         + SUM(o.delivery_fee)
+                 FROM hollybam.orders o
+                          JOIN hollybam.order_items oi ON o.order_code = oi.order_code
+                          JOIN hollybam.price       pr ON oi.product_code = pr.product_code
+                 WHERE o.create_at BETWEEN #{startDate} AND #{endDate}
+                )
+                    -
+                (
+                    (SELECT COALESCE(SUM(cm.discount_amount),0)
+                     FROM hollybam.coupon_member cm
+                              JOIN hollybam.orders o ON cm.order_code = o.order_code
+                     WHERE cm.used = 1
+                       AND o.create_at BETWEEN #{startDate} AND #{endDate}
+                    )
+                        +
+                    (SELECT COALESCE(SUM(dcu.discount_amount),0)
+                     FROM hollybam.discount_code_usage dcu
+                              JOIN hollybam.orders o ON dcu.order_code = o.order_code
+                     WHERE o.create_at BETWEEN #{startDate} AND #{endDate}
+                    )
+                        +
+                    (SELECT COALESCE(SUM(-p.point_change),0)
+                     FROM hollybam.point p
+                              JOIN hollybam.orders o ON p.related_order_code = o.order_code
+                     WHERE p.point_type = 'USE'
+                       AND o.create_at BETWEEN #{startDate} AND #{endDate}
+                    )
+                    )
+                ) AS `순수익(할인 제외)`
+        ]]>
+  </select>
+</mapper>

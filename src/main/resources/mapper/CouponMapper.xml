@@ -136,7 +136,8 @@
         UPDATE coupon_member
         SET used = 1,
             used_at = NOW(),
-            order_code = #{orderCode}
+            order_code = #{orderCode},
+            discount_amount = #{discountAmount}
         WHERE coupon_member_code = #{couponMemberCode}
           AND used = 0
     </update>

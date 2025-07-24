@@ -1148,9 +1148,9 @@
                             </div>
                             <div class="chart-controls">
                                 <div class="chart-tabs">
-                                    <button class="chart-tab active" data-period="daily">일별</button>
-                                    <button class="chart-tab" data-period="monthly">월별</button>
-                                    <button class="chart-tab" data-period="yearly">연도별</button>
+                                    <button class="chart-tab active" data-period="daily">최근 30일 (일별)</button>
+                                    <button class="chart-tab" data-period="monthly">최근 2년 (월별)</button>
+                                    <button class="chart-tab" data-period="yearly">전체 기간 (연도별)</button>
                                 </div>
                                 <div class="chart-date-range">
                                     <input type="date" class="chart-date-input" id="chartStartDate" value="2025-01-01">
@@ -1323,10 +1323,15 @@
             clickOpens: true
         });
 
-        // 차트용 날짜 선택기 초기화
+        // 🆕 차트용 날짜 선택기 초기화 (동적 기본값 설정)
+        const today = new Date();
+        const defaultEndDate = new Date(today);
+        const defaultStartDate = new Date(today);
+        defaultStartDate.setDate(today.getDate() - 30); // 기본: 최근 30일
+
         const chartStartDatePicker = flatpickr("#chartStartDate", {
             dateFormat: "Y-m-d",
-            defaultDate: "2025-01-01",
+            defaultDate: defaultStartDate, // 🆕 동적으로 계산된 30일 전
             locale: "ko",
             allowInput: true,
             clickOpens: true
@@ -1334,7 +1339,7 @@
 
         const chartEndDatePicker = flatpickr("#chartEndDate", {
             dateFormat: "Y-m-d",
-            defaultDate: "2025-01-31",
+            defaultDate: defaultEndDate, // 🆕 동적으로 계산된 오늘 날짜
             locale: "ko",
             allowInput: true,
             clickOpens: true
@@ -1342,12 +1347,12 @@
 
         const ctx = document.getElementById('salesChart').getContext('2d');
 
-        // 임의의 매출 데이터 (최근 7일)
-        const salesData = {
-            labels: ['1월 17일', '1월 18일', '1월 19일', '1월 20일', '1월 21일', '1월 22일', '1월 23일'],
+        // 🆕 빈 차트로 초기화 (더미 데이터 제거)
+        const initialChartData = {
+            labels: ['로딩 중...'],
             datasets: [{
-                label: '매출 (배송비 포함)',
-                data: [1200000, 1850000, 2100000, 1750000, 2300000, 1950000, 2150000],
+                label: '매출 데이터 로딩 중...',
+                data: [0],
                 borderColor: '#007bff',
                 backgroundColor: 'rgba(0, 123, 255, 0.1)',
                 borderWidth: 2,
@@ -1363,7 +1368,7 @@
 
         const config = {
             type: 'line',
-            data: salesData,
+            data: initialChartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -1441,6 +1446,10 @@
 
         new Chart(ctx, config);
 
+        // 🆕 페이지 로드 시 실제 차트 데이터 로드 (최근 30일 일별)
+        console.log('페이지 로드: 기본 차트 데이터 조회 (최근 30일 일별)');
+        updateChart('daily');
+
         // 페이지 로드 시 기본적으로 "전체" 기간으로 통계 업데이트
         updateStats('전체');
 
@@ -1512,7 +1521,7 @@
             updateStats('사용자 지정');
         });
 
-        // 차트 탭 기능
+        // 🛠️ 차트 탭 기능 (월별 기간 계산 수정)
         const chartTabs = document.querySelectorAll('.chart-tab');
 
         chartTabs.forEach(tab => {
@@ -1523,26 +1532,30 @@
                 // 클릭된 탭을 active로 설정
                 this.classList.add('active');
 
-                // 탭에 따라 기본 날짜 범위 설정
+                // 탭에 따라 올바른 날짜 범위 설정
                 const period = this.dataset.period;
                 const today = new Date();
                 const endDate = new Date(today);
                 let startDate = new Date(today);
 
                 if (period === 'daily') {
-                    // 일별: 최근 30일
+                    // 최근 30일 (일별) - 정확히 30일 전
                     startDate.setDate(today.getDate() - 30);
+                    console.log(`일별 탭 클릭: ${startDate.toISOString().split('T')[0]} ~ ${endDate.toISOString().split('T')[0]} (${Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24))}일)`);
+
                 } else if (period === 'monthly') {
-                    // 월별: 최근 12개월
-                    startDate.setMonth(today.getMonth() - 12);
-                    startDate.setDate(1); // 월 시작일로 설정
-                    endDate.setDate(0); // 월 마지막일로 설정
-                    endDate.setMonth(endDate.getMonth() + 1);
+                    // 🛠️ 수정: 최근 2년 (월별) - 정확히 24개월 전 같은 날짜부터
+                    startDate.setFullYear(today.getFullYear() - 2);
+                    startDate.setMonth(today.getMonth());
+                    startDate.setDate(today.getDate()); // 🆕 같은 날짜로 설정 (1일이 아니라)
+                    console.log(`월별 탭 클릭: ${startDate.toISOString().split('T')[0]} ~ ${endDate.toISOString().split('T')[0]} (${Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24))}일)`);
+
                 } else if (period === 'yearly') {
-                    // 연도별: 최근 5년
+                    // 전체 기간 (연도별) - 5년 전부터
                     startDate.setFullYear(today.getFullYear() - 5);
                     startDate.setMonth(0, 1); // 년 시작일로 설정
                     endDate.setMonth(11, 31); // 년 마지막일로 설정
+                    console.log(`연도별 탭 클릭: ${startDate.toISOString().split('T')[0]} ~ ${endDate.toISOString().split('T')[0]} (${Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24))}일)`);
                 }
 
                 // Flatpickr 날짜 업데이트
@@ -1571,11 +1584,11 @@
             if (period === '전체') {
                 console.log('전체 기간 통계 조회');
                 params = { startDate : null,
-                           endDate : null };
+                    endDate : null };
             } else if (startDate && endDate) {
                 console.log(`통계 기간: ${startDate} ~ ${endDate}`);
                 params = { startDate : startDate,
-                           endDate : endDate };
+                    endDate : endDate };
             } else {
                 console.log('날짜 범위가 설정되지 않음');
             }
@@ -1597,39 +1610,175 @@
         }
 
         function updateChart(period) {
-            // 실제 프로젝트에서는 여기서 서버에서 차트 데이터를 가져와서 업데이트
-            console.log(`${period} 단위로 차트 업데이트`);
-            console.log(`차트 기간: ${document.getElementById('chartStartDate').value} ~ ${document.getElementById('chartEndDate').value}`);
+            const startDate = document.getElementById('chartStartDate').value;
+            const endDate = document.getElementById('chartEndDate').value;
 
-            // 차트 레이블과 데이터를 기간에 맞게 변경하는 예시
-            let newLabels = [];
-            let newData = [];
-
-            if (period === 'daily') {
-                newLabels = ['1월 17일', '1월 18일', '1월 19일', '1월 20일', '1월 21일', '1월 22일', '1월 23일'];
-                newData = [1200000, 1850000, 2100000, 1750000, 2300000, 1950000, 2150000];
-            } else if (period === 'monthly') {
-                newLabels = ['2024년 2월', '2024년 3월', '2024년 4월', '2024년 5월', '2024년 6월', '2024년 7월'];
-                newData = [45000000, 52000000, 48000000, 58000000, 63000000, 59000000];
-            } else if (period === 'yearly') {
-                newLabels = ['2020년', '2021년', '2022년', '2023년', '2024년'];
-                newData = [480000000, 520000000, 680000000, 750000000, 820000000];
+            if (!startDate || !endDate) {
+                alert('시작일과 종료일을 모두 선택해주세요.');
+                return;
             }
 
-            // 차트 데이터 업데이트
+            // 🆕 기간 차이 계산 및 상세 로그
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+
+            console.log(`📊 차트 업데이트 요청: ${startDate} ~ ${endDate} (${diffDays}일간)`);
+
+            // 로딩 상태 표시
             const chart = Chart.getChart('salesChart');
             if (chart) {
-                chart.data.labels = newLabels;
-                chart.data.datasets[0].data = newData;
+                chart.data.labels = ['로딩 중...'];
+                chart.data.datasets[0].data = [0];
+                chart.data.datasets[0].label = '매출 데이터 로딩 중...';
                 chart.update();
             }
+
+            $.ajax({
+                url: '/admin/sales/chart',
+                type: 'GET',
+                data: {
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                success: function(response) {
+                    console.log('📈 차트 데이터 응답:', response);
+
+                    if (response.error) {
+                        alert(response.error);
+                        return;
+                    }
+
+                    // 응답 데이터에서 차트 정보 추출
+                    const chartData = response.chartData || [];
+                    const periodType = response.periodType || 'daily';
+                    const totalDays = response.totalDays || 0;
+
+                    console.log(`✅ 차트 유형: ${periodType}, 데이터 포인트: ${chartData.length}개, 기간: ${totalDays}일`);
+
+                    // 기간에 따른 안내 메시지 표시
+                    showPeriodMessage(periodType, totalDays);
+
+                    // 차트 데이터 포맷팅
+                    const labels = chartData.map(item => formatChartLabel(item.period, periodType));
+                    const salesData = chartData.map(item => item.salesAmount || 0);
+
+                    console.log(`🏷️ 차트 라벨 (처음 5개):`, labels.slice(0, 5));
+                    console.log(`💰 매출 데이터 (처음 5개):`, salesData.slice(0, 5));
+
+                    // 차트 업데이트
+                    updateSalesChart(labels, salesData, periodType);
+                },
+                error: function(xhr, status, error) {
+                    console.error('❌ 차트 조회 실패:', status, error);
+                    alert('차트 데이터를 불러오는 중 오류가 발생했습니다.');
+                }
+            });
         }
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        /**
+         * 🆕 기간에 따른 안내 메시지 표시 (731일 기준으로 수정)
+         */
+        function showPeriodMessage(periodType, totalDays) {
+            let message = '';
+            let bgColor = '';
+            let borderColor = '';
+
+            switch(periodType) {
+                case 'daily':
+                    message = `📅 일별 조회: ${totalDays}일간의 데이터 (90일 이하는 자동으로 일별 표시)`;
+                    bgColor = '#e8f5e8';
+                    borderColor = '#4caf50';
+                    break;
+                case 'monthly':
+                    message = `📅 월별 조회: ${totalDays}일간의 데이터 (91일~731일은 자동으로 월별 표시)`;
+                    bgColor = '#fff3cd';
+                    borderColor = '#ffc107';
+                    break;
+                case 'yearly':
+                    message = `📅 연도별 조회: ${totalDays}일간의 데이터 (731일 초과는 자동으로 연도별 표시)`;
+                    bgColor = '#f8d7da';
+                    borderColor = '#dc3545';
+                    break;
+            }
+
+            // 기존 메시지가 있다면 제거
+            const existingMessage = document.querySelector('.chart-period-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            // 새 메시지 표시
+            if (message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chart-period-message';
+                messageDiv.style.cssText = `padding: 12px; margin: 10px 0; background: ${bgColor}; border-radius: 4px; font-size: 14px; color: #333; border-left: 4px solid ${borderColor};`;
+                messageDiv.textContent = message;
+
+                const chartContainer = document.querySelector('.chart-container');
+                chartContainer.insertBefore(messageDiv, chartContainer.firstChild);
+            }
+        }
+
+        /**
+         * 차트 라벨 포맷팅
+         */
+        function formatChartLabel(period, periodType) {
+            switch(periodType) {
+                case 'daily':
+                    // "2024-01-01" → "1월 1일"
+                    const date = new Date(period);
+                    return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+
+                case 'monthly':
+                    // "2024-01" → "2024년 1월"
+                    const [year, month] = period.split('-');
+                    return `${year}년 ${parseInt(month)}월`;
+
+                case 'yearly':
+                    // "2024" → "2024년"
+                    return `${period}년`;
+
+                default:
+                    return period;
+            }
+        }
+
+        /**
+         * 차트 업데이트
+         */
+        function updateSalesChart(labels, salesData, periodType) {
+            const chart = Chart.getChart('salesChart');
+            if (chart) {
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = salesData;
+                chart.data.datasets[0].label = getPeriodLabel(periodType);
+                chart.update();
+                console.log(`🎯 차트 업데이트 완료: ${labels.length}개 라벨, ${salesData.length}개 데이터`);
+            }
+        }
+
+        /**
+         * 기간별 차트 라벨 반환
+         */
+        function getPeriodLabel(periodType) {
+            switch(periodType) {
+                case 'daily':
+                    return '일별 매출 (배송비 포함)';
+                case 'monthly':
+                    return '월별 매출 (배송비 포함)';
+                case 'yearly':
+                    return '연도별 매출 (배송비 포함)';
+                default:
+                    return '매출 (배송비 포함)';
+            }
+        }
+
     });
-
-
-    function formatNumber(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
 </script>
 </body>
 </html>

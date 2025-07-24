@@ -379,4 +379,94 @@
         , 0)
         AS margin
     </select>
+
+    <!-- 일별 매출 차트 - 전체 날짜 포함 -->
+    <select id="adminSelectDailySalesChart" resultType="map">
+    <![CDATA[
+        WITH RECURSIVE date_range AS (
+            SELECT #{startDate} as date_value
+            UNION ALL
+            SELECT DATE_ADD(date_value, INTERVAL 1 DAY)
+            FROM date_range
+            WHERE date_value < #{endDate}
+        )
+        SELECT
+            DATE_FORMAT(dr.date_value, '%Y-%m-%d') as period,
+            COALESCE(SUM(
+                             CASE
+                                 WHEN o.payment_status IN ('REFUNDED','CANCELLED') THEN 0
+                                 ELSE o.final_amount
+                                 END
+                     ) - SUM(
+                             CASE
+                                 WHEN o.payment_status IN ('REFUNDED','CANCELLED') THEN o.final_amount
+                                 ELSE 0
+                                 END
+                         ), 0) as salesAmount
+        FROM date_range dr
+                 LEFT JOIN hollybam.orders o ON DATE(o.create_at) = dr.date_value
+        GROUP BY dr.date_value
+        ORDER BY dr.date_value ASC
+        ]]>
+</select>
+
+    <!-- 월별 매출 차트 - 전체 월 포함 -->
+    <select id="adminSelectMonthlySalesChart" resultType="map">
+    <![CDATA[
+        WITH RECURSIVE month_range AS (
+            SELECT LAST_DAY(#{startDate}) as month_end
+            UNION ALL
+            SELECT LAST_DAY(DATE_ADD(month_end, INTERVAL 1 DAY))
+            FROM month_range
+            WHERE month_end < #{endDate}
+        )
+        SELECT
+            DATE_FORMAT(mr.month_end, '%Y-%m') as period,
+            COALESCE(SUM(
+                             CASE
+                                 WHEN o.payment_status IN ('REFUNDED','CANCELLED') THEN 0
+                                 ELSE o.final_amount
+                                 END
+                     ) - SUM(
+                             CASE
+                                 WHEN o.payment_status IN ('REFUNDED','CANCELLED') THEN o.final_amount
+                                 ELSE 0
+                                 END
+                         ), 0) as salesAmount
+        FROM month_range mr
+                 LEFT JOIN hollybam.orders o ON DATE_FORMAT(o.create_at, '%Y-%m') = DATE_FORMAT(mr.month_end, '%Y-%m')
+        GROUP BY DATE_FORMAT(mr.month_end, '%Y-%m')
+        ORDER BY DATE_FORMAT(mr.month_end, '%Y-%m') ASC
+        ]]>
+</select>
+
+    <!-- 연도별 매출 차트 - 전체 연도 포함 -->
+    <select id="adminSelectYearlySalesChart" resultType="map">
+    <![CDATA[
+        WITH RECURSIVE year_range AS (
+            SELECT YEAR(#{startDate}) as year_value
+            UNION ALL
+            SELECT year_value + 1
+            FROM year_range
+            WHERE year_value < YEAR(#{endDate})
+        )
+        SELECT
+            CAST(yr.year_value AS CHAR) as period,
+            COALESCE(SUM(
+                             CASE
+                                 WHEN o.payment_status IN ('REFUNDED','CANCELLED') THEN 0
+                                 ELSE o.final_amount
+                                 END
+                     ) - SUM(
+                             CASE
+                                 WHEN o.payment_status IN ('REFUNDED','CANCELLED') THEN o.final_amount
+                                 ELSE 0
+                                 END
+                         ), 0) as salesAmount
+        FROM year_range yr
+                 LEFT JOIN hollybam.orders o ON YEAR(o.create_at) = yr.year_value
+        GROUP BY yr.year_value
+        ORDER BY yr.year_value ASC
+        ]]>
+</select>
 </mapper>

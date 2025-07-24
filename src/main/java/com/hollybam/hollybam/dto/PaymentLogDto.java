@@ -14,8 +14,7 @@ public class PaymentLogDto {
     private String orderId;
     private String merchantUid;
     private int amount;
-    private String status;
-    private String pgProvider;
+    private String status;    private String pgProvider;
     private String pgTid;
     private String payMethod;
 

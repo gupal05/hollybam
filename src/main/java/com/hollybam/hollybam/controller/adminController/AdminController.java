@@ -101,6 +101,45 @@ public class AdminController {
         return result;
     }
 
+    /**
+     * 매출 차트 데이터 조회 API
+     * 기간에 따라 자동으로 일별/월별/연도별로 조회 단위 결정
+     *
+     * @param startDate 시작일 (필수)
+     * @param endDate 종료일 (필수)
+     * @return 매출 차트 데이터
+     */
+    @GetMapping("/sales/chart")
+    @ResponseBody
+    public Map<String, Object> getSalesChart(
+            @RequestParam("startDate") LocalDate startDate,
+            @RequestParam("endDate") LocalDate endDate
+    ) {
+        try {
+            log.info("매출 차트 조회 요청: {} ~ {}", startDate, endDate);
+
+            // 날짜 유효성 검증
+            if (startDate.isAfter(endDate)) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "시작일이 종료일보다 늦을 수 없습니다.");
+                return errorResponse;
+            }
+
+            // 차트 데이터 조회
+            Map<String, Object> result = adminDashboardService.getSalesChartData(startDate, endDate);
+
+            log.info("매출 차트 조회 완료: {} 타입", result.get("periodType"));
+            return result;
+
+        } catch (Exception e) {
+            log.error("매출 차트 조회 중 오류 발생", e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "매출 차트 데이터를 불러오는 중 오류가 발생했습니다.");
+            return errorResponse;
+        }
+    }
+
     @GetMapping("/add/product")
     public String addProduct(Model model) {
         ProductDto productDto = new ProductDto();

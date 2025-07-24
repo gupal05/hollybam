@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.hollybam.hollybam.dao.admin.IF_AdminSalesAmountDao">
+<mapper namespace="com.hollybam.hollybam.dao.admin.IF_AdminDashboardDao">
     <!-- 전체 조회 -->
     <select id="selectSummaryAll" resultType="map">
     <![CDATA[
@@ -215,4 +215,168 @@
                 ) AS `순수익(할인 제외)`
         ]]>
   </select>
+
+    <!--  총 주문 수량 -->
+    <select id="adminSelectOrderCount" resultType="int">
+        SELECT
+            COUNT(*)
+                - COALESCE(
+                    SUM(
+                            CASE WHEN payment_status IN ('CANCELLED','REFUNDED') THEN 1 ELSE 0 END
+                    ), 0
+                  )
+        FROM orders
+    </select>
+
+    <!-- 회원 수 조회 -->
+    <select id="adminSelectMemberCount" resultType="int">
+        select count(*)
+        from member
+    </select>
+
+    <!-- 총 상품 수량 -->
+    <select id="adminSelectProductCount" resultType="int">
+        select count(*)
+        from product
+    </select>
+
+    <!-- 총 결제 금액(취소/환불 고려X) -->
+    <select id="adminSelectTotalPaymentAmount" resultType="long" parameterType="map">
+        SELECT
+        IFNULL( SUM(o.final_amount), 0 )
+        FROM hollybam.orders o
+        <where>
+            <if test="startDate != null">
+                AND o.create_at &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o.create_at &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- 취소/환불 금액 -->
+    <select id="adminSelectCancelAmount" parameterType="map" resultType="long">
+        SELECT
+        IFNULL( SUM(o.final_amount), 0 )
+        FROM hollybam.orders o
+        <where>
+            <!-- 날짜가 넘어오면 시작일 조건 -->
+            <if test="startDate != null">
+                AND o.create_at &gt;= #{startDate}
+            </if>
+            <!-- 날짜가 넘어오면 종료일 조건 -->
+            <if test="endDate != null">
+                AND o.create_at &lt;= #{endDate}
+            </if>
+            <!-- 항상 적용되는 취소·환불 상태 필터 -->
+            AND o.payment_status IN ('REFUNDED', 'CANCELLED')
+        </where>
+    </select>
+
+    <!-- 총 결제 금액 - 취소/환불 금액 -->
+    <select id="adminSelectSalesAmount" parameterType="map" resultType="long">
+        SELECT
+        -- 전체 결제액에서 취소·환불액을 뺀 뒤, NULL 이면 0
+        IFNULL(
+        IFNULL(SUM(o.final_amount),0)
+        - IFNULL(
+        SUM(
+        CASE WHEN o.payment_status IN ('REFUNDED','CANCELLED')
+        THEN o.final_amount
+        ELSE 0
+        END
+        ), 0
+        )
+        , 0)
+        AS salesAmount
+        FROM hollybam.orders o
+        <where>
+            <if test="startDate != null">
+                AND o.create_at &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o.create_at &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- 순수익(할인 금액을 제외한) -->
+    <select id="adminSelectMargin" parameterType="map" resultType="long">
+        SELECT
+        -- (매출합계) – (쿠폰 + 코드할인 + 포인트사용) 전체 계산 후 NULL 이면 0
+        IFNULL(
+        (
+        -- 매출합계: (판매액 – 원가 + 배송비)
+        SELECT
+        IFNULL(SUM(oi.total_price),0)
+        - IFNULL(SUM(pr.price_cost * oi.quantity),0)
+        + IFNULL(SUM(o.delivery_fee),0)
+        FROM hollybam.orders o
+        JOIN hollybam.order_items oi ON o.order_code = oi.order_code
+        JOIN hollybam.price pr       ON oi.product_code = pr.product_code
+        <where>
+            <if test="startDate != null">
+                AND o.create_at &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o.create_at &lt;= #{endDate}
+            </if>
+        </where>
+        )
+        -
+        (
+        -- 1) 쿠폰 할인
+        IFNULL(
+        (SELECT SUM(cm.discount_amount)
+        FROM hollybam.coupon_member cm
+        JOIN hollybam.orders o2 ON cm.order_code = o2.order_code
+        <where>
+            <if test="startDate != null">
+                AND o2.create_at &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o2.create_at &lt;= #{endDate}
+            </if>
+            AND cm.used = 1
+        </where>
+        ), 0
+        )
+        +
+        -- 2) 코드 할인
+        IFNULL(
+        (SELECT SUM(dcu.discount_amount)
+        FROM hollybam.discount_code_usage dcu
+        JOIN hollybam.orders o3 ON dcu.order_code = o3.order_code
+        <where>
+            <if test="startDate != null">
+                AND o3.create_at &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o3.create_at &lt;= #{endDate}
+            </if>
+        </where>
+        ), 0
+        )
+        +
+        -- 3) 포인트 사용
+        IFNULL(
+        (SELECT SUM(-p.point_change)
+        FROM hollybam.point p
+        JOIN hollybam.orders o4 ON p.related_order_code = o4.order_code
+        <where>
+            <if test="startDate != null">
+                AND o4.create_at &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o4.create_at &lt;= #{endDate}
+            </if>
+            AND p.point_type = 'USE'
+        </where>
+        ), 0
+        )
+        )
+        , 0)
+        AS margin
+    </select>
 </mapper>

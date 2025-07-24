@@ -6,6 +6,7 @@ import com.hollybam.hollybam.dto.*;
 import com.hollybam.hollybam.services.CouponService;
 import com.hollybam.hollybam.services.DiscountService;
 import com.hollybam.hollybam.services.ProductService;
+import com.hollybam.hollybam.services.admin.AdminDashboardServiceImpl;
 import com.hollybam.hollybam.util.S3Uploader;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,8 @@ public class AdminController {
     private CouponService couponService;
     @Autowired
     private DiscountService discountService;
+    @Autowired
+    private AdminDashboardServiceImpl adminDashboardService;
     @Autowired
     private HttpSession session;
     @Autowired
@@ -61,12 +65,40 @@ public class AdminController {
             if(!member.getMemberRole().equals("admin")) {
                 return "redirect:/";
             } else  {
+                // 총 주문 수량
+                model.addAttribute("orderCount", adminDashboardService.adminSelectOrderCount());
+                // 회원 수(비회원 제외)
+                model.addAttribute("memberCount", adminDashboardService.adminSelectMemberCount());
+                // 총 상품 수량
+                model.addAttribute("productCount", adminDashboardService.adminSelectProductCount());
+                // 총 결제 금액(취소/환불 고려 X)
+                model.addAttribute("totalPaymentAmount", adminDashboardService.adminSelectTotalPaymentAmount(null, null));
+                // 취소/환불 금액
+                model.addAttribute("cancelAmount", adminDashboardService.adminSelectCancelAmount(null, null));
+                // 총 결제 금액 - 취소/환불 금액
+                //model.addAttribute("salesAmount", adminDashboardService.adminSelectSalesAmount());
+                // 순수익(할인 금액을 제외한)
+                model.addAttribute("margin",  adminDashboardService.adminSelectMargin(null, null));
                 model.addAttribute("member", member);
                 return "admin/dashboard";
             }
         } else  {
             return "redirect:/";
         }
+    }
+
+    @GetMapping("/sales/stat")
+    @ResponseBody
+    public Map<String, Object> updateSalesStat(@RequestParam(value = "startDate", required = false)LocalDate startDate,
+                                               @RequestParam(value = "endDate", required = false)LocalDate endDate) {
+        Map<String, Object> result = new HashMap<>();
+        // 총 결제 금액(취소/환불 고려 X)
+        result.put("totalPaymentAmount", adminDashboardService.adminSelectTotalPaymentAmount(startDate, endDate));
+        // 취소/환불 금액
+        result.put("cancelAmount", adminDashboardService.adminSelectCancelAmount(startDate, endDate));
+        // 순수익(할인 금액을 제외한)
+        result.put("margin",  adminDashboardService.adminSelectMargin(startDate, endDate));
+        return result;
     }
 
     @GetMapping("/add/product")

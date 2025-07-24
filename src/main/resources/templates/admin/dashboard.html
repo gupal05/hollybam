@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 대시보드 - HOLLYBAM</title>
+    <title>HOLLYBAM - Admin Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/ko.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <style>
         * {
             margin: 0;
@@ -12,9 +17,9 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             background: #f8f9fa;
-            color: #333;
+            color: #212529;
             line-height: 1.6;
         }
 
@@ -27,8 +32,8 @@
         /* 사이드바 */
         .sidebar {
             width: 280px;
-            background: #fff;
-            border-right: 1px solid #e9ecef;
+            background: #212529;
+            color: #fff;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
@@ -37,11 +42,10 @@
 
         .sidebar-header {
             padding: 30px 25px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #343a40;
         }
 
         .sidebar-header h1 {
-            color: #212529;
             font-size: 20px;
             font-weight: 300;
             letter-spacing: 2px;
@@ -49,8 +53,8 @@
         }
 
         .sidebar-header p {
+            font-size: 11px;
             color: #adb5bd;
-            font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -64,43 +68,41 @@
         }
 
         .nav-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: block;
             padding: 15px 25px;
-            color: #6c757d;
+            color: #adb5bd;
             text-decoration: none;
             font-size: 13px;
             font-weight: 300;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
-            border-left: 2px solid transparent;
+            border-left: 3px solid transparent;
         }
 
         .nav-link:hover,
         .nav-link.active {
-            color: #212529;
-            background: #f8f9fa;
-            border-left-color: #212529;
+            color: #fff;
+            background: #343a40;
+            border-left-color: #fff;
         }
 
         .nav-link.has-submenu::after {
-            content: '+';
-            font-size: 16px;
-            font-weight: 300;
+            content: '▼';
+            float: right;
+            font-size: 10px;
             transition: transform 0.3s ease;
         }
 
         .nav-link.has-submenu.open::after {
-            transform: rotate(45deg);
+            transform: rotate(180deg);
         }
 
         .submenu {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
-            background: #f8f9fa;
+            background: #1a1e21;
         }
 
         .submenu.open {
@@ -217,6 +219,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            text-align: center;
         }
 
         .stat-card:hover {
@@ -240,10 +243,10 @@
 
         .stat-title {
             color: #6c757d;
-            font-size: 11px;
+            font-size: 15px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-weight: 400;
+            font-weight: bold;
         }
 
         .stat-value {
@@ -307,42 +310,410 @@
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            min-width: auto;
+            box-sizing: border-box;
         }
 
         .btn:hover {
             border-color: #212529;
         }
 
+        .btn:active,
+        .btn:focus {
+            outline: none;
+            transform: none;
+            box-shadow: none;
+        }
+
         .btn-primary {
             background: #212529;
             color: #fff;
             border-color: #212529;
+            padding: 8px 16px;
         }
 
         .btn-primary:hover {
             background: #000;
         }
 
-        /* 차트 영역 */
-        .charts-grid {
+        .btn-primary:active,
+        .btn-primary:focus {
+            outline: none;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 기간 선택기 스타일 */
+        .period-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .date-range-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 15px;
+            border-left: 1px solid #dee2e6;
+            margin-left: 15px;
+        }
+
+        .date-input,
+        .chart-date-input {
+            padding: 6px 12px;
+            border: 1px solid #dee2e6;
+            font-size: 11px;
+            font-weight: 300;
+            background: #fff;
+            color: #212529;
+            border-radius: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .date-input:focus,
+        .chart-date-input:focus {
+            outline: none;
+            border-color: #212529;
+        }
+
+        .date-separator,
+        .chart-date-separator {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 300;
+        }
+
+        .btn-apply {
+            background: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .btn-apply:hover {
+            background: #218838;
+            border-color: #1e7e34;
+        }
+
+        /* Flatpickr 커스텀 스타일 */
+        .flatpickr-calendar {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            border: 1px solid #dee2e6;
+            border-radius: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .flatpickr-current-month {
+            font-size: 14px;
+            font-weight: 400;
+            color: #212529;
+        }
+
+        .flatpickr-weekday {
+            font-size: 11px;
+            font-weight: 300;
+            color: #6c757d;
+        }
+
+        .flatpickr-day {
+            font-size: 12px;
+            font-weight: 300;
+        }
+
+        .flatpickr-day.selected {
+            background: #212529;
+            border-color: #212529;
+        }
+
+        .flatpickr-day.selected:hover {
+            background: #000;
+            border-color: #000;
+        }
+
+        .flatpickr-day:hover {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+        .flatpickr-months .flatpickr-month {
+            background: #f8f9fa;
+            color: #212529;
+        }
+
+        .flatpickr-prev-month,
+        .flatpickr-next-month {
+            color: #6c757d;
+        }
+
+        .flatpickr-prev-month:hover,
+        .flatpickr-next-month:hover {
+            color: #212529;
+        }
+
+        /* 매출 분석 영역 스타일 */
+        .sales-analytics {
+            margin-bottom: 40px;
+        }
+
+        .sales-stats-container {
+            padding: 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .sales-stats-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 40px;
-            margin-bottom: 60px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .sales-stat-item {
+            background: #fff;
+            padding: 25px 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .sales-stat-item:hover {
+            border-color: #dee2e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+
+        .stat-amount {
+            color: #212529;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+        }
+
+        .stat-amount.negative {
+            color: #dc3545;
+        }
+
+        .stat-amount.highlight {
+            color: #007bff;
+            font-weight: 400;
+        }
+
+        .stat-amount.profit {
+            color: #28a745;
+            font-weight: 400;
+        }
+
+        /* 차트 컨테이너 */
+        .chart-container {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-top: none;
+        }
+
+        .chart-header {
+            padding: 20px 40px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .chart-title-section h3 {
+            color: #212529;
+            font-size: 16px;
+            font-weight: 400;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chart-tabs {
+            display: flex;
+            gap: 0;
+            border: 1px solid #dee2e6;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .chart-tab {
+            background: #fff;
+            color: #6c757d;
+            border: none;
+            padding: 8px 16px;
+            font-size: 11px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .chart-tab:last-child {
+            border-right: none;
+        }
+
+        .chart-tab:hover {
+            background: #f8f9fa;
+        }
+
+        .chart-tab.active {
+            background: #212529;
+            color: #fff;
+        }
+
+        .chart-date-range {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-chart-apply {
+            background: #007bff;
+            color: #fff;
+            border-color: #007bff;
+            padding: 6px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-chart-apply:hover {
+            background: #0056b3;
+            border-color: #004085;
         }
 
         .chart-placeholder {
-            height: 300px;
-            background: #f8f9fa;
-            border: 1px dashed #dee2e6;
+            padding: 40px;
+            min-height: 350px;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .chart-content {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+
+        #salesChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 임시 차트 표시 */
+        .chart-mock {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: none; /* 실제 차트 사용 시 숨김 */
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px dashed #dee2e6;
+            border-radius: 4px;
+        }
+
+        .chart-bars {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: end;
+            gap: 8px;
+            opacity: 0.3;
+        }
+
+        .chart-bar {
+            width: 12px;
+            background: linear-gradient(to top, #007bff, #0056b3);
+            border-radius: 2px 2px 0 0;
+            animation: chartPulse 2s ease-in-out infinite;
+        }
+
+        .chart-bar:nth-child(even) {
+            animation-delay: 0.2s;
+        }
+
+        .chart-bar:nth-child(3n) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes chartPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .chart-overlay {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .chart-overlay p {
+            color: #6c757d;
+            font-size: 18px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-overlay small {
             color: #adb5bd;
+            font-size: 12px;
+            font-weight: 300;
+        }
+
+        /* 네비게이션 탭 */
+        .nav-tabs {
+            display: flex;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .nav-tab {
+            padding: 15px 30px;
+            color: #6c757d;
+            text-decoration: none;
             font-size: 13px;
+            font-weight: 300;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 40px;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover,
+        .nav-tab.active {
+            color: #212529;
+            border-bottom-color: #212529;
         }
 
         /* 테이블 */
@@ -358,19 +729,18 @@
 
         .table th,
         .table td {
-            padding: 20px 25px;
+            padding: 20px;
             text-align: left;
-            border-bottom: 1px solid #f1f3f4;
+            border-bottom: 1px solid #e9ecef;
         }
 
         .table th {
             background: #f8f9fa;
             color: #6c757d;
             font-size: 11px;
+            font-weight: 400;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-weight: 400;
-            border-bottom: 1px solid #e9ecef;
         }
 
         .table td {
@@ -379,17 +749,16 @@
             font-weight: 300;
         }
 
-        .table tbody tr:hover {
+        .table tr:hover {
             background: #f8f9fa;
         }
 
-        /* 상태 배지 */
         .status-badge {
             padding: 4px 12px;
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border-radius: 2px;
+            border-radius: 12px;
             font-weight: 400;
         }
 
@@ -403,33 +772,9 @@
             color: #856404;
         }
 
-        .status-badge.inactive {
+        .status-badge.cancelled {
             background: #f8d7da;
             color: #721c24;
-        }
-
-        /* 네비게이션 탭 */
-        .nav-tabs {
-            display: flex;
-            border-bottom: 1px solid #e9ecef;
-            margin-bottom: 30px;
-        }
-
-        .nav-tab {
-            padding: 15px 25px;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .nav-tab.active,
-        .nav-tab:hover {
-            color: #212529;
-            border-bottom-color: #212529;
         }
 
         /* 반응형 */
@@ -460,21 +805,104 @@
                 gap: 20px;
             }
 
-            .charts-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
             .section-header {
-                padding: 20px 25px;
+                padding: 20px;
                 flex-direction: column;
-                align-items: flex-start;
                 gap: 15px;
             }
 
-            .table th,
-            .table td {
+            .section-actions {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .period-selector {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .date-range-selector {
+                border-left: none;
+                border-top: 1px solid #dee2e6;
+                margin-left: 0;
+                padding-top: 10px;
+                padding-left: 0;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .date-input {
+                flex-shrink: 0;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .sales-stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .sales-stats-container {
+                padding: 20px;
+            }
+
+            .chart-placeholder {
+                padding: 20px;
+                min-height: 250px;
+            }
+
+            .chart-content {
+                height: 200px;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 10px;
+            }
+
+            .chart-header {
                 padding: 15px 20px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .chart-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .chart-date-range {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .chart-date-input {
+                flex-shrink: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sales-stats-grid {
+                gap: 10px;
+            }
+
+            .sales-stat-item {
+                padding: 20px 15px;
+            }
+
+            .stat-amount {
+                font-size: 20px;
             }
         }
     </style>
@@ -489,7 +917,7 @@
         </div>
         <div class="sidebar-nav">
             <div class="nav-item">
-                <a href="#" class="nav-link active">Dashboard</a>
+                <a href="/admin/dashboard" class="nav-link active">Dashboard</a>
             </div>
 
             <!-- 상품 관리 -->
@@ -530,55 +958,22 @@
                 <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">회원 관리</a>
                 <div class="submenu">
                     <a href="#" class="submenu-link">회원 목록</a>
-                    <a href="#" class="submenu-link">본인인증 관리</a>
                     <a href="#" class="submenu-link">회원 등급</a>
-                    <a href="#" class="submenu-link">탈퇴 회원</a>
-                    <a href="#" class="submenu-link">블랙리스트</a>
-                </div>
-            </div>
-
-            <!-- 할인권 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">할인권 관리</a>
-                <div class="submenu">
-                    <a href="/admin/coupon/create" class="submenu-link">쿠폰 생성</a>
-                    <a href="/admin/discount/create" class="submenu-link">할인코드 생성</a>
-                    <a href="#" class="submenu-link">쿠폰 사용내역</a>
                     <a href="#" class="submenu-link">적립금 관리</a>
+                    <a href="#" class="submenu-link">본인인증 관리</a>
+                    <a href="#" class="submenu-link">휴면 계정</a>
                 </div>
             </div>
 
-            <!-- 이벤트 관리 -->
+            <!-- 할인 관리 -->
             <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">이벤트 관리</a>
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">할인 관리</a>
                 <div class="submenu">
-                    <a href="#" class="submenu-link">이벤트 등록</a>
-                    <a href="#" class="submenu-link">이벤트 현황</a>
-                    <a href="#" class="submenu-link">당첨자 관리</a>
-                </div>
-            </div>
-
-            <!-- 게시판 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">게시판 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">공지사항</a>
-                    <a href="#" class="submenu-link">FAQ</a>
-                    <a href="#" class="submenu-link">1:1 문의</a>
-                    <a href="#" class="submenu-link">상품 Q&A</a>
-                    <a href="#" class="submenu-link">리뷰 관리</a>
-                </div>
-            </div>
-
-            <!-- 통계 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">통계 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">매출 통계</a>
-                    <a href="#" class="submenu-link">상품 통계</a>
-                    <a href="#" class="submenu-link">회원 통계</a>
-                    <a href="#" class="submenu-link">접속 통계</a>
-                    <a href="#" class="submenu-link">검색어 분석</a>
+                    <a href="/admin/discount/coupon/create" class="submenu-link">쿠폰 생성</a>
+                    <a href="#" class="submenu-link">쿠폰 관리</a>
+                    <a href="/admin/discount/create" class="submenu-link">할인코드 생성</a>
+                    <a href="#" class="submenu-link">할인코드 관리</a>
+                    <a href="#" class="submenu-link">이벤트 관리</a>
                 </div>
             </div>
 
@@ -686,57 +1081,106 @@
                     <div class="stat-header">
                         <div class="stat-title">총 주문</div>
                     </div>
-                    <div class="stat-value">1,245</div>
-                    <div class="stat-change positive">+12.5% from last month</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-title">매출</div>
-                    </div>
-                    <div class="stat-value">₩12,450,000</div>
-                    <div class="stat-change positive">+8.3% from last month</div>
+                    <div class="stat-value" th:text="${orderCount}" >0</div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-header">
                         <div class="stat-title">회원 수</div>
                     </div>
-                    <div class="stat-value">3,567</div>
-                    <div class="stat-change positive">+15.2% from last month</div>
+                    <div class="stat-value" th:text="${memberCount}">0</div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-header">
                         <div class="stat-title">상품 수</div>
                     </div>
-                    <div class="stat-value">892</div>
-                    <div class="stat-change positive">+5 new this week</div>
+                    <div class="stat-value" th:text="${productCount}">0</div>
                 </div>
             </div>
 
-            <!-- 차트 영역 -->
-            <div class="charts-grid">
+            <!-- 매출 통계 및 차트 영역 -->
+            <div class="sales-analytics">
+                <!-- 기간 선택 및 타이틀 -->
                 <div class="section">
                     <div class="section-header">
-                        <div class="section-title">매출 현황</div>
+                        <div class="section-title">매출 분석</div>
                         <div class="section-actions">
-                            <button class="btn">7일</button>
-                            <button class="btn">30일</button>
-                            <button class="btn btn-primary">90일</button>
+                            <div class="period-selector">
+                                <button class="btn btn-primary">전체</button>
+                                <button class="btn">최근 7일</button>
+                                <button class="btn">최근 30일</button>
+                                <button class="btn">최근 3개월</button>
+                                <button class="btn">최근 1년</button>
+                                <div class="date-range-selector">
+                                    <input type="date" class="date-input" id="startDate" value="">
+                                    <span class="date-separator">~</span>
+                                    <input type="date" class="date-input" id="endDate" value="">
+                                    <button class="btn btn-apply">조회</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="chart-placeholder">
-                        Sales Chart Will Be Here
-                    </div>
-                </div>
 
-                <div class="section">
-                    <div class="section-header">
-                        <div class="section-title">카테고리별 판매</div>
+                    <!-- 매출 통계 항목들 -->
+                    <div class="sales-stats-container">
+                        <div class="sales-stats-grid">
+                            <div class="sales-stat-item">
+                                <div class="stat-label">총 결제 금액</div>
+                                <div id="statTotalPayment" class="stat-amount">0원</div>
+                            </div>
+                            <div class="sales-stat-item">
+                                <div class="stat-label">취소/환불 금액</div>
+                                <div id="statCancelAmount" class="stat-amount negative">0원</div>
+                            </div>
+                            <div class="sales-stat-item">
+                                <div class="stat-label">순수익(할인 제외)</div>
+                                <div id="statMargin" class="stat-amount profit">0원</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="chart-placeholder">
-                        Category Chart Will Be Here
+
+                    <!-- 매출 그래프 영역 -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title-section">
+                                <h3>매출 추이</h3>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-tabs">
+                                    <button class="chart-tab active" data-period="daily">일별</button>
+                                    <button class="chart-tab" data-period="monthly">월별</button>
+                                    <button class="chart-tab" data-period="yearly">연도별</button>
+                                </div>
+                                <div class="chart-date-range">
+                                    <input type="date" class="chart-date-input" id="chartStartDate" value="2025-01-01">
+                                    <span class="chart-date-separator">~</span>
+                                    <input type="date" class="chart-date-input" id="chartEndDate" value="2025-01-31">
+                                    <button class="btn btn-chart-apply">조회</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <div class="chart-content">
+                                <canvas id="salesChart" width="800" height="300"></canvas>
+                                <div class="chart-mock">
+                                    <!-- 임시 차트 표시 -->
+                                    <div class="chart-bars">
+                                        <div class="chart-bar" style="height: 60%"></div>
+                                        <div class="chart-bar" style="height: 80%"></div>
+                                        <div class="chart-bar" style="height: 45%"></div>
+                                        <div class="chart-bar" style="height: 90%"></div>
+                                        <div class="chart-bar" style="height: 75%"></div>
+                                        <div class="chart-bar" style="height: 65%"></div>
+                                        <div class="chart-bar" style="height: 85%"></div>
+                                    </div>
+                                    <div class="chart-overlay">
+                                        <p>매출 그래프 영역</p>
+                                        <small>실제 데이터가 연동되면 여기에 차트가 표시됩니다</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -782,33 +1226,33 @@
                         <td>#ORD-2025-002</td>
                         <td>이**</td>
                         <td>성인용품 B</td>
-                        <td>₩28,000</td>
+                        <td>₩52,000</td>
                         <td><span class="status-badge pending">배송중</span></td>
-                        <td>2025-01-15 12:15</td>
+                        <td>2025-01-15 13:45</td>
                     </tr>
                     <tr>
                         <td>#ORD-2025-003</td>
                         <td>박**</td>
                         <td>성인용품 C</td>
-                        <td>₩42,000</td>
-                        <td><span class="status-badge pending">결제대기</span></td>
-                        <td>2025-01-15 10:45</td>
+                        <td>₩28,000</td>
+                        <td><span class="status-badge cancelled">취소</span></td>
+                        <td>2025-01-15 12:20</td>
                     </tr>
                     <tr>
                         <td>#ORD-2025-004</td>
-                        <td>최**</td>
+                        <td>정**</td>
                         <td>성인용품 D</td>
-                        <td>₩58,000</td>
+                        <td>₩46,000</td>
                         <td><span class="status-badge active">배송완료</span></td>
-                        <td>2025-01-14 16:20</td>
+                        <td>2025-01-15 11:15</td>
                     </tr>
                     <tr>
                         <td>#ORD-2025-005</td>
-                        <td>정**</td>
+                        <td>최**</td>
                         <td>성인용품 E</td>
-                        <td>₩33,000</td>
-                        <td><span class="status-badge inactive">취소</span></td>
-                        <td>2025-01-14 13:10</td>
+                        <td>₩39,000</td>
+                        <td><span class="status-badge pending">준비중</span></td>
+                        <td>2025-01-15 10:30</td>
                     </tr>
                     </tbody>
                 </table>
@@ -818,10 +1262,7 @@
 </div>
 
 <script>
-    // 서브메뉴 토글
     function toggleSubmenu(element) {
-        event.preventDefault();
-
         const submenu = element.nextElementSibling;
         const isOpen = submenu.classList.contains('open');
 
@@ -833,68 +1274,362 @@
             link.classList.remove('open');
         });
 
-        // 클릭된 서브메뉴만 토글
+        // 클릭한 서브메뉴만 토글
         if (!isOpen) {
             submenu.classList.add('open');
             element.classList.add('open');
         }
     }
 
-    // 네비게이션 아이템 클릭 처리
-    document.querySelectorAll('.nav-link, .submenu-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            if (!this.classList.contains('has-submenu')) {
-                // 모든 active 클래스 제거
-                document.querySelectorAll('.nav-link, .submenu-link').forEach(item => {
-                    item.classList.remove('active');
-                });
-
-                // 클릭된 아이템에 active 클래스 추가
-                this.classList.add('active');
-            }
-        });
-    });
-
-    // 로그아웃 처리
     function logout() {
         if (confirm('로그아웃 하시겠습니까?')) {
-            fetch('/admin/auth/logout', {
-                method: 'POST'
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = '/admin/login';
-                    }
-                })
-                .catch(error => {
-                    console.error('로그아웃 오류:', error);
-                    // 오류가 발생해도 로그인 페이지로 이동
-                    window.location.href = '/admin/login';
-                });
+            window.location.href = '/admin/logout';
         }
     }
 
-    // 탭 전환 처리
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.addEventListener('click', function(e) {
-            e.preventDefault();
+    // 반응형 사이드바 토글
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('open');
+    }
 
-            // 모든 탭에서 active 클래스 제거
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    // 모바일에서 사이드바 외부 클릭 시 닫기
+    document.addEventListener('click', function(event) {
+        const sidebar = document.querySelector('.sidebar');
+        const isClickInsideSidebar = sidebar.contains(event.target);
 
-            // 클릭된 탭에 active 클래스 추가
-            this.classList.add('active');
-
-            // 여기에 탭별 컨텐츠 로딩 로직 추가
-            console.log('탭 전환:', this.textContent);
-        });
+        if (!isClickInsideSidebar && window.innerWidth <= 768) {
+            sidebar.classList.remove('open');
+        }
     });
 
-    // 페이지 로드 시 초기화
+    // 매출 차트 생성
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('대시보드 로드 완료');
+        // Flatpickr 한국어 로케일 설정
+        flatpickr.localize(flatpickr.l10ns.ko);
+
+        // 통계용 날짜 선택기 초기화 (비어있는 상태로 시작)
+        const startDatePicker = flatpickr("#startDate", {
+            dateFormat: "Y-m-d",
+            locale: "ko",
+            allowInput: true,
+            clickOpens: true
+        });
+
+        const endDatePicker = flatpickr("#endDate", {
+            dateFormat: "Y-m-d",
+            locale: "ko",
+            allowInput: true,
+            clickOpens: true
+        });
+
+        // 차트용 날짜 선택기 초기화
+        const chartStartDatePicker = flatpickr("#chartStartDate", {
+            dateFormat: "Y-m-d",
+            defaultDate: "2025-01-01",
+            locale: "ko",
+            allowInput: true,
+            clickOpens: true
+        });
+
+        const chartEndDatePicker = flatpickr("#chartEndDate", {
+            dateFormat: "Y-m-d",
+            defaultDate: "2025-01-31",
+            locale: "ko",
+            allowInput: true,
+            clickOpens: true
+        });
+
+        const ctx = document.getElementById('salesChart').getContext('2d');
+
+        // 임의의 매출 데이터 (최근 7일)
+        const salesData = {
+            labels: ['1월 17일', '1월 18일', '1월 19일', '1월 20일', '1월 21일', '1월 22일', '1월 23일'],
+            datasets: [{
+                label: '매출 (배송비 포함)',
+                data: [1200000, 1850000, 2100000, 1750000, 2300000, 1950000, 2150000],
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0,
+                pointBackgroundColor: '#007bff',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        };
+
+        const config = {
+            type: 'line',
+            data: salesData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 12,
+                                weight: '300'
+                            },
+                            color: '#6c757d',
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(33, 37, 41, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#dee2e6',
+                        borderWidth: 1,
+                        cornerRadius: 4,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return '매출: ₩' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#6c757d',
+                            font: {
+                                size: 11,
+                                weight: '300'
+                            }
+                        },
+                        border: {
+                            color: '#e9ecef'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f8f9fa',
+                            borderDash: [2, 2]
+                        },
+                        ticks: {
+                            color: '#6c757d',
+                            font: {
+                                size: 11,
+                                weight: '300'
+                            },
+                            callback: function(value) {
+                                return '₩' + (value / 1000000).toFixed(1) + 'M';
+                            }
+                        },
+                        border: {
+                            color: '#e9ecef'
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        };
+
+        new Chart(ctx, config);
+
+        // 페이지 로드 시 기본적으로 "전체" 기간으로 통계 업데이트
+        updateStats('전체');
+
+        // 기간 선택 기능 (상단 통계용)
+        const periodButtons = document.querySelectorAll('.period-selector .btn:not(.btn-apply)');
+
+        periodButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 모든 버튼의 active 클래스 제거
+                periodButtons.forEach(btn => {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn');
+                });
+
+                // 클릭된 버튼을 active로 설정
+                this.classList.remove('btn');
+                this.classList.add('btn-primary');
+
+                // 기간에 따라 날짜 자동 설정
+                const today = new Date();
+                const endDate = new Date(today);
+                let startDate = new Date(today);
+
+                const buttonText = this.textContent;
+
+                if (buttonText === '전체') {
+                    // 전체: 날짜 필드를 비움
+                    startDatePicker.clear();
+                    endDatePicker.clear();
+                } else {
+                    // 다른 기간들은 날짜 자동 설정
+                    if (buttonText === '최근 7일') {
+                        startDate.setDate(today.getDate() - 7);
+                    } else if (buttonText === '최근 30일') {
+                        startDate.setDate(today.getDate() - 30);
+                    } else if (buttonText === '최근 3개월') {
+                        startDate.setMonth(today.getMonth() - 3);
+                    } else if (buttonText === '최근 1년') {
+                        startDate.setFullYear(today.getFullYear() - 1);
+                    }
+
+                    // Flatpickr 날짜 업데이트
+                    startDatePicker.setDate(startDate);
+                    endDatePicker.setDate(endDate);
+                }
+
+                // 통계 업데이트
+                updateStats(buttonText);
+            });
+        });
+
+        // 통계 조회 버튼 클릭 이벤트
+        document.querySelector('.btn-apply').addEventListener('click', function() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert('시작일과 종료일을 모두 선택해주세요.');
+                return;
+            }
+
+            // 모든 기간 버튼 비활성화
+            periodButtons.forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn');
+            });
+
+            // 사용자 지정 기간으로 통계 업데이트
+            updateStats('사용자 지정');
+        });
+
+        // 차트 탭 기능
+        const chartTabs = document.querySelectorAll('.chart-tab');
+
+        chartTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 모든 탭의 active 클래스 제거
+                chartTabs.forEach(t => t.classList.remove('active'));
+
+                // 클릭된 탭을 active로 설정
+                this.classList.add('active');
+
+                // 탭에 따라 기본 날짜 범위 설정
+                const period = this.dataset.period;
+                const today = new Date();
+                const endDate = new Date(today);
+                let startDate = new Date(today);
+
+                if (period === 'daily') {
+                    // 일별: 최근 30일
+                    startDate.setDate(today.getDate() - 30);
+                } else if (period === 'monthly') {
+                    // 월별: 최근 12개월
+                    startDate.setMonth(today.getMonth() - 12);
+                    startDate.setDate(1); // 월 시작일로 설정
+                    endDate.setDate(0); // 월 마지막일로 설정
+                    endDate.setMonth(endDate.getMonth() + 1);
+                } else if (period === 'yearly') {
+                    // 연도별: 최근 5년
+                    startDate.setFullYear(today.getFullYear() - 5);
+                    startDate.setMonth(0, 1); // 년 시작일로 설정
+                    endDate.setMonth(11, 31); // 년 마지막일로 설정
+                }
+
+                // Flatpickr 날짜 업데이트
+                chartStartDatePicker.setDate(startDate);
+                chartEndDatePicker.setDate(endDate);
+
+                // 차트 업데이트
+                updateChart(period);
+            });
+        });
+
+        // 차트 조회 버튼 클릭 이벤트
+        document.querySelector('.btn-chart-apply').addEventListener('click', function() {
+            const activePeriod = document.querySelector('.chart-tab.active').dataset.period;
+            updateChart(activePeriod);
+        });
+
+        function updateStats(period) {
+            // 실제 프로젝트에서는 여기서 서버에서 통계 데이터를 가져와서 업데이트
+            console.log(`${period} 기간으로 통계 업데이트`);
+
+            let params = {};
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (period === '전체') {
+                console.log('전체 기간 통계 조회');
+                params = { startDate : null,
+                           endDate : null };
+            } else if (startDate && endDate) {
+                console.log(`통계 기간: ${startDate} ~ ${endDate}`);
+                params = { startDate : startDate,
+                           endDate : endDate };
+            } else {
+                console.log('날짜 범위가 설정되지 않음');
+            }
+
+            $.ajax({
+                url: '/admin/sales/stat',   // 실제 엔드포인트로 변경
+                type: 'GET',
+                data: params,
+                success: function(res) {
+                    $('#statTotalPayment').text( formatNumber(res.totalPaymentAmount) + '원' );
+                    $('#statCancelAmount').text( formatNumber(res.cancelAmount)        + '원' );
+                    $('#statMargin').text(        formatNumber(res.margin)             + '원' );
+                },
+                error: function(xhr, status, err) {
+                    console.error('통계 조회 실패:', status, err);
+                    alert('통계 데이터를 불러오는 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        function updateChart(period) {
+            // 실제 프로젝트에서는 여기서 서버에서 차트 데이터를 가져와서 업데이트
+            console.log(`${period} 단위로 차트 업데이트`);
+            console.log(`차트 기간: ${document.getElementById('chartStartDate').value} ~ ${document.getElementById('chartEndDate').value}`);
+
+            // 차트 레이블과 데이터를 기간에 맞게 변경하는 예시
+            let newLabels = [];
+            let newData = [];
+
+            if (period === 'daily') {
+                newLabels = ['1월 17일', '1월 18일', '1월 19일', '1월 20일', '1월 21일', '1월 22일', '1월 23일'];
+                newData = [1200000, 1850000, 2100000, 1750000, 2300000, 1950000, 2150000];
+            } else if (period === 'monthly') {
+                newLabels = ['2024년 2월', '2024년 3월', '2024년 4월', '2024년 5월', '2024년 6월', '2024년 7월'];
+                newData = [45000000, 52000000, 48000000, 58000000, 63000000, 59000000];
+            } else if (period === 'yearly') {
+                newLabels = ['2020년', '2021년', '2022년', '2023년', '2024년'];
+                newData = [480000000, 520000000, 680000000, 750000000, 820000000];
+            }
+
+            // 차트 데이터 업데이트
+            const chart = Chart.getChart('salesChart');
+            if (chart) {
+                chart.data.labels = newLabels;
+                chart.data.datasets[0].data = newData;
+                chart.update();
+            }
+        }
     });
+
+
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 </script>
 </body>
 </html>

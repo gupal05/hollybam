@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -13,4 +15,7 @@ public class ProductOptionDto {
     private String optionValue;
     private int optionPrice;
     private int optionQuantity;
+
+    private List<OptionPriceDto> optionPriceDtoList;
+    private OptionPriceDto optionPriceDto;
 }

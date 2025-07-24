@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -154,10 +154,13 @@
     </form>
 </div>
 
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const merchantKey = /*[[${merchant_key}]]*/ '';
+    const mid = /*[[${mid}]]*/ '';
+</script>
 <script>
     // PDF 7.1에서 명시된 SHA256 암호화 예시
-    const merchantKey = "BoBwBC4hRuMxAztw9p85L7K+SB7Iswd1tdRwca7xQ2sFftC5nYAFgYkOctQ1ubHzACV0YzaWHJdqWAGZW34kPw==";
-    const mid = "demotest0m";
 
     // SHA256 해시 생성 함수 (PDF에서 요구하는 형식)
     async function generateSHA256Hash(data) {

@@ -830,6 +830,114 @@
                 align-items: stretch;
             }
         }
+
+        /* 옵션 원가 관리 관련 스타일 */
+        .option-cost-management {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .uniform-cost-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .uniform-cost-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .uniform-cost-label {
+            color: #212529;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .uniform-cost-input-group {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .uniform-cost-input-group.active {
+            display: block;
+        }
+
+        .uniform-cost-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .uniform-cost-input {
+            width: 200px;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            color: #212529;
+            font-size: 14px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+        }
+
+        .uniform-cost-input:focus {
+            outline: none;
+            border-color: #212529;
+        }
+
+        .uniform-cost-apply-btn {
+            background: #212529;
+            color: #fff;
+            border: 1px solid #212529;
+            padding: 12px 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .uniform-cost-apply-btn:hover {
+            background: #000;
+        }
+
+        /* 옵션값 아이템 그리드 수정 */
+        .option-value-item {
+            display: grid;
+            grid-template-columns: 1fr 100px 100px 100px auto;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #dee2e6;
+        }
+
+        /* 반응형에서 옵션값 아이템 수정 */
+        @media (max-width: 768px) {
+            .option-value-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .uniform-cost-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .uniform-cost-input {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1079,6 +1187,32 @@
                                     옵션 추가
                                 </button>
                             </div>
+                            <div class="option-cost-management" id="optionCostManagement" style="display: none;">
+                                <div class="uniform-cost-toggle">
+                                    <input type="checkbox" class="uniform-cost-checkbox" id="uniformCostCheck">
+                                    <label class="uniform-cost-label" for="uniformCostCheck">
+                                        모든 옵션 원가 동일하게 설정
+                                    </label>
+                                </div>
+
+                                <div class="uniform-cost-input-group" id="uniformCostInputGroup">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            통합 옵션 원가
+                                        </label>
+                                        <div class="uniform-cost-controls">
+                                            <div class="input-group">
+                                                <div class="input-addon">₩</div>
+                                                <input type="number" class="uniform-cost-input" id="uniformCostInput"
+                                                       placeholder="0" min="0">
+                                            </div>
+                                            <button type="button" class="uniform-cost-apply-btn" id="applyCostBtn">
+                                                모든 옵션에 적용
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div id="optionList" class="option-list">
                                 <!-- 동적으로 옵션이 추가될 영역 -->
@@ -1217,17 +1351,6 @@
                         </div>
                         <div class="price-grid">
                             <div class="form-group">
-                                <label class="form-label" for="priceCost">
-                                    상품 원가 <span class="required">*</span>
-                                </label>
-                                <div class="input-group">
-                                    <div class="input-addon">₩</div>
-                                    <input type="number" class="form-input" id="priceCost"
-                                           name="priceCost" placeholder="0" min="0" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
                                 <label class="form-label" for="priceOriginal">
                                     상품 정가
                                 </label>
@@ -1246,6 +1369,16 @@
                                     <div class="input-addon">₩</div>
                                     <input type="number" class="form-input" id="priceSelling"
                                            name="priceSelling" placeholder="0" min="0" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="priceCost">
+                                    상품 원가 <span class="required">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-addon">₩</div>
+                                    <input type="number" class="form-input" id="priceCost"
+                                           name="priceCost" placeholder="0" min="0" required>
                                 </div>
                             </div>
                         </div>
@@ -1710,23 +1843,27 @@ function removeOption(optionIndex) {
     updateQuantityMode();
 }
 
-// 옵션값 추가 함수
-function addOptionValue(optionIndex) {
-    const valueHtml =
-        '<div class="option-value-item">' +
-            '<input type="text" class="option-value-input option-value" ' +
-                'placeholder="옵션값 (예: 빨강, Large)">' +
-            '<input type="number" class="option-value-input option-price" ' +
-                'placeholder="추가금액" min="0">' +
-            '<input type="number" class="option-value-input option-quantity" ' +
-                'placeholder="재고" min="0" onchange="updateTotalQuantity()">' +
-            '<button type="button" class="remove-value-btn" onclick="removeOptionValue(this)">' +
-                '제거' +
-            '</button>' +
-        '</div>';
+    // 옵션값 추가 함수
+    function addOptionValue(optionIndex) {
+        const uniformCost = $('#uniformCostCheck').is(':checked') ? $('#uniformCostInput').val() || '' : '';
 
-    $('#optionValues-' + optionIndex).append(valueHtml);
-}
+        const valueHtml =
+            '<div class="option-value-item">' +
+            '<input type="text" class="option-value-input option-value" ' +
+            'placeholder="옵션값 (예: 빨강, Large)">' +
+            '<input type="number" class="option-value-input option-price" ' +
+            'placeholder="추가금액" min="0">' +
+            '<input type="number" class="option-value-input option-cost" ' +
+            'placeholder="원가" min="0" value="' + uniformCost + '">' +
+            '<input type="number" class="option-value-input option-quantity" ' +
+            'placeholder="재고" min="0" onchange="updateTotalQuantity()">' +
+            '<button type="button" class="remove-value-btn" onclick="removeOptionValue(this)">' +
+            '제거' +
+            '</button>' +
+            '</div>';
+
+        $('#optionValues-' + optionIndex).append(valueHtml);
+    }
 
 // 옵션값 제거 함수
 function removeOptionValue(button) {
@@ -1734,38 +1871,46 @@ function removeOptionValue(button) {
     updateTotalQuantity();
 }
 
-// 재고 관리 모드 업데이트
-function updateQuantityMode() {
-    const hasOptionsNow = $('.option-item').length > 0;
-    const $quantityInput = $('#productQuantity');
-    const $quantityInfo = $('#quantityInfo');
-    const $quantityStatus = $('#quantityStatus');
-    const $quantityDetails = $('#quantityDetails');
+    // 재고 관리 모드 업데이트
+    function updateQuantityMode() {
+        const hasOptionsNow = $('.option-item').length > 0;
+        const $quantityInput = $('#productQuantity');
+        const $quantityInfo = $('#quantityInfo');
+        const $quantityStatus = $('#quantityStatus');
+        const $quantityDetails = $('#quantityDetails');
+        const $costInput = $('#priceCost');
+        const $optionCostManagement = $('#optionCostManagement');
 
-    if (hasOptionsNow) {
-        // 옵션이 있는 경우: readonly 모드
-        $quantityInput.prop('readonly', true);
-        $quantityInfo.removeClass('total-quantity-info').addClass('total-quantity-info auto-calculated');
-        $quantityStatus.removeClass('manual').addClass('auto').text('자동 계산 모드');
-        $quantityDetails.text('옵션별 재고 수량의 합계가 자동으로 계산됩니다.');
+        if (hasOptionsNow) {
+            // 옵션이 있는 경우: readonly 모드
+            $quantityInput.prop('readonly', true);
+            $costInput.prop('readonly', true).css('background', '#f8f9fa');
+            $optionCostManagement.show();
 
-        // 현재 총 재고 계산
-        updateTotalQuantity();
-    } else {
-        // 옵션이 없는 경우: 수동 입력 모드
-        $quantityInput.prop('readonly', false);
-        $quantityInfo.removeClass('auto-calculated').addClass('total-quantity-info');
-        $quantityStatus.removeClass('auto').addClass('manual').text('수동 입력 모드');
-        $quantityDetails.text('옵션이 없는 상품의 경우 직접 재고 수량을 입력하세요.');
+            $quantityInfo.removeClass('total-quantity-info').addClass('total-quantity-info auto-calculated');
+            $quantityStatus.removeClass('manual').addClass('auto').text('자동 계산 모드');
+            $quantityDetails.text('옵션별 재고 수량의 합계가 자동으로 계산됩니다.');
 
-        // 입력값 초기화 (옵션에서 수동으로 변경될 때)
-        if (hasOptions && !hasOptionsNow) {
-            $quantityInput.val('');
+            // 현재 총 재고 계산
+            updateTotalQuantity();
+        } else {
+            // 옵션이 없는 경우: 수동 입력 모드
+            $quantityInput.prop('readonly', false);
+            $costInput.prop('readonly', false).css('background', '#fff');
+            $optionCostManagement.hide();
+
+            $quantityInfo.removeClass('auto-calculated').addClass('total-quantity-info');
+            $quantityStatus.removeClass('auto').addClass('manual').text('수동 입력 모드');
+            $quantityDetails.text('옵션이 없는 상품의 경우 직접 재고 수량을 입력하세요.');
+
+            // 입력값 초기화 (옵션에서 수동으로 변경될 때)
+            if (hasOptions && !hasOptionsNow) {
+                $quantityInput.val('');
+            }
         }
-    }
 
-    hasOptions = hasOptionsNow;
-}
+        hasOptions = hasOptionsNow;
+    }
 
 // 총 재고 수량 계산 및 업데이트
 function updateTotalQuantity() {
@@ -1791,43 +1936,120 @@ function updateTotalQuantity() {
     }
 }
 
-// 옵션 데이터 수집 함수
-function collectOptionData() {
-    const options = [];
+    // 옵션 데이터 수집 함수
+    function collectOptionData() {
+        const options = [];
 
-    $('.option-item').each(function() {
-        const $optionItem = $(this);
-        const optionName = $optionItem.find('.option-name').val().trim();
+        $('.option-item').each(function() {
+            const $optionItem = $(this);
+            const optionName = $optionItem.find('.option-name').val().trim();
 
-        if (optionName) {
-            const optionValues = [];
+            if (optionName) {
+                const optionValues = [];
 
-            $optionItem.find('.option-value-item').each(function() {
-                const $valueItem = $(this);
-                const value = $valueItem.find('.option-value').val().trim();
-                const price = parseInt($valueItem.find('.option-price').val()) || 0;
-                const quantity = parseInt($valueItem.find('.option-quantity').val()) || 0;
+                $optionItem.find('.option-value-item').each(function() {
+                    const $valueItem = $(this);
+                    const value = $valueItem.find('.option-value').val().trim();
+                    const price = parseInt($valueItem.find('.option-price').val()) || 0;
+                    const cost = parseInt($valueItem.find('.option-cost').val()) || 0;
+                    const quantity = parseInt($valueItem.find('.option-quantity').val()) || 0;
 
-                if (value) {
-                    optionValues.push({
-                        optionValue: value,
-                        optionPrice: price,
-                        optionQuantity: quantity
+                    if (value) {
+                        optionValues.push({
+                            optionValue: value,
+                            optionPrice: price,
+                            optionCost: cost,
+                            optionQuantity: quantity
+                        });
+                    }
+                });
+
+                if (optionValues.length > 0) {
+                    options.push({
+                        optionName: optionName,
+                        values: optionValues
                     });
                 }
-            });
-
-            if (optionValues.length > 0) {
-                options.push({
-                    optionName: optionName,
-                    values: optionValues
-                });
             }
-        }
-    });
+        });
 
-    return options;
-}
+        return options;
+    }
+
+    $(document).ready(function() {
+        // 기존 코드는 그대로 두고 아래 코드들을 추가
+
+        // 통합 원가 체크박스 토글
+        $('#uniformCostCheck').on('change', function() {
+            const $inputGroup = $('#uniformCostInputGroup');
+
+            if ($(this).is(':checked')) {
+                $inputGroup.addClass('active');
+            } else {
+                $inputGroup.removeClass('active');
+                $('#uniformCostInput').val('');
+                // 체크 해제 시 모든 옵션 원가 필드를 수동 입력 가능하게 만들기
+                $('.option-cost').prop('readonly', false).css('background', '#fff');
+            }
+        });
+
+        // 통합 원가 적용 버튼 클릭
+        $('#applyCostBtn').on('click', function() {
+            const uniformCost = $('#uniformCostInput').val();
+
+            if (!uniformCost || uniformCost <= 0) {
+                alert('올바른 원가를 입력해주세요.');
+                return;
+            }
+
+            // 모든 옵션의 원가 필드에 동일한 값 적용
+            $('.option-cost').val(uniformCost);
+
+            alert('모든 옵션에 원가가 적용되었습니다.');
+        });
+
+        // 통합 원가 입력창에서 엔터키 처리
+        $('#uniformCostInput').on('keypress', function(e) {
+            if (e.which === 13) {
+                $('#applyCostBtn').click();
+            }
+        });
+
+        $('#uniformCostCheck').on('change', function() {
+            const $inputGroup = $('#uniformCostInputGroup');
+
+            if ($(this).is(':checked')) {
+                $inputGroup.addClass('active');
+            } else {
+                $inputGroup.removeClass('active');
+                $('#uniformCostInput').val('');
+                // 체크 해제 시 모든 옵션 원가 필드를 수동 입력 가능하게 만들기
+                $('.option-cost').prop('readonly', false).css('background', '#fff');
+            }
+        });
+
+        // 통합 원가 적용 버튼 클릭
+        $('#applyCostBtn').on('click', function() {
+            const uniformCost = $('#uniformCostInput').val();
+
+            if (!uniformCost || uniformCost <= 0) {
+                alert('올바른 원가를 입력해주세요.');
+                return;
+            }
+
+            // 모든 옵션의 원가 필드에 동일한 값 적용
+            $('.option-cost').val(uniformCost);
+
+            alert('모든 옵션에 원가가 적용되었습니다.');
+        });
+
+        // 통합 원가 입력창에서 엔터키 처리
+        $('#uniformCostInput').on('keypress', function(e) {
+            if (e.which === 13) {
+                $('#applyCostBtn').click();
+            }
+        });
+    });
 </script>
 </body>
 </html>

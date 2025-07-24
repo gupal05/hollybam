@@ -69,6 +69,7 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.683'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+	implementation 'commons-codec:commons-codec:1.9'          // SHA-256 해시 (groupId 수정)
 }
 
 tasks.named('test') {

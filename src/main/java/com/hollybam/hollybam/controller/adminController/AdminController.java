@@ -160,7 +160,7 @@ public class AdminController {
         Map<String, Boolean> response = new HashMap<>();
         boolean uploadStatus = true;
 
-        String uploadDir = "testImage";
+        String uploadDir = "product";
 
         try {
             // 필수 타이틀 이미지 저장

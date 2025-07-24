@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,22 +33,22 @@ import java.util.Map;
 @Slf4j
 @Controller
 public class GoogleAuthController {
-
     @Autowired
     private LoginService loginService;
-
     @Autowired
     private IF_SignupService signupService;
-
     @Autowired
     private NiceCryptoTokenService niceCryptoTokenService;
+
+    @Value("${google.client.id}")
+    private String GOOGLE_CLIENT_ID;
 
     @PostMapping("/auth/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> tokenMap, HttpSession session) {
         String idTokenString = tokenMap.get("idToken");
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
-                .setAudience(Collections.singletonList("92346439771-d4b0tga52c1klh9f0qnrc31h51i8vfqm.apps.googleusercontent.com"))
+                .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
                 .build();
 
         try {

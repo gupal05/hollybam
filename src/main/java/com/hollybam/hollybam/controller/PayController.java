@@ -23,13 +23,18 @@ import java.util.HashMap;
 public class PayController {
 
     // PDF에서 제공된 테스트 정보 (실제로는 properties에서 가져와야 함)
-    private final String MID = "demotest0m";
-    private final String MERCHANT_KEY = "BoBwBC4hRuMxAztw9p85L7K+SB7Iswd1tdRwca7xQ2sFftC5nYAFgYkOctQ1ubHzACV0YzaWHJdqWAGZW34kPw==";
+    @Value("${payster.mid}")
+    private String MID;
+    @Value("${payster.merchant_key}")
+    private String MERCHANT_KEY;
 
     // PDF에서 명시된 API URLs
-    private final String PAYMENT_INIT_URL = "https://api.payster.co.kr/payInit_hash.do";
-    private final String PAYMENT_APPROVE_URL = "https://api.payster.co.kr/payment.do";
-    private final String PAYMENT_CANCEL_URL = "https://api.payster.co.kr/payment.cancel";
+    @Value("${payster.payment_init_url}")
+    private String PAYMENT_INIT_URL;
+    @Value("${payster.payment_approve_url}")
+    private String PAYMENT_APPROVE_URL;
+    @Value("${payster.payment_cancel_url}")
+    private String PAYMENT_CANCEL_URL;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -39,6 +44,7 @@ public class PayController {
     @GetMapping("/test")
     public String paymentTest(Model model) {
         model.addAttribute("mid", MID);
+        model.addAttribute("merchant_key", MERCHANT_KEY);
         model.addAttribute("paymentInitUrl", PAYMENT_INIT_URL);
         return "payForm"; // 위에서 만든 HTML 페이지
     }

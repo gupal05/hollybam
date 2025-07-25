@@ -79,6 +79,20 @@ public class AdminController {
                 //model.addAttribute("salesAmount", adminDashboardService.adminSelectSalesAmount());
                 // 순수익(할인 금액을 제외한)
                 model.addAttribute("margin",  adminDashboardService.adminSelectMargin(null, null));
+
+                model.addAttribute("paidCount", adminDashboardService.getPaymentStatusCount("PAID"));
+                model.addAttribute("pendingCount", adminDashboardService.getOrderStatusCount("PENDING"));
+                model.addAttribute("preparingCount", adminDashboardService.getOrderStatusCount("PREPARING"));
+                model.addAttribute("shippedCount", adminDashboardService.getOrderStatusCount("SHIPPED"));
+                model.addAttribute("shippingCount", adminDashboardService.getDeliveryStatusCount("SHIPPING"));
+                model.addAttribute("deliveredCount", adminDashboardService.getDeliveryStatusCount("DELIVERED"));
+                model.addAttribute("returnRequestedCount", adminDashboardService.getPaymentStatusCount("RETURN_REQUESTED"));
+                model.addAttribute("returningCount",  adminDashboardService.getDeliveryStatusCount("RETURNING"));
+                model.addAttribute("refundPending",  adminDashboardService.getPaymentStatusCount("REFUND_PENDING"));
+                model.addAttribute("refundedCount", adminDashboardService.getPaymentStatusCount("REFUNDED"));
+                model.addAttribute("cancelCount",  adminDashboardService.getPaymentStatusCount("CANCELLED"));
+
+
                 model.addAttribute("member", member);
                 return "admin/dashboard";
             }
@@ -254,6 +268,7 @@ public class AdminController {
                     optionDto.setOptionValue((String) valueData.get("optionValue"));
                     optionDto.setOptionPrice((Integer) valueData.get("optionPrice"));
                     optionDto.setOptionQuantity((Integer) valueData.get("optionQuantity"));
+                    optionDto.setOptionCost((Integer) valueData.get("optionCost"));
                     productOptions.add(optionDto);
                 }
             }
@@ -297,11 +312,23 @@ public class AdminController {
 
         // 전체 재고 계산 로직 추가
         if (!productOptions.isEmpty()) {
+            priceDto.setPriceCost(0);
+            priceDto.setPriceMargin(0);
+            for (ProductOptionDto option : productOptions) {
+                OptionPriceDto optionPriceDto = new OptionPriceDto();
+                // 마진 = (기본 판매가 + 옵션 추가가) - 옵션 원가
+                int margin = (priceDto.getPriceSelling() + option.getOptionPrice()) - option.getOptionCost();
+                optionPriceDto.setOptionPriceMargin(margin);
+                option.setOptionPriceDto(optionPriceDto);
+            }
             // 옵션이 있는 경우: 모든 옵션의 재고 합계를 전체 재고로 설정
             int totalQuantity = productOptions.stream()
                     .mapToInt(ProductOptionDto::getOptionQuantity)
                     .sum();
             productDto.setProductQuantity(totalQuantity);
+        } else {
+            // 옵션이 없는 경우: 기존 로직 유지
+            priceDto.setPriceMargin(priceDto.getPriceSelling() - priceDto.getPriceCost());
         }
 
         productDtoList.add(productDto);
@@ -318,9 +345,10 @@ public class AdminController {
                 if(productService.insertImage(pro) > 0){
                     // 옵션이 있는 경우 옵션도 저장
                     if (!productOptions.isEmpty()) {
-                        if(productService.insertProductOptions(pro) > 0) { // 옵션 저장 메소드
+                        try {
+                            productService.saveOptionsAndPrices(pro);
                             message = "상품이 등록 되었습니다.";
-                        } else {
+                        } catch (Exception e) {
                             status = false;
                             message = "상품 옵션 등록이 실패 되었습니다.";
                         }

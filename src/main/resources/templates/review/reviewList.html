@@ -563,7 +563,7 @@
           </div>
           <div class="review-info">
             <div class="review-header">
-              <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${review.productImage}" alt="상품" class="product-thumb">
+              <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${review.productImage}" alt="상품" class="product-thumb">
               <div class="product-info">
                 <div class="product-name" th:text="${review.productName}">상품명</div>
                 <div class="rating-stars">
@@ -790,7 +790,7 @@
           ` : ''}
           <div class="review-info">
             <div class="review-header">
-              <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/${review.productImage}" alt="상품" class="product-thumb">
+              <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/${review.productImage}" alt="상품" class="product-thumb">
               <div class="product-info">
                 <div class="product-name">${review.productName}</div>
                 <div class="rating-stars">

@@ -1,5 +1,7 @@
 package com.hollybam.hollybam.services.admin;
 
+import org.apache.ibatis.annotations.Param;
+
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -67,4 +69,8 @@ public interface IF_AdminDashboardService {
      * }
      */
     Map<String, Object> getSalesChartData(LocalDate startDate, LocalDate endDate);
+
+    int getPaymentStatusCount(String status);
+    int getOrderStatusCount(String status);
+    int getDeliveryStatusCount(String status);
 }

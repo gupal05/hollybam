@@ -173,4 +173,23 @@ public class ProductService implements IF_ProductService{
         return productDao.selectProductCountByCategory(categoryCode);
     }
 
+    @Override
+    @Transactional
+    public int insertOptionPrices(ProductDto productDto) {
+        return productDao.insertOptionPrices(productDto);
+    }
+
+    @Transactional
+    public void saveOptionsAndPrices(ProductDto pro) {
+        // pro.getProductOptionDtoList() 안에 옵션 DTO 들이 이미 세팅되어 있다고 가정
+        for (ProductOptionDto opt : pro.getProductOptionDtoList()) {
+            opt.setProductCode(pro.getProductCode());
+            // 1) product_option 에 INSERT → opt.optionCode 에 PK 채워짐
+            productDao.insertOneOption(opt);
+
+            // 2) option_price 에 INSERT
+            productDao.insertOneOptionPrice(opt);
+        }
+    }
+
 }

@@ -905,6 +905,164 @@
                 font-size: 20px;
             }
         }
+
+        /* 주문 상태 모니터링 */
+        .order-status-section {
+            margin-bottom: 60px;
+        }
+
+        .order-status-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 1px;
+            background: #e9ecef;
+            border: 1px solid #e9ecef;
+        }
+
+        .order-status-item,
+        .order-status-item-double {
+            background: #fff;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-right: 1px solid #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .order-status-item:hover,
+        .order-status-item-double:hover {
+            background: #f8f9fa;
+        }
+
+        .order-status-item:last-child,
+        .order-status-item-double:last-child {
+            border-right: none;
+        }
+
+        /* 상단 테두리 */
+        .order-status-item::before,
+        .order-status-item-double::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+        }
+
+        /* 정상 처리 단계 (처음 6개) - 푸른색 테두리 */
+        .order-status-item:nth-child(1)::before,
+        .order-status-item:nth-child(2)::before,
+        .order-status-item:nth-child(3)::before,
+        .order-status-item:nth-child(4)::before,
+        .order-status-item:nth-child(5)::before,
+        .order-status-item:nth-child(6)::before {
+            background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+        }
+
+        /* 예외 처리 단계 (나머지 3개) - 붉은색 테두리 */
+        .order-status-item-double:nth-child(7)::before,
+        .order-status-item-double:nth-child(8)::before,
+        .order-status-item-double:nth-child(9)::before {
+            background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .order-status-label {
+            color: #6c757d;
+            font-size: 11px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .order-status-count {
+            color: #212529;
+            font-size: 22px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+        }
+
+        /* 더블 항목 스타일 */
+        .order-status-item-double {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px 10px;
+        }
+
+        .order-status-double-row {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* 더블 항목의 아래쪽 항목에 상단 테두리 추가 */
+        .order-status-double-row:last-child::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -10px;
+            right: -10px;
+            height: 3px;
+            background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .order-status-double-row .order-status-label {
+            margin-bottom: 4px;
+            font-size: 10px;
+        }
+
+        .order-status-double-row .order-status-count {
+            font-size: 18px;
+        }
+
+        /* 반응형 */
+        @media (min-width: 769px) {
+            .order-status-grid {
+                grid-template-columns: repeat(9, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .order-status-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1px;
+            }
+
+            .order-status-item,
+            .order-status-item-double {
+                padding: 15px 8px;
+            }
+
+            .order-status-label {
+                font-size: 9px;
+                margin-bottom: 4px;
+            }
+
+            .order-status-count {
+                font-size: 16px;
+            }
+
+            .order-status-item-double {
+                gap: 10px;
+                padding: 10px 5px;
+            }
+
+            .order-status-double-row .order-status-label {
+                font-size: 8px;
+                margin-bottom: 2px;
+            }
+
+            .order-status-double-row .order-status-count {
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1096,6 +1254,66 @@
                         <div class="stat-title">상품 수</div>
                     </div>
                     <div class="stat-value" th:text="${productCount}">0</div>
+                </div>
+            </div>
+
+            <!-- 주문 상태 모니터링 -->
+            <div class="order-status-section">
+                <div class="order-status-grid">
+                    <div class="order-status-item" data-status="payment">
+                        <div class="order-status-label">결제 완료</div>
+                        <div class="order-status-count" id="paymentCompleteCount" th:text="${paidCount}">0</div>
+                    </div>
+                    <div class="order-status-item" data-status="order">
+                        <div class="order-status-label">주문 접수</div>
+                        <div class="order-status-count" id="orderReceivedCount" th:text="${pendingCount}">0</div>
+                    </div>
+                    <div class="order-status-item" data-status="preparing">
+                        <div class="order-status-label">상품 준비중</div>
+                        <div class="order-status-count" id="preparingCount" th:text="${preparingCount}">0</div>
+                    </div>
+                    <div class="order-status-item" data-status="shipped">
+                        <div class="order-status-label">출고 완료</div>
+                        <div class="order-status-count" id="shippedCount" th:text="${shippedCount}">0</div>
+                    </div>
+                    <div class="order-status-item" data-status="delivery">
+                        <div class="order-status-label">배송중</div>
+                        <div class="order-status-count" id="deliveringCount" th:text="${shippingCount}">0</div>
+                    </div>
+                    <div class="order-status-item" data-status="delivered">
+                        <div class="order-status-label">배송 완료</div>
+                        <div class="order-status-count" id="deliveredCount" th:text="${deliveredCount}">0</div>
+                    </div>
+                    <div class="order-status-item-double" data-status="return-processing">
+                        <div class="order-status-double-row">
+                            <div class="order-status-label">반품 접수</div>
+                            <div class="order-status-count" id="returnRequestCount" th:text="${returnRequestedCount}">0</div>
+                        </div>
+                        <div class="order-status-double-row">
+                            <div class="order-status-label">반품 처리중</div>
+                            <div class="order-status-count" id="returnProcessingCount" th:text="${returningCount}">0</div>
+                        </div>
+                    </div>
+                    <div class="order-status-item-double" data-status="return-refund">
+                        <div class="order-status-double-row">
+                            <div class="order-status-label">반품 완료</div>
+                            <div class="order-status-count" id="returnCompleteCount" th:text="${refundedCount}">0</div>
+                        </div>
+                        <div class="order-status-double-row">
+                            <div class="order-status-label">환불 대기</div>
+                            <div class="order-status-count" id="refundWaitingCount" th:text="${refundPending}">0</div>
+                        </div>
+                    </div>
+                    <div class="order-status-item-double" data-status="refund-cancel">
+                        <div class="order-status-double-row">
+                            <div class="order-status-label">환불 완료</div>
+                            <div class="order-status-count" id="refundCompleteCount" th:text="${refundedCount}">0</div>
+                        </div>
+                        <div class="order-status-double-row">
+                            <div class="order-status-label">주문 취소</div>
+                            <div class="order-status-count" id="orderCancelCount" th:text="${cancelCount}">0</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

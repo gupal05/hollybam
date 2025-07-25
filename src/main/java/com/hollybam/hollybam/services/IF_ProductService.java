@@ -11,6 +11,7 @@ public interface IF_ProductService {
     public int insertPrice(ProductDto productDto);
     public int insertImage(ProductDto productDto);
     public int insertProductOptions(ProductDto productDto);
+    public int insertOptionPrices(ProductDto productDto);
     public List<ProductDto> selectBestProducts();
     public List<ProductDto> selectBestProductsForMobile();
     public List<ProductDto> selectNewProducts();

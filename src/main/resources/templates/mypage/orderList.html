@@ -1267,7 +1267,7 @@
                             <div class="product-item" th:each="item : ${order.orderItems}">
                                 <div class="product-image">
                                     <img th:if="${item.productDto != null and item.productDto.imageDto != null}"
-                                         th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${item.productDto.imageDto.imageUrl}}"
+                                         th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${item.productDto.imageDto.imageUrl}}"
                                          th:alt="${item.productDto.productName}" />
                                 </div>
                                 <div class="product-details">
@@ -1711,7 +1711,7 @@
         // 주문 상품 HTML 생성
         const productHtml = data.map(item => `
     <div class="mypage-product-item">
-      <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/${item.imageUrl}" alt="상품" class="mypage-product-image">
+      <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/${item.imageUrl}" alt="상품" class="mypage-product-image">
       <div class="mypage-product-info">
         <div class="mypage-product-name">${item.productName}</div>
         <div>

@@ -18,4 +18,7 @@ public class ProductOptionDto {
 
     private List<OptionPriceDto> optionPriceDtoList;
     private OptionPriceDto optionPriceDto;
+    private int optionCost;
+
+    private Integer productCode;
 }

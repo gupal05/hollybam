@@ -594,4 +594,40 @@
           AND p.cd_code = #{detailCode}
           AND p.product_active = 1
     </select>
+
+    <insert id="insertOptionPrices" parameterType="com.hollybam.hollybam.dto.ProductDto">
+        INSERT INTO option_price (
+        option_code,
+        option_price_cost,
+        option_price_margin
+        ) VALUES
+        <foreach collection="productOptionDtoList" item="option" separator=",">
+            (
+            #{option.optionCode},
+            #{option.optionCost},
+            #{option.optionPriceDto.optionPriceMargin}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertOneOption"
+            parameterType="com.hollybam.hollybam.dto.ProductOptionDto"
+            useGeneratedKeys="true"
+            keyProperty="optionCode"
+            keyColumn="option_code">
+        INSERT INTO product_option
+        (product_code, option_name, option_value, option_price, option_quantity)
+        VALUES
+            (#{productCode}, #{optionName},   #{optionValue},
+             #{optionPrice},  #{optionQuantity})
+    </insert>
+
+    <!-- 2) 방금 채워진 optionCode 로 옵션 가격 INSERT -->
+    <insert id="insertOneOptionPrice"
+            parameterType="com.hollybam.hollybam.dto.ProductOptionDto">
+        INSERT INTO option_price
+            (option_code, option_price_cost, option_price_margin)
+        VALUES
+            (#{optionCode}, #{optionCost}, #{optionPriceDto.optionPriceMargin})
+    </insert>
 </mapper>

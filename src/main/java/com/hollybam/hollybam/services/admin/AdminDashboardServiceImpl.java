@@ -159,4 +159,22 @@ public class AdminDashboardServiceImpl implements IF_AdminDashboardService {
             return "yearly";    // 2년 초과 → 연도별
         }
     }
+
+    @Override
+    @Transactional
+    public int getPaymentStatusCount(String status){
+        return adminDashboardDao.getPaymentStatusCount(status);
+    }
+
+    @Override
+    @Transactional
+    public int getOrderStatusCount(String status){
+        return adminDashboardDao.getOrderStatusCount(status);
+    }
+
+    @Override
+    @Transactional
+    public int getDeliveryStatusCount(String status){
+        return adminDashboardDao.getDeliveryStatusCount(status);
+    }
 }

@@ -2191,12 +2191,12 @@
                             Sold Out
                         </div>
                         <img class="product-img"
-                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
+                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
                              th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
-                             th:attr="data-hover=${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageWebp}"
+                             th:attr="data-hover=${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageWebp}"
                              alt="상품 이미지" />
                         <img class="product-img"
-                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
+                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
                              th:unless="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
                              alt="상품 이미지" />
                     </div>
@@ -2241,7 +2241,7 @@
                     <div class="review-card" th:each="review : ${bestReviews}" th:data-review-code="${review.reviewCode}">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
-                            <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${review.imageDto.imageUrl}}"
+                            <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${review.imageDto.imageUrl}}"
                                  alt="상품 이미지" class="product-thumb">
                             <!-- 상품명 -->
                             <div class="product-name" th:text="${review.productDto.productName}">상품명</div>
@@ -2318,13 +2318,13 @@
                             Sold Out
                         </div>
                         <img class="product-img"
-                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
+                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
                              th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
-                             th:attr="data-hover=${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageWebp}"
+                             th:attr="data-hover=${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageWebp}"
                              alt="상품 이미지" />
 
                         <img class="product-img"
-                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
+                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
                              th:unless="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
                              alt="상품 이미지" />
                     </div>

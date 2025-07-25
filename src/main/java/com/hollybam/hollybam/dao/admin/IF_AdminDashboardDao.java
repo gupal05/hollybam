@@ -82,4 +82,8 @@ public interface IF_AdminDashboardDao {
      * @return 연도별 매출 데이터 리스트 [{"period": "2024", "salesAmount": 420000000}, ...]
      */
     List<Map<String, Object>> adminSelectYearlySalesChart(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    int getPaymentStatusCount(@Param("status") String status);
+    int getOrderStatusCount(@Param("status") String status);
+    int getDeliveryStatusCount(@Param("status") String status);
 }

@@ -1612,7 +1612,7 @@
             <div class="product-preview" th:each="item : ${order.orderItems}">
               <div class="product-image"
                    th:if="${item.productDto != null and item.productDto.imageDto != null}">
-                <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${item.productDto.imageDto.imageUrl}}"
+                <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${item.productDto.imageDto.imageUrl}}"
                      th:alt="${item.productDto.productName}"
                      style="width: 100px; height: 100px; object-fit: cover; border-radius: 12px;" />
               </div>
@@ -1652,7 +1652,7 @@
                th:attr="data-product-id=${item.productId}"
                onclick="goToProduct(this)">
             <img th:if="${item.productImage != null and !item.productImage.isEmpty()}"
-                 th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + item.productImage}"
+                 th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + item.productImage}"
                  th:alt="${item.productName}"
                  style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
@@ -2212,7 +2212,7 @@
     // 주문 상품 HTML 생성
     const productHtml = data.map(item => `
     <div class="mypage-product-item">
-      <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/${item.imageUrl}" alt="상품" class="mypage-product-image">
+      <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/${item.imageUrl}" alt="상품" class="mypage-product-image">
       <div class="mypage-product-info">
         <div class="mypage-product-name">${item.productName}</div>
         <div>

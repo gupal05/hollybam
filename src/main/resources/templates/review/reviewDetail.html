@@ -697,7 +697,7 @@
             <!-- 상품 정보 -->
             <div class="product-info" th:onclick="|window.location.href='@{/product/{id}(id=${review.productDto.productId})}'|" style="cursor: pointer">
                 <img th:if="${review.productImageDto != null}"
-                     th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${review.productImageDto.imageUrl}}"
+                     th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${review.productImageDto.imageUrl}}"
                      alt="상품 이미지" class="product-image">
                 <div class="product-details">
                     <h2 class="product-name" th:text="${review.productDto.productName}">상품명</h2>
@@ -801,7 +801,7 @@
                     <!-- 리뷰 이미지가 없는 경우 상품 이미지 표시 -->
                     <img th:unless="${relatedReview.containsKey('reviewImage') and relatedReview['reviewImage'] != null and relatedReview['reviewImage'] != ''}"
                          th:if="${relatedReview.containsKey('productImage') and relatedReview['productImage'] != null}"
-                         th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${relatedReview['productImage']}}"
+                         th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${relatedReview['productImage']}}"
                          th:alt="'상품 이미지'"
                          class="related-image">
 

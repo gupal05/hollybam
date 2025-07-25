@@ -670,12 +670,12 @@
                     <tr th:each="product : ${products}">
                         <td>
                             <div th:if="${product.titleImageUrl != null and product.titleImageUrl != ''}">
-                                <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.titleImageUrl}"
+                                <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.titleImageUrl}"
                                      alt="상품 이미지" class="product-image" />
                             </div>
 
                             <div th:if="${product.titleImageUrl == null and product.imageDtoList != null and !#lists.isEmpty(product.imageDtoList)}">
-                                <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + product.imageDtoList[0].imageUrl}"
+                                <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
                                      alt="상품 이미지" class="product-image" />
                             </div>
                             <!-- 이미지가 없는 경우 -->

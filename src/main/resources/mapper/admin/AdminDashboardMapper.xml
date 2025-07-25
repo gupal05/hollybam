@@ -469,4 +469,20 @@
         ORDER BY yr.year_value ASC
         ]]>
 </select>
+
+    <select id="getPaymentStatusCount" resultType="int" parameterType="String">
+        select count(*)
+        from hollybam.orders
+        where payment_status = #{status}
+    </select>
+    <select id="getOrderStatusCount" resultType="int" parameterType="String">
+        select count(*)
+        from hollybam.orders
+        where order_status = #{status}
+    </select>
+    <select id="getDeliveryStatusCount" parameterType="String" resultType="int">
+        select count(*)
+        from hollybam.delivery
+        where delivery_status = #{status}
+    </select>
 </mapper>

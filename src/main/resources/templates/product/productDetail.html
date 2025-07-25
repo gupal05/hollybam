@@ -1348,7 +1348,7 @@
                     <div class="sold-out-badge" th:if="${product.productQuantity == 0}">
                         Sold Out
                     </div>
-                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + thumbnails[0].imageUrl}" class="main-image" id="mainImage"/>
+                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + thumbnails[0].imageUrl}" class="main-image" id="mainImage"/>
                     <div class="wishlist-wrap">
                         <button class="wishlist-btn"
                                 th:data-product-code="${product.productCode}"
@@ -1363,9 +1363,9 @@
                     <div th:each="img, stat : ${thumbnails}"
                          class="thumbnail-item"
                          th:classappend="${stat.index == 0} ? ' active'"
-                         th:attr="data-img='https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${img.imageUrl}"
+                         th:attr="data-img='https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${img.imageUrl}"
                          onclick="changeMainImage(this.getAttribute('data-img'), this)">
-                        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + ${img.imageUrl}"
+                        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${img.imageUrl}"
                              th:alt="'대표이미지 ' + ${stat.index + 1}"
                              class="thumbnail-image"/>
                     </div>
@@ -1480,8 +1480,9 @@
 <section class="content-section" id="detail">
     <h2 class="section-title">상세정보</h2>
     <div class="detail-images">
+        <img src='https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/배송안내.jpg' alt="배송안내" />
         <div th:each="img : ${contents}">
-            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/testImage/' + img.imageUrl}"
+            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + img.imageUrl}"
                  th:alt="'상세 이미지 ' + ${img.imageOrder + 1}" />
         </div>
     </div>

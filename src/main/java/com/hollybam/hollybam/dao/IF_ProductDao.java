@@ -14,6 +14,7 @@ public interface IF_ProductDao {
     public int insertPrice(ProductDto productDto);
     public int insertImage(ProductDto productDto);
     public int insertProductOptions(ProductDto productDto);
+    public int insertOptionPrices(ProductDto productDto);
     public List<ProductDto> getProductList();
     public List<ProductDto> selectBestProducts();
     public List<ProductDto> selectBestProductsForMobile();
@@ -60,4 +61,8 @@ public interface IF_ProductDao {
     int selectProductCountByCategoryAndDetail(@Param("categoryCode") String categoryCode, @Param("detailCode") String detailCode);
 
     int selectProductCountByCategory(@Param("categoryCode") String categoryCode);
+
+    int insertOneOption(ProductOptionDto optionDto);
+
+    int insertOneOptionPrice(ProductOptionDto optionDto);
 }

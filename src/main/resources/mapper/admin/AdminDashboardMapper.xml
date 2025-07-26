@@ -304,17 +304,24 @@
     <!-- 순수익(할인 금액을 제외한) -->
     <select id="adminSelectMargin" parameterType="map" resultType="long">
         SELECT
-        -- (매출합계) – (쿠폰 + 코드할인 + 포인트사용) 전체 계산 후 NULL 이면 0
+        -- ① 매출합계 (판매액 – 원가 + 배송비)
         IFNULL(
         (
-        -- 매출합계: (판매액 – 원가 + 배송비)
         SELECT
-        IFNULL(SUM(oi.total_price),0)
-        - IFNULL(SUM(pr.price_cost * oi.quantity),0)
-        + IFNULL(SUM(o.delivery_fee),0)
-        FROM hollybam.orders o
+        IFNULL(SUM(oi.total_price), 0)
+        -- 옵션이 있으면 option_price_cost, 없으면 price_cost 사용
+        - IFNULL(SUM(
+        CASE
+        WHEN oi.option_code IS NOT NULL
+        THEN op.option_price_cost * oi.quantity
+        ELSE pr.price_cost * oi.quantity
+        END
+        ), 0)
+        + IFNULL(SUM(o.delivery_fee), 0)
+        FROM hollybam.orders      o
         JOIN hollybam.order_items oi ON o.order_code = oi.order_code
-        JOIN hollybam.price pr       ON oi.product_code = pr.product_code
+        LEFT JOIN hollybam.price        pr ON oi.product_code = pr.product_code
+        LEFT JOIN hollybam.option_price op ON oi.option_code   = op.option_code
         <where>
             <if test="startDate != null">
                 AND o.create_at &gt;= #{startDate}
@@ -324,11 +331,13 @@
             </if>
         </where>
         )
-        -
-        (
-        -- 1) 쿠폰 할인
+        , 0)
+        --
+        - (
+        -- ② 쿠폰 할인
         IFNULL(
-        (SELECT SUM(cm.discount_amount)
+        (
+        SELECT SUM(cm.discount_amount)
         FROM hollybam.coupon_member cm
         JOIN hollybam.orders o2 ON cm.order_code = o2.order_code
         <where>
@@ -343,9 +352,10 @@
         ), 0
         )
         +
-        -- 2) 코드 할인
+        -- ③ 코드 할인
         IFNULL(
-        (SELECT SUM(dcu.discount_amount)
+        (
+        SELECT SUM(dcu.discount_amount)
         FROM hollybam.discount_code_usage dcu
         JOIN hollybam.orders o3 ON dcu.order_code = o3.order_code
         <where>
@@ -359,9 +369,10 @@
         ), 0
         )
         +
-        -- 3) 포인트 사용
+        -- ④ 포인트 사용
         IFNULL(
-        (SELECT SUM(-p.point_change)
+        (
+        SELECT SUM(-p.point_change)
         FROM hollybam.point p
         JOIN hollybam.orders o4 ON p.related_order_code = o4.order_code
         <where>
@@ -376,8 +387,7 @@
         ), 0
         )
         )
-        , 0)
-        AS margin
+        AS margin;
     </select>
 
     <!-- 일별 매출 차트 - 전체 날짜 포함 -->

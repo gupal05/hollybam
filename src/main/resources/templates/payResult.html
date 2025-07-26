@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>결제 결과</title></head>
+<body>
+<div th:if="${errorMsg}">
+    <h3>오류: <span th:text="${errorMsg}"/></h3>
+</div>
+<div th:unless="${errorMsg}">
+    <h3>결제 인증 성공 (Result)</h3>
+    <ul>
+        <li th:each="e : ${params.entrySet()}">
+            <strong th:text="${e.key}"/>: <span th:text="${e.value}"/>
+        </li>
+    </ul>
+    <h4>서버 승인 응답</h4>
+    <pre th:text="${approveRes}"/>
+</div>
+</body>
+</html>

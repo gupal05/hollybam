@@ -1,272 +1,57 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Payster 결제 연동 - 홀리밤</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <style>
-        body {
-            font-family: 'Noto Sans KR', Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        .payment-button {
-            background: #007bff;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .payment-button:hover {
-            background: #0056b3;
-        }
-
-        .hidden-form {
-            display: none;
-        }
-
-        .info-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        .required {
-            color: red;
-        }
-    </style>
+    <title>Payster 결제 요청 (A 방식)</title>
+    <script src="https://api.payster.co.kr/js/pgAsistant.js"></script>
 </head>
 <body>
-<div class="container">
-    <h2>Payster 결제 연동 (PDF 기준)</h2>
+<!-- ★ A 방식: action 은 내 서버 콜백 (/pay/result) -->
+<form name="payInit"
+      method="post"
+      th:action="@{${returnUrl}}">
 
-    <div class="info-section">
-        <h3>PDF에서 확인된 필수 정보</h3>
-        <p><strong>결제 요청 URL:</strong> https://api.payster.co.kr/payInit_hash.do</p>
-        <p><strong>승인 요청 URL:</strong> https://api.payster.co.kr/payment.do</p>
-        <p><strong>취소 요청 URL:</strong> https://api.payster.co.kr/payment.cancel</p>
-        <p><strong>암호화 방식:</strong> SHA256 (mid + ediDate + goodsAmt + merchantKey)</p>
-    </div>
+    <!-- 1) 필수 파라미터 -->
+    <input type="hidden" name="payMethod"    th:value="${payMethod}"/>
+    <input type="hidden" name="mid"          th:value="${mid}"/>
+    <input type="hidden" name="trxCd"        th:value="${trxCd}"/>
+    <input type="hidden" name="goodsNm"      th:value="${goodsNm}"/>
 
-    <!-- 실제 결제 요청 폼 (PDF 3.1.1 기준) -->
-    <form id="paymentRequestForm">
-        <div class="form-group">
-            <label>결제 방법 <span class="required">*</span></label>
-            <select id="payMethod" name="payMethod" required>
-                <option value="card">신용카드</option>
-                <option value="vacnt">가상계좌</option>
-            </select>
-        </div>
+    <!-- 2) 주문 정보 -->
+    <input type="hidden" name="ordNo"        th:value="${ordNo}"/>
+    <input type="hidden" name="ordNm"        th:value="${ordNm}"/>
+    <input type="hidden" name="ordTel"       th:value="${ordTel}"/>
+    <input type="hidden" name="ordEmail"     th:value="${ordEmail}"/>
 
-        <div class="form-group">
-            <label>상품명 <span class="required">*</span></label>
-            <input type="text" id="goodsNm" name="goodsNm" value="홀리밤 성인용품" required>
-        </div>
+    <!-- 3) 금액·날짜·해시 -->
+    <input type="hidden" name="goodsAmt"     th:value="${goodsAmt}"/>
+    <input type="hidden" name="ediDate"      th:value="${ediDate}"/>
+    <input type="hidden" name="encData"      th:value="${encData}"/>
 
-        <div class="form-group">
-            <label>결제금액 <span class="required">*</span></label>
-            <input type="number" id="goodsAmt" name="goodsAmt" value="1004" min="500" required>
-        </div>
+    <!-- 4) 팝업 스피너 방지용 -->
+    <input type="hidden" name="currencyType" th:value="${currencyType}"/>
+    <input type="hidden" name="channel"      th:value="${channel}"/>
+    <input type="hidden" name="charset"      th:value="${charset}"/>
+    <input type="hidden" name="appMode"      th:value="${appMode}"/>
+    <input type="hidden" name="userIp"       th:value="${userIp}"/>
 
-        <div class="form-group">
-            <label>구매자명 <span class="required">*</span></label>
-            <input type="text" id="ordNm" name="ordNm" value="홍길동" required>
-        </div>
+    <!-- 5) PG → 내 서버 콜백용 URL -->
+    <input type="hidden" name="returnUrl"    th:value="${returnUrl}"/>
+    <input type="hidden" name="notiUrl"      th:value="${notiUrl}"/>
 
-        <div class="form-group">
-            <label>구매자 휴대폰 <span class="required">*</span></label>
-            <input type="text" id="ordTel" name="ordTel" value="01012345678" required>
-        </div>
+    <button type="button" onclick="SendPay(document.payInit)">
+        결제 요청
+    </button>
+</form>
 
-        <div class="form-group">
-            <label>구매자 이메일 <span class="required">*</span></label>
-            <input type="email" id="ordEmail" name="ordEmail" value="test@example.com" required>
-        </div>
-
-        <button type="button" class="payment-button" onclick="requestPayment()">
-            결제 요청하기
-        </button>
-    </form>
-
-    <!-- PDF에 명시된 실제 Payster 결제 폼 (숨김) -->
-    <form id="paysterForm" method="post" action="https://api.payster.co.kr/payInit_hash.do" class="hidden-form">
-        <!-- PDF 3.1.1에서 명시된 필수 필드들 -->
-        <input type="hidden" name="payMethod" id="hidden_payMethod"/>
-        <input type="hidden" name="mid" id="hidden_mid" value="demotest0m"/>
-        <input type="hidden" name="trxCd" id="hidden_trxCd" value="0"/>
-        <input type="hidden" name="goodsNm" id="hidden_goodsNm"/>
-        <input type="hidden" name="ordNo" id="hidden_ordNo"/>
-        <input type="hidden" name="goodsAmt" id="hidden_goodsAmt"/>
-        <input type="hidden" name="ordNm" id="hidden_ordNm"/>
-        <input type="hidden" name="ordTel" id="hidden_ordTel"/>
-        <input type="hidden" name="ordHp" id="hidden_ordHp"/>
-        <input type="hidden" name="ordEmail" id="hidden_ordEmail"/>
-        <input type="hidden" name="userIp" id="hidden_userIp" value="127.0.0.1"/>
-        <input type="hidden" name="mbsReserved" id="hidden_mbsReserved" value=""/>
-        <input type="hidden" name="mbsUsrId" id="hidden_mbsUsrId" value="testuser"/>
-        <input type="hidden" name="currencyType" id="hidden_currencyType" value="KWR"/>
-        <input type="hidden" name="mbsIp" id="hidden_mbsIp" value="127.0.0.1"/>
-        <input type="hidden" name="channel" id="hidden_channel" value="0001"/>
-        <input type="hidden" name="period" id="hidden_period" value=""/>
-        <input type="hidden" name="ediDate" id="hidden_ediDate"/>
-        <input type="hidden" name="encData" id="hidden_encData"/>
-        <input type="hidden" name="returnUrl" id="hidden_returnUrl" value="http://localhost:8080/payment/result"/>
-        <input type="hidden" name="notiUrl" id="hidden_notiUrl" value="http://localhost:8080/payment/noti"/>
-        <input type="hidden" name="charset" id="hidden_charset" value="UTF-8"/>
-        <input type="hidden" name="appMode" id="hidden_appMode" value="1"/>
-    </form>
-</div>
-
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    const merchantKey = /*[[${merchant_key}]]*/ '';
-    const mid = /*[[${mid}]]*/ '';
-</script>
 <script>
-    // PDF 7.1에서 명시된 SHA256 암호화 예시
-
-    // SHA256 해시 생성 함수 (PDF에서 요구하는 형식)
-    async function generateSHA256Hash(data) {
-        const encoder = new TextEncoder();
-        const dataBuffer = encoder.encode(data);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        return hashHex.toLowerCase();
+    // 결제 완료 후 PG SDK가 호출
+    function pay_result_submit(){
+        payResultSubmit();  // 위 form을 returnUrl로 POST
     }
-
-    // PDF에서 명시된 ediDate 형식: yyyymmddhhmmss
-    function getCurrentEdiDate() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-
-        return year + month + day + hours + minutes + seconds;
+    function pay_result_close(){
+        // 팝업 닫힘 처리 (선택)
     }
-
-    // 주문번호 생성 (PDF에서 40byte 제한)
-    function generateOrderNo() {
-        return "ORDER_" + Date.now();
-    }
-
-    // PDF 기준 결제 요청 함수
-    async function requestPayment() {
-        try {
-            // 폼 데이터 수집
-            const payMethod = document.getElementById('payMethod').value;
-            const goodsNm = document.getElementById('goodsNm').value;
-            const goodsAmt = document.getElementById('goodsAmt').value;
-            const ordNm = document.getElementById('ordNm').value;
-            const ordTel = document.getElementById('ordTel').value;
-            const ordEmail = document.getElementById('ordEmail').value;
-
-            // 필수 검증
-            if (!goodsNm || !goodsAmt || !ordNm || !ordTel || !ordEmail) {
-                alert('모든 필수 항목을 입력해주세요.');
-                return;
-            }
-
-            // PDF에서 요구하는 최소 금액 검증 (500원)
-            if (parseInt(goodsAmt) < 500) {
-                alert('최소 결제 금액은 500원입니다.');
-                return;
-            }
-
-            // PDF 기준 필수 데이터 생성
-            const ediDate = getCurrentEdiDate();
-            const ordNo = generateOrderNo();
-
-            // PDF 7.1에서 명시된 암호화 데이터 생성
-            // encData = SHA256(mid + ediDate + goodsAmt + merchantKey)
-            const encDataString = mid + ediDate + goodsAmt + merchantKey;
-            console.log('암호화 대상 문자열:', encDataString);
-
-            const encData = await generateSHA256Hash(encDataString);
-            console.log('생성된 encData:', encData);
-
-            // 숨겨진 폼에 데이터 설정
-            document.getElementById('hidden_payMethod').value = payMethod;
-            document.getElementById('hidden_goodsNm').value = goodsNm;
-            document.getElementById('hidden_ordNo').value = ordNo;
-            document.getElementById('hidden_goodsAmt').value = goodsAmt;
-            document.getElementById('hidden_ordNm').value = ordNm;
-            document.getElementById('hidden_ordTel').value = ordTel;
-            document.getElementById('hidden_ordHp').value = ordTel; // 동일하게 설정
-            document.getElementById('hidden_ordEmail').value = ordEmail;
-            document.getElementById('hidden_ediDate').value = ediDate;
-            document.getElementById('hidden_encData').value = encData;
-
-            // PDF에서 명시된 대로 Form POST로 결제창 호출
-            console.log('Payster 결제창으로 이동...');
-            document.getElementById('paysterForm').submit();
-
-        } catch (error) {
-            console.error('결제 요청 오류:', error);
-            alert('결제 요청 중 오류가 발생했습니다: ' + error.message);
-        }
-    }
-
-    // 페이지 로드 시 정보 표시
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('=== Payster 연동 정보 (PDF 기준) ===');
-        console.log('MID:', mid);
-        console.log('Merchant Key (앞 10자):', merchantKey.substring(0, 10) + '...');
-        console.log('결제 요청 URL:', 'https://api.payster.co.kr/payInit_hash.do');
-        console.log('현재 ediDate:', getCurrentEdiDate());
-
-        // PDF 7.1 예시와 동일한 암호화 테스트
-        const testEdiDate = "20210713151115";
-        const testGoodsAmt = "1004";
-        const testString = mid + testEdiDate + testGoodsAmt + merchantKey;
-        console.log('PDF 예시 암호화 문자열:', testString);
-
-        generateSHA256Hash(testString).then(hash => {
-            console.log('PDF 예시 암호화 결과:', hash);
-            console.log('PDF 예상 결과:', '4684f4b322ae388e2e4c9a60309c66a472db61140e5cb8da085b1bd6dbb6f0c1');
-            console.log('암호화 일치 여부:', hash === '4684f4b322ae388e2e4c9a60309c66a472db61140e5cb8da085b1bd6dbb6f0c1');
-        });
-    });
 </script>
 </body>
 </html>

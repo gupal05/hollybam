@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 수정 - HollyBam 관리자</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 사이드바 스타일 */
+        .sidebar {
+            width: 280px;
+            background: #212529;
+            color: #fff;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid #343a40;
+        }
+
+        .sidebar-header h1 {
+            font-size: 20px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 11px;
+            color: #adb5bd;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 15px 25px;
+            color: #adb5bd;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff;
+            background: #343a40;
+            border-left-color: #fff;
+        }
+
+        .nav-link.has-submenu::after {
+            content: '▼';
+            float: right;
+            font-size: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link.has-submenu.open::after {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #1a1e21;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .submenu-link {
+            display: block;
+            padding: 12px 25px 12px 50px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+        }
+
+        .submenu-link:hover,
+        .submenu-link.active {
+            color: #212529;
+            background: #fff;
+            border-left-color: #212529;
+        }
+
+        /* 메인 컨텐츠 */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 40px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-info {
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 300;
+        }
+
+        .logout-btn {
+            background: #fff;
+            color: #212529;
+            border: 1px solid #212529;
+            padding: 8px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #212529;
+            color: #fff;
+        }
+
+        /* 컨테이너 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 페이지 헤더 */
+        .page-header {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title h2 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* 폼 컨테이너 */
+        .form-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* 폼 섹션 */
+        .form-section {
+            padding: 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-description {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        /* 폼 그리드 */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* 상품 검색 */
+        .product-search-container {
+            max-width: 600px;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            font-size: 16px;
+            padding: 15px 20px;
+        }
+
+        .search-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: background 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #0056b3;
+        }
+
+        .search-results {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .result-image {
+            margin-right: 15px;
+        }
+
+        .result-image img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .result-code {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .result-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .result-status.active {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .result-status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* 상품 상태 표시 */
+        .product-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .product-status.active {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .product-status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* 옵션 관리 */
+        .option-container {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .option-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .option-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .option-add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .option-add-btn:hover {
+            background: #218838;
+        }
+
+        .uniform-cost-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .uniform-cost-input {
+            width: 120px;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .uniform-cost-apply-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .uniform-cost-apply-btn:hover {
+            background: #138496;
+        }
+
+        .option-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .option-item {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .option-item:last-child {
+            border-bottom: none;
+        }
+
+        .option-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .option-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .option-remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .option-remove-btn:hover {
+            background: #c82333;
+        }
+
+        .option-values {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option-value-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .option-value-remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 이미지 관리 */
+        .image-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .image-group {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .image-group-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .image-group-content {
+            padding: 20px;
+        }
+
+        .current-image {
+            margin-bottom: 15px;
+        }
+
+        .current-image img {
+            width: 100%;
+            max-width: 200px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .current-image-info {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .file-input-group {
+            margin-top: 15px;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #e9ecef;
+            border-radius: 6px;
+            text-align: center;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+
+        /* 가격 관리 */
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-addon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .input-group .form-input {
+            padding-left: 40px;
+        }
+
+        /* 변경 이력 */
+        .change-history {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-action {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 0 20px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .option-value-item {
+                grid-template-columns: 1fr;
+            }
+
+            .image-section {
+                grid-template-columns: 1fr;
+            }
+
+            .price-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 저장 버튼 고정 */
+        .form-actions {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 20px 30px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .save-status {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .save-actions {
+            display: flex;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-layout">
+    <!-- 사이드바 -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1>HOLLYBAM</h1>
+            <p>Administrator</p>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-item">
+                <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+            </div>
+
+            <!-- 상품 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu open" onclick="toggleSubmenu(this)">상품 관리</a>
+                <div class="submenu open">
+                    <a href="/admin/add/product" class="submenu-link">상품 등록</a>
+                    <a href="/admin/product/edit" class="submenu-link active">상품 수정</a>
+                    <a href="/admin/product/list" class="submenu-link">상품 목록</a>
+                    <a href="#" class="submenu-link">재고 관리</a>
+                    <a href="#" class="submenu-link">상품 리뷰</a>
+                </div>
+            </div>
+
+            <!-- 카테고리 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">카테고리 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">카테고리 등록</a>
+                    <a href="#" class="submenu-link">카테고리 수정</a>
+                    <a href="#" class="submenu-link">카테고리 순서</a>
+                </div>
+            </div>
+
+            <!-- 주문 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">주문 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">주문 현황</a>
+                    <a href="#" class="submenu-link">배송 관리</a>
+                    <a href="#" class="submenu-link">취소/환불</a>
+                    <a href="#" class="submenu-link">교환/반품</a>
+                </div>
+            </div>
+
+            <!-- 회원 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">회원 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">회원 목록</a>
+                    <a href="#" class="submenu-link">회원 등급</a>
+                    <a href="#" class="submenu-link">적립금 관리</a>
+                    <a href="#" class="submenu-link">본인인증 관리</a>
+                    <a href="#" class="submenu-link">휴면 계정</a>
+                </div>
+            </div>
+
+            <!-- 할인 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">할인 관리</a>
+                <div class="submenu">
+                    <a href="/admin/coupon/create" class="submenu-link">쿠폰 생성</a>
+                    <a href="#" class="submenu-link">쿠폰 관리</a>
+                    <a href="/admin/discount/create" class="submenu-link">할인코드 생성</a>
+                    <a href="#" class="submenu-link">할인코드 관리</a>
+                    <a href="#" class="submenu-link">이벤트 관리</a>
+                </div>
+            </div>
+
+            <!-- 정산 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">정산 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">매출 정산</a>
+                    <a href="#" class="submenu-link">결제 수수료</a>
+                    <a href="#" class="submenu-link">세금계산서</a>
+                    <a href="#" class="submenu-link">재무 보고서</a>
+                </div>
+            </div>
+
+            <!-- 배송 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">배송 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">배송비 설정</a>
+                    <a href="#" class="submenu-link">택배사 관리</a>
+                    <a href="#" class="submenu-link">배송 추적</a>
+                    <a href="#" class="submenu-link">무료배송 설정</a>
+                </div>
+            </div>
+
+            <!-- 마케팅 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">마케팅 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">이메일 발송</a>
+                    <a href="#" class="submenu-link">SMS 발송</a>
+                    <a href="#" class="submenu-link">푸시 알림</a>
+                    <a href="#" class="submenu-link">추천 상품</a>
+                    <a href="#" class="submenu-link">베스트 상품</a>
+                </div>
+            </div>
+
+            <!-- 시스템 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">시스템 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">사이트 설정</a>
+                    <a href="#" class="submenu-link">결제 설정</a>
+                    <a href="#" class="submenu-link">본인인증 설정</a>
+                    <a href="#" class="submenu-link">약관 관리</a>
+                    <a href="#" class="submenu-link">개인정보처리방침</a>
+                    <a href="#" class="submenu-link">성인인증 설정</a>
+                    <a href="#" class="submenu-link">관리자 계정</a>
+                    <a href="#" class="submenu-link">백업 관리</a>
+                    <a href="#" class="submenu-link">로그 관리</a>
+                </div>
+            </div>
+
+            <!-- 컨텐츠 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">컨텐츠 관리</a>
+                <div class="submenu">
+                    <a href="/admin/banner/list" class="submenu-link">메인 배너</a>
+                    <a href="#" class="submenu-link">팝업 관리</a>
+                    <a href="#" class="submenu-link">상품 동영상</a>
+                    <a href="#" class="submenu-link">이미지 관리</a>
+                    <a href="#" class="submenu-link">성인용품 가이드</a>
+                </div>
+            </div>
+
+            <!-- 모니터링 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">모니터링</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">실시간 접속</a>
+                    <a href="#" class="submenu-link">서버 상태</a>
+                    <a href="#" class="submenu-link">오류 로그</a>
+                    <a href="#" class="submenu-link">보안 이벤트</a>
+                    <a href="#" class="submenu-link">API 사용량</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="main-content">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="header-actions">
+                <div class="admin-info">
+                    관리자님 환영합니다
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    Sign Out
+                </button>
+            </div>
+        </header>
+
+        <!-- 컨테이너 -->
+        <div class="container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <div class="page-title">
+                    <h2>
+                        <i class="fas fa-edit"></i>
+                        상품 수정
+                    </h2>
+                    <p>수정할 상품을 검색하고 정보를 수정합니다</p>
+                </div>
+                <div class="page-actions" style="display: none;">
+                    <a href="/admin/product/list" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        목록으로
+                    </a>
+                    <button type="button" class="btn btn-danger" onclick="deleteProduct()">
+                        <i class="fas fa-trash"></i>
+                        상품 삭제
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <!-- 상품 검색 섹션 -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="fas fa-search"></i>
+                            상품 검색
+                        </h3>
+                        <p class="section-description">수정할 상품을 검색하세요</p>
+                    </div>
+
+                    <div class="product-search-container">
+                        <div class="search-input-group">
+                            <input type="text" class="form-input search-input" id="productSearchInput"
+                                   placeholder="상품명을 입력하세요 (예: 프리미엄 성인용품 A타입)">
+                            <button type="button" class="search-btn" onclick="searchProduct()">
+                                <i class="fas fa-search"></i>
+                                검색
+                            </button>
+                        </div>
+
+                        <!-- 검색 결과 영역 -->
+                        <div class="search-results" id="searchResults" style="display: none;">
+                            <div class="search-result-item" onclick="selectProduct('PR-A001')">
+                                <div class="result-image">
+                                    <img src="https://via.placeholder.com/60x60?text=IMG" alt="상품 이미지">
+                                </div>
+                                <div class="result-info">
+                                    <div class="result-name">프리미엄 성인용품 A타입</div>
+                                    <div class="result-code">상품코드: PR-A001</div>
+                                    <div class="result-status active">판매중</div>
+                                </div>
+                            </div>
+                            <div class="search-result-item" onclick="selectProduct('PR-A002')">
+                                <div class="result-image">
+                                    <img src="https://via.placeholder.com/60x60?text=IMG" alt="상품 이미지">
+                                </div>
+                                <div class="result-info">
+                                    <div class="result-name">프리미엄 성인용품 B타입</div>
+                                    <div class="result-code">상품코드: PR-A002</div>
+                                    <div class="result-status inactive">판매중지</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="productEditForm" method="post" enctype="multipart/form-data">
+                    <!-- 상품 정보 수정 폼 (처음에는 숨김) -->
+                    <div id="productEditSection" style="display: none;">
+                        <!-- 상품 기본 정보 -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-info-circle"></i>
+                                    기본 정보
+                                </h3>
+                                <p class="section-description">상품의 기본 정보를 수정할 수 있습니다</p>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">상품 코드</label>
+                                    <input type="text" class="form-input" id="productCode" value="" readonly>
+                                    <small style="color: #6c757d; margin-top: 5px;">상품 코드는 수정할 수 없습니다</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">현재 상태</label>
+                                    <div class="product-status active" id="productStatus">
+                                        <i class="fas fa-check-circle"></i>
+                                        판매중
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="productName">
+                                        상품 이름 <span class="required">*</span>
+                                    </label>
+                                    <input type="text" class="form-input" id="productName"
+                                           value="" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="productQuantity">
+                                        전체 재고 수량 <span class="required">*</span>
+                                    </label>
+                                    <input type="number" class="form-input" id="productQuantity"
+                                           value="" min="0" required>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label class="form-label" for="productDescription">
+                                        상품 설명
+                                    </label>
+                                    <textarea class="form-textarea" id="productDescription"
+                                              placeholder="상품에 대한 간단한 설명을 입력하세요"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 카테고리 설정 -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-tags"></i>
+                                    카테고리 설정
+                                </h3>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="parentCategory">
+                                        상위 카테고리 <span class="required">*</span>
+                                    </label>
+                                    <select class="form-select" id="parentCategory" required>
+                                        <option value="">상위 카테고리를 선택하세요</option>
+                                        <option value="TA">성인용품</option>
+                                        <option value="CL">의류</option>
+                                        <option value="AC">액세서리</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="childCategory">
+                                        하위 카테고리 <span class="required">*</span>
+                                    </label>
+                                    <select class="form-select" id="childCategory" required>
+                                        <option value="">하위 카테고리를 선택하세요</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 상품 옵션 관리 -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-cogs"></i>
+                                    상품 옵션 관리
+                                </h3>
+                                <p class="section-description">상품의 색상, 크기 등 옵션을 관리할 수 있습니다</p>
+                            </div>
+
+                            <div class="option-container">
+                                <div class="option-header">
+                                    <div class="option-controls">
+                                        <button type="button" class="option-add-btn" onclick="addOption()">
+                                            <i class="fas fa-plus"></i>
+                                            옵션 추가
+                                        </button>
+
+                                        <div class="uniform-cost-group">
+                                            <label>일괄 원가 적용:</label>
+                                            <input type="number" class="uniform-cost-input" id="uniformCost" placeholder="원가">
+                                            <button type="button" class="uniform-cost-apply-btn" onclick="applyUniformCost()">
+                                                모든 옵션에 적용
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="option-list" id="optionList">
+                                    <!-- 기존 옵션 1 -->
+                                    <div class="option-item" data-option-id="1">
+                                        <div class="option-item-header">
+                                            <div class="option-name">색상</div>
+                                            <button type="button" class="option-remove-btn" onclick="removeOption(1)">
+                                                <i class="fas fa-trash"></i>
+                                                삭제
+                                            </button>
+                                        </div>
+
+                                        <div class="option-values">
+                                            <div class="option-value-item">
+                                                <input type="text" class="form-input" value="레드" placeholder="옵션값">
+                                                <input type="number" class="form-input" value="0" placeholder="추가가격">
+                                                <input type="number" class="form-input" value="50" placeholder="재고">
+                                                <input type="number" class="form-input" value="15000" placeholder="원가">
+                                                <button type="button" class="option-value-remove-btn">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            <div class="option-value-item">
+                                                <input type="text" class="form-input" value="블루" placeholder="옵션값">
+                                                <input type="number" class="form-input" value="0" placeholder="추가가격">
+                                                <input type="number" class="form-input" value="50" placeholder="재고">
+                                                <input type="number" class="form-input" value="15000" placeholder="원가">
+                                                <button type="button" class="option-value-remove-btn">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" class="btn btn-secondary" style="margin-top: 15px;" onclick="addOptionValue(1)">
+                                            <i class="fas fa-plus"></i>
+                                            옵션값 추가
+                                        </button>
+                                    </div>
+
+                                    <!-- 기존 옵션 2 -->
+                                    <div class="option-item" data-option-id="2">
+                                        <div class="option-item-header">
+                                            <div class="option-name">크기</div>
+                                            <button type="button" class="option-remove-btn" onclick="removeOption(2)">
+                                                <i class="fas fa-trash"></i>
+                                                삭제
+                                            </button>
+                                        </div>
+
+                                        <div class="option-values">
+                                            <div class="option-value-item">
+                                                <input type="text" class="form-input" value="Small" placeholder="옵션값">
+                                                <input type="number" class="form-input" value="0" placeholder="추가가격">
+                                                <input type="number" class="form-input" value="30" placeholder="재고">
+                                                <input type="number" class="form-input" value="15000" placeholder="원가">
+                                                <button type="button" class="option-value-remove-btn">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            <div class="option-value-item">
+                                                <input type="text" class="form-input" value="Large" placeholder="옵션값">
+                                                <input type="number" class="form-input" value="5000" placeholder="추가가격">
+                                                <input type="number" class="form-input" value="20" placeholder="재고">
+                                                <input type="number" class="form-input" value="18000" placeholder="원가">
+                                                <button type="button" class="option-value-remove-btn">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" class="btn btn-secondary" style="margin-top: 15px;" onclick="addOptionValue(2)">
+                                            <i class="fas fa-plus"></i>
+                                            옵션값 추가
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 이미지 관리 -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-images"></i>
+                                    이미지 관리
+                                </h3>
+                                <p class="section-description">상품 이미지를 수정할 수 있습니다</p>
+                            </div>
+
+                            <div class="image-section">
+                                <!-- 타이틀 이미지 -->
+                                <div class="image-group">
+                                    <div class="image-group-header">
+                                        <i class="fas fa-image"></i>
+                                        타이틀 이미지
+                                    </div>
+                                    <div class="image-group-content">
+                                        <div class="current-image">
+                                            <img src="https://via.placeholder.com/200x200?text=Title+Image" alt="현재 타이틀 이미지">
+                                            <div class="current-image-info">
+                                                현재 이미지: title_image.jpg (120KB)
+                                            </div>
+                                        </div>
+                                        <div class="file-input-group">
+                                            <input type="file" class="file-input" accept="image/*" id="titleImage">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 썸네일 이미지 -->
+                                <div class="image-group">
+                                    <div class="image-group-header">
+                                        <i class="fas fa-th"></i>
+                                        썸네일 이미지
+                                    </div>
+                                    <div class="image-group-content">
+                                        <div class="current-image">
+                                            <img src="https://via.placeholder.com/200x150?text=Thumbnail" alt="현재 썸네일">
+                                            <div class="current-image-info">
+                                                현재 이미지: thumbnail.jpg (80KB)
+                                            </div>
+                                        </div>
+                                        <div class="file-input-group">
+                                            <input type="file" class="file-input" accept="image/*" id="thumbnailImage" multiple>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 상세 이미지 -->
+                                <div class="image-group">
+                                    <div class="image-group-header">
+                                        <i class="fas fa-list"></i>
+                                        상세 이미지
+                                    </div>
+                                    <div class="image-group-content">
+                                        <div class="current-image">
+                                            <img src="https://via.placeholder.com/200x300?text=Detail+Image" alt="현재 상세 이미지">
+                                            <div class="current-image-info">
+                                                현재 이미지: detail_01.jpg (250KB)<br>
+                                                총 3개 이미지
+                                            </div>
+                                        </div>
+                                        <div class="file-input-group">
+                                            <input type="file" class="file-input" accept="image/*" id="detailImages" multiple>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 가격 정보 -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-won-sign"></i>
+                                    가격 정보
+                                </h3>
+                            </div>
+
+                            <div class="price-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="priceOriginal">상품 정가</label>
+                                    <div class="input-group">
+                                        <div class="input-addon">₩</div>
+                                        <input type="number" class="form-input" id="priceOriginal"
+                                               value="" min="0">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="priceSelling">
+                                        상품 판매가 <span class="required">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-addon">₩</div>
+                                        <input type="number" class="form-input" id="priceSelling"
+                                               value="" min="0" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="priceCost">
+                                        상품 원가 <span class="required">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-addon">₩</div>
+                                        <input type="number" class="form-input" id="priceCost"
+                                               value="" min="0" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">예상 마진</label>
+                                    <div class="input-group">
+                                        <div class="input-addon">₩</div>
+                                        <input type="number" class="form-input" id="priceMargin"
+                                               value="" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 저장 액션 -->
+                        <div class="form-actions">
+                            <div class="save-status">
+                                <i class="fas fa-clock"></i>
+                                마지막 수정: 2024-12-21 14:30
+                            </div>
+                            <div class="save-actions">
+                                <button type="button" class="btn btn-secondary" onclick="cancelEdit()">
+                                    <i class="fas fa-times"></i>
+                                    취소
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    변경사항 저장
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 사이드바 토글
+    function toggleSubmenu(element) {
+        const submenu = element.nextElementSibling;
+        const isOpen = submenu.classList.contains('open');
+
+        if (isOpen) {
+            submenu.classList.remove('open');
+            element.classList.remove('open');
+        } else {
+            submenu.classList.add('open');
+            element.classList.add('open');
+        }
+    }
+
+    // 로그아웃
+    function logout() {
+        if (confirm('정말 로그아웃 하시겠습니까?')) {
+            window.location.href = '/admin/logout';
+        }
+    }
+
+    // 반응형 사이드바 토글
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('open');
+    }
+
+    // 모바일에서 사이드바 외부 클릭 시 닫기
+    document.addEventListener('click', function(event) {
+        const sidebar = document.querySelector('.sidebar');
+        const isClickInsideSidebar = sidebar.contains(event.target);
+
+        if (!isClickInsideSidebar && window.innerWidth <= 768) {
+            sidebar.classList.remove('open');
+        }
+    });
+
+    // 옵션 관리
+    let optionCounter = 2; // 기존 옵션이 2개이므로
+
+    function addOption() {
+        optionCounter++;
+        const optionList = document.getElementById('optionList');
+
+        const optionHtml = `
+                <div class="option-item" data-option-id="${optionCounter}">
+                    <div class="option-item-header">
+                        <input type="text" class="form-input option-name" placeholder="옵션명 (예: 색상, 크기)">
+                        <button type="button" class="option-remove-btn" onclick="removeOption(${optionCounter})">
+                            <i class="fas fa-trash"></i>
+                            삭제
+                        </button>
+                    </div>
+
+                    <div class="option-values">
+                        <div class="option-value-item">
+                            <input type="text" class="form-input" placeholder="옵션값">
+                            <input type="number" class="form-input" placeholder="추가가격" value="0">
+                            <input type="number" class="form-input" placeholder="재고" value="0">
+                            <input type="number" class="form-input" placeholder="원가" value="0">
+                            <button type="button" class="option-value-remove-btn" onclick="removeOptionValue(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" style="margin-top: 15px;" onclick="addOptionValue(${optionCounter})">
+                        <i class="fas fa-plus"></i>
+                        옵션값 추가
+                    </button>
+                </div>
+            `;
+
+        optionList.insertAdjacentHTML('beforeend', optionHtml);
+    }
+
+    function removeOption(optionId) {
+        if (confirm('이 옵션을 삭제하시겠습니까?')) {
+            const optionItem = document.querySelector(`[data-option-id="${optionId}"]`);
+            optionItem.remove();
+        }
+    }
+
+    function addOptionValue(optionId) {
+        const optionItem = document.querySelector(`[data-option-id="${optionId}"]`);
+        const optionValues = optionItem.querySelector('.option-values');
+
+        const valueHtml = `
+                <div class="option-value-item">
+                    <input type="text" class="form-input" placeholder="옵션값">
+                    <input type="number" class="form-input" placeholder="추가가격" value="0">
+                    <input type="number" class="form-input" placeholder="재고" value="0">
+                    <input type="number" class="form-input" placeholder="원가" value="0">
+                    <button type="button" class="option-value-remove-btn" onclick="removeOptionValue(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+        optionValues.insertAdjacentHTML('beforeend', valueHtml);
+    }
+
+    function removeOptionValue(button) {
+        if (confirm('이 옵션값을 삭제하시겠습니까?')) {
+            button.closest('.option-value-item').remove();
+        }
+    }
+
+    function applyUniformCost() {
+        const uniformCost = document.getElementById('uniformCost').value;
+        if (!uniformCost) {
+            alert('적용할 원가를 입력해주세요.');
+            return;
+        }
+
+        const costInputs = document.querySelectorAll('.option-value-item input[placeholder="원가"]');
+        costInputs.forEach(input => {
+            input.value = uniformCost;
+        });
+
+        alert('모든 옵션에 원가가 적용되었습니다.');
+    }
+
+    // 가격 계산
+    function calculateMargin() {
+        const selling = parseFloat(document.getElementById('priceSelling').value) || 0;
+        const cost = parseFloat(document.getElementById('priceCost').value) || 0;
+        const margin = selling - cost;
+
+        document.getElementById('priceMargin').value = margin;
+    }
+
+    // 가격 입력 시 마진 자동 계산
+    document.getElementById('priceSelling').addEventListener('input', calculateMargin);
+    document.getElementById('priceCost').addEventListener('input', calculateMargin);
+
+    // 상품 삭제
+    function deleteProduct() {
+        if (confirm('정말 이 상품을 삭제하시겠습니까?\n삭제된 상품은 복구할 수 없습니다.')) {
+            // 삭제 처리 로직
+            alert('상품이 삭제되었습니다.');
+            window.location.href = '/admin/product/list';
+        }
+    }
+
+    // 취소
+    function cancelEdit() {
+        if (confirm('변경사항을 저장하지 않고 나가시겠습니까?')) {
+            window.location.href = '/admin/product/list';
+        }
+    }
+
+    // 폼 제출
+    document.getElementById('productEditForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (confirm('변경사항을 저장하시겠습니까?')) {
+            // 여기에 실제 저장 로직 구현
+            alert('상품이 수정되었습니다.');
+            // window.location.href = '/admin/product/list';
+        }
+    });
+
+    // 하위 카테고리 업데이트
+    function updateChildCategory(parentCategoryCode, selectedChildCode = null) {
+        const childCategory = document.getElementById('childCategory');
+
+        // 하위 카테고리 옵션 초기화
+        childCategory.innerHTML = '<option value="">하위 카테고리를 선택하세요</option>';
+
+        // 실제로는 AJAX로 서버에서 데이터를 가져와야 함
+        if (parentCategoryCode === 'TA') {
+            childCategory.innerHTML += '<option value="01">토이 A타입</option>';
+            childCategory.innerHTML += '<option value="02">토이 B타입</option>';
+        } else if (parentCategoryCode === 'CL') {
+            childCategory.innerHTML += '<option value="01">의류 A타입</option>';
+            childCategory.innerHTML += '<option value="02">의류 B타입</option>';
+        }
+
+        // 선택된 값이 있으면 설정
+        if (selectedChildCode) {
+            childCategory.value = selectedChildCode;
+        }
+    }
+
+    // 카테고리 변경 시 하위 카테고리 업데이트
+    document.getElementById('parentCategory').addEventListener('change', function() {
+        updateChildCategory(this.value);
+    });
+</script>
+</body>
+</html>

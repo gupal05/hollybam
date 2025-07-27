@@ -261,6 +261,7 @@
                  LEFT JOIN price pr ON p.product_code = pr.product_code
                  LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
         WHERE o.mem_code = #{memberCode}
+        AND o.payment_status != 'PENDING'
         ORDER BY o.create_at desc
     </select>
 
@@ -288,6 +289,7 @@
                  LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
 
         WHERE o.guest_code = #{guestCode}
+          AND o.payment_status != 'PENDING'
         ORDER BY o.create_at DESC
     </select>
 
@@ -311,6 +313,7 @@
                  SELECT order_code
                  FROM orders
                  WHERE mem_code = #{memberCode}
+                   AND payment_status != 'PENDING'
                  ORDER BY create_at DESC
                  LIMIT 2
              ) AS recent_orders
@@ -346,6 +349,7 @@
                  SELECT order_code
                  FROM orders
                  WHERE guest_code = #{guestCode}
+                   AND payment_status != 'PENDING'
                  ORDER BY create_at DESC
                  LIMIT 2
              ) AS recent_orders

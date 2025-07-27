@@ -3,6 +3,8 @@ package com.hollybam.hollybam.controller.orderController;
 
 import com.hollybam.hollybam.dto.*;
 import com.hollybam.hollybam.services.*;
+import com.hollybam.hollybam.util.IpUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -13,16 +15,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 @Controller
 @RequestMapping("/order")
 @Slf4j
 public class OrderController {
+    private final PayService service;
+    private final PaysterProperties prop;
+    private final RestTemplate rest = new RestTemplate();
+
+    public OrderController(PayService service, PaysterProperties prop) {
+        this.service = service;
+        this.prop    = prop;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
@@ -38,6 +48,8 @@ public class OrderController {
     private IF_OrderService orderService;
     @Autowired
     private IF_PointService pointService;
+    @Autowired
+    private IpUtils ipUtils;
 
     @PostMapping("/checkout")
     public ModelAndView introPage(@RequestParam("cartCodes") List<String> cartCodes,
@@ -116,6 +128,12 @@ public class OrderController {
             mav.addObject("cartItems", cartItems);
             mav.addObject("cartCodes", cartCodeList);
             mav.addObject("couponList", couponList);
+            mav.addObject("mid", prop.getMid());
+            mav.addObject("returnUrl", prop.getReturnUrl());
+            mav.addObject("notiUrl", prop.getNotiUrl());
+            System.out.println("확인 : "+prop.getMid());
+            System.out.println("확인 : "+prop.getReturnUrl());
+            System.out.println("확인 : "+prop.getNotiUrl());
             mav.setViewName("order");
 
         } catch (Exception e) {
@@ -270,6 +288,9 @@ public class OrderController {
             mav.addObject("cartCodes", new ArrayList<Integer>()); // 빈 리스트 (바로구매는 cartCode 없음)
             mav.addObject("couponList", couponList);
             mav.addObject("isDirect", true); // 바로구매 구분용
+            mav.addObject("mid", prop.getMid());
+            mav.addObject("returnUrl", prop.getReturnUrl());
+            mav.addObject("notiUrl", prop.getNotiUrl());
             mav.setViewName("order");
 
         } catch (Exception e) {
@@ -328,7 +349,7 @@ public class OrderController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createOrder(
             @RequestBody Map<String, Object> orderData,
-            HttpSession session) {
+            HttpSession session, HttpServletRequest request) {
 
         Map<String, Object> result = new HashMap<>();
 
@@ -364,6 +385,38 @@ public class OrderController {
             result.put("orderId", order.getOrderId());
             result.put("orderCode", order.getOrderCode());
 
+            Map<String, Object> orderNameInfo = orderService.getCartProductName(order.getOrderCode());
+            String firstProductName = orderNameInfo.get("firstProductName").toString();
+            Object raw = orderNameInfo.get("itemCount");
+            int itemCount = 0;
+            if (raw instanceof Number) {
+                itemCount = ((Number) raw).intValue();
+            } else if (raw instanceof String) {
+                itemCount = Integer.parseInt((String) raw);
+            }
+            String goodsNm = firstProductName + " 외 "+ (itemCount - 1)+"개";
+
+            // 상품명
+            result.put("goodsNm", goodsNm);
+            // 주문자명
+            result.put("ordNm", orderData.get("ordererName"));
+            // 주문자 번호
+            result.put("ordTel",  orderData.get("ordererPhone"));
+            // 주문자 이메일
+            result.put("ordEmail", orderData.get("ordererEmail"));
+            // 결제 금액
+            result.put("goodsAmt", orderData.get("finalAmount"));
+            // 주문 일시(ediDate)
+            String ediDate  = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            result.put("ediDate", ediDate);
+            // encData
+            Object obj = orderData.get("finalAmount");
+            String finalAmount = obj != null ? obj.toString() : null;
+            result.put("encData", service.makeEncData(ediDate, finalAmount));
+            // 사용자 ip
+            result.put("userIp", ipUtils.getClientIp(request));
+
+
         } catch (Exception e) {
             log.error("주문 생성 실패", e);
             result.put("success", false);
@@ -380,7 +433,7 @@ public class OrderController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createDirectOrder(
             @RequestBody Map<String, Object> orderData,
-            HttpSession session) {
+            HttpSession session, HttpServletRequest request) {
 
         Map<String, Object> result = new HashMap<>();
 
@@ -415,6 +468,26 @@ public class OrderController {
             result.put("message", "주문이 완료되었습니다.");
             result.put("orderId", order.getOrderId());
             result.put("orderCode", order.getOrderCode());
+            // 상품명
+            result.put("goodsNm", orderService.getProductName((int)orderData.get("productCode")));
+            // 주문자명
+            result.put("ordNm", orderData.get("ordererName"));
+            // 주문자 번호
+            result.put("ordTel",  orderData.get("ordererPhone"));
+            // 주문자 이메일
+            result.put("ordEmail", orderData.get("ordererEmail"));
+            // 결제 금액
+            result.put("goodsAmt", orderData.get("finalAmount"));
+            // 주문 일시(ediDate)
+            String ediDate  = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            result.put("ediDate", ediDate);
+            // encData
+            Object obj = orderData.get("finalAmount");
+            String finalAmount = obj != null ? obj.toString() : null;
+            result.put("encData", service.makeEncData(ediDate, finalAmount));
+            // 사용자 ip
+            result.put("userIp", ipUtils.getClientIp(request));
+
 
         } catch (Exception e) {
             log.error("바로 구매 주문 생성 실패", e);

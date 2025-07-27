@@ -60,49 +60,58 @@ public class OrderServiceImpl implements IF_OrderService {
 
             List<OrderItemDto> orderItems = createOrderItemsFromCart(order.getOrderCode(), cartItems);
             orderDao.insertOrderItems(orderItems);
-            for(OrderItemDto orderItem : orderItems) {
-                orderDao.updateOrderCount(orderItem);
-            }
+//            for(OrderItemDto orderItem : orderItems) {
+//                orderDao.updateOrderCount(orderItem);
+//            }
 
             // 수정된 재고 차감 로직
-            updateInventory(orderItems);
+//            updateInventory(orderItems);
 
-            orderDao.deleteCartItems(cartCodes);
-            createInitialDelivery(order.getOrderCode());
+//            orderDao.deleteCartItems(cartCodes);
+            //createInitialDelivery(order.getOrderCode());
 
             // 쿠폰 처리 (기존 로직 유지)
-            if(order.getMemCode() != null) {
-                if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
-                    int memCode = Integer.parseInt(orderData.get("memCode").toString());
-                    int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
-                    int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
-                    int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
-                    couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
-                }
-            }
+//            if(order.getMemCode() != null) {
+//                if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
+//                    int memCode = Integer.parseInt(orderData.get("memCode").toString());
+//                    int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
+//                    int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
+//                    int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
+//                    couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
+//                }
+//            }
 
             // 적립금 처리 (회원인 경우만)
-            if (order.getMemCode() != null && usePoints >= 0) {
-                processOrderPoints(
-                        order.getOrderCode(),
-                        order.getMemCode(),
-                        usePoints,
-                        (int)orderData.get("totalAmount")
-                );
-            }
+//            if (order.getMemCode() != null && usePoints >= 0) {
+//                processOrderPoints(
+//                        order.getOrderCode(),
+//                        order.getMemCode(),
+//                        usePoints,
+//                        (int)orderData.get("totalAmount")
+//                );
+//            }
 
             // 🆕 할인코드 사용 내역 저장 (회원인 경우만)
-            if(session.getAttribute("member") != null){
-                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
-            }
+//            if(session.getAttribute("member") != null){
+//                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
+//            }
 
             log.info("장바구니 주문 생성 완료: {}", order.getOrderId());
+            session.setAttribute("orderData", orderData);
+            session.setAttribute("order", order);
+            session.setAttribute("orderItems", orderItems);
             return order;
 
         } catch (Exception e) {
             log.error("장바구니 주문 생성 실패", e);
             throw new Exception("주문 생성에 실패했습니다: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Object> getCartProductName(int orderCode){
+        return orderDao.getCartProductName(orderCode);
     }
 
     @Override
@@ -128,42 +137,45 @@ public class OrderServiceImpl implements IF_OrderService {
             order.setDiscountAmount(order.getDiscountAmount() + usePoints);
             orderDao.insertOrder(order);
             log.info("바로 구매 주문 저장 완료. 주문코드: {}", order.getOrderCode());
+            session.setAttribute("orderData", orderData);
+            session.setAttribute("order", order);
 
             // 쿠폰 처리 (기존 로직 유지)
-            if(order.getMemCode() != null) {
-                if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
-                    int memCode = Integer.parseInt(orderData.get("memCode").toString());
-                    int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
-                    int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
-                    int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
-                    couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
-                }
-            }
+//            if(order.getMemCode() != null) {
+//                if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
+//                    int memCode = Integer.parseInt(orderData.get("memCode").toString());
+//                    int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
+//                    int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
+//                    int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
+//                    couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
+//                }
+//            }
 
             // 적립금 처리 (회원인 경우만)
-            if (order.getMemCode() != null && usePoints >= 0) {
-                processOrderPoints(
-                        order.getOrderCode(),
-                        order.getMemCode(),
-                        usePoints,
-                        (int)orderData.get("totalAmount")
-                );
-            }
+//            if (order.getMemCode() != null && usePoints >= 0) {
+//                processOrderPoints(
+//                        order.getOrderCode(),
+//                        order.getMemCode(),
+//                        usePoints,
+//                        (int)orderData.get("totalAmount")
+//                );
+//            }
 
             List<OrderItemDto> orderItems = createDirectOrderItems(order.getOrderCode(), productCode, optionCode, quantity, priceDto, optionDto);
             orderDao.insertOrderItems(orderItems);
-            for(OrderItemDto orderItem : orderItems) {
-                orderDao.updateOrderCount(orderItem);
-            }
+            session.setAttribute("orderItems", orderItems);
+//            for(OrderItemDto orderItem : orderItems) {
+//                orderDao.updateOrderCount(orderItem);
+//            }
 
             // 수정된 재고 차감 로직
-            updateInventory(orderItems);
+            //updateInventory(orderItems);
 
-            createInitialDelivery(order.getOrderCode());
+            //createInitialDelivery(order.getOrderCode());
             // 🆕 할인코드 사용 내역 저장 (회원인 경우만)
-            if(session.getAttribute("member") != null){
-                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
-            }
+//            if(session.getAttribute("member") != null){
+//                recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
+//            }
 
             log.info("바로 구매 주문 생성 완료: {}", order.getOrderId());
             return order;
@@ -174,7 +186,7 @@ public class OrderServiceImpl implements IF_OrderService {
         }
     }
     // 수정된 재고 차감 로직
-    private void updateInventory(List<OrderItemDto> orderItems) throws Exception {
+    public void updateInventory(List<OrderItemDto> orderItems) throws Exception {
         for (OrderItemDto item : orderItems) {
             if (item.getOptionCode() != null) {
                 // 옵션이 있는 상품: 옵션 재고만 차감
@@ -244,8 +256,7 @@ public class OrderServiceImpl implements IF_OrderService {
         order.setFinalAmount((Integer) orderData.get("finalAmount"));
 
         // 주문 상태 설정 (결제 완료로 가정)
-        order.setOrderStatus("PAID");  // 결제 기능 추가 시 PENDING -> PAID로 변경
-        order.setPaymentStatus("PAID"); // 결제 기능 추가 시 PENDING -> PAID로 변경
+        order.setPaymentStatus("PENDING"); // 결제 기능 추가 시 PENDING -> PAID로 변경
 
         order.setAdultVerified((Boolean) orderData.getOrDefault("adultVerified", true));
         order.setAdultVerifiedAt(LocalDateTime.now());
@@ -301,7 +312,7 @@ public class OrderServiceImpl implements IF_OrderService {
         return orderItems;
     }
 
-    private void createInitialDelivery(int orderCode) {
+    public void createInitialDelivery(int orderCode) {
         DeliveryDto delivery = new DeliveryDto();
         delivery.setOrderCode(orderCode);
         delivery.setDeliveryStatus("READY");
@@ -613,7 +624,7 @@ public class OrderServiceImpl implements IF_OrderService {
      * @param orderData 주문 데이터
      * @param code 회원 코드 (회원인 경우에만 전달)
      */
-    private void recordDiscountCodeUsageIfApplied(Map<String, Object> orderData, Integer code, Integer orderCode) {
+    public void recordDiscountCodeUsageIfApplied(Map<String, Object> orderData, Integer code, Integer orderCode) {
         try {
             System.out.println("확인 : "+orderData);
             // 주문 데이터에서 할인코드 정보 추출
@@ -648,5 +659,17 @@ public class OrderServiceImpl implements IF_OrderService {
             // 할인코드 사용 내역 저장 실패가 주문 전체를 실패시키지 않도록 함
             log.error("할인코드 사용 내역 저장 중 오류 발생 (주문은 정상 진행)", e);
         }
+    }
+
+    @Override
+    @Transactional
+    public String getProductName(int productCode){
+        return orderDao.getProductName(productCode);
+    }
+
+    @Override
+    @Transactional
+    public void updatePaymentStatus(String orderId, String status){
+        orderDao.updatePaymentStatus(orderId, status);
     }
 }

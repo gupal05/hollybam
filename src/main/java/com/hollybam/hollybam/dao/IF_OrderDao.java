@@ -65,4 +65,8 @@ public interface IF_OrderDao {
     int getFinalAmount(int code);
     DeliveryDto getTrackingNumber(int orderCode);
     OrderItemDto selectOrderItemDetail(int orderItemCode);
+    String getProductName(int productCode);
+    void updatePaymentStatus(@Param("orderId") String orderId, @Param("status") String status);
+
+    Map<String, Object> getCartProductName(@Param("orderCode") int orderCode);
 }

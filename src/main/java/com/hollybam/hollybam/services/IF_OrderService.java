@@ -41,4 +41,9 @@ public interface IF_OrderService {
      * @param finalAmount 최종 결제 금액
      */
     void processOrderPoints(int orderCode, Integer memCode, int usePoints, int finalAmount) throws Exception;
+    String getProductName(int productCode);
+
+    void updatePaymentStatus(String orderId, String status);
+
+    Map<String, Object> getCartProductName(int orderCode);
 }

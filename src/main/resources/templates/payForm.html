@@ -53,5 +53,88 @@
         // 팝업 닫힘 처리 (선택)
     }
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div style="display: none;">
+    <form name="payInit"
+          method="post"
+          th:action="@{${returnUrl}}">
+
+        <!-- 1) 필수 파라미터 -->
+        <input type="hidden" name="payMethod" value="card"/>
+        <input type="hidden" name="mid" th:value="${mid}"/>
+        <input type="hidden" name="trxCd" value="0"/>
+        <input type="hidden" name="goodsNm" id="goodsNm"/>
+
+        <!-- 2) 주문 정보 -->
+        <input type="hidden" name="ordNo" id="ordNo"/>
+        <input type="hidden" name="ordNm" id="ordNm"/>
+        <input type="hidden" name="ordTel" id="ordTel"/>
+        <input type="hidden" name="ordEmail" id="ordEmail"/>
+
+        <!-- 3) 금액·날짜·해시 -->
+        <input type="hidden" name="goodsAmt" id="goodsAmt"/>
+        <input type="hidden" name="ediDate" id="ediDate"/>
+        <input type="hidden" name="encData" th:value="${encData}"/>
+
+        <!-- 4) 팝업 스피너 방지용 -->
+        <input type="hidden" name="currencyType" value="KRW"/>
+        <input type="hidden" name="channel" id="channel"/>
+        <input type="hidden" name="charset" value="UTF-8"/>
+        <input type="hidden" name="appMode" value="1"/>
+        <input type="hidden" name="userIp" id="userIp"/>
+
+        <!-- 5) PG → 내 서버 콜백용 URL -->
+        <input type="hidden" name="returnUrl" th:value="${returnUrl}"/>
+        <input type="hidden" name="notiUrl" th:value="${notiUrl}"/>
+
+        <button type="button" onclick="SendPay(document.payInit)">
+            결제 요청
+        </button>
+    </form>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>

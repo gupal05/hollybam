@@ -10,6 +10,7 @@
     <link th:href="@{/css/footer.css}" rel="stylesheet"/>
     <script type="text/javascript" th:src="@{/js/header.js}"></script>
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="https://api.payster.co.kr/js/pgAsistant.js"></script>
 
     <style>
         * {
@@ -1357,6 +1358,45 @@
     </div>
 </div>
 
+<div style="display: none;">
+    <form name="payInit"
+          method="post"
+          th:action="@{${returnUrl}}">
+
+        <!-- 1) 필수 파라미터 -->
+        <input type="hidden" name="payMethod" value="card"/>
+        <input type="hidden" name="mid" th:value="${mid}"/>
+        <input type="hidden" name="trxCd" value="0"/>
+        <input type="hidden" name="goodsNm" id="goodsNm"/>
+
+        <!-- 2) 주문 정보 -->
+        <input type="hidden" name="ordNo" id="ordNo"/>
+        <input type="hidden" name="ordNm" id="ordNm"/>
+        <input type="hidden" name="ordTel" id="ordTel"/>
+        <input type="hidden" name="ordEmail" id="ordEmail"/>
+
+        <!-- 3) 금액·날짜·해시 -->
+        <input type="hidden" name="goodsAmt" id="goodsAmt"/>
+        <input type="hidden" name="ediDate" id="ediDate"/>
+        <input type="hidden" name="encData" id="encData"/>
+
+        <!-- 4) 팝업 스피너 방지용 -->
+        <input type="hidden" name="currencyType" value="KRW"/>
+        <input type="hidden" name="channel" id="channel"/>
+        <input type="hidden" name="charset" value="UTF-8"/>
+        <input type="hidden" name="appMode" value="1"/>
+        <input type="hidden" name="userIp" id="userIp"/>
+
+        <!-- 5) PG → 내 서버 콜백용 URL -->
+        <input type="hidden" name="returnUrl" th:value="${returnUrl}"/>
+        <input type="hidden" name="notiUrl" th:value="${notiUrl}"/>
+
+        <button type="button" onclick="SendPay(document.payInit)" id="payBtn">
+            결제 요청
+        </button>
+    </form>
+</div>
+
 <!-- 고정 풋터 -->
 <div th:replace="~{layout/footer :: footer}"></div>
 
@@ -2375,28 +2415,32 @@
 
     // 결제하기 버튼 클릭 이벤트 (기존 코드 대체)
     document.getElementById('paymentButton').addEventListener('click', function() {
-        // 결제 진행 중 상태로 변경
-        this.disabled = true;
-        this.classList.add('processing');
-        this.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>주문 처리 중...';
+        const selected = document.querySelector('input[name="payment"]:checked').value;
+        if (selected === 'card') {
+            // 결제 진행 중 상태로 변경
+            this.disabled = true;
+            this.classList.add('processing');
+            this.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>주문 처리 중...';
 
-        try {
-            // 주문 데이터 수집
-            const orderData = collectOrderData();
+            try {
+                // 주문 데이터 수집
+                const orderData = collectOrderData();
+                // 입력 검증
+                if (!validateOrderData(orderData)) {
+                    resetPaymentButton();
+                    return;
+                }
 
-            // 입력 검증
-            if (!validateOrderData(orderData)) {
+                // 주문 생성 요청
+                createOrder(orderData);
+
+            } catch (error) {
+                console.error('주문 처리 중 오류:', error);
+                alert('주문 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
                 resetPaymentButton();
-                return;
             }
-
-            // 주문 생성 요청
-            createOrder(orderData);
-
-        } catch (error) {
-            console.error('주문 처리 중 오류:', error);
-            alert('주문 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
-            resetPaymentButton();
+        } else if (selected === 'trans') {
+            alert('실시간 계좌이체가 선택되었습니다. 계좌이체 안내 메시지...');
         }
     });
 
@@ -2438,7 +2482,7 @@
             totalAmount: paymentInfo.totalAmount,
             discountAmount: activeDiscount ? activeDiscount.amount : 0,
             deliveryFee: paymentInfo.deliveryFee,
-            finalAmount: currentTotalAmount,
+            finalAmount: 500,
             cartCodes: isDirect ? [] : cartCodes,
             productCode, optionCode, quantity,
             couponCode, discountCode, agreeTerms, agreePrivacy, agreeAdult,
@@ -2529,12 +2573,12 @@
 
         fetch(endpoint, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify(orderData)
-        })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(orderData)
+            })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -2545,9 +2589,19 @@
                 console.log('주문 생성 응답:', data);
 
                 if (data.success) {
-                    alert('주문이 완료되었습니다!');
-                    sessionStorage.removeItem('orderDraft');
-                    window.location.href = `/order/order-complete/${data.orderId}`;
+                    document.getElementById("goodsNm").value = data.goodsNm;
+                    document.getElementById("ordNo").value = data.orderId;
+                    document.getElementById("ordNm").value = data.ordNm;
+                    document.getElementById("ordTel").value = data.ordTel;
+                    document.getElementById("ordEmail").value = data.ordEmail;
+                    document.getElementById("goodsAmt").value = data.goodsAmt;
+                    document.getElementById("ediDate").value = data.ediDate;
+                    document.getElementById("encData").value = data.encData;
+                    document.getElementById("userIp").value = data.userIp;
+
+                    document.getElementById('payBtn').click();
+                    // window.location.href = `/pay`;
+                    //window.location.href = `/order/order-complete/${data.orderId}`;
                     // 결제 기능 추가 시 여기서 PG사 결제 처리
                     // processPayment(data.orderCode, orderData.finalAmount);
                 } else {
@@ -2560,6 +2614,14 @@
                 alert('주문 처리 중 네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.');
                 resetPaymentButton();
             });
+        }
+
+    // 결제 완료 후 PG SDK가 호출
+    function pay_result_submit(){
+        payResultSubmit();  // 위 form을 returnUrl로 POST
+    }
+    function pay_result_close(){
+        // 팝업 닫힘 처리 (선택)
     }
 
     // 결제 버튼 상태 초기화

@@ -1,10 +1,18 @@
 package com.hollybam.hollybam.controller;
 
 
+import com.hollybam.hollybam.dao.IF_OrderDao;
+import com.hollybam.hollybam.dto.MemberDto;
+import com.hollybam.hollybam.dto.OrderDto;
+import com.hollybam.hollybam.dto.OrderItemDto;
 import com.hollybam.hollybam.dto.PaysterProperties;
+import com.hollybam.hollybam.services.CouponService;
+import com.hollybam.hollybam.services.OrderServiceImpl;
 import com.hollybam.hollybam.services.PayService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
@@ -14,11 +22,18 @@ import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/pay")
 public class PayController {
+    @Autowired
+    private OrderServiceImpl orderService;
+    @Autowired
+    private CouponService couponService;
+    @Autowired
+    private IF_OrderDao orderDao;
     private final PayService service;
     private final PaysterProperties prop;
     private final RestTemplate rest = new RestTemplate();
@@ -62,8 +77,8 @@ public class PayController {
     @RequestMapping(value = "/result", method = { RequestMethod.GET, RequestMethod.POST })
     public String payResult(
             @RequestParam Map<String, String> p,
-            Model m
-    ) {
+            Model m, HttpSession session
+    ) throws Exception {
         // 1) PG 모듈이 준 모든 파라미터(resultCode, resultMsg, tid, signData 등)
         m.addAttribute("params", p);
 
@@ -72,6 +87,8 @@ public class PayController {
             String tid      = p.get("tid");
             String ediDate  = p.get("ediDate");
             String goodsAmt = p.get("goodsAmt");
+            String ordNo =  p.get("ordNo");
+
 
             // a) encData 재생성 (mid + ediDate + goodsAmt + merchantKey)
             String encData = service.makeEncData(ediDate, goodsAmt);
@@ -92,12 +109,66 @@ public class PayController {
             // d) 서버→서버 승인 요청
             String approveRes = rest.postForObject(prop.getUrlApprove(), form, String.class);
             m.addAttribute("approveRes", approveRes);
+            orderService.updatePaymentStatus(ordNo, "PAID");
+
+            // 주문 관련 데이터 꺼내기
+            MemberDto member = (MemberDto)session.getAttribute("member");
+            Map<String, Object> orderData = (Map<String, Object>) session.getAttribute("orderData");
+            OrderDto order = (OrderDto) session.getAttribute("order");
+            List<OrderItemDto> orderItems = (List<OrderItemDto>) session.getAttribute("orderItems");
+
+            // 포인트 관련
+            Integer usePoints = (Integer) orderData.get("usePoints");
+            if (usePoints == null) usePoints = 0;
+
+            // 쿠폰 사용
+            if(member != null) {
+                if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
+                    int memCode = Integer.parseInt(orderData.get("memCode").toString());
+                    int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
+                    int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
+                    int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
+                    couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
+                }
+            }
+
+            // 적립금 처리
+            if (order.getMemCode() != null && usePoints >= 0) {
+                orderService.processOrderPoints(
+                        order.getOrderCode(),
+                        order.getMemCode(),
+                        usePoints,
+                        (int)orderData.get("totalAmount")
+                );
+            }
+
+            // 주문 수량 증가
+            for(OrderItemDto orderItem : orderItems) {
+                orderDao.updateOrderCount(orderItem);
+            }
+
+            // 재고 차감
+            orderService.updateInventory(orderItems);
+
+            // 할인코드 사용내역 저장
+            if(session.getAttribute("member") != null){
+                orderService.recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
+            }
+
+            List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
+            if (cartCodes != null && !cartCodes.isEmpty()) {
+                orderDao.deleteCartItems(cartCodes);
+            }
+
+            session.removeAttribute("orderData");
+            session.removeAttribute("order");
+            session.removeAttribute("orderItems");
+            return "redirect:/order/order-complete/" + ordNo;
+        } else {
+            orderService.updatePaymentStatus(p.get("resultCode"), "FAILED");
+            return "payResult";
         }
-
-        // 3) payResult.html 에 params 와 approveRes 를 렌더링
-        return "payResult";
     }
-
     /** 3) 백엔드 알림용 콜백 */
     @PostMapping("/notify")
     @ResponseBody
@@ -106,6 +177,7 @@ public class PayController {
         return "OK";
     }
 }
+
 //import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.stereotype.Controller;
 //import org.springframework.ui.Model;

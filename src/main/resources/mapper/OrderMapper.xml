@@ -40,12 +40,12 @@
             order_id, mem_code, guest_code, orderer_name, orderer_phone, orderer_email,
             receiver_name, receiver_phone, receiver_zip, receiver_addr, receiver_addr_detail,
             delivery_request, payment_method, total_amount, discount_amount, delivery_fee,
-            final_amount, order_status, payment_status, adult_verified, adult_verified_at
+            final_amount, payment_status, adult_verified, adult_verified_at
         ) VALUES (
                      #{orderId}, #{memCode}, #{guestCode}, #{ordererName}, #{ordererPhone}, #{ordererEmail},
                      #{receiverName}, #{receiverPhone}, #{receiverZip}, #{receiverAddr}, #{receiverAddrDetail},
                      #{deliveryRequest}, #{paymentMethod}, #{totalAmount}, #{discountAmount}, #{deliveryFee},
-                     #{finalAmount}, #{orderStatus}, #{paymentStatus}, #{adultVerified}, #{adultVerifiedAt}
+                     #{finalAmount}, #{paymentStatus}, #{adultVerified}, #{adultVerifiedAt}
                  )
     </insert>
 
@@ -160,11 +160,11 @@
     </update>
 
     <!-- 결제 상태 업데이트 -->
-    <update id="updatePaymentStatus">
-        UPDATE orders
-        SET payment_status = #{paymentStatus}, pg_provider = #{pgProvider}, pg_tid = #{pgTid}, update_at = CURRENT_TIMESTAMP
-        WHERE order_code = #{orderCode}
-    </update>
+<!--    <update id="updatePaymentStatus">-->
+<!--        UPDATE orders-->
+<!--        SET payment_status = #{paymentStatus}, pg_provider = #{pgProvider}, pg_tid = #{pgTid}, update_at = CURRENT_TIMESTAMP-->
+<!--        WHERE order_code = #{orderCode}-->
+<!--    </update>-->
 
     <!-- 회원 주문 개수 조회 -->
     <select id="countOrdersByMemberCode" resultType="int">
@@ -482,4 +482,34 @@
             <result property="optionValue" column="option_value"/>
         </association>
     </resultMap>
+
+    <select id="getProductName" parameterType="int" resultType="String">
+        select product_name
+        from product
+        where product_code=#{productCode}
+    </select>
+
+    <update id="updatePaymentStatus" parameterType="String">
+        update hollybam.orders
+        set hollybam.orders.payment_status = #{status}
+        where hollybam.orders.order_id = #{orderId}
+    </update>
+
+    <select id="getCartProductName" resultType="map" parameterType="int">
+        SELECT
+            (
+                SELECT p.product_name
+                FROM order_items oi
+                         JOIN product p
+                              ON p.product_code = oi.product_code
+                WHERE oi.order_code = #{orderCode}
+                ORDER BY oi.order_item_code
+                LIMIT 1
+            ) AS firstProductName,
+            (
+                SELECT COUNT(*)
+                FROM order_items
+                WHERE order_code = 130
+            ) AS itemCount;
+    </select>
 </mapper>

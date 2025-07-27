@@ -59,52 +59,52 @@
         SELECT COUNT(*)
         FROM orders
         WHERE mem_code = #{memCode}
-          AND order_status IN ('PAID', 'PREPARING')
+          AND simple_status = 'PAID'
     </select>
     <select id="getGuestPaidCount" resultType="int" parameterType="int">
         SELECT COUNT(*)
         FROM orders
         WHERE guest_code = #{guestCode}
-          AND order_status IN ('PAID', 'PREPARING')
+          AND simple_status = 'PAID'
     </select>
 
     <select id="getMemberShippedCount" resultType="int" parameterType="int">
         SELECT COUNT(*)
         FROM orders
         WHERE mem_code = #{memCode}
-          AND order_status = 'SHIPPED'
+          AND simple_status = 'SHIPPING'
     </select>
     <select id="getGuestShippedCount" resultType="int" parameterType="int">
         SELECT COUNT(*)
         FROM orders
         WHERE guest_code = #{guestCode}
-          AND order_status = 'SHIPPED'
+          AND simple_status = 'SHIPPING'
     </select>
 
     <select id="getMemberDeliveredCount" resultType="int" parameterType="int">
         SELECT COUNT(*)
         FROM orders
         WHERE mem_code = #{memCode}
-          AND order_status = 'DELIVERED'
+          AND simple_status = 'DELIVERED'
     </select>
     <select id="getGuestDeliveredCount" resultType="int" parameterType="int">
         SELECT COUNT(*)
         FROM orders
         WHERE guest_code = #{guestCode}
-          AND order_status = 'DELIVERED'
+          AND simple_status = 'DELIVERED'
     </select>
 
     <select id="getMemberCancelCount" resultType="int" parameterType="int">
         SELECT COUNT(*)
         FROM orders
         WHERE mem_code = #{memCode}
-          AND order_status IN ('CANCELLED', 'REFUNDED')
+          AND simple_status = 'CANCELLED'
     </select>
     <select id="getGuestCancelCount" resultType="int" parameterType="int">
         SELECT COUNT(*)
         FROM orders
         WHERE guest_code = #{guestCode}
-          AND order_status IN ('CANCELLED', 'REFUNDED')
+          AND simple_status = 'CANCELLED'
     </select>
 
 
@@ -112,7 +112,7 @@
         SELECT
             o.order_id,
             o.create_at,
-            o.order_status,
+            o.simple_status,
             o.payment_method,
             o.orderer_name,
             o.orderer_phone,
@@ -150,6 +150,7 @@
         <result property="orderId" column="order_id"/>
         <result property="createAt" column="create_at"/>
         <result property="orderStatus" column="order_status"/>
+        <result property="orderStatus" column="simple_status"/>
         <result property="paymentMethod" column="payment_method"/>
         <result property="ordererName" column="orderer_name"/>
         <result property="ordererPhone" column="orderer_phone"/>

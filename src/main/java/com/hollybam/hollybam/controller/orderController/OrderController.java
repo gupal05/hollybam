@@ -244,6 +244,7 @@ public class OrderController {
                                        @RequestParam(value = "optionCode", required = false) Integer optionCode,
                                        @RequestParam("quantity") int quantity,
                                        HttpSession session, ModelAndView mav) {
+        System.out.println("바로구매");
         try {
             // 세션에서 사용자 정보 가져오기
             MemberDto member = (MemberDto) session.getAttribute("member");

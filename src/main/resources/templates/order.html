@@ -8,6 +8,7 @@
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
     <link th:href="@{/css/header.css}" rel="stylesheet"/>
     <link th:href="@{/css/footer.css}" rel="stylesheet"/>
+
     <script type="text/javascript" th:src="@{/js/header.js}"></script>
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
     <script src="https://api.payster.co.kr/js/pgAsistant.js"></script>
@@ -1402,7 +1403,6 @@
 
 <!-- 다음 우편번호 서비스 -->
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-
 <script th:inline="javascript">
     // 서버에서 전달받은 데이터
     var isDirect = /*[[${isDirect}]]*/ false;
@@ -2459,8 +2459,9 @@
         const agreeTerms = document.getElementById('agree-terms').checked;
         const agreePrivacy = document.getElementById('agree-privacy').checked;
         const agreeAdult = document.getElementById('agree-adult').checked;
-        const couponCode = document.getElementById('couponSelect').value;
-        const discountCode = document.getElementById('discountCode').value;
+        const couponCode   = document.getElementById('couponSelect')?.value   || '';
+        const discountCode = document.getElementById('discountCode')?.value   || '';
+
 
         let productCode, optionCode, quantity;
 
@@ -2573,12 +2574,12 @@
 
         fetch(endpoint, {
             method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify(orderData)
-            })
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(orderData)
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -2614,7 +2615,7 @@
                 alert('주문 처리 중 네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.');
                 resetPaymentButton();
             });
-        }
+    }
 
     // 결제 완료 후 PG SDK가 호출
     function pay_result_submit(){

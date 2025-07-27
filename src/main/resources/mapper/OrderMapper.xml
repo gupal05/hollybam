@@ -248,7 +248,7 @@
 
     <!-- Order 전체 조회 (회원 기준) -->
     <select id="selectOrdersByMember" parameterType="int" resultMap="orderResultMap">
-        SELECT o.order_code, o.order_id, o.order_status, o.create_at, o.final_amount,
+        SELECT o.order_code, o.order_id, o.simple_status, o.create_at, o.final_amount,
                oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
                oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
                p.product_name, p.product_code, p.product_order_count,
@@ -267,7 +267,7 @@
     <!-- Order 전체 조회 (비회원 기준) -->
     <select id="selectOrdersByGuest" parameterType="int" resultMap="orderResultMap">
         SELECT
-            o.order_code, o.order_id, o.order_status, o.create_at, o.final_amount,
+            o.order_code, o.order_id, o.simple_status, o.create_at, o.final_amount,
 
             oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
             oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
@@ -294,7 +294,7 @@
     <!-- Order 최근 조회 (회원 기준) -->
     <select id="selectOrdersByMemberForLimit" parameterType="int" resultMap="orderResultMap">
         SELECT
-            o.order_code, o.order_id, o.order_status, o.create_at, o.final_amount,
+            o.order_code, o.order_id, o.simple_status, o.create_at, o.final_amount,
 
             oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
             oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
@@ -329,7 +329,7 @@
     <!-- Order 최근 조회 (비회원 기준) -->
     <select id="selectOrdersByGuestForLimit" parameterType="int" resultMap="orderResultMap">
         SELECT
-            o.order_code, o.order_id, o.order_status, o.create_at, o.final_amount,
+            o.order_code, o.order_id, o.simple_status, o.create_at, o.final_amount,
 
             oi.order_item_code, oi.order_code AS oi_order_code, oi.product_code, oi.option_code,
             oi.quantity, oi.unit_price, oi.option_price, oi.total_price,
@@ -367,6 +367,7 @@
         <id property="orderCode" column="order_code"/>
         <result property="orderId" column="order_id"/>
         <result property="orderStatus" column="order_status"/>
+        <result property="orderStatus" column="simple_status"/>
         <result property="createAt" column="create_at"/>
         <result property="finalAmount" column="final_amount"/>
 
@@ -491,7 +492,7 @@
 
     <update id="updatePaymentStatus" parameterType="String">
         update hollybam.orders
-        set hollybam.orders.payment_status = #{status}
+        set hollybam.orders.payment_status = #{status}, simple_status = 'PAID'
         where hollybam.orders.order_id = #{orderId}
     </update>
 

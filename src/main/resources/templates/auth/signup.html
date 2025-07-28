@@ -472,22 +472,6 @@
         </button>
 
         <!-- 회원인증 -->
-        <div class="member-type">
-            <div class="radio-group">
-                <div class="radio-item">
-                    <input type="radio" id="phoneAuth" name="authType" value="phone" checked>
-                    <label for="phoneAuth">휴대폰인증</label>
-                </div>
-                <div class="radio-item">
-                    <input type="radio" id="ipin" name="authType" value="ipin">
-                    <label for="ipin">이메일인증</label>
-                </div>
-            </div>
-            <div class="input-desc">
-                휴대폰인증<br>
-                본인 명의의 휴대폰으로 본인인증을 진행합니다.
-            </div>
-        </div>
     </div>
 
     <!-- 회원가입 폼 -->
@@ -556,6 +540,16 @@
                         <input type="text" class="form-input" id="trdPhone" style="width: 100px;" required>
                     </div>
                 </div>
+<!--                <div class="form-group">-->
+<!--                    <label class="form-label" for="memberMail">이메일 <span class="required">*</span></label>-->
+<!--                    <div class="button-group">-->
+<!--                        <input type="email" id="memberMail" name="memberMail" th:field="*{memberMail}"-->
+<!--                               class="form-input" placeholder="example@email.com" required>-->
+<!--                        <button type="button" class="btn-secondary" onclick="checkEmail()">중복확인</button>-->
+<!--                    </div>-->
+<!--                    <div class="error-message" id="emailError"></div>-->
+<!--                    <div class="success-message" id="emailSuccess"></div>-->
+<!--                </div>-->
             </div>
 
             <div class="form-section">

@@ -1,6 +1,8 @@
 package com.hollybam.hollybam.controller;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hollybam.hollybam.dao.IF_OrderDao;
 import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.dto.OrderDto;
@@ -34,6 +36,8 @@ public class PayController {
     private CouponService couponService;
     @Autowired
     private IF_OrderDao orderDao;
+    @Autowired
+    private ObjectMapper mapper;
     private final PayService service;
     private final PaysterProperties prop;
     private final RestTemplate rest = new RestTemplate();
@@ -109,64 +113,79 @@ public class PayController {
             // d) 서버→서버 승인 요청
             String approveRes = rest.postForObject(prop.getUrlApprove(), form, String.class);
             m.addAttribute("approveRes", approveRes);
-            orderService.updatePaymentStatus(ordNo, "PAID");
+            System.out.println(approveRes);
+            // JSON 파싱
+            JsonNode root = mapper.readTree(approveRes);
+            String resultCd  = root.path("resultCd").asText();
+            String resultMsg = root.path("resultMsg").asText();
 
-            // 주문 관련 데이터 꺼내기
-            MemberDto member = (MemberDto)session.getAttribute("member");
-            Map<String, Object> orderData = (Map<String, Object>) session.getAttribute("orderData");
-            OrderDto order = (OrderDto) session.getAttribute("order");
-            List<OrderItemDto> orderItems = (List<OrderItemDto>) session.getAttribute("orderItems");
+            if("3001".equals(resultCd)){
+                orderService.updatePaymentStatus(ordNo, "PAID");
 
-            // 포인트 관련
-            Integer usePoints = (Integer) orderData.get("usePoints");
-            if (usePoints == null) usePoints = 0;
+                // 주문 관련 데이터 꺼내기
+                MemberDto member = (MemberDto)session.getAttribute("member");
+                Map<String, Object> orderData = (Map<String, Object>) session.getAttribute("orderData");
+                OrderDto order = (OrderDto) session.getAttribute("order");
+                List<OrderItemDto> orderItems = (List<OrderItemDto>) session.getAttribute("orderItems");
 
-            // 쿠폰 사용
-            if(member != null) {
-                if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
-                    int memCode = Integer.parseInt(orderData.get("memCode").toString());
-                    int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
-                    int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
-                    int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
-                    couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
+                // 포인트 관련
+                Integer usePoints = (Integer) orderData.get("usePoints");
+                if (usePoints == null) usePoints = 0;
+
+                // 쿠폰 사용
+                if(member != null) {
+                    if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
+                        int memCode = Integer.parseInt(orderData.get("memCode").toString());
+                        int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
+                        int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
+                        int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
+                        couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
+                    }
                 }
+
+                // 적립금 처리
+                if (order.getMemCode() != null && usePoints >= 0) {
+                    orderService.processOrderPoints(
+                            order.getOrderCode(),
+                            order.getMemCode(),
+                            usePoints,
+                            (int)orderData.get("totalAmount")
+                    );
+                }
+
+                // 주문 수량 증가
+                for(OrderItemDto orderItem : orderItems) {
+                    orderDao.updateOrderCount(orderItem);
+                }
+
+                // 재고 차감
+                orderService.updateInventory(orderItems);
+
+                // 할인코드 사용내역 저장
+                if(session.getAttribute("member") != null){
+                    orderService.recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
+                }
+
+                List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
+                if (cartCodes != null && !cartCodes.isEmpty()) {
+                    orderDao.deleteCartItems(cartCodes);
+                }
+
+                session.removeAttribute("orderData");
+                session.removeAttribute("order");
+                session.removeAttribute("orderItems");
+                return "redirect:/order/order-complete/" + ordNo;
+            } else {
+                // 결제 실패
+                System.out.println("❌ 결제 실패: code=" + resultCd + ", msg=" + resultMsg);
+                orderService.updatePaymentStatus(ordNo, "FAILED");
+                m.addAttribute("errorMsg", "결제 실패: " + resultMsg);
+                return "paymentFail";
             }
 
-            // 적립금 처리
-            if (order.getMemCode() != null && usePoints >= 0) {
-                orderService.processOrderPoints(
-                        order.getOrderCode(),
-                        order.getMemCode(),
-                        usePoints,
-                        (int)orderData.get("totalAmount")
-                );
-            }
-
-            // 주문 수량 증가
-            for(OrderItemDto orderItem : orderItems) {
-                orderDao.updateOrderCount(orderItem);
-            }
-
-            // 재고 차감
-            orderService.updateInventory(orderItems);
-
-            // 할인코드 사용내역 저장
-            if(session.getAttribute("member") != null){
-                orderService.recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
-            }
-
-            List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
-            if (cartCodes != null && !cartCodes.isEmpty()) {
-                orderDao.deleteCartItems(cartCodes);
-            }
-
-            session.removeAttribute("orderData");
-            session.removeAttribute("order");
-            session.removeAttribute("orderItems");
-            return "redirect:/order/order-complete/" + ordNo;
         } else {
             orderService.updatePaymentStatus(p.get("resultCode"), "FAILED");
-            return "payResult";
+            return "paymentFail";
         }
     }
     /** 3) 백엔드 알림용 콜백 */

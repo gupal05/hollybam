@@ -7,7 +7,7 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+  <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="stylesheet" th:href="@{/css/footer.css}"/>
 
@@ -186,6 +186,134 @@
       height: 18px;
       margin-right: 10px;
     }
+
+    /* 리뉴얼 안내 모달 스타일 */
+    .renewal-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: modalFadeIn 0.3s ease-out;
+    }
+
+    .renewal-modal {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 30px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      position: relative;
+      animation: modalSlideUp 0.4s ease-out;
+    }
+
+    .renewal-modal-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .renewal-modal-icon i {
+      font-size: 28px;
+      color: white;
+    }
+
+    .renewal-modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+
+    .renewal-modal-content {
+      font-size: 15px;
+      color: #5a6c7d;
+      line-height: 1.6;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .renewal-modal-content p {
+      margin-bottom: 12px;
+    }
+
+    .renewal-modal-content .highlight {
+      color: #e74c3c;
+      font-weight: 600;
+    }
+
+    .renewal-modal-content .notice {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .renewal-modal-button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 120px;
+    }
+
+    .renewal-modal-button:hover {
+      background: linear-gradient(135deg, #5a67d8, #6b46c1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 모바일 대응 */
+    @media (max-width: 480px) {
+      .renewal-modal {
+        padding: 32px 24px;
+        margin: 20px;
+      }
+
+      .renewal-modal-title {
+        font-size: 18px;
+      }
+
+      .renewal-modal-content {
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -256,6 +384,40 @@
       본인 명의의 휴대폰 또는 간편 인증 수단으로 본인인증을 진행합니다.<br>
       명의자의 나이 정보로 19세 미만 여부를 확인합니다.
     </p>
+  </div>
+</div>
+
+<div id="renewalModal" class="renewal-modal-overlay">
+  <div class="renewal-modal">
+    <div class="renewal-modal-icon">
+      <i class="fas fa-sync-alt"></i>
+    </div>
+
+    <h2 class="renewal-modal-title">홀리밤 서비스 리뉴얼 안내</h2>
+
+    <div class="renewal-modal-content">
+      <p>안녕하세요, 홀리밤을 이용해 주시는 고객님께 감사드립니다.</p>
+
+      <p>더 나은 서비스 제공을 위해 <span class="highlight">시스템 전면 리뉴얼</span>을 진행하였습니다.</p>
+
+      <p>리뉴얼 과정에서 보안 강화 및 개인정보보호 정책에 따라,
+        <span class="highlight">기존 회원님들께서도 신규 회원가입</span>을
+        다시 진행해 주셔야 합니다.</p>
+
+      <div class="notice">
+        <strong>📋 안내사항</strong><br>
+        • 더욱 향상된 보안과 개인정보 보호를 제공합니다<br>
+        • 새로운 기능과 개선된 서비스를 경험하실 수 있습니다
+      </div>
+
+      <p style="margin-top: 16px; text-align: center; color: #7f8c8d;">
+        이용에 불편을 드려 죄송하며, 양해 부탁드립니다.
+      </p>
+    </div>
+
+    <button class="renewal-modal-button" onclick="closeRenewalModal()">
+      확인했습니다
+    </button>
   </div>
 </div>
 <script>
@@ -459,6 +621,50 @@
    */
   window.addEventListener('beforeunload', function() {
     resetAuthState();
+  });
+
+  function closeRenewalModal() {
+    const modal = document.getElementById('renewalModal');
+    modal.style.animation = 'modalFadeIn 0.3s ease-out reverse';
+
+    setTimeout(() => {
+      modal.style.display = 'none';
+      // 쿠키에 모달 확인 상태 저장 (24시간)
+      document.cookie = "renewalModalSeen=true; max-age=86400; path=/";
+    }, 300);
+  }
+
+  // 페이지 로드 시 모달 표시 여부 확인
+  function checkRenewalModal() {
+    // 쿠키에서 모달 확인 상태 체크
+    const cookies = document.cookie.split(';');
+    const modalSeen = cookies.some(cookie =>
+            cookie.trim().startsWith('renewalModalSeen=true')
+    );
+
+    if (!modalSeen) {
+      // 모달 표시
+      document.getElementById('renewalModal').style.display = 'flex';
+    } else {
+      // 이미 확인한 경우 모달 숨김
+      document.getElementById('renewalModal').style.display = 'none';
+    }
+  }
+
+  // 페이지 로드 완료 후 모달 체크
+  document.addEventListener('DOMContentLoaded', function() {
+    // 잠시 후 모달 표시 (자연스러운 효과)
+    setTimeout(checkRenewalModal, 500);
+  });
+
+  // ESC 키로 모달 닫기
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      const modal = document.getElementById('renewalModal');
+      if (modal.style.display !== 'none') {
+        closeRenewalModal();
+      }
+    }
   });
 </script>
 

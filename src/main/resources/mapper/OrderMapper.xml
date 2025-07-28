@@ -500,7 +500,7 @@
 
     <update id="updatePaymentStatus" parameterType="String">
         update hollybam.orders
-        set hollybam.orders.payment_status = #{status}, simple_status = 'PAID'
+        set hollybam.orders.payment_status = #{status}, simple_status = #{status}
         where hollybam.orders.order_id = #{orderId}
     </update>
 

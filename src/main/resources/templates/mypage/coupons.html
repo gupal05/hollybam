@@ -809,7 +809,7 @@
     </div>
 
     <ul class="sidebar-menu">
-      <li><a href="/mypage" class="active"><i class="fas fa-user"></i>계정 정보</a></li>
+      <li><a href="/mypage"><i class="fas fa-user"></i>계정 정보</a></li>
       <li><a href="/mypage/orders"><i class="fas fa-shopping-bag"></i>주문 내역</a></li>
       <li><a href="/mypage/review"><i class="fas fa-star"></i>작성한 리뷰</a></li>
       <li><a href="/wishlist"><i class="fas fa-heart"></i>위시리스트</a></li>
@@ -924,13 +924,6 @@
 
             <div class="coupon-actions">
               <!-- 사용 가능한 쿠폰인 경우 -->
-              <button th:if="${coupon.coupon_status == 'available'}"
-                      class="use-coupon-btn"
-                      th:data-coupon-id="${coupon.coupon_id}"
-                      th:data-coupon-member-code="${coupon.coupon_member_code}"
-                      onclick="useCouponFromData(this)">
-                쿠폰 사용하기
-              </button>
 
               <!-- 사용 완료된 쿠폰인 경우 -->
               <button th:if="${coupon.coupon_status == 'used'}"
@@ -943,8 +936,6 @@
                       class="use-coupon-btn" disabled>
                 만료됨
               </button>
-
-              <span class="coupon-code" th:text="${coupon.coupon_id}">COUPON_CODE</span>
             </div>
           </div>
         </div>

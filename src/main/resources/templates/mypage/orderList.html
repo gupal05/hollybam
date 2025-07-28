@@ -1512,7 +1512,7 @@
                             <i class="fas fa-truck"></i> 배송조회
                         </button>
                         <button class="mypage-modal-btn" onclick="requestExchangeFromModal()">
-                            교환/반품
+                            취소/반품
                         </button>
                     </div>
                 </div>
@@ -1571,30 +1571,31 @@
 
     // 주문 취소
     function cancelOrder(button) {
-        const orderNumber = button.getAttribute('data-order-id');
-
-        if(confirm('정말 주문을 취소하시겠습니까?')) {
-            // 회원/비회원 구분하여 처리
-            const isMember = /*[[${isMember}]]*/ false;
-            const url = isMember ? '/orders/cancel' : '/guest/orders/cancel';
-
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: { orderNumber: orderNumber },
-                success: function(response) {
-                    if (response.success) {
-                        alert('주문이 취소되었습니다.');
-                        location.reload();
-                    } else {
-                        alert(response.message || '주문취소에 실패했습니다.');
-                    }
-                },
-                error: function() {
-                    alert('주문취소 중 오류가 발생했습니다.');
-                }
-            });
-        }
+        alert("주문 취소는 1:1 문의를 남겨주세요");
+        // const orderNumber = button.getAttribute('data-order-id');
+        //
+        // if(confirm('정말 주문을 취소하시겠습니까?')) {
+        //     // 회원/비회원 구분하여 처리
+        //     const isMember = /*[[${isMember}]]*/ false;
+        //     const url = isMember ? '/orders/cancel' : '/guest/orders/cancel';
+        //
+        //     $.ajax({
+        //         url: url,
+        //         method: 'POST',
+        //         data: { orderNumber: orderNumber },
+        //         success: function(response) {
+        //             if (response.success) {
+        //                 alert('주문이 취소되었습니다.');
+        //                 location.reload();
+        //             } else {
+        //                 alert(response.message || '주문취소에 실패했습니다.');
+        //             }
+        //         },
+        //         error: function() {
+        //             alert('주문취소 중 오류가 발생했습니다.');
+        //         }
+        //     });
+        // }
     }
 
     // 배송 조회 (주문 목록에서)
@@ -1624,12 +1625,12 @@
     // 교환/반품 신청
     function requestExchange(button) {
         const orderNumber = button.getAttribute('data-order-id');
-        alert('교환/반품 신청은 고객센터(1588-0000)로 연락주세요.\n주문번호: ' + orderNumber);
+        alert('주문 취소는 1:1 문의를 남겨주세요.\n주문번호: ' + orderNumber);
     }
 
     // 교환/반품 신청 (모달에서)
     function requestExchangeFromModal() {
-        alert('교환/반품 신청은 고객센터(1588-0000)로 연락주세요.');
+        alert("주문 취소는 1:1 문의를 남겨주세요");
     }
 
     // 정보 수정 페이지 이동 (회원용)

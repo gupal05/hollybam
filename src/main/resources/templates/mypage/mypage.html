@@ -1548,7 +1548,7 @@
         <div class="order-count" style="display: none;">0</div>
         <div class="order-label" style="font-weight: bold; color: #1a1a1a; margin-top: 30px; font-size: 21px;">1:1 문의</div>
       </div>
-      <div th:if="${session.member != null}" class="order-card">
+      <div th:if="${session.member != null}" class="order-card" onclick="window.location.href='/mypage/review'">
         <div class="order-icon">
           <i class="fas fa-star"></i>
         </div>
@@ -2373,7 +2373,7 @@
 
   // 교환/반품 신청 (모달에서)
   function requestExchangeFromModal() {
-    alert('교환/반품 신청은 고객센터(1588-0000)로 연락주세요.');
+    alert("주문 취소는 1:1 문의를 남겨주세요");
   }
 
   // ESC 키로 모달 닫기

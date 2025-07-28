@@ -84,4 +84,16 @@
         FROM product_option
         WHERE option_code = #{optionCode}
     </select>
+
+    <insert id="insertPaymentLog" parameterType="com.hollybam.hollybam.dto.PaymentLogDto">
+        INSERT INTO payment_log (`order_code`, `tid`, `pay_method`, `amount`, `result_code`, `result_msg`
+        <if test="memberCode != null and memberCode > 0">, `mem_code`</if>
+        <if test="guestCode != null and guestCode > 0">, `guest_code`</if>
+        )
+        VALUES (#{orderCode}, #{tid}, #{payMethod}, #{amount}, #{resultCode}, #{resultMsg}
+        <if test="memberCode != null and memberCode > 0">, #{memberCode}</if>
+        <if test="guestCode != null and guestCode > 0">, #{guestCode}</if>
+        )
+    </insert>
+
 </mapper>

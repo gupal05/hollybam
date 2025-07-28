@@ -19,4 +19,6 @@ public interface IF_PaymentService {
      */
     PaymentRequestDto calculateDirectPurchase(int productCode, Integer optionCode, int quantity,
                                               Integer memberCode, Integer guestCode);
+
+    void insertPaymentLog(PaymentLogDto paymentLogDto);
 }

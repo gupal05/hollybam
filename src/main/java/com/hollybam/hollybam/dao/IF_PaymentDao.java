@@ -19,4 +19,5 @@ public interface IF_PaymentDao {
      * 상품 옵션 정보 조회
      */
     ProductOptionDto selectProductOption(int optionCode);
+    void insertPaymentLog(PaymentLogDto paymentLogDto);
 }

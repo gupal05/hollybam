@@ -4,13 +4,11 @@ package com.hollybam.hollybam.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hollybam.hollybam.dao.IF_OrderDao;
-import com.hollybam.hollybam.dto.MemberDto;
-import com.hollybam.hollybam.dto.OrderDto;
-import com.hollybam.hollybam.dto.OrderItemDto;
-import com.hollybam.hollybam.dto.PaysterProperties;
+import com.hollybam.hollybam.dto.*;
 import com.hollybam.hollybam.services.CouponService;
 import com.hollybam.hollybam.services.OrderServiceImpl;
 import com.hollybam.hollybam.services.PayService;
+import com.hollybam.hollybam.services.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -41,6 +39,8 @@ public class PayController {
     private final PayService service;
     private final PaysterProperties prop;
     private final RestTemplate rest = new RestTemplate();
+    @Autowired
+    private PaymentService paymentService;
 
     public PayController(PayService service, PaysterProperties prop) {
         this.service = service;
@@ -171,12 +171,58 @@ public class PayController {
                     orderDao.deleteCartItems(cartCodes);
                 }
 
+                PaymentLogDto paymentLogDto = new PaymentLogDto();
+                if(member != null){
+                    paymentLogDto.setTid(tid);
+                    paymentLogDto.setPayMethod("card");
+                    paymentLogDto.setAmount((Integer)orderData.get("finalAmount"));
+                    paymentLogDto.setResultCode(resultCd);
+                    paymentLogDto.setResultMsg(resultMsg);
+                    paymentLogDto.setOrderCode(order.getOrderCode());
+                    paymentLogDto.setMemberCode(member.getMemberCode());
+                } else {
+                    GuestDto guestDto = (GuestDto)session.getAttribute("guest");
+                    paymentLogDto.setTid(tid);
+                    paymentLogDto.setPayMethod("card");
+                    paymentLogDto.setAmount((Integer)orderData.get("finalAmount"));
+                    paymentLogDto.setResultCode(resultCd);
+                    paymentLogDto.setResultMsg(resultMsg);
+                    paymentLogDto.setOrderCode(order.getOrderCode());
+                    paymentLogDto.setGuestCode(guestDto.getGuestCode());
+                }
+
+                paymentService.insertPaymentLog(paymentLogDto);
+
                 session.removeAttribute("orderData");
                 session.removeAttribute("order");
                 session.removeAttribute("orderItems");
                 return "redirect:/order/order-complete/" + ordNo;
             } else {
+                MemberDto member = (MemberDto)session.getAttribute("member");
+                Map<String, Object> orderData = (Map<String, Object>) session.getAttribute("orderData");
+                OrderDto order = (OrderDto) session.getAttribute("order");
                 // 결제 실패
+                PaymentLogDto paymentLogDto = new PaymentLogDto();
+                if(member != null){
+                    paymentLogDto.setTid(tid);
+                    paymentLogDto.setPayMethod("card");
+                    paymentLogDto.setAmount((Integer)orderData.get("finalAmount"));
+                    paymentLogDto.setResultCode(resultCd);
+                    paymentLogDto.setResultMsg(resultMsg);
+                    paymentLogDto.setOrderCode(order.getOrderCode());
+                    paymentLogDto.setMemberCode(member.getMemberCode());
+                } else {
+                    GuestDto guestDto = (GuestDto)session.getAttribute("guest");
+                    paymentLogDto.setTid(tid);
+                    paymentLogDto.setPayMethod("card");
+                    paymentLogDto.setAmount((Integer)orderData.get("finalAmount"));
+                    paymentLogDto.setResultCode(resultCd);
+                    paymentLogDto.setResultMsg(resultMsg);
+                    paymentLogDto.setOrderCode(order.getOrderCode());
+                    paymentLogDto.setGuestCode(guestDto.getGuestCode());
+                }
+
+                paymentService.insertPaymentLog(paymentLogDto);
                 System.out.println("❌ 결제 실패: code=" + resultCd + ", msg=" + resultMsg);
                 orderService.updatePaymentStatus(ordNo, "FAILED");
                 m.addAttribute("errorMsg", "결제 실패: " + resultMsg);

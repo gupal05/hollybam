@@ -104,4 +104,10 @@ public class PaymentService implements IF_PaymentService {
             return paymentRequest;
         }
     }
+
+    @Override
+    @Transactional
+    public void insertPaymentLog(PaymentLogDto paymentLogDto){
+        paymentDao.insertPaymentLog(paymentLogDto);
+    }
 }

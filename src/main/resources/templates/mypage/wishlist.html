@@ -934,23 +934,23 @@
                                 <svg class="heart-icon" viewBox="0 0 24 24">
                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                 </svg>
-                                <span>45</span>
+                                <span th:text="${item.wishlistCount}">0</span>
                                 <svg class="star-icon" viewBox="0 0 24 24">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                 </svg>
-                                <span>4.9 (23)</span>
+                                <span th:text="${item.reviewAvg}+' ('+${item.reviewCount}+')'">4.9 (23)</span>
                             </div>
 
                             <!-- 아이템 액션 버튼들 - 품절 상품은 비활성화 -->
                             <div class="item-actions">
-                                <button class="btn btn-sm cart-btn"
-                                        th:attr="data-product-code=${item.productCode}"
-                                        th:disabled="${item.productQuantity == 0}"
-                                        th:text="${item.productQuantity == 0} ? '품절' : '장바구니'">장바구니</button>
+<!--                                <button class="btn btn-sm cart-btn"-->
+<!--                                        th:attr="data-product-code=${item.productCode}"-->
+<!--                                        th:disabled="${item.productQuantity == 0}"-->
+<!--                                        th:text="${item.productQuantity == 0} ? '품절' : '장바구니'">장바구니</button>-->
                                 <button class="btn btn-sm btn-primary buy-btn"
                                         th:attr="onclick=${item.productQuantity > 0} ? 'directBuy(\'' + ${item.productId} + '\')' : 'void(0)'"
                                         th:disabled="${item.productQuantity == 0}"
-                                        th:text="${item.productQuantity == 0} ? '품절' : '바로구매'">바로구매</button>
+                                        th:text="${item.productQuantity == 0} ? '품절' : '상품 보기'">상품 보기</button>
                             </div>
                         </div>
                     </a>

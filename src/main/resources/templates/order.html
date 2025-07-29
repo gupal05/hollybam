@@ -1021,6 +1021,104 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* 🆕 모바일 고정 결제 버튼 */
+        .mobile-checkout-button {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #EE386D 0%, #d63060 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 18px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer !important;
+            transition: all 0.3s ease;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1), 0 -2px 10px rgba(238, 56, 109, 0.3) !important;
+            pointer-events: auto !important;
+            /* Safe area 지원 (iPhone X 이상) */
+            padding-bottom: calc(18px + env(safe-area-inset-bottom));
+        }
+
+        .mobile-checkout-button:disabled,
+        .mobile-checkout-button.disabled {
+            background: #ccc !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+            color: white !important;
+            pointer-events: auto !important;
+        }
+
+        .mobile-checkout-button.processing {
+            background: #6c757d !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+            color: white !important;
+            pointer-events: none !important;
+        }
+
+        .mobile-checkout-button.force-active {
+            background: linear-gradient(135deg, #EE386D 0%, #d63060 100%) !important;
+            color: white !important;
+            cursor: pointer !important;
+            transform: none !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1), 0 -2px 10px rgba(238, 56, 109, 0.3) !important;
+            pointer-events: auto !important;
+        }
+
+        /* 모바일에서만 고정 버튼 표시 */
+        @media (max-width: 1024px) {
+            .mobile-checkout-button {
+                display: block;
+            }
+
+            /* 기존 결제 버튼 숨김 */
+            .order-summary .checkout-button {
+                display: none;
+            }
+
+            /* 하단 여백 추가 (고정 버튼 공간 확보) */
+            body {
+                padding-bottom: 80px; /* 버튼 높이 + 여유 공간 */
+            }
+
+            /* 콘텐츠가 고정 버튼에 가려지지 않도록 */
+            .main-container {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* 태블릿에서도 동일하게 적용 */
+        @media (max-width: 768px) {
+            .mobile-checkout-button {
+                padding: 16px 20px;
+                font-size: 15px;
+                padding-bottom: calc(16px + env(safe-area-inset-bottom));
+            }
+
+            body {
+                padding-bottom: 75px;
+            }
+        }
+
+        /* 아주 작은 모바일 화면 */
+        @media (max-width: 480px) {
+            .mobile-checkout-button {
+                padding: 14px 16px;
+                font-size: 14px;
+                padding-bottom: calc(14px + env(safe-area-inset-bottom));
+            }
+
+            body {
+                padding-bottom: 70px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1397,7 +1495,10 @@
         </button>
     </form>
 </div>
-
+<button type="button" class="mobile-checkout-button" id="mobilePaymentButton">
+    <i class="fas fa-lock" style="margin-right: 8px;"></i>
+    <span id="mobilePaymentButtonText" th:text="'₩' + ${#numbers.formatInteger(paymentInfo.finalAmount, 0, 'COMMA')} + ' 결제하기'">₩0 결제하기</span>
+</button>
 <!-- 고정 풋터 -->
 <div th:replace="~{layout/footer :: footer}"></div>
 
@@ -1768,6 +1869,12 @@
         $('#receiverAddrDetail').on('input', function() {
             validateField('receiverAddr');
         });
+
+        // 🆕 모바일 결제 버튼 이벤트
+        $('#mobilePaymentButton').click(function() {
+            // 데스크톱 버튼과 동일한 로직 실행
+            $('#paymentButton').click();
+        });
     }
 
     // 할인코드 적용 (백엔드 검증)
@@ -2005,6 +2112,13 @@
         $('#finalAmount').text(`₩${currentTotalAmount.toLocaleString()}`);
         $('#paymentButtonText').text(`₩${currentTotalAmount.toLocaleString()} 결제하기`);
 
+        // 최종 금액 표시 업데이트
+        $('#finalAmount').text(`₩${currentTotalAmount.toLocaleString()}`);
+        $('#paymentButtonText').text(`₩${currentTotalAmount.toLocaleString()} 결제하기`);
+
+        // 🆕 모바일 버튼 텍스트도 업데이트
+        $('#mobilePaymentButtonText').text(`₩${currentTotalAmount.toLocaleString()} 결제하기`);
+
         // 적립금 관련 업데이트
         updateRewardAmount();
     }
@@ -2202,6 +2316,14 @@
         } else {
             $('#paymentButton').addClass('disabled');
         }
+
+        // 🆕 모바일 버튼도 동일하게 업데이트
+        $('#mobilePaymentButton').prop('disabled', !isValid);
+        if (isValid) {
+            $('#mobilePaymentButton').removeClass('disabled');
+        } else {
+            $('#mobilePaymentButton').addClass('disabled');
+        }
     }
 
     function isFormValid() {
@@ -2325,10 +2447,19 @@
     window.removeDiscount = removeDiscount;
 
     function forceResetPaymentButton() {
-        const button = document.getElementById('paymentButton');  // 결제 버튼
-        button.disabled = false;  // 버튼을 활성화
-        button.classList.remove('processing');  // 'processing' 클래스 제거
-        button.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="paymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;  // 버튼 텍스트 복원
+        // 데스크톱 버튼
+        const button = document.getElementById('paymentButton');
+        button.disabled = false;
+        button.classList.remove('processing');
+        button.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="paymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
+
+        // 🆕 모바일 버튼도 동일하게 리셋
+        const mobileButton = document.getElementById('mobilePaymentButton');
+        if (mobileButton) {
+            mobileButton.disabled = false;
+            mobileButton.classList.remove('processing');
+            mobileButton.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="mobilePaymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
+        }
     }
 
     // 테스트 함수들 (개발자 도구에서 사용 가능)
@@ -2421,6 +2552,13 @@
             this.disabled = true;
             this.classList.add('processing');
             this.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>주문 처리 중...';
+
+            const mobileButton = document.getElementById('mobilePaymentButton');
+            if (mobileButton) {
+                mobileButton.disabled = true;
+                mobileButton.classList.add('processing');
+                mobileButton.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>주문 처리 중...';
+            }
 
             try {
                 // 주문 데이터 수집
@@ -2628,10 +2766,19 @@
 
     // 결제 버튼 상태 초기화
     function resetPaymentButton() {
+        // 데스크톱 버튼
         const button = document.getElementById('paymentButton');
         button.disabled = false;
         button.classList.remove('processing');
         button.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="paymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
+
+        // 🆕 모바일 버튼도 동일하게 리셋
+        const mobileButton = document.getElementById('mobilePaymentButton');
+        if (mobileButton) {
+            mobileButton.disabled = false;
+            mobileButton.classList.remove('processing');
+            mobileButton.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="mobilePaymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
+        }
     }
 
     // 🆕 적립금 관련 글로벌 함수 노출

@@ -2000,16 +2000,16 @@
     let filterUrl = '/mypage/orders';
     switch(orderType) {
       case '결제완료':
-        filterUrl += '?status=pending';
+        filterUrl += '?status=PAID';
         break;
       case '배송중':
-        filterUrl += '?status=shipped';
+        filterUrl += '?status=SHIPPED';
         break;
       case '배송완료':
-        filterUrl += '?status=delivered';
+        filterUrl += '?status=DELIVERED';
         break;
       case '취소/반품':
-        filterUrl += '?status=cancelled';
+        filterUrl += '?status=CANCELLED';
         break;
     }
     window.location.href = filterUrl;

@@ -48,23 +48,53 @@
             w.product_code,
             w.create_at,
             w.update_at,
+
             p.product_name,
             p.product_active,
             p.product_id,
             p.product_quantity,
-            pr.price_selling as sellingPrice,
-            pr.price_original as originalPrice,
+
+            pr.price_selling   AS sellingPrice,
+            pr.price_original  AS originalPrice,
+
+            -- 대표 이미지
             (SELECT i.image_url
              FROM image i
              WHERE i.product_code = p.product_code
-               AND i.image_type = 'title'
+               AND i.image_type   = 'title'
              ORDER BY i.image_order
-             LIMIT 1) as productImage
+             LIMIT 1
+            ) AS productImage,
+
+            -- 평균 평점 (공개 리뷰만)
+            (SELECT IFNULL(ROUND(AVG(r.rating),2), 0)
+             FROM review r
+                      JOIN order_items oi
+                           ON r.order_item_code = oi.order_item_code
+             WHERE oi.product_code = p.product_code
+               AND r.is_active      = 1
+            ) AS reviewAvg,
+
+            -- 리뷰 수량 (공개 리뷰만)
+            (SELECT COUNT(*)
+             FROM review r
+                      JOIN order_items oi
+                           ON r.order_item_code = oi.order_item_code
+             WHERE oi.product_code = p.product_code
+               AND r.is_active      = 1
+            ) AS reviewCount,
+
+            -- 위시리스트에 담긴 횟수
+            (SELECT COUNT(*)
+             FROM wishlist w2
+             WHERE w2.product_code = p.product_code
+            ) AS wishlistCount
+
         FROM wishlist w
-                 INNER JOIN product p ON w.product_code = p.product_code
-                 INNER JOIN price pr ON p.product_code = pr.product_code
-        WHERE w.mem_code = #{memCode}
-          AND w.guest_code IS NULL
+                 INNER JOIN product       p  ON w.product_code = p.product_code
+                 INNER JOIN price         pr ON p.product_code = pr.product_code
+        WHERE w.mem_code     = #{memCode}
+          AND w.guest_code   IS NULL
         ORDER BY w.create_at DESC
     </select>
 
@@ -77,23 +107,53 @@
             w.product_code,
             w.create_at,
             w.update_at,
+
             p.product_name,
             p.product_active,
             p.product_id,
             p.product_quantity,
-            pr.price_selling as sellingPrice,
-            pr.price_original as originalPrice,
+
+            pr.price_selling   AS sellingPrice,
+            pr.price_original  AS originalPrice,
+
+            -- 대표 이미지
             (SELECT i.image_url
              FROM image i
              WHERE i.product_code = p.product_code
-               AND i.image_type = 'title'
+               AND i.image_type   = 'title'
              ORDER BY i.image_order
-             LIMIT 1) as productImage
+             LIMIT 1
+            ) AS productImage,
+
+            -- 평균 평점 (공개 리뷰만)
+            (SELECT IFNULL(ROUND(AVG(r.rating),2), 0)
+             FROM review r
+                      JOIN order_items oi
+                           ON r.order_item_code = oi.order_item_code
+             WHERE oi.product_code = p.product_code
+               AND r.is_active      = 1
+            ) AS avgRating,
+
+            -- 리뷰 수량 (공개 리뷰만)
+            (SELECT COUNT(*)
+             FROM review r
+                      JOIN order_items oi
+                           ON r.order_item_code = oi.order_item_code
+             WHERE oi.product_code = p.product_code
+               AND r.is_active      = 1
+            ) AS reviewCount,
+
+            -- 위시리스트에 담긴 횟수
+            (SELECT COUNT(*)
+             FROM wishlist w2
+             WHERE w2.product_code = p.product_code
+            ) AS wishlistCount
+
         FROM wishlist w
-                 INNER JOIN product p ON w.product_code = p.product_code
-                 INNER JOIN price pr ON p.product_code = pr.product_code
-        WHERE w.guest_code = #{guestCode}
-          AND w.mem_code IS NULL
+                 INNER JOIN product       p  ON w.product_code = p.product_code
+                 INNER JOIN price         pr ON p.product_code = pr.product_code
+        WHERE w.mem_code     = #{guestCode}
+          AND w.guest_code   IS NULL
         ORDER BY w.create_at DESC
     </select>
 

@@ -294,6 +294,11 @@
         <result property="createAt" column="create_at"/>
         <result property="updateAt" column="update_at"/>
 
+        <!-- ✅ 추가된 필드 매핑 -->
+        <result property="reviewAvg" column="review_avg"/>
+        <result property="reviewCount" column="review_count"/>
+        <result property="wishCount" column="wishlist_count"/>
+
         <collection property="priceDtoList" ofType="com.hollybam.hollybam.dto.PriceDto">
             <id property="priceCode" column="price_code"/>
             <result property="priceOriginal" column="price_original"/>
@@ -514,13 +519,48 @@
         CASE
         WHEN i.image_type = 'webp' THEN i.image_url
         ELSE NULL
-        END as image_webp
+        END as image_webp,
+
+        -- 위시리스트 개수
+        (SELECT COUNT(*)
+        FROM wishlist w
+        WHERE w.product_code = p.product_code) as wishlist_count,
+
+        -- 리뷰 평균 평점
+        (SELECT IFNULL(ROUND(AVG(r.rating), 1), 0.0)
+        FROM review r
+        JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        WHERE oi.product_code = p.product_code AND r.is_active = 1) as review_avg,
+
+        -- 리뷰 개수
+        (SELECT COUNT(*)
+        FROM review r
+        JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        WHERE oi.product_code = p.product_code AND r.is_active = 1) as review_count
+
+        FROM (
+        SELECT p.product_code
         FROM product p
-        LEFT JOIN price pr ON p.product_code = pr.product_code
-        LEFT JOIN image i ON p.product_code = i.product_code
         WHERE p.cate_code = #{categoryCode}
         AND p.product_active = 1
-        AND (i.image_type = 'title' OR i.image_type = 'webp' OR i.image_code IS NULL)
+        ORDER BY
+        <choose>
+            <when test="sort == 'latest'">p.create_at DESC</when>
+            <when test="sort == 'popular'">p.product_order_count DESC, p.create_at DESC</when>
+            <when test="sort == 'highprice'">
+                (SELECT price_selling FROM price WHERE product_code = p.product_code LIMIT 1) DESC
+            </when>
+            <when test="sort == 'lowprice'">
+                (SELECT price_selling FROM price WHERE product_code = p.product_code LIMIT 1) ASC
+            </when>
+            <otherwise>p.product_order_count DESC, p.create_at DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+        ) limited_products
+        JOIN product p ON limited_products.product_code = p.product_code
+        LEFT JOIN price pr ON p.product_code = pr.product_code
+        LEFT JOIN image i ON p.product_code = i.product_code
+        AND (i.image_type = 'title' OR i.image_type = 'webp')
         ORDER BY
         <choose>
             <when test="sort == 'latest'">p.create_at DESC</when>
@@ -529,7 +569,6 @@
             <when test="sort == 'lowprice'">pr.price_selling ASC</when>
             <otherwise>p.product_order_count DESC, p.create_at DESC</otherwise>
         </choose>
-        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="selectProductsByCategoryAndDetailWithPaging" resultMap="productMap">
@@ -559,14 +598,49 @@
         CASE
         WHEN i.image_type = 'webp' THEN i.image_url
         ELSE NULL
-        END as image_webp
+        END as image_webp,
+
+        -- 위시리스트 개수
+        (SELECT COUNT(*)
+        FROM wishlist w
+        WHERE w.product_code = p.product_code) as wishlist_count,
+
+        -- 리뷰 평균 평점
+        (SELECT IFNULL(ROUND(AVG(r.rating), 1), 0.0)
+        FROM review r
+        JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        WHERE oi.product_code = p.product_code AND r.is_active = 1) as review_avg,
+
+        -- 리뷰 개수
+        (SELECT COUNT(*)
+        FROM review r
+        JOIN order_items oi ON r.order_item_code = oi.order_item_code
+        WHERE oi.product_code = p.product_code AND r.is_active = 1) as review_count
+
+        FROM (
+        SELECT p.product_code
         FROM product p
-        LEFT JOIN price pr ON p.product_code = pr.product_code
-        LEFT JOIN image i ON p.product_code = i.product_code
         WHERE p.cate_code = #{categoryCode}
         AND p.cd_code = #{detailCode}
         AND p.product_active = 1
-        AND (i.image_type = 'title' OR i.image_type = 'webp' OR i.image_code IS NULL)
+        ORDER BY
+        <choose>
+            <when test="sort == 'latest'">p.create_at DESC</when>
+            <when test="sort == 'popular'">p.product_order_count DESC, p.create_at DESC</when>
+            <when test="sort == 'highprice'">
+                (SELECT price_selling FROM price WHERE product_code = p.product_code LIMIT 1) DESC
+            </when>
+            <when test="sort == 'lowprice'">
+                (SELECT price_selling FROM price WHERE product_code = p.product_code LIMIT 1) ASC
+            </when>
+            <otherwise>p.product_order_count DESC, p.create_at DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+        ) limited_products
+        JOIN product p ON limited_products.product_code = p.product_code
+        LEFT JOIN price pr ON p.product_code = pr.product_code
+        LEFT JOIN image i ON p.product_code = i.product_code
+        AND (i.image_type = 'title' OR i.image_type = 'webp')
         ORDER BY
         <choose>
             <when test="sort == 'latest'">p.create_at DESC</when>
@@ -575,7 +649,6 @@
             <when test="sort == 'lowprice'">pr.price_selling ASC</when>
             <otherwise>p.product_order_count DESC, p.create_at DESC</otherwise>
         </choose>
-        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <!-- 카테고리별 상품 개수 조회 -->

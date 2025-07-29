@@ -28,4 +28,7 @@ public class WishlistDto {
     private int sellingPrice;       // 판매가
     private int originalPrice;      // 정가
     private boolean productActive;  // 상품 활성화 여부
+    private int reviewAvg;
+    private int reviewCount;
+    private int wishlistCount;
 }

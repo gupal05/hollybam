@@ -51,9 +51,14 @@ public class CategoryController {
         if (detailCode != null && !detailCode.isEmpty()) {
             productList = productService.getProductsByCategoryAndDetailWithPaging(categoryCode, detailCode, sort, offset, size);
             totalCount = productService.getProductCountByCategoryAndDetail(categoryCode, detailCode);
+            System.out.println("디테일 : "+productList.size() + "코드 : "+detailCode);
         } else {
             productList = productService.getProductsByCategoryCodeWithPaging(categoryCode, sort, offset, size);
             totalCount = productService.getProductCountByCategory(categoryCode);
+            System.out.println(sort);
+            System.out.println(offset);
+            System.out.println(size);
+            System.out.println("카테 : "+productList.size() + "코드 : "+categoryCode);
         }
 
         // 페이징 정보 계산

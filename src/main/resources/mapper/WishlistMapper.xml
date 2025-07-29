@@ -152,8 +152,8 @@
         FROM wishlist w
                  INNER JOIN product       p  ON w.product_code = p.product_code
                  INNER JOIN price         pr ON p.product_code = pr.product_code
-        WHERE w.mem_code     = #{guestCode}
-          AND w.guest_code   IS NULL
+        WHERE w.guest_code     = #{guestCode}
+          AND w.mem_code   IS NULL
         ORDER BY w.create_at DESC
     </select>
 

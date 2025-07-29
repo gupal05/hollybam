@@ -486,6 +486,14 @@
       font-size: 14px;
       font-weight: 500;
       transition: all 0.2s ease;
+      display: inline-block;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .page-btn:hover:not(.disabled) {
+      border-color: #EE386D;
+      color: #EE386D;
     }
 
     .page-btn:hover {
@@ -499,9 +507,10 @@
       color: white;
     }
 
-    .page-btn:disabled {
+    .page-btn.disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      pointer-events: none;
     }
 
     .page-btn:disabled:hover {
@@ -756,24 +765,23 @@
 
   <!-- 페이지네이션 -->
   <div class="pagination-container" th:if="${totalPages > 1}">
-    <ul class="pagination">
+    <div class="pagination">
       <!-- 이전 -->
-      <li th:classappend="${currentPage == 1}? 'disabled'">
-        <a th:href="@{/search(keyword=${keyword}, page=${currentPage > 1 ? currentPage - 1 : 1}, size=${size})}" class="page-btn">&laquo;</a>
-      </li>
+      <a th:href="@{/search(keyword=${keyword}, page=${currentPage > 1 ? currentPage - 1 : 1}, size=${size})}"
+         th:classappend="${currentPage == 1} ? 'page-btn disabled' : 'page-btn'"
+         th:onclick="${currentPage == 1} ? 'return false;' : ''">&laquo;</a>
 
       <!-- 각 페이지 번호 -->
-      <li th:each="i : ${#numbers.sequence(1, totalPages)}"
-          th:classappend="${i == currentPage}? 'active'">
-        <a th:href="@{/search(keyword=${keyword}, page=${i}, size=${size})}"
-           th:text="${i}">1</a>
-      </li>
+      <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+         th:href="@{/search(keyword=${keyword}, page=${i}, size=${size})}"
+         th:classappend="${i == currentPage} ? 'page-btn active' : 'page-btn'"
+         th:text="${i}">1</a>
 
       <!-- 다음 -->
-      <li th:classappend="${currentPage == totalPages}? 'disabled'">
-        <a th:href="@{/search(keyword=${keyword}, page=${currentPage+1}, size=${size})}">&raquo;</a>
-      </li>
-    </ul>
+      <a th:href="@{/search(keyword=${keyword}, page=${currentPage < totalPages ? currentPage + 1 : totalPages}, size=${size})}"
+         th:classappend="${currentPage == totalPages} ? 'page-btn disabled' : 'page-btn'"
+         th:onclick="${currentPage == totalPages} ? 'return false;' : ''">&raquo;</a>
+    </div>
   </div>
 </div>
 

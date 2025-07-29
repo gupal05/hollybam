@@ -74,17 +74,11 @@ public class WishlistController {
             } else if (guest != null) {
                 // 비회원
                 log.info("비회원 위시리스트 조회 - guest: {}", guest);
-                Integer guestCode = guest.getGuestCode();
+                int guestCode = guest.getGuestCode();
                 log.info("guestCode 조회 결과: {}", guestCode);
-
-                if (guestCode != null) {
-                    wishlistItems = wishlistService.getGuestWishlist(guestCode);
-                    totalCount = wishlistService.getGuestWishlistCount(guestCode);
-                } else {
-                    log.warn("guestCode를 찾을 수 없음");
-                    wishlistItems = List.of();
-                    totalCount = 0;
-                }
+                wishlistItems = wishlistService.getGuestWishlist(guestCode);
+                totalCount = wishlistService.getGuestWishlistCount(guestCode);
+                System.out.println(wishlistItems);
 
                 model.addAttribute("wishlistItems", wishlistItems);
                 model.addAttribute("totalCount", totalCount);

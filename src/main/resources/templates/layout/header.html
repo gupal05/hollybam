@@ -91,8 +91,8 @@
                         <i class="fa-solid fa-headset"></i><span>고객센터</span>
                     </a>
                     <div class="user-dropdown-divider"></div>
-                    <a href="javascript:void(0)" onclick="goLogin()" class="user-dropdown-link login">
-                        <i class="fa-solid fa-right-to-bracket"></i><span>로그인/회원가입</span>
+                    <a href="/auth/signup" class="user-dropdown-link login">
+                        <i class="fa-solid fa-right-to-bracket"></i><span>회원가입</span>
                     </a>
                     <a href="javascript:void(0)" onclick="logout()" class="user-dropdown-link logout">
                         <i class="fa-solid fa-right-from-bracket"></i><span>비회원 로그아웃</span>
@@ -140,7 +140,7 @@
                 </div>
                 <div class="mobile-guest-details">
                     <div class="mobile-guest-text">로그인이 필요합니다</div>
-                    <button class="mobile-login-btn" onclick="goLogin()">로그인/회원가입</button>
+                    <button class="mobile-login-btn" onclick="window.location.href='/auth/signup'">회원가입</button>
                 </div>
             </div>
         </div>
@@ -261,9 +261,9 @@
                     <i class="fa-solid fa-headset"></i>
                     <span>고객센터</span>
                 </a>
-                <a href="javascript:void(0)" onclick="goLogin()" class="mobile-menu-link">
+                <a href="/auth/signup" class="mobile-menu-link">
                     <i class="fa-solid fa-right-to-bracket"></i>
-                    <span>로그인/회원가입</span>
+                    <span>회원가입</span>
                 </a>
                 <a href="javascript:void(0)" onclick="logout()" class="mobile-menu-link">
                     <i class="fa-solid fa-right-from-bracket"></i>

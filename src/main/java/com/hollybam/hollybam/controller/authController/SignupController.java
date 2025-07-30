@@ -37,8 +37,6 @@ public class SignupController {
             guestInfo.setAdultVerifiedAt(guestDto.getAdultVerifiedAt());
             guestInfo.setAdultVerified(guestDto.isAdultVerified());
             guestInfo.setMemberLoginType("web");
-            System.out.println("session : "+guestDto);
-            System.out.println("info : "+guestInfo);
             model.addAttribute("guestInfo", guestInfo);
             model.addAttribute("memberDto", new MemberDto());
             return "auth/signup";
@@ -88,5 +86,29 @@ public class SignupController {
         Map<String, Object> signupResult = new HashMap<>();
         signupResult.put("signupResult", result > 0);
         return signupResult;
+    }
+
+    @PostMapping("/mail")
+    @ResponseBody
+    public Map<String, Object> mail(@RequestParam String email, HttpSession session) {
+        String message = signupService.mainAuth(email, session);
+        Map<String, Object> map = new HashMap<>();
+        map.put("message", message);
+        map.put("result", message.equals("인증번호가 전송 되었습니다."));
+        return map;
+    }
+
+    @PostMapping("/mail/result")
+    @ResponseBody
+    public Map<String, Object> mainResult(@RequestParam String code, HttpSession session) {
+        Map<String, Object> map = new HashMap<>();
+        String mailCode = session.getAttribute("mailCode").toString();
+        if(code.equals(mailCode)) {
+            map.put("result", true);
+            session.removeAttribute("mailCode");
+        } else {
+            map.put("result", false);
+        }
+        return map;
     }
 }

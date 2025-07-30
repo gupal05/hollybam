@@ -511,6 +511,21 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label" for="memberZip">이메일 <span class="required">*</span></label>
+                    <div class="button-group">
+                        <input type="text" id="memberMail" name="memberMail" th:field="*{memberMail}" class="form-input" placeholder="이메일" required>
+                        <button type="button" class="btn-secondary" id="verifyEmail">인증하기</button>
+                    </div>
+                    <!-- 인증번호 입력창 (처음에는 숨김) -->
+                    <div id="verificationCodeSection" class="button-group" style="display: none; margin-top: 8px;">
+                        <input type="text" id="verificationCode" class="form-input" placeholder="인증번호를 입력하세요" maxlength="6">
+                        <button type="button" class="btn-secondary" id="confirmCode">확인</button>
+                    </div>
+                    <div class="error-message" id="verificationCodeError"></div>
+                    <div class="success-message" id="verificationCodeSuccess"></div>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label" for="memberZip">우편번호 <span class="required">*</span></label>
                     <div class="button-group">
                         <input type="text" id="memberZip" name="memberZip" th:field="*{memberZip}" class="form-input" placeholder="우편번호" readonly required>
@@ -976,6 +991,7 @@
                 memberId: $('#memberId').val(),
                 memberName: $('#memberName').val(),
                 memberPw: $('#memberPw').val(),
+                memberMail: $('#memberMail').val(),
                 memberZip: $('#memberZip').val(),
                 memberAddr: $('#firstAddr').val() + $('#secAddr').val(),
                 memberPhone: $('#firstPhone').val() + $('#secPhone').val() + $('#trdPhone').val(),
@@ -1109,6 +1125,89 @@
         }).open();
     });
 
+    $('#verifyEmail').on('click', function() {
+        const email = $('#memberMail').val().trim();
+
+        if (!email) {
+            alert('이메일을 입력해주세요.');
+            return;
+        }
+
+        // 기존 메시지들 숨기기
+        $('#verificationCodeError').hide();
+        $('#verificationCodeSuccess').hide();
+
+        $.ajax({
+            url: '/auth/mail',
+            type: 'POST',
+            data: { email: email },
+            success: (response) => {
+                if(response.result){
+                    alert(response.message);
+                    // 인증번호 입력창 표시
+                    $('#verificationCodeSection').slideDown();
+                    // 인증번호 입력창 포커스
+                    $('#verificationCode').focus();
+                }
+            },
+            error: (xhr) => {
+                console.log("이메일 인증 실패 : "+xhr);
+            }
+        });
+    });
+
+    $('#confirmCode').on('click', function() {
+        const code = $('#verificationCode').val().trim();
+
+        if (!code) {
+            alert('인증번호를 입력해주세요.');
+            return;
+        }
+
+        $.ajax({
+            url: '/auth/mail/result',
+            type: 'POST',
+            data: { code: code },
+            success: (response) => {
+                if(response.result){
+                    // 인증 성공 처리
+
+                    // 성공 메시지 표시
+                    $('#verificationCodeError').hide();
+                    $('#verificationCodeSuccess').text('이메일 인증이 완료되었습니다.').show();
+
+                    // 입력창들 readonly로 변경
+                    $('#memberMail').prop('readonly', true);
+                    $('#verificationCode').prop('readonly', true);
+
+                    // 버튼들 비활성화
+                    $('#verifyEmail').prop('disabled', true).text('인증완료');
+                    $('#confirmCode').prop('disabled', true).text('완료');
+
+                    // 시각적 피드백 (옵션)
+                    $('#memberMail').css('background-color', '#f8f9fa');
+                    $('#verificationCode').css('background-color', '#f8f9fa');
+                    $('#verifyEmail').css('background-color', '#28a745').css('color', 'white');
+                    $('#confirmCode').css('background-color', '#28a745').css('color', 'white');
+
+                } else {
+                    // 인증 실패 처리
+
+                    // 오류 메시지 표시
+                    $('#verificationCodeSuccess').hide();
+                    $('#verificationCodeError').text('인증번호가 올바르지 않습니다. 다시 확인해주세요.').show();
+
+                    // 인증번호 입력창 포커스 및 선택
+                    $('#verificationCode').focus().select();
+                }
+            },
+            error: (xhr) => {
+                console.log("이메일 인증 실패: " + xhr);
+                $('#verificationCodeSuccess').hide();
+                $('#verificationCodeError').text('인증 처리 중 오류가 발생했습니다. 다시 시도해주세요.').show();
+            }
+        });
+    });
 </script>
 </body>
 </html>

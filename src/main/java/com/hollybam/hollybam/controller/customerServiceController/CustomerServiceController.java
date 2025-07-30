@@ -34,6 +34,7 @@ public class CustomerServiceController {
         } else if(session.getAttribute("guest") != null){
             GuestDto guestDto = (GuestDto) session.getAttribute("guest");
             List<InquiryDto> inquiryList = inquiryService.selectInquiryListForGuest(guestDto.getGuestCode());
+            System.out.println(inquiryList);
             model.addAttribute("inquiryList", inquiryList);
         }
         return "cs";

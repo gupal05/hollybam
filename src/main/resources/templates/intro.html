@@ -288,6 +288,13 @@
       font-weight: 500;
     }
 
+    #g_id_signin {
+      width: 100% !important;
+      height: 40px !important;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
     /* 모바일 반응형 스타일 - 768px 이하에서만 적용 */
     @media (max-width: 768px) {
       .container {
@@ -392,6 +399,7 @@
       #g_id_signin {
         width: 100% !important;
         height: 56px !important;
+        max-width: none;
       }
 
       /* 리뉴얼 모달 모바일 최적화 */
@@ -521,7 +529,6 @@
   </style>
 </head>
 <body>
-
 <!-- 리뉴얼 안내 모달 -->
 <div id="renewalModal" class="renewal-modal-overlay">
   <div class="renewal-modal">
@@ -602,7 +609,7 @@
       <div style="cursor: pointer; display: none">
         <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/kakao_login_clean_320x40.png'" alt="카카오 로그인" style="margin: 0; width: 100%; height: 100%;">
       </div>
-      <div id="g_id_signin" style="width: 320px; height: 40px;"></div>
+      <div id="g_id_signin"></div>
 
     </div>
   </div>
@@ -648,16 +655,39 @@
       callback: handleCredentialResponse,
     });
 
+    const isMobile = window.innerWidth <= 768;
+
     google.accounts.id.renderButton(
             document.getElementById("g_id_signin"),
             {
               theme: "outline",
               size: "large",
-              width: 320,
-              height: 40
+              width: isMobile ? window.innerWidth - 40 : 320, // 모바일에서는 동적 너비
+              height: isMobile ? 56 : 40
             }
     );
   }
+
+  // 창 크기 변경 시 버튼 재렌더링
+  window.addEventListener('resize', function() {
+    const googleButtonContainer = document.getElementById("g_id_signin");
+    if (googleButtonContainer) {
+      // 기존 버튼 제거
+      googleButtonContainer.innerHTML = '';
+
+      // 새로운 크기로 재렌더링
+      const isMobile = window.innerWidth <= 768;
+      google.accounts.id.renderButton(
+              googleButtonContainer,
+              {
+                theme: "outline",
+                size: "large",
+                width: isMobile ? window.innerWidth - 40 : 320,
+                height: isMobile ? 56 : 40
+              }
+      );
+    }
+  });
 
   function handleCredentialResponse(response) {
     console.log("ID 토큰:", response.credential);

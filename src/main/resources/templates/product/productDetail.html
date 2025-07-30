@@ -496,15 +496,46 @@
             flex-direction: column;
             gap: 0px;
             align-items: center;
+            max-width: 760px; /* 컨테이너 최대 너비 설정 */
+            margin: 0 auto; /* 중앙 정렬 */
         }
 
         .detail-images img {
-            max-width: 100%;
-            height: auto;
+            width: 760px !important; /* 고정 너비 760px */
+            height: auto !important; /* 비율 유지 */
+            max-width: 760px !important; /* 최대 너비 제한 */
+            min-width: 760px !important; /* 최소 너비 보장 */
             border-radius: 0px;
             box-shadow: none;
-            display: block;
+            display: block !important;
             margin: 0;
+            object-fit: cover; /* contain에서 cover로 변경 */
+            object-position: center; /* 이미지 중앙 정렬 */
+        }
+
+        /* 모든 이미지 파일 형식에 대해 동일 적용 */
+        .detail-images img[src*=".jpg"],
+        .detail-images img[src*=".jpeg"],
+        .detail-images img[src*=".png"],
+        .detail-images img[src*=".webp"],
+        .detail-images img[src*=".gif"] {
+            width: 760px !important;
+            height: auto !important;
+            max-width: 760px !important;
+            min-width: 760px !important;
+            display: block !important;
+            object-fit: cover !important; /* WebP도 강제 적용 */
+            object-position: center !important;
+        }
+
+        /* WebP 전용 추가 스타일 (더 강한 우선순위) */
+        .detail-images img[src*=".webp"] {
+            width: 760px !important;
+            height: auto !important;
+            max-width: 760px !important;
+            min-width: 760px !important;
+            object-fit: cover !important;
+            aspect-ratio: auto !important; /* 고정 비율 해제 */
         }
 
         /* 리뷰 섹션 */
@@ -1319,6 +1350,31 @@
 
             .delivery-sub-text {
                 font-size: 11px;
+            }
+        }
+
+        /* 반응형 - 모바일에서는 화면 너비에 맞춤 */
+        @media (max-width: 768px) {
+            .detail-images {
+                max-width: 100%;
+                padding: 0 16px;
+            }
+
+            .detail-images img,
+            .detail-images img[src*=".jpg"],
+            .detail-images img[src*=".jpeg"],
+            .detail-images img[src*=".png"],
+            .detail-images img[src*=".webp"],
+            .detail-images img[src*=".gif"] {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: auto !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .detail-images {
+                padding: 0 12px;
             }
         }
     </style>

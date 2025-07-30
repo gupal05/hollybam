@@ -80,9 +80,11 @@ public class SignupController {
         if(signupService.getGuestOrderCount(guestInfo) > 0){
             signupService.updateGuestToMemberOrder(memberCode, guestInfo.getGuestCode());
         }
+        if(signupService.getGuestInquiryCount(guestInfo) > 0){
+            signupService.updateGuestToMemberInquiry(memberCode, guestInfo.getGuestCode());
+        }
         signupService.deleteGuestByDi(guestInfo.getGuestDi());
         session.removeAttribute("guest");
-        session.setAttribute("temp", "temp");
         Map<String, Object> signupResult = new HashMap<>();
         signupResult.put("signupResult", result > 0);
         return signupResult;

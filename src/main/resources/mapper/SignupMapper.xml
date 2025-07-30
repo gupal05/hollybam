@@ -47,6 +47,12 @@
         where guest_code = #{guestCode}
     </select>
 
+    <select id="getGuestInquiryCount" parameterType="com.hollybam.hollybam.dto.GuestDto" resultType="int">
+        select count(*)
+        from inquiry
+        where guest_code = #{guestCode}
+    </select>
+
     <update id="updateGuestToMemberCart" parameterType="com.hollybam.hollybam.dto.GuestDto">
         update cart
         set mem_code = #{memberCode},
@@ -63,6 +69,13 @@
 
     <update id="updateGuestToMemberOrder" parameterType="com.hollybam.hollybam.dto.GuestDto">
         update orders
+        set mem_code = #{memberCode},
+            guest_code = null
+        where guest_code = #{guestCode}
+    </update>
+
+    <update id="updateGuestToMemberInquiry" parameterType="com.hollybam.hollybam.dto.GuestDto">
+        update inquiry
         set mem_code = #{memberCode},
             guest_code = null
         where guest_code = #{guestCode}

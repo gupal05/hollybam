@@ -100,18 +100,32 @@ public class SignupService implements IF_SignupService{
     }
 
     @Override
+    public int getGuestInquiryCount(GuestDto guest){
+        return signupDao.getGuestInquiryCount(guest);
+    }
+
+    @Override
+    @Transactional
     public void updateGuestToMemberCart(int memberCode, int guestCode){
         signupDao.updateGuestToMemberCart(memberCode, guestCode);
     }
 
     @Override
+    @Transactional
     public void updateGuestToMemberWishList(int memberCode, int guestCode){
         signupDao.updateGuestToMemberWishList(memberCode, guestCode);
     }
 
     @Override
+    @Transactional
     public void updateGuestToMemberOrder(int memberCode, int guestCode){
         signupDao.updateGuestToMemberOrder(memberCode, guestCode);
+    }
+
+    @Override
+    @Transactional
+    public void updateGuestToMemberInquiry(int memberCode, int guestCode){
+        signupDao.updateGuestToMemberInquiry(memberCode, guestCode);
     }
 
     public String mainAuth(String email, HttpSession session) {

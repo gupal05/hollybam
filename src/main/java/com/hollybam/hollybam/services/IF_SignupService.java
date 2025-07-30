@@ -10,9 +10,11 @@ public interface IF_SignupService {
     public int getGuestCartCount(GuestDto guest);
     public int getGuestWishCount(GuestDto guest);
     public int getGuestOrderCount(GuestDto guest);
+    int getGuestInquiryCount(GuestDto guest);
     public void updateGuestToMemberCart(int memberCode, int guestCode);
     public void updateGuestToMemberWishList(int memberCode, int guestCode);
     public void updateGuestToMemberOrder(int memberCode, int guestCode);
+    public void updateGuestToMemberInquiry(int memberCode, int guestCode);
     public int getMemberCode(String memberId);
     public void insertSignupCoupon(int memberCode, int signupCouponCode);
     public int getSignupCouponCode();

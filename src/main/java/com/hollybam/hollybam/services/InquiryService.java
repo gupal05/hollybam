@@ -19,8 +19,19 @@ public class InquiryService implements IF_InquiryService{
     }
 
     @Override
+    public List<InquiryDto> selectInquiryListForGuest(int memberCode){
+        return inquiryDao.selectInquiryList(memberCode);
+    }
+
+    @Override
     @Transactional
     public int insertInquiry(InquiryDto inquiryDto){
         return inquiryDao.insertInquiry(inquiryDto);
+    }
+
+    @Override
+    @Transactional
+    public int insertInquiryForGuest(InquiryDto inquiryDto){
+        return inquiryDao.insertInquiryForGuest(inquiryDto);
     }
 }

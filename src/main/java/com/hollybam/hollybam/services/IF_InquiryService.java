@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface IF_InquiryService {
     public List<InquiryDto> selectInquiryList(int memberCode);
+    public List<InquiryDto> selectInquiryListForGuest(int memberCode);
     public int insertInquiry(InquiryDto inquiryDto);
+    public int insertInquiryForGuest(InquiryDto inquiryDto);
 }

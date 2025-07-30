@@ -1,9 +1,6 @@
 package com.hollybam.hollybam.controller.customerServiceController;
 
-import com.hollybam.hollybam.dto.EventDetailDto;
-import com.hollybam.hollybam.dto.EventDto;
-import com.hollybam.hollybam.dto.InquiryDto;
-import com.hollybam.hollybam.dto.MemberDto;
+import com.hollybam.hollybam.dto.*;
 import com.hollybam.hollybam.services.EventService;
 import com.hollybam.hollybam.services.InquiryService;
 import jakarta.servlet.http.HttpSession;
@@ -34,6 +31,10 @@ public class CustomerServiceController {
             MemberDto memberDto = (MemberDto) session.getAttribute("member");
             List<InquiryDto> inquiryList = inquiryService.selectInquiryList(memberDto.getMemberCode());
             model.addAttribute("inquiryList", inquiryList);
+        } else if(session.getAttribute("guest") != null){
+            GuestDto guestDto = (GuestDto) session.getAttribute("guest");
+            List<InquiryDto> inquiryList = inquiryService.selectInquiryListForGuest(guestDto.getGuestCode());
+            model.addAttribute("inquiryList", inquiryList);
         }
         return "cs";
     }
@@ -53,8 +54,13 @@ public class CustomerServiceController {
         if(session.getAttribute("member") != null){
             MemberDto memberDto = (MemberDto) session.getAttribute("member");
             inquiryDto.setInquiryCode(memberDto.getMemberCode());
+            return ResponseEntity.ok(inquiryService.insertInquiry(inquiryDto) > 0);
+        } else {
+            GuestDto guestDto = (GuestDto) session.getAttribute("guest");
+            inquiryDto.setInquiryCode(guestDto.getGuestCode());
+            return ResponseEntity.ok(inquiryService.insertInquiryForGuest(inquiryDto) > 0);
         }
-        return ResponseEntity.ok(inquiryService.insertInquiry(inquiryDto) > 0);
+
     }
 
 }

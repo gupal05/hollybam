@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ public class AdminBannerServiceImpl implements IF_AdminBannerService{
         return adminBannerDao.getBannerList();
     }
 
+    @Transactional
     public void uploadBanner(MultipartFile[] files, String[] clickEvents) throws IOException {
         Map<String, Object> map = new HashMap<>();
         for (int i = 0; i < files.length; i++) {
@@ -41,9 +44,27 @@ public class AdminBannerServiceImpl implements IF_AdminBannerService{
                 String url = s3Uploader.upload(file, "banner");
                 map.put("url", url);
                 map.put("event", clickEvent);
-                map.put("order", i);
                 adminBannerDao.insBanner(map);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public int deleteBanner(@RequestParam("bannerCode") int bannerCode) throws URISyntaxException {
+        String bannerUrl = adminBannerDao.selectBannerUrl(bannerCode);
+        System.out.println(bannerUrl);
+        int oldOrder = adminBannerDao.getBannerOrder(bannerCode);
+        int rows = adminBannerDao.deleteBanner(bannerCode);
+        if (rows > 0 && bannerUrl != null) {
+            // 3) URL에서 S3 키(버킷 뒤 경로) 추출
+            //    예: https://bucket.s3.region.amazonaws.com/dir/filename.jpg
+            URI uri = new URI(bannerUrl);
+            String key = uri.getPath().substring(1);
+            // 4) S3에서 파일 삭제
+            s3Uploader.delete(key);
+            adminBannerDao.decrementOrdersAbove(oldOrder);
+        }
+        return rows;
     }
 }

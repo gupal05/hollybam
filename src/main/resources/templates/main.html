@@ -4,7 +4,18 @@
     <link rel="icon" href="data:,">
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Hollybam</title>
+    <title>홀리밤</title>
+    <!-- 설명 (검색 결과에 노출) -->
+    <meta name="description" content="홀리밤은 프리미엄 성인용품을 빠르고 안전하게 배송합니다.">
+
+    <!-- 키워드 (큰 영향은 없지만 추가 가능) -->
+    <meta name="keywords" content="성인용품, 리얼돌, 딜도, 러브젤, 콘돔, 성인쇼핑몰">
+
+    <!-- Open Graph (SNS 공유 최적화) -->
+    <meta property="og:title" content="홀리밤 - 성인용품 전문 쇼핑몰">
+    <meta property="og:description" content="프리미엄 성인용품을 빠르게 배송받으세요.">
+    <meta property="og:image" content="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/hollybam_logo.webp">
+    <meta property="og:url" content="https://holly-bam.com">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" th:href="@{/css/header.css}"/>
@@ -32,7 +43,7 @@
         /* 슬라이드 */
         .slide {
             width: 100%;
-            height: 450px;
+            height: 505.8px;
             overflow: hidden;
             position: relative;
         }
@@ -972,15 +983,15 @@
             }
 
             .category-grid {
-                gap: 12px;
+                display: grid !important; /* flex에서 grid로 변경 */
+                grid-template-columns: repeat(4, 1fr); /* 4개씩 배치 */
+                grid-template-rows: repeat(2, 1fr); /* 2줄로 배치 */
+                gap: 12px 8px; /* 세로 12px, 가로 8px 간격 */
+                justify-items: center; /* 가로 중앙 정렬 */
+                align-items: start; /* 세로 상단 정렬 */
+                overflow: visible; /* 스크롤 제거 */
                 padding: 0 5px;
-                justify-content: flex-start;
-                overflow-x: auto;
-                overflow-y: hidden;
-                scroll-snap-type: x mandatory;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                -ms-overflow-style: none;
+                max-width: 100%;
             }
 
             .category-grid::-webkit-scrollbar {
@@ -988,32 +999,42 @@
             }
 
             .category-item {
-                min-width: 70px;
-                scroll-snap-align: start;
+                min-width: auto; /* 최소 너비 제한 해제 */
+                width: 100%; /* 전체 너비 사용 */
+                max-width: 65px; /* 최대 너비 제한 */
+                scroll-snap-align: none; /* 스크롤 스냅 제거 */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 0;
             }
 
             .category-icon {
-                width: 55px;
-                height: 55px;
+                width: 50px; /* 기존 55px에서 축소 */
+                height: 50px;
+                margin-bottom: 6px; /* 간격 줄임 */
             }
 
             .category-icon img {
-                width: 28px;
-                height: 28px;
+                width: 25px; /* 기존 28px에서 축소 */
+                height: 25px;
             }
 
             .category-icon i {
-                font-size: 22px;
+                font-size: 20px; /* 기존 22px에서 축소 */
             }
 
             .category-label {
-                font-size: 11px;
+                font-size: 10px; /* 기존 11px에서 축소 */
                 white-space: nowrap;
+                text-align: center;
+                line-height: 1.2;
+                margin-top: 2px;
             }
 
             .category-badge {
-                font-size: 9px;
-                padding: 1px 4px;
+                font-size: 8px; /* 기존 9px에서 축소 */
+                padding: 1px 3px; /* 기존 1px 4px에서 축소 */
             }
 
             .slide {
@@ -1184,30 +1205,36 @@
             }
 
             .category-grid {
-                gap: 10px;
+                gap: 10px 6px; /* 간격 더 줄임 */
                 padding: 0 3px;
             }
 
             .category-item {
-                min-width: 65px;
+                max-width: 60px;
             }
 
             .category-icon {
-                width: 50px;
-                height: 50px;
+                width: 45px;
+                height: 45px;
+                margin-bottom: 5px;
             }
 
             .category-icon img {
-                width: 25px;
-                height: 25px;
+                width: 22px;
+                height: 22px;
             }
 
             .category-icon i {
-                font-size: 20px;
+                font-size: 18px;
             }
 
             .category-label {
-                font-size: 10px;
+                font-size: 9px;
+            }
+
+            .category-badge {
+                font-size: 7px;
+                padding: 1px 2px;
             }
 
             .slide {
@@ -1349,35 +1376,36 @@
             }
 
             .category-grid {
-                gap: 8px;
+                gap: 8px 4px;
                 padding: 0;
             }
 
             .category-item {
-                min-width: 60px;
+                max-width: 55px;
             }
 
             .category-icon {
-                width: 48px;
-                height: 48px;
+                width: 42px;
+                height: 42px;
+                margin-bottom: 4px;
             }
 
             .category-icon img {
-                width: 24px;
-                height: 24px;
+                width: 20px;
+                height: 20px;
             }
 
             .category-icon i {
-                font-size: 18px;
+                font-size: 16px;
             }
 
             .category-label {
-                font-size: 9px;
+                font-size: 8px;
             }
 
             .category-badge {
-                font-size: 8px;
-                padding: 1px 3px;
+                font-size: 6px;
+                padding: 0.5px 2px;
             }
 
             .slide {
@@ -1566,30 +1594,38 @@
             }
 
             .category-grid {
-                gap: 6px;
+                gap: 6px 3px;
             }
 
             .category-item {
-                min-width: 55px;
+                max-width: 50px;
             }
 
             .category-icon {
-                width: 45px;
-                height: 45px;
+                width: 38px;
+                height: 38px;
+                margin-bottom: 3px;
             }
 
             .category-icon img {
-                width: 22px;
-                height: 22px;
+                width: 18px;
+                height: 18px;
             }
 
             .category-icon i {
-                font-size: 16px;
+                font-size: 14px;
             }
 
             .category-label {
-                font-size: 8px;
+                font-size: 7px;
+                line-height: 1.1;
             }
+
+            .category-badge {
+                font-size: 5px;
+                padding: 0.5px 1px;
+            }
+
 
             .slide {
                 height: 200px;
@@ -2080,6 +2116,156 @@
             border: 5px solid transparent;
             border-top-color: rgba(33, 37, 41, 0.95);
         }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+            padding: 20px; /* 여백 추가 */
+            box-sizing: border-box;
+        }
+
+        .popup-container {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: popupFadeIn 0.3s ease-out;
+            width: 420px; /* 고정 너비 */
+            max-width: 90vw; /* 모바일 대응 */
+            max-height: 90vh; /* 높이 제한 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes popupFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .popup-content {
+            position: relative;
+            flex-shrink: 0; /* 내용이 줄어들지 않도록 */
+        }
+
+        .popup-image {
+            width: 420px; /* 고정 너비 */
+            height: 420px; /* 고정 높이 */
+            display: block;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            object-fit: cover; /* 비율 유지하며 크롭 */
+            background: #f5f5f5; /* 로딩 중 배경색 */
+        }
+
+        .popup-image:hover {
+            transform: scale(1.02);
+        }
+
+        .popup-buttons {
+            display: flex;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            flex-shrink: 0; /* 버튼 영역이 줄어들지 않도록 */
+        }
+
+        .popup-btn {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #495057;
+        }
+
+        .popup-btn:hover {
+            background: #e9ecef;
+            color: #212529;
+        }
+
+        .popup-btn:not(:last-child) {
+            border-right: 1px solid #dee2e6;
+        }
+
+        .popup-today-close {
+            color: #6c757d;
+        }
+
+        .popup-close {
+            color: #EE386D;
+            font-weight: 600;
+        }
+
+        /* 모바일 대응 */
+        @media (max-width: 768px) {
+            .popup-overlay {
+                padding: 15px;
+            }
+
+            .popup-container {
+                width: 350px; /* 모바일에서 약간 작게 */
+                max-width: 100%;
+            }
+
+            .popup-image {
+                width: 350px; /* 모바일에서 약간 작게 */
+                height: 350px;
+            }
+
+            .popup-btn {
+                padding: 14px 16px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .popup-overlay {
+                padding: 10px;
+            }
+
+            .popup-container {
+                width: 300px; /* 작은 모바일에서 더 작게 */
+                max-width: 100%;
+            }
+
+            .popup-image {
+                width: 300px; /* 작은 모바일에서 더 작게 */
+                height: 300px;
+            }
+
+            .popup-btn {
+                padding: 12px 14px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .popup-container {
+                width: 280px; /* 매우 작은 모바일 */
+            }
+
+            .popup-image {
+                width: 280px;
+                height: 280px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2091,14 +2277,20 @@
 
     <!-- 슬라이드 이미지 반복 출력 -->
     <div th:each="banner, stat : ${banner}">
-        <a th:href="${banner.bannerClickEvent}" th:if="${banner.bannerClickEvent != null}">
-            <img th:src="${banner.bannerUrl}"
-                 th:alt="'배너 ' + ${stat.index + 1}"
+        <!-- 클릭 이벤트가 있으면 <a> 태그로 감싸고 -->
+        <a
+                th:if="${banner.bannerClickEvent != null}"
+                href="javascript:void(0)"
+                th:attr="data-url=${banner.bannerClickEvent}"
+                onclick="slideEvent(this.dataset.url)">
+            <img th:src="${banner['bannerUrl']}"
+                 th:alt="|배너 ${stat.index + 1}|"
                  th:classappend="${stat.index == 0} ? 'active' : ''"/>
         </a>
-        <img th:if="${banner.bannerClickEvent == null}"
-             th:src="${banner.bannerUrl}"
-             th:alt="'배너 ' + ${stat.index + 1}"
+        <!-- 클릭 이벤트 없으면 단순 이미지 -->
+        <img th:if="${banner['bannerClickEvent']} == null"
+             th:src="${banner['bannerUrl']}"
+             th:alt="|배너 ${stat.index + 1}|"
              th:classappend="${stat.index == 0} ? 'active' : ''"/>
     </div>
 
@@ -2124,7 +2316,7 @@
     <div class="category-container">
         <div class="category-grid">
             <div class="category-item">
-                <div class="category-icon">
+                <div class="category-icon" onclick="window.location.href='/special/sale'">
                     <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/category-icon/sale-icon.png" alt="세일 아이콘" style="width: 50px; height: 50px;" />
                 </div>
                 <div class="category-label">이달의 특가</div>
@@ -2441,7 +2633,21 @@
         </div>
     </div>
 </div>
-
+<div th:each="popupItem, stat : ${popup}" th:if="${popup != null and not #lists.isEmpty(popup)}">
+    <div class="popup-overlay" th:id="'popup-overlay-' + ${stat.index}" style="display: none;">
+        <div class="popup-container">
+            <div class="popup-content">
+                <a th:href="${popupItem.popupUrl}" th:if="${popupItem.popupUrl != null and popupItem.popupUrl != ''}">
+                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/popup/' + popupItem.popupImage}" alt="팝업 이미지" class="popup-image">
+                </a>
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn popup-today-close" th:data-popup-index="${stat.index}">오늘 그만 보기</button>
+                <button class="popup-btn popup-close" th:data-popup-index="${stat.index}">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- 푸터 -->
 <div th:replace="~{layout/footer :: footer}"></div>
 
@@ -2451,59 +2657,84 @@
     const images = $('.slide img');
     const dots = $('.dot');
     const totalSlides = images.length;
-    let autoSlideInterval;
+    let autoSlideInterval = null;
+    const SLIDE_DELAY = 3000; // 8초
 
+    // 슬라이드 변경 함수
     const changeSlide = (index) => {
         images.removeClass('active').eq(index).addClass('active');
         dots.removeClass('active').eq(index).addClass('active');
         current = index;
     };
 
-    const nextSlide = () => {
-        const next = (current + 1) % totalSlides;
-        changeSlide(next);
-    };
+    // 다음/이전 슬라이드
+    const nextSlide = () => changeSlide((current + 1) % totalSlides);
+    const prevSlide = () => changeSlide((current - 1 + totalSlides) % totalSlides);
 
-    const prevSlide = () => {
-        const prev = (current - 1 + totalSlides) % totalSlides;
-        changeSlide(prev);
-    };
+    // 자동 슬라이드 시작
+    function startAutoSlide() {
+        // 기존 타이머가 있으면 무조건 제거
+        if (autoSlideInterval) {
+            clearInterval(autoSlideInterval);
+        }
+        autoSlideInterval = setInterval(nextSlide, SLIDE_DELAY);
+    }
 
-    const startAutoSlide = () => {
-        autoSlideInterval = setInterval(nextSlide, 8000);
-    };
+    // 자동 슬라이드 정지
+    function stopAutoSlide() {
+        if (autoSlideInterval) {
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = null;
+        }
+    }
 
-    const stopAutoSlide = () => {
-        clearInterval(autoSlideInterval);
-    };
-
-    // 슬라이드 이벤트
-    $('#nextBtn').on('click', (e) => {
-        e.preventDefault();
-        nextSlide();
-        stopAutoSlide();
+    // 문서 준비 시 초기화
+    $(function() {
+        // 1) 자동 슬라이드 시작
         startAutoSlide();
-    });
 
-    $('#prevBtn').on('click', (e) => {
-        e.preventDefault();
-        prevSlide();
-        stopAutoSlide();
-        startAutoSlide();
-    });
-
-    dots.each((i, el) => {
-        $(el).on('click', () => {
-            changeSlide(i);
-            stopAutoSlide();
-            startAutoSlide();
+        // 2) 네비게이션 화살표 클릭
+        $('#nextBtn').on('click', function(e) {
+            e.preventDefault();
+            nextSlide();
+            startAutoSlide(); // 클릭 후 타이머 리셋
         });
+        $('#prevBtn').on('click', function(e) {
+            e.preventDefault();
+            prevSlide();
+            startAutoSlide(); // 클릭 후 타이머 리셋
+        });
+
+        // 3) 도트 네비게이션 클릭
+        dots.each((i, el) => {
+            $(el).on('click', () => {
+                changeSlide(i);
+                startAutoSlide(); // 클릭 후 타이머 리셋
+            });
+        });
+
+        // 4) 마우스 오버/아웃
+        $('.slide')
+            .on('mouseenter', stopAutoSlide)
+            .on('mouseleave', startAutoSlide);
     });
 
-    $('.slide').on('mouseenter', stopAutoSlide);
-    $('.slide').on('mouseleave', startAutoSlide);
-
-    startAutoSlide();
+    // 슬라이드 클릭 이벤트 핸들러
+    function slideEvent(event){
+        if (!event.includes('/')) {
+            // 예: 베스트 상품 섹션으로 스크롤
+            const targetElement = document.querySelector('.content .section-title');
+            if (targetElement) {
+                const headerOffset = 100;
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            }
+        } else {
+            // URL 이동
+            window.location.href = event;
+        }
+    }
 
     // 카테고리 클릭 이벤트
     $('.category-item').on('click', function() {
@@ -2893,6 +3124,117 @@
         checkSpecialEvents();
 
         console.log('당일배송 메시지 시스템이 초기화되었습니다.');
+    });
+
+    function slideEvent(event){
+        if (!event.includes('/')) {
+            // 베스트 상품 섹션으로 스크롤 이동
+            const targetElement = document.querySelector('.content .section-title');
+            if (targetElement) {
+                const headerOffset = 100; // 헤더 높이 고려
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        } else {
+            // URL이 포함된 경우 페이지 이동 등의 로직
+            window.location.href = event;
+        }
+    }
+
+    // 팝업 관리 JavaScript
+    $(document).ready(function() {
+        // 팝업 표시 함수
+        function showPopups() {
+            const today = new Date().toDateString();
+            let hasVisiblePopup = false;
+
+            $('.popup-overlay').each(function(index) {
+                const popupId = 'popup-' + index;
+                const savedDate = localStorage.getItem(popupId + '-hide-date');
+
+                // 오늘 그만 보기가 설정되지 않았거나 날짜가 다르면 팝업 표시
+                if (!savedDate || savedDate !== today) {
+                    if (!hasVisiblePopup) { // 첫 번째 팝업만 표시
+                        $(this).fadeIn(300);
+                        hasVisiblePopup = true;
+                    }
+                }
+            });
+        }
+
+        // 팝업 닫기 버튼 이벤트
+        $('.popup-close').on('click', function() {
+            const popupIndex = $(this).data('popup-index');
+            $('#popup-overlay-' + popupIndex).fadeOut(200, function() {
+                // 다음 팝업이 있는지 확인하고 표시
+                showNextPopup(popupIndex + 1);
+            });
+        });
+
+        // 오늘 그만 보기 버튼 이벤트
+        $('.popup-today-close').on('click', function() {
+            const popupIndex = $(this).data('popup-index');
+            const popupId = 'popup-' + popupIndex;
+            const today = new Date().toDateString();
+
+            // 오늘 날짜를 localStorage에 저장
+            localStorage.setItem(popupId + '-hide-date', today);
+
+            $('#popup-overlay-' + popupIndex).fadeOut(200, function() {
+                // 다음 팝업이 있는지 확인하고 표시
+                showNextPopup(popupIndex + 1);
+            });
+        });
+
+        // 다음 팝업 표시 함수
+        function showNextPopup(startIndex) {
+            const today = new Date().toDateString();
+
+            $('.popup-overlay').each(function(index) {
+                if (index >= startIndex) {
+                    const popupId = 'popup-' + index;
+                    const savedDate = localStorage.getItem(popupId + '-hide-date');
+
+                    if (!savedDate || savedDate !== today) {
+                        $(this).fadeIn(300);
+                        return false; // 첫 번째 유효한 팝업만 표시하고 중단
+                    }
+                }
+            });
+        }
+
+        // 팝업 오버레이 클릭 시 닫기 (이미지 영역 제외)
+        $('.popup-overlay').on('click', function(e) {
+            if (e.target === this) {
+                const popupIndex = $(this).attr('id').split('-').pop();
+                $('#popup-overlay-' + popupIndex).fadeOut(200, function() {
+                    showNextPopup(parseInt(popupIndex) + 1);
+                });
+            }
+        });
+
+        // ESC 키로 팝업 닫기
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const $visiblePopup = $('.popup-overlay:visible').first();
+                if ($visiblePopup.length > 0) {
+                    const popupIndex = $visiblePopup.attr('id').split('-').pop();
+                    $visiblePopup.fadeOut(200, function() {
+                        showNextPopup(parseInt(popupIndex) + 1);
+                    });
+                }
+            }
+        });
+
+        // 페이지 로드 시 팝업 표시 (1초 지연)
+        setTimeout(function() {
+            showPopups();
+        }, 1000);
     });
 </script>
 

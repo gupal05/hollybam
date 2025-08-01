@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>팝업 등록</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
+        h1 { margin-bottom: 1rem; }
+        form { background: #fff; padding: 1.5rem; border-radius: 4px; max-width: 500px; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input[type="text"], textarea, input[type="file"] {
+            width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;
+        }
+        button {
+            padding: 0.6rem 1.2rem; background: #007bff; color: #fff; border: none; border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+<h1>팝업 등록</h1>
+<form id="popup-form" action="/admin/popup/create" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="popup_description">팝업 설명</label>
+        <textarea id="popup_description" name="popup_description" rows="3" placeholder="간단한 설명을 입력하세요"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="popup_image">팝업 이미지 업로드</label>
+        <input
+                type="file"
+                id="popup_image"
+                name="popup_image"
+                accept="image/*"
+                required
+        />
+    </div>
+
+    <div class="form-group">
+        <label for="popup_url">팝업 클릭 시 이동 URL</label>
+        <input
+                type="text"
+                id="popup_url"
+                name="popup_url"
+                placeholder="https://example.com"
+                required
+        />
+    </div>
+
+    <button type="button" id="submit-btn">등록하기</button>
+</form>
+
+</body>
+<script>
+    $(function(){
+        $('#submit-btn').on('click', function(){
+            var formData = new FormData($('#popup-form')[0]);
+
+            $.ajax({
+                url: '/admin/popup/create',
+                type: 'POST',
+                data: formData,
+                contentType: false,    // 이 두 옵션이 필수
+                processData: false,    //
+                dataType: 'json',
+                success: function(res){
+                    if(res.result){
+                        alert("팝업이 등록 되었습니다.");
+                        $('#popup-form')[0].reset();
+                    } else {
+                        alert(res.message);
+                    }
+                },
+                error: function(xhr, status, err){
+                    console.error(err);
+                    alert("팝업 등록 실패: " + status);
+                }
+            });
+        });
+    });
+</script>
+</html>

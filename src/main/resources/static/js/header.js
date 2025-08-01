@@ -146,10 +146,17 @@ $(document).ready(function() {
     function openMobileMenu() {
         if (!isMobileMenuActive()) return;
 
+        // 현재 스크롤 위치 저장
+        const scrollY = $(window).scrollTop();
+        $('body').data('scroll-position', scrollY);
+
         $mobileMenuBtn.addClass('active');
         $mobileMenu.addClass('active');
         $mobileOverlay.addClass('active');
-        $body.css('overflow', 'hidden');
+
+        // body에 클래스 추가로 전체 페이지 어둡게 + 스크롤 방지
+        $('body').addClass('mobile-menu-active');
+        $('body').css('top', `-${scrollY}px`);
     }
 
     // 모바일 메뉴 닫기
@@ -157,7 +164,14 @@ $(document).ready(function() {
         $mobileMenuBtn.removeClass('active');
         $mobileMenu.removeClass('active');
         $mobileOverlay.removeClass('active');
-        $body.css('overflow', '');
+
+        // body 클래스 제거로 원상복구
+        $('body').removeClass('mobile-menu-active');
+
+        // 스크롤 위치 복원
+        const scrollY = $('body').data('scroll-position') || 0;
+        $('body').css('top', '');
+        $(window).scrollTop(scrollY);
 
         // 카테고리 메뉴도 닫기
         $('#mobileCategoryItems').removeClass('active');
@@ -171,6 +185,16 @@ $(document).ready(function() {
     });
 
     $mobileOverlay.on('click', closeMobileMenu);
+
+    // 🔥 body의 어두운 영역 클릭 시에도 메뉴 닫기
+    $(document).on('click', function(e) {
+        if ($('body').hasClass('mobile-menu-active')) {
+            // 클릭된 요소가 모바일 메뉴나 햄버거 버튼이 아닌 경우 메뉴 닫기
+            if (!$(e.target).closest('#mobileMenu, #mobileMenuBtn').length) {
+                closeMobileMenu();
+            }
+        }
+    });
 
     // ESC 키로 메뉴 닫기
     $(document).on('keydown', function(e) {
@@ -263,7 +287,12 @@ $(window).on('resize', function() {
             $('#mobileMenu').removeClass('active');
             $('#mobileOverlay').removeClass('active');
             $('#mobileMenuBtn').removeClass('active');
-            $('body').css('overflow', '');
+
+            // body 상태 복원
+            $('body').removeClass('mobile-menu-active');
+            const scrollY = $('body').data('scroll-position') || 0;
+            $('body').css('top', '');
+            $(window).scrollTop(scrollY);
         }
     }, 100);
 });

@@ -619,17 +619,19 @@
 
         /* 🆕 적립금 섹션 스타일 - 기존 CSS 마지막에 추가 */
         .points-section {
-            border: 2px dashed #ff6b35;
-            border-radius: 16px;
-            padding: 24px;
+            border: 1px dashed #ff6b35; /* 2px → 1px */
+            border-radius: 8px; /* 12px → 8px */
+            padding: 12px; /* 16px → 12px */
             background: linear-gradient(135deg, #fff9f5 0%, #fff 100%);
-            margin-bottom: 20px;
+            margin-bottom: 12px; /* 15px → 12px */
         }
 
         .points-section .section-title {
             border-bottom: none;
-            margin-bottom: 20px;
+            margin-bottom: 8px; /* 12px → 8px */
             color: #ff6b35;
+            font-size: 15px; /* 16px → 15px */
+            font-weight: 500; /* 600 → 500 */
         }
 
         .points-section .section-title::before {
@@ -638,7 +640,7 @@
 
         .points-section .section-title::after {
             content: '🪙';
-            margin-left: 8px;
+            margin-left: 4px; /* 6px → 4px */
         }
 
         .points-balance {
@@ -646,24 +648,24 @@
             justify-content: space-between;
             align-items: center;
             background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
+            padding: 8px 10px; /* 12px → 8px 10px */
+            border-radius: 6px; /* 8px → 6px */
+            margin-bottom: 8px; /* 12px → 8px */
         }
 
         .balance-info {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 2px; /* 3px → 2px */
         }
 
         .balance-label {
-            font-size: 14px;
+            font-size: 12px; /* 13px → 12px */
             color: #666;
         }
 
         .balance-amount {
-            font-size: 18px;
+            font-size: 14px; /* 16px → 14px */
             font-weight: 600;
             color: #ff6b35;
         }
@@ -672,9 +674,9 @@
             background: #ff6b35;
             color: white;
             border: none;
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-size: 14px;
+            padding: 6px 8px; /* 8px 12px → 6px 8px */
+            border-radius: 6px; /* 8px → 6px */
+            font-size: 11px; /* 13px → 11px */
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -687,9 +689,9 @@
 
         .points-input-group {
             display: flex;
-            gap: 8px;
+            gap: 4px; /* 6px → 4px */
             align-items: flex-end;
-            margin-bottom: 15px;
+            margin-bottom: 8px; /* 12px → 8px */
         }
 
         .input-wrapper {
@@ -699,10 +701,10 @@
 
         .points-input {
             width: 100%;
-            padding: 14px 40px 14px 16px;
+            padding: 8px 28px 8px 10px; /* 10px 32px 10px 12px → 8px 28px 8px 10px */
             border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 14px;
+            border-radius: 6px; /* 8px → 6px */
+            font-size: 12px; /* 13px → 12px */
             text-align: right;
             transition: all 0.3s ease;
         }
@@ -710,32 +712,38 @@
         .points-input:focus {
             outline: none;
             border-color: #ff6b35;
-            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+            box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.1); /* 2px → 1px */
         }
 
         .currency {
             position: absolute;
-            right: 16px;
+            right: 10px; /* 12px → 10px */
             top: 50%;
             transform: translateY(-50%);
             color: #666;
-            font-size: 14px;
+            font-size: 11px; /* 13px → 11px */
+        }
+
+        .points-input-group .btn-apply {
+            padding: 8px 10px; /* 기본값에서 줄임 */
+            font-size: 11px; /* 기본값에서 줄임 */
+            border-radius: 6px;
         }
 
         .points-result {
             background: #f0f9ff;
             border: 1px solid #0ea5e9;
             color: #0369a1;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
+            padding: 8px 10px; /* 10px 12px → 8px 10px */
+            border-radius: 4px; /* 6px → 4px */
+            margin-bottom: 8px; /* 12px → 8px */
+            font-size: 11px; /* 13px → 11px */
         }
 
         .result-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
+            margin-bottom: 3px; /* 4px → 3px */
         }
 
         .result-row:last-child {
@@ -743,12 +751,13 @@
         }
 
         .result-label {
-            font-size: 14px;
+            font-size: 11px; /* 13px → 11px */
             color: #666;
         }
 
         .result-value {
             font-weight: 600;
+            font-size: 11px; /* 추가 */
         }
 
         .use-amount {
@@ -761,23 +770,24 @@
 
         .points-reward {
             text-align: center;
-            padding: 12px;
+            padding: 6px 8px; /* 10px → 6px 8px */
             background: #fff3cd;
             border: 1px solid #ffeaa7;
-            border-radius: 8px;
+            border-radius: 4px; /* 6px → 4px */
         }
 
         .reward-info {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            font-size: 14px;
+            gap: 4px; /* 6px → 4px */
+            font-size: 11px; /* 13px → 11px */
             color: #856404;
         }
 
         .reward-info i {
             color: #ffc107;
+            font-size: 11px; /* 추가 */
         }
 
         .reward-amount {
@@ -790,11 +800,11 @@
             color: #ff6b35;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 3px; /* 4px → 3px */
         }
 
         .points-discount-row .price-label i {
-            font-size: 12px;
+            font-size: 10px; /* 11px → 10px */
         }
 
         .points-discount {
@@ -803,28 +813,38 @@
         }
 
         .reward-info-summary {
-            margin-top: 15px;
-            padding: 10px;
+            margin-top: 8px; /* 12px → 8px */
+            padding: 6px; /* 8px → 6px */
             background: #fff9e6;
             border: 1px solid #ffeaa7;
-            border-radius: 8px;
+            border-radius: 4px; /* 6px → 4px */
             text-align: center;
-            font-size: 13px;
+            font-size: 10px; /* 12px → 10px */
             color: #856404;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 4px; /* 6px → 4px */
         }
 
         .reward-info-summary i {
             color: #ffc107;
-            font-size: 14px;
+            font-size: 11px; /* 13px → 11px */
         }
 
         .reward-info-summary strong {
             color: #ff6b35;
             font-weight: 600;
+        }
+
+        /* 섹션 상단 헤더 부분도 줄이기 */
+        .points-section > div:first-child {
+            margin-bottom: 8px !important; /* 20px → 8px */
+        }
+
+        .points-section .discount-notice {
+            font-size: 10px !important; /* 12px → 10px */
+            padding: 2px 6px !important; /* 4px 8px → 2px 6px */
         }
 
         /* 반응형 */
@@ -849,6 +869,84 @@
         }
 
         @media (max-width: 768px) {
+            .points-section {
+                padding: 8px; /* 12px → 8px */
+                margin-bottom: 8px;
+            }
+
+            .points-section .section-title {
+                font-size: 14px; /* 15px → 14px */
+                margin-bottom: 6px; /* 8px → 6px */
+            }
+
+            .points-balance {
+                flex-direction: column;
+                gap: 6px; /* 8px → 6px */
+                text-align: center;
+                padding: 6px 8px; /* 8px 10px → 6px 8px */
+            }
+
+            .balance-amount {
+                font-size: 13px; /* 14px → 13px */
+            }
+
+            .balance-label {
+                font-size: 11px; /* 12px → 11px */
+            }
+
+            .btn-all-use {
+                padding: 4px 8px; /* 6px 8px → 4px 8px */
+                font-size: 10px; /* 11px → 10px */
+            }
+
+            .points-input-group {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .points-input-group .btn-apply {
+                width: 100%;
+                padding: 6px; /* 8px → 6px */
+                font-size: 11px;
+            }
+
+            .points-input {
+                padding: 6px 24px 6px 8px; /* 8px 28px 8px 10px → 6px 24px 6px 8px */
+                font-size: 11px; /* 12px → 11px */
+            }
+
+            .currency {
+                right: 8px; /* 10px → 8px */
+                font-size: 10px; /* 11px → 10px */
+            }
+
+            .reward-info {
+                flex-direction: column;
+                gap: 2px; /* 4px → 2px */
+                font-size: 10px; /* 11px → 10px */
+            }
+
+            .reward-info-summary {
+                flex-direction: column;
+                gap: 2px; /* 4px → 2px */
+                font-size: 9px; /* 10px → 9px */
+                padding: 4px; /* 6px → 4px */
+            }
+
+            .points-result {
+                padding: 6px 8px; /* 8px 10px → 6px 8px */
+                font-size: 10px; /* 11px → 10px */
+            }
+
+            .result-label, .result-value {
+                font-size: 10px; /* 11px → 10px */
+            }
+
+            .points-section .discount-notice {
+                font-size: 9px !important; /* 10px → 9px */
+                padding: 1px 4px !important; /* 2px 6px → 1px 4px */
+            }
+
             .main-container {
                 padding: 20px 16px;
             }

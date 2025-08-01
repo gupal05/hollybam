@@ -27,4 +27,11 @@ public class S3Uploader {
 
         return amazonS3.getUrl(bucket, fileName).toString(); // S3 URL 반환
     }
+
+    // 이미지 삭제
+    public void delete(String fileKey) {
+        if (amazonS3.doesObjectExist(bucket, fileKey)) {
+            amazonS3.deleteObject(bucket, fileKey);
+        }
+    }
 }

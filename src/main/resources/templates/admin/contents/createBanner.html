@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배너 관리 - 관리자</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* 레이아웃 */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid #e9ecef;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .sidebar-header h1 {
+            color: #212529;
+            font-size: 20px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            color: #adb5bd;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 25px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #212529;
+            background: #f8f9fa;
+            border-left-color: #212529;
+        }
+
+        .nav-link.has-submenu::after {
+            content: '+';
+            font-size: 16px;
+            font-weight: 300;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link.has-submenu.open::after {
+            transform: rotate(45deg);
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .submenu-link {
+            display: block;
+            padding: 12px 25px 12px 50px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+        }
+
+        .submenu-link:hover,
+        .submenu-link.active {
+            color: #212529;
+            background: #fff;
+            border-left-color: #212529;
+        }
+
+        /* 메인 컨텐츠 영역 */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+        }
+
+        /* 헤더 */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 40px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-info {
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 300;
+        }
+
+        .logout-btn {
+            background: #fff;
+            color: #212529;
+            border: 1px solid #212529;
+            padding: 8px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #212529;
+            color: #fff;
+        }
+
+        /* 컨테이너 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 페이지 타이틀 */
+        .page-title {
+            margin-bottom: 40px;
+        }
+
+        .page-title h2 {
+            color: #212529;
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .page-title p {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        /* 폼 컨테이너 */
+        .form-container {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            margin-bottom: 40px;
+        }
+
+        .form-section {
+            padding: 40px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: #212529;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* 현재 배너 섹션 */
+        .current-banners {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            margin-bottom: 40px;
+        }
+
+        .banner-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .banner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .banner-item {
+            position: relative;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .banner-item.edit-mode {
+            border-color: #ffc107;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
+        }
+
+        .banner-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .banner-info {
+            padding: 15px;
+            background: #fff;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .banner-url {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 300;
+            word-break: break-all;
+        }
+
+        /* 배너 삭제 버튼 */
+        .banner-delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            background: rgba(220, 53, 69, 0.9);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+
+        .banner-delete-btn:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: scale(1.1);
+        }
+
+        /* 배너 수정 모드 */
+        .banner-edit-mode {
+            margin-top: 10px;
+        }
+
+        .banner-url-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            color: #212529;
+            font-size: 12px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .banner-url-input:focus {
+            outline: none;
+            border-color: #212529;
+            box-shadow: 0 0 0 2px rgba(33, 37, 41, 0.1);
+        }
+
+        .no-banners {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        /* 폼 요소들 */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            color: #6c757d;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: #dc3545;
+            margin-left: 4px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            color: #212529;
+            font-size: 14px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #212529;
+        }
+
+        /* 파일 업로드 */
+        .file-upload {
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            border: 1px dashed #dee2e6;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-height: 120px;
+        }
+
+        .file-label:hover {
+            border-color: #212529;
+            background: #fff;
+        }
+
+        .file-text {
+            color: #212529;
+            font-size: 14px;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+
+        .file-subtext {
+            color: #6c757d;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 선택된 파일들 */
+        .selected-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #212529;
+            font-size: 13px;
+            font-weight: 300;
+        }
+
+        .file-remove {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .file-remove:hover {
+            background: #fee2e2;
+        }
+
+        /* URL 입력 필드들 */
+        .url-fields {
+            margin-top: 30px;
+        }
+
+        .url-field-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+        }
+
+        .url-field-label {
+            color: #212529;
+            font-size: 14px;
+            font-weight: 300;
+            min-width: 120px;
+            white-space: nowrap;
+        }
+
+        .url-field-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            color: #212529;
+            font-size: 14px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+        }
+
+        .url-field-input:focus {
+            outline: none;
+            border-color: #212529;
+        }
+
+        /* 버튼 */
+        .btn {
+            background: #fff;
+            color: #212529;
+            border: 1px solid #dee2e6;
+            padding: 15px 30px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            border-color: #212529;
+        }
+
+        .btn-primary {
+            background: #212529;
+            color: #fff;
+            border-color: #212529;
+        }
+
+        .btn-primary:hover {
+            background: #000;
+        }
+
+        /* 폼 액션 */
+        .form-actions {
+            background: #f8f9fa;
+            padding: 40px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .help-text {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 300;
+            margin-top: 8px;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 0 20px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .form-section {
+                padding: 25px 20px;
+            }
+
+            .banner-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+                padding: 25px 20px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .url-field-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .url-field-label {
+                min-width: auto;
+            }
+
+            /* 배너 액션 버튼들 모바일 대응 */
+            .section-header > div {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .banner-actions {
+                justify-content: center;
+            }
+
+            .banner-actions .btn {
+                width: auto;
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="admin-layout">
+    <!-- 사이드바 -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1>HOLLYBAM</h1>
+            <p>Administrator</p>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-item">
+                <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+            </div>
+
+            <!-- 컨텐츠 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu open" onclick="toggleSubmenu(this)">컨텐츠 관리</a>
+                <div class="submenu open">
+                    <a href="#" class="submenu-link active">메인 배너</a>
+                    <a href="#" class="submenu-link">팝업 관리</a>
+                    <a href="#" class="submenu-link">상품 동영상</a>
+                    <a href="#" class="submenu-link">이미지 관리</a>
+                    <a href="#" class="submenu-link">성인용품 가이드</a>
+                </div>
+            </div>
+
+            <!-- 상품 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">상품 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">상품 등록</a>
+                    <a href="/admin/product/edit" class="submenu-link">상품 수정</a>
+                    <a href="/admin/product/list" class="submenu-link">상품 목록</a>
+                    <a href="#" class="submenu-link">재고 관리</a>
+                    <a href="#" class="submenu-link">상품 리뷰</a>
+                </div>
+            </div>
+
+            <!-- 기타 메뉴들 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link">주문 관리</a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link">회원 관리</a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link">통계 관리</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="main-content">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="header-actions">
+                <div class="admin-info">
+                    관리자님 환영합니다
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    Sign Out
+                </button>
+            </div>
+        </header>
+
+        <!-- 컨테이너 -->
+        <div class="container">
+            <!-- 페이지 타이틀 -->
+            <div class="page-title">
+                <h2>배너 관리</h2>
+                <p>메인 페이지에 표시될 슬라이드 배너를 관리합니다</p>
+            </div>
+
+            <!-- 현재 배너 섹션 -->
+            <div class="current-banners">
+                <div class="section-header" style="padding: 40px 40px 20px 40px; margin-bottom: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 class="section-title">현재 등록된 배너</h3>
+                        <div class="banner-actions" th:if="${bannerList != null and !#lists.isEmpty(bannerList)}">
+                            <button type="button" class="btn btn-secondary" id="editModeBtn" onclick="toggleEditMode()">
+                                수정
+                            </button>
+                            <button type="button" class="btn btn-primary" id="saveBannersBtn" onclick="saveBannerChanges()" style="display: none;">
+                                저장
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancelEditBtn" onclick="cancelEditMode()" style="display: none;">
+                                취소
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 배너 리스트가 존재할 경우 -->
+                <div th:if="${bannerList != null and !#lists.isEmpty(bannerList)}">
+                    <div class="banner-grid">
+                        <div class="banner-item" th:each="banner, iterStat : ${bannerList}" th:data-banner-id="${banner.bannerCode}">
+                            <!-- 삭제 버튼 (수정 모드에서만 표시) -->
+                            <button type="button" class="banner-delete-btn" onclick="deleteBanner(this)" style="display: none;">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+
+                            <img th:src="${banner.bannerUrl}" alt="배너 이미지" />
+                            <div class="banner-info">
+                                <!-- 일반 모드 -->
+                                <div class="banner-url view-mode"
+                                     th:text="${banner['bannerClickEvent'] != null && banner['bannerClickEvent'] != ''
+                                     ? banner['bannerClickEvent']
+                                     : '링크 없음'}">
+                                </div>
+
+                                <!-- 수정 모드 -->
+                                <div class="banner-edit-mode" style="display: none;">
+                                    <label class="form-label" style="margin-bottom: 5px; font-size: 10px;">배너 링크 URL</label>
+                                    <input type="text" class="banner-url-input"
+                                           th:value="${banner['bannerClickEvent']}"
+                                           placeholder="https://example.com" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 배너 리스트가 null이거나 비어 있을 경우 -->
+                <div th:if="${bannerList == null or #lists.isEmpty(bannerList)}">
+                    <div class="no-banners">
+                        <p>등록된 배너가 없습니다.<br>아래에서 새로운 배너를 등록해주세요.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 배너 등록 폼 -->
+            <div class="form-container">
+                <form th:action="@{/admin/banner/upload}" method="post" enctype="multipart/form-data" id="bannerForm">
+
+                    <!-- 배너 이미지 업로드 섹션 -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3 class="section-title">배너 이미지 업로드</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                배너 이미지 <span class="required">*</span>
+                            </label>
+                            <div class="file-upload">
+                                <input type="file" name="bannerImages" id="bannerImages" class="file-input" accept="image/*" multiple required />
+                                <div class="file-label">
+                                    <div class="file-text">배너 이미지 업로드</div>
+                                    <div class="file-subtext">여러 이미지를 동시에 선택할 수 있습니다</div>
+                                </div>
+                            </div>
+                            <div class="selected-files" id="selectedFiles"></div>
+                            <div class="help-text">권장 크기: 1920x600px, JPG, PNG 형식 지원</div>
+                        </div>
+                    </div>
+
+                    <!-- URL 설정 섹션 -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3 class="section-title">배너 링크 설정</h3>
+                        </div>
+
+                        <div class="help-text" style="margin-bottom: 20px;">
+                            각 배너를 클릭했을 때 이동할 URL을 설정합니다. 빈칸으로 두면 링크가 설정되지 않습니다.
+                        </div>
+
+                        <div id="url-fields" class="url-fields">
+                            <!-- 동적으로 URL 입력 필드가 생성될 영역 -->
+                        </div>
+                    </div>
+
+                    <!-- 액션 버튼 -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            초기화
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            배너 등록
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 배너 수정 관련 변수
+    let isEditMode = false;
+    let originalBannerData = [];
+
+    // 수정 모드 토글
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+
+        if (isEditMode) {
+            enterEditMode();
+        } else {
+            exitEditMode();
+        }
+    }
+
+    // 수정 모드 진입
+    function enterEditMode() {
+        // 원본 데이터 백업
+        originalBannerData = [];
+        document.querySelectorAll('.banner-item').forEach(item => {
+            const urlElement = item.querySelector('.banner-url');
+            const bannerCode = item.getAttribute('data-banner-id');
+            originalBannerData.push({
+                bannerCode: bannerCode,
+                url: urlElement.textContent === '링크 없음' ? '' : urlElement.textContent
+            });
+        });
+
+        // UI 변경
+        document.getElementById('editModeBtn').style.display = 'none';
+        document.getElementById('saveBannersBtn').style.display = 'inline-flex';
+        document.getElementById('cancelEditBtn').style.display = 'inline-flex';
+
+        // 배너 아이템들 수정 모드로 변경
+        document.querySelectorAll('.banner-item').forEach(item => {
+            item.classList.add('edit-mode');
+
+            // 삭제 버튼 표시
+            const deleteBtn = item.querySelector('.banner-delete-btn');
+            deleteBtn.style.display = 'flex';
+
+            // URL 표시/수정 모드 토글
+            const viewMode = item.querySelector('.view-mode');
+            const editMode = item.querySelector('.banner-edit-mode');
+            const urlInput = item.querySelector('.banner-url-input');
+
+            viewMode.style.display = 'none';
+            editMode.style.display = 'block';
+
+            // 현재 URL 값을 input에 설정
+            const currentUrl = viewMode.textContent === '링크 없음' ? '' : viewMode.textContent;
+            urlInput.value = currentUrl;
+        });
+    }
+
+    // 수정 모드 종료
+    function exitEditMode() {
+        isEditMode = false;
+
+        // UI 변경
+        document.getElementById('editModeBtn').style.display = 'inline-flex';
+        document.getElementById('saveBannersBtn').style.display = 'none';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+
+        // 배너 아이템들 일반 모드로 변경
+        document.querySelectorAll('.banner-item').forEach(item => {
+            item.classList.remove('edit-mode');
+
+            // 삭제 버튼 숨기기
+            const deleteBtn = item.querySelector('.banner-delete-btn');
+            deleteBtn.style.display = 'none';
+
+            // URL 표시/수정 모드 토글
+            const viewMode = item.querySelector('.view-mode');
+            const editMode = item.querySelector('.banner-edit-mode');
+
+            viewMode.style.display = 'block';
+            editMode.style.display = 'none';
+        });
+    }
+
+    // 수정 취소
+    function cancelEditMode() {
+        if (confirm('변경사항이 취소됩니다. 계속하시겠습니까?')) {
+            // 원본 데이터 복원
+            originalBannerData.forEach(data => {
+                const item = document.querySelector(`[data-banner-id="${data.bannerCode}"]`);
+                if (item) {
+                    const viewMode = item.querySelector('.view-mode');
+                    const urlInput = item.querySelector('.banner-url-input');
+
+                    viewMode.textContent = data.url || '링크 없음';
+                    urlInput.value = data.url;
+                }
+            });
+
+            exitEditMode();
+        }
+    }
+
+    // 배너 삭제
+    function deleteBanner(button) {
+        if (confirm('이 배너를 삭제하시겠습니까?')) {
+            const bannerItem = button.closest('.banner-item');
+            const bannerCode = bannerItem.getAttribute('data-banner-id');
+            alert(bannerCode);
+
+            // 서버에 삭제 요청
+            fetch('/admin/banner/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                body: new URLSearchParams({ bannerCode })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        bannerItem.remove();
+
+                        // 배너가 모두 삭제되었으면 수정 모드 종료
+                        if (document.querySelectorAll('.banner-item').length === 0) {
+                            exitEditMode();
+                            location.reload(); // 페이지 새로고침하여 "배너가 없습니다" 메시지 표시
+                        }
+                    } else {
+                        alert('배너 삭제에 실패했습니다: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('배너 삭제 오류:', error);
+                    alert('배너 삭제 중 오류가 발생했습니다.');
+                });
+        }
+    }
+
+    // 배너 변경사항 저장
+    function saveBannerChanges() {
+        const bannerUpdates = [];
+
+        document.querySelectorAll('.banner-item').forEach(item => {
+            const bannerCode = item.getAttribute('data-banner-id');
+            const urlInput = item.querySelector('.banner-url-input');
+            const newUrl = urlInput.value.trim();
+
+            bannerUpdates.push({
+                bannerCode: bannerCode,
+                bannerClickEvent: newUrl
+            });
+        });
+
+        // 서버에 업데이트 요청
+        fetch('/admin/banner/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ banners: bannerUpdates })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // UI 업데이트
+                    bannerUpdates.forEach(update => {
+                        const item = document.querySelector(`[data-banner-id="${update.bannerCode}"]`);
+                        if (item) {
+                            const viewMode = item.querySelector('.view-mode');
+                            viewMode.textContent = update.bannerClickEvent || '링크 없음';
+                        }
+                    });
+
+                    exitEditMode();
+                    alert('배너 정보가 성공적으로 업데이트되었습니다.');
+                } else {
+                    alert('배너 업데이트에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('배너 업데이트 오류:', error);
+                alert('배너 업데이트 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 서브메뉴 토글
+    function toggleSubmenu(element) {
+        event.preventDefault();
+
+        const submenu = element.nextElementSibling;
+        const isOpen = submenu.classList.contains('open');
+
+        // 모든 서브메뉴 닫기
+        document.querySelectorAll('.submenu').forEach(menu => {
+            menu.classList.remove('open');
+        });
+        document.querySelectorAll('.nav-link.has-submenu').forEach(link => {
+            link.classList.remove('open');
+        });
+
+        // 클릭된 서브메뉴만 토글
+        if (!isOpen) {
+            submenu.classList.add('open');
+            element.classList.add('open');
+        }
+    }
+
+    // 로그아웃 처리
+    function logout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            fetch('/admin/auth/logout', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/admin/login';
+                    }
+                })
+                .catch(error => {
+                    console.error('로그아웃 오류:', error);
+                    window.location.href = '/admin/login';
+                });
+        }
+    }
+
+    // 폼 초기화
+    function resetForm() {
+        if (confirm('모든 입력 내용이 초기화됩니다. 계속하시겠습니까?')) {
+            document.getElementById('bannerForm').reset();
+            document.getElementById('selectedFiles').innerHTML = '';
+            document.getElementById('url-fields').innerHTML = '';
+
+            // 파일 라벨 초기화
+            const fileLabel = document.querySelector('.file-label');
+            fileLabel.querySelector('.file-text').textContent = '배너 이미지 업로드';
+            fileLabel.style.borderColor = '#dee2e6';
+            fileLabel.style.background = '#f8f9fa';
+        }
+    }
+
+    // 배너 업로드 관련 JavaScript
+    const fileInput = document.getElementById('bannerImages');
+    const urlFields = document.getElementById('url-fields');
+    const selectedFiles = document.getElementById('selectedFiles');
+
+    let bannerFiles = [];
+
+    fileInput.addEventListener('change', function () {
+        const files = Array.from(this.files);
+        const fileLabel = this.nextElementSibling;
+
+        // 기존 파일에 새 파일들 추가
+        files.forEach(file => {
+            if (!bannerFiles.some(f => f.name === file.name && f.size === file.size)) {
+                bannerFiles.push(file);
+            }
+        });
+
+        updateFileDisplay();
+        updateUrlFields();
+        updateFileInput();
+
+        // 파일 라벨 업데이트
+        if (bannerFiles.length > 0) {
+            fileLabel.querySelector('.file-text').textContent = `${bannerFiles.length}개 파일 선택됨`;
+            fileLabel.style.borderColor = '#212529';
+            fileLabel.style.background = '#fff';
+        }
+    });
+
+    // 파일 표시 업데이트
+    function updateFileDisplay() {
+        selectedFiles.innerHTML = '';
+
+        bannerFiles.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <span>${file.name}</span>
+                <button type="button" class="file-remove" onclick="removeFile(${index})">
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            `;
+            selectedFiles.appendChild(fileItem);
+        });
+    }
+
+    // URL 입력 필드 업데이트
+    function updateUrlFields() {
+        urlFields.innerHTML = '';
+
+        bannerFiles.forEach((file, index) => {
+            const urlFieldItem = document.createElement('div');
+            urlFieldItem.className = 'url-field-item';
+            urlFieldItem.innerHTML = `
+                <div class="url-field-label">배너 ${index + 1}:</div>
+                <input type="text" name="bannerClickEvents" class="url-field-input"
+                       placeholder="https://example.com" />
+            `;
+            urlFields.appendChild(urlFieldItem);
+        });
+    }
+
+    // 파일 제거
+    function removeFile(index) {
+        bannerFiles.splice(index, 1);
+        updateFileDisplay();
+        updateUrlFields();
+        updateFileInput();
+
+        // 파일 라벨 업데이트
+        const fileLabel = fileInput.nextElementSibling;
+        if (bannerFiles.length > 0) {
+            fileLabel.querySelector('.file-text').textContent = `${bannerFiles.length}개 파일 선택됨`;
+        } else {
+            fileLabel.querySelector('.file-text').textContent = '배너 이미지 업로드';
+            fileLabel.style.borderColor = '#dee2e6';
+            fileLabel.style.background = '#f8f9fa';
+        }
+    }
+
+    // 파일 input 업데이트
+    function updateFileInput() {
+        const dt = new DataTransfer();
+        bannerFiles.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+    }
+
+    // 네비게이션 아이템 클릭 처리
+    document.querySelectorAll('.nav-link, .submenu-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (!this.classList.contains('has-submenu')) {
+                document.querySelectorAll('.nav-link, .submenu-link').forEach(item => {
+                    item.classList.remove('active');
+                });
+                this.classList.add('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>

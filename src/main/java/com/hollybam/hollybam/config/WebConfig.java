@@ -26,7 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/verify-cert", "/auth/loginResult", "/order", "/cart", "/admin/**",
                         "/test/auth/**", "/auth/nice/**", "/test/**", "/nice/**", "/authResult",
                         "/error", "/authPopupCallbackView", "/authError", "/authPopupCallback", "/auth/login/naver", "/login/naver/callback", "/naver/nice/result", "/naver/complete-registration", "/naver/phone-verification", "/auth/google-login",
-                        "/google/nice/result", "/google/complete-registration", "/google/phone-verification", "/kiki", "/pay", "/pay/**"); // 예외 처리
+                        "/google/nice/result", "/google/complete-registration", "/google/phone-verification", "/kiki", "/pay", "/pay/**", "robots.txt"); // 예외 처리
     }
 
     @Override

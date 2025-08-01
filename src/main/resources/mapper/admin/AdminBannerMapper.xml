@@ -14,8 +14,43 @@
             banner_order ASC;
     </select>
 
+    <select id="getLastBannerOrder" resultType="int">
+        SELECT MAX(banner_order) AS max_order
+        FROM banner
+    </select>
+
     <insert id="insBanner" parameterType="map">
-        insert into banner(banner_url, banner_order, banner_click_event)
-        values(#{url}, #{order}, #{event})
+        INSERT INTO banner
+            (banner_url, banner_click_event, banner_order)
+        SELECT
+            #{url},
+            #{event},
+            IFNULL(MAX(banner_order), 0) + 1
+        FROM
+                (SELECT banner_order FROM banner) AS temp;
     </insert>
+
+    <select id="selectBannerUrl" parameterType="int" resultType="String">
+        select banner.banner_url
+        from hollybam.banner
+        where banner_code = #{bannerCode}
+    </select>
+
+    <delete id="deleteBanner" parameterType="int">
+        delete
+        from hollybam.banner
+        where banner_code = #{bannerCode}
+    </delete>
+
+    <select id="getBannerOrder" resultType="int">
+        SELECT banner_order
+        FROM banner
+        WHERE banner_code = #{bannerCode}
+    </select>
+
+    <update id="decrementOrdersAbove" parameterType="int">
+        UPDATE banner
+        SET banner_order = banner_order - 1
+        WHERE banner_order > #{oldOrder}
+    </update>
 </mapper>

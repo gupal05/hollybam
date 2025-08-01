@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hollybam.hollybam.dao.admin.IF_AdminPopupDao">
+    <insert id="insertPopup" parameterType="map">
+        INSERT INTO popup
+            (popup_description, popup_image, popup_url, popup_sort)
+        SELECT
+            #{popupDescription},
+            #{popupImage},
+            #{popupUrl},
+            IFNULL(MAX(popup_sort), 0) + 1
+        FROM
+                (SELECT popup_sort FROM popup) AS temp;
+    </insert>
+
+    <select id="getPopupCount" resultType="int">
+        select count(*)
+        from popup
+    </select>
+
+    <select id="getPopupList" resultType="map">
+        select popup_code as popupCode, popup_description as popupDescription, popup_image as popupImage, popup_url as popupUrl
+        from popup
+        order by popup_sort asc;
+    </select>
+</mapper>

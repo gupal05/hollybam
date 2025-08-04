@@ -159,6 +159,19 @@ public class HomeController {
         }
         for(int i = 0; i < proList.size(); i++){
             proList.get(i).setWishCount(productService.getWishCount(proList.get(i).getProductCode()));
+            if(productService.isSpecialSale(proList.get(i).getProductCode()) > 0){
+                proList.get(i).setSale(true);
+                proList.get(i).setSalePrice(productService.getProductDetailSalePrice(proList.get(i).getProductCode()));
+
+                int originalPrice = proList.get(i).getPriceDtoList().get(0).getPriceOriginal();
+                int salePrice = proList.get(i).getSalePrice();
+
+                int discountRate = 0;
+                if(originalPrice > 0){
+                    discountRate = (int) Math.round(((originalPrice - salePrice) / (double) originalPrice) * 100);
+                }
+                proList.get(i).setSpecialDiscountRate(discountRate);
+            }
             proList.get(i).getPriceDtoList().get(0).setPercentage((proList.get(i).getPriceDtoList().get(0).getPriceOriginal() - proList.get(i).getPriceDtoList().get(0).getPriceSelling()) * 100 / proList.get(i).getPriceDtoList().get(0).getPriceOriginal());
         }
         List<ProductDto> newProList = productService.selectNewProducts();

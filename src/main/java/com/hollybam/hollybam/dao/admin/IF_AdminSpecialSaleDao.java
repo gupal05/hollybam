@@ -15,4 +15,9 @@ public interface IF_AdminSpecialSaleDao {
     int selectOriginalPrice(@Param("productCode") int productCode);
     int insertSpecialSaleProducts(List<Map<String, Object>> products);
     List<Map<String, Object>> selectSpecialSaleList(@Param("startDate") String startDate);
+
+    // 스케줄러용 메서드들
+    int activateCurrentMonthSpecialSales(Map<String, Object> params);
+    int deactivateNotCurrentMonthSpecialSales(Map<String, Object> params);
+    int countActiveSpecialSales();
 }

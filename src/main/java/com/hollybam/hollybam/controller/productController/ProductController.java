@@ -126,11 +126,18 @@ public class ProductController {
             mav.addObject("currentMemCode", memCode);
             mav.addObject("currentGuestCode", guestCode);
 
-            System.out.println("=== 리뷰 데이터 확인 ===");
-            System.out.println("초기 포토리뷰 개수: " + initialPhotoReviews.size());
-            System.out.println("초기 텍스트리뷰 개수: " + initialTextReviews.size());
-            System.out.println("리뷰 카운트: " + reviewCount);
-            System.out.println("베스트 리뷰 개수: " + bestReviews.size());
+            if(productService.isSpecialSale(productDto.getProductCode()) > 0){
+                productDto.setSale(true);
+                productDto.setSalePrice(productService.getProductDetailSalePrice(productDto.getProductCode()));
+                int originalPrice = productDto.getPriceDtoList().get(0).getPriceOriginal();
+                int salePrice = productDto.getSalePrice();
+
+                int discountRate = 0;
+                if (originalPrice > 0) {
+                    discountRate = (int) Math.round(((originalPrice - salePrice) / (double) originalPrice) * 100);
+                }
+                productDto.setSpecialDiscountRate(discountRate);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

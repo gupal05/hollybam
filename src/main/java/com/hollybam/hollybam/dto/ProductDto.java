@@ -38,4 +38,8 @@ public class ProductDto {
     private double reviewAvg;
     private int reviewCount;
     private int wishCount;
+
+    private boolean isSale;
+    private int salePrice;
+    private int specialDiscountRate;
 }

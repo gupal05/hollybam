@@ -65,4 +65,8 @@ public interface IF_ProductDao {
     int insertOneOption(ProductOptionDto optionDto);
 
     int insertOneOptionPrice(ProductOptionDto optionDto);
+
+    int isSpecialSale(@Param("productCode") int productCode);
+
+    int getProductDetailSalePrice(@Param("productCode") int productCode);
 }

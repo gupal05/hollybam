@@ -2,6 +2,7 @@ package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dao.IF_ProductDao;
 import com.hollybam.hollybam.dto.*;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -190,6 +191,18 @@ public class ProductService implements IF_ProductService{
             // 2) option_price 에 INSERT
             productDao.insertOneOptionPrice(opt);
         }
+    }
+
+    @Override
+    @Transactional
+    public int isSpecialSale(@Param("productCode") int productCode){
+        return productDao.isSpecialSale(productCode);
+    }
+
+    @Override
+    @Transactional
+    public int getProductDetailSalePrice(@Param("productCode") int productCode){
+        return productDao.getProductDetailSalePrice(productCode);
     }
 
 }

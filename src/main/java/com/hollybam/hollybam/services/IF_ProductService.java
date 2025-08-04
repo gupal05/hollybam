@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dto.*;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -53,4 +54,8 @@ public interface IF_ProductService {
     int getProductCountByCategoryAndDetail(String categoryCode, String detailCode);
 
     int getProductCountByCategory(String categoryCode);
+
+    int isSpecialSale(@Param("productCode") int productCode);
+
+    int getProductDetailSalePrice(@Param("productCode") int productCode);
 }

@@ -663,6 +663,41 @@
             transition: opacity 0.4s ease-in-out;
         }
 
+        .price-sale-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 5px;
+            min-height: 24px;
+        }
+
+        /* 특가 뱃지 컨테이너 */
+        .sale-badge-container {
+            display: flex;
+            align-items: flex-end;
+            min-width: 80px;
+        }
+
+        /* 이달의 특가 뱃지 */
+        .monthly-sale-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(238, 56, 109, 0.1);
+            color: #EE386D;
+            white-space: nowrap;
+        }
+
+        .sale-badge-icon {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
         /* 태블릿 (1200px 이하) */
         @media (max-width: 1200px) {
             .content {
@@ -739,6 +774,15 @@
             .hollybam-news-section-title::after {
                 left: 50%;
                 transform: translateX(-50%);
+            }
+
+            .sale-badge-container {
+                min-width: 70px;
+            }
+
+            .monthly-sale-badge {
+                font-size: 10px;
+                padding: 3px 6px;
             }
         }
 
@@ -830,6 +874,19 @@
 
         /* 모바일 가로 (900px 이하) */
         @media (max-width: 900px) {
+            .sale-badge-container {
+                min-width: 60px;
+            }
+
+            .price-sale-container {
+                gap: 8px;
+            }
+
+            .monthly-sale-badge {
+                font-size: 9px;
+                padding: 3px 6px;
+            }
+
             .content {
                 padding: 40px 18px 0;
             }
@@ -921,6 +978,20 @@
 
         /* 모바일 세로 (768px 이하) */
         @media (max-width: 768px) {
+            .sale-badge-container {
+                min-width: 55px;
+            }
+
+            .price-sale-container {
+                gap: 6px;
+            }
+
+            .monthly-sale-badge {
+                font-size: 9px;
+                padding: 3px 5px;
+                gap: 3px;
+            }
+
             .content {
                 padding: 35px 16px 0;
             }
@@ -1129,6 +1200,19 @@
 
         /* 모바일 세로 소형 (600px 이하) */
         @media (max-width: 600px) {
+            .sale-badge-container {
+                min-width: 50px;
+            }
+
+            .price-sale-container {
+                gap: 4px;
+            }
+
+            .monthly-sale-badge {
+                font-size: 8px;
+                padding: 2px 4px;
+            }
+
             .content {
                 padding: 30px 14px 0;
             }
@@ -1276,6 +1360,19 @@
 
         /* 모바일 세로 극소형 (480px 이하) */
         @media (max-width: 480px) {
+            .sale-badge-container {
+                min-width: 45px;
+            }
+
+            .price-sale-container {
+                gap: 3px;
+            }
+
+            .monthly-sale-badge {
+                font-size: 7px;
+                padding: 2px 3px;
+            }
+
             .content {
                 padding: 25px 12px 0;
             }
@@ -1523,6 +1620,23 @@
 
         /* 모바일 세로 초소형 (360px 이하) */
         @media (max-width: 360px) {
+            .sale-badge-container {
+                min-width: 40px;
+            }
+
+            .price-sale-container {
+                gap: 2px;
+            }
+
+            .monthly-sale-badge {
+                font-size: 6px;
+                padding: 1px 2px;
+            }
+
+            .sale-badge-icon {
+                font-size: 6px;
+            }
+
             .delivery-message {
                 font-size: 7px;
                 padding: 2px 4px;
@@ -2397,10 +2511,28 @@
                         <div class="card-product-description" th:text="${product.productDescription}">
                             상품 설명
                         </div>
-                        <div class="card-product-price">
+                        <div class="card-product-price" th:if="${!product.isSale}">
                             <div class="sale-perc" th:text="${product.priceDtoList[0].percentage}+'%'">0%</div>
                             <div class="sale_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '원'">150,000원</div>
                             <div class="regular_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">200,000원</div>
+                        </div>
+                        <div th:if="${product.isSale}">
+                            <div class="price-sale-container">
+                                <!-- 가격 정보 -->
+                                <div class="card-product-price">
+                                    <div class="sale-perc" th:text="${product.specialDiscountRate}+'%'">0%</div>
+                                    <div class="sale_price" th:text="${#numbers.formatInteger(product.salePrice, 3, 'COMMA')} + '원'">150,000원</div>
+                                    <div class="regular_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">200,000원</div>
+                                </div>
+
+                                <!-- 이달의 특가 뱃지 -->
+                                <div class="sale-badge-container">
+                                    <div class="monthly-sale-badge">
+                                        <i class="sale-badge-icon fas fa-fire"></i>
+                                        <span>이달의 특가</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="delivery-message" th:unless="${product.productQuantity == null or product.productQuantity == 0}">
                             <i class="fas fa-shipping-fast delivery-icon"></i>

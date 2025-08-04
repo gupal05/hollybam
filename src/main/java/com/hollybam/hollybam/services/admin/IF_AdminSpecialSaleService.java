@@ -13,4 +13,5 @@ public interface IF_AdminSpecialSaleService {
     int selectOriginalPrice(@Param("productCode") int productCode);
     int insertSpecialSaleProducts(List<Map<String, Object>> products);
     List<Map<String, Object>> selectSpecialSaleList(String startDate);
+    Map<String, Integer> updateSpecialSaleStatusForScheduler();
 }

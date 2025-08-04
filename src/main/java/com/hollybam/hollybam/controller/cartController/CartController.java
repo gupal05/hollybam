@@ -4,7 +4,9 @@ import com.hollybam.hollybam.dto.CartDto;
 import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.MemberDto;
 import com.hollybam.hollybam.services.CartService;
+import com.hollybam.hollybam.services.ProductService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,10 +19,14 @@ import java.util.Map;
 @Controller
 @RequestMapping("/cart")
 public class CartController {
-    private final CartService cartService;
+    @Autowired
+    private CartService cartService;
+    @Autowired
+    private ProductService productService;
 
-    public CartController(CartService cartService) {
+    public CartController(CartService cartService, ProductService productService) {
         this.cartService = cartService;
+        this.productService = productService;
     }
 
     @PostMapping("/add")
@@ -86,6 +92,12 @@ public class CartController {
             cartItems = cartService.getCartItemsByMember(member.getMemberCode());
         } else if (guest != null) {
             cartItems = cartService.getCartItemsByGuest(guest.getGuestCode());
+        }
+        for(int i=0; i<cartItems.size(); i++) {
+            if(productService.isSpecialSale(cartItems.get(i).getProductCode()) > 0){
+                cartItems.get(i).getProductDto().setSale(true);
+                cartItems.get(i).getPriceDto().setPriceSelling(productService.getProductDetailSalePrice(cartItems.get(i).getProductCode()));
+            }
         }
         System.out.println("cartItems = " + cartItems);
         mav.addObject("cartItems", cartItems);

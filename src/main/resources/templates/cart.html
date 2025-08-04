@@ -176,8 +176,10 @@
 
         .delivery-info {
             font-size: 12px;
-            color: #EE386D;
+            color: #666;
             margin-top: 4px;
+            display: flex;
+            align-items: center;
         }
 
         .item-controls {
@@ -437,6 +439,12 @@
             color: #EE386D;
         }
 
+        .special-sale-text {
+            color: #ee386d;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+
         /* 반응형 */
         @media (max-width: 1024px) {
             .cart-layout {
@@ -635,7 +643,10 @@
                                   th:if="${item.priceDto.priceOriginal > item.priceDto.priceSelling}"
                                   th:text="${#numbers.formatInteger(item.priceDto.priceOriginal + (item.productOptionDto?.optionPrice ?: 0), 3, 'COMMA')} + '원'">30,000원</span>
                         </div>
-                        <div class="delivery-info">일반배송</div>
+                        <div class="delivery-info">
+                            일반배송
+                            <span class="special-sale-text" th:if="${item.productDto.sale}"> • 이달의 특가</span>
+                        </div>
                     </div>
 
                     <div class="item-controls">

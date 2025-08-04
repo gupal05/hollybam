@@ -59,23 +59,51 @@
 
     <select id="selectSpecialSaleList" parameterType="String" resultType="map">
         SELECT
-            ss.special_sale_code as specialSaleCode,
-            ss.product_code as productCode,
-            ss.special_sale_price as specialSalePrice,
-            ss.start_date as startDate,
-            ss.special_sale_per as specialSalePer,
-            p.product_name as productName,
-            p.product_id as productId,
-            pr.price_original as priceOriginal,
-            pr.price_selling as priceSelling,
-            i.image_url as imageUrl
+            ss.special_sale_code AS specialSaleCode,
+            ss.product_code AS productCode,
+            ss.special_sale_price AS specialSalePrice,
+            ss.start_date AS startDate,
+            ss.special_sale_per AS specialSalePer,
+            p.product_name AS productName,
+            p.product_id AS productId,
+            pr.price_original AS priceOriginal,
+            pr.price_selling AS priceSelling,
+            i.image_url AS imageUrl,
+
+            -- wishlist count
+            COALESCE(w.wishlistCount, 0) AS wishlistCount,
+
+            -- 리뷰 평균 평점 및 리뷰 수
+            COALESCE(rv.reviewAvg, 0) AS reviewAvg,
+            COALESCE(rv.reviewCount, 0) AS reviewCount
+
         FROM special_sale ss
-                 JOIN product p
-                      ON ss.product_code = p.product_code
-                 LEFT JOIN price pr
-                           ON p.product_code = pr.product_code
-                 LEFT JOIN image i
-                           ON p.product_code = i.product_code AND i.image_type = 'title'
+                 JOIN product p ON ss.product_code = p.product_code
+                 LEFT JOIN price pr ON p.product_code = pr.product_code
+                 LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
+
+            -- wishlist count 서브쿼리
+                 LEFT JOIN (
+            SELECT
+                product_code,
+                COUNT(*) AS wishlistCount
+            FROM wishlist
+            GROUP BY product_code
+        ) w ON p.product_code = w.product_code
+
+            -- review 평균 평점 및 리뷰 수 서브쿼리
+                 LEFT JOIN (
+            SELECT
+                oi.product_code,
+                ROUND(AVG(r.rating), 1) AS reviewAvg,
+                COUNT(*) AS reviewCount
+            FROM review r
+                     JOIN order_items oi ON r.order_item_code = oi.order_item_code
+            GROUP BY oi.product_code
+        ) rv ON p.product_code = rv.product_code
+
         WHERE ss.start_date = #{startDate}
     </select>
+
+
 </mapper>

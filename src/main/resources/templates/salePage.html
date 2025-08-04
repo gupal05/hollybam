@@ -213,7 +213,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            min-height: 140px;
+            min-height: 180px;
         }
 
         .card-product-title {
@@ -228,11 +228,21 @@
             overflow: hidden;
         }
 
+        /* 가격과 긴급성 정보 컨테이너 - 가로 배치 */
+        .price-urgency-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 5px;
+            min-height: 24px;
+        }
+
         .card-product-price {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 5px;
+            flex: 1;
             min-height: 24px;
         }
 
@@ -270,15 +280,94 @@
             text-overflow: ellipsis;
         }
 
+        /* 긴급성 정보 컨테이너 - 재고만 */
+        .urgency-container {
+            display: flex;
+            align-items: flex-end;
+            min-width: 80px;
+        }
+
+        /* 남은 수량 정보 */
+        .stock-info {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.05);
+        }
+
+        .stock-info.low-stock {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .stock-info.medium-stock {
+            color: #f39c12;
+            background: rgba(243, 156, 18, 0.1);
+        }
+
+        .stock-info.high-stock {
+            color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .stock-icon {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
+        /* 남은 시간 정보 */
+        .time-info {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.05);
+        }
+
+        .time-info.urgent {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .time-info.hidden {
+            display: none;
+        }
+
+        .time-icon {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
+        .countdown-timer {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
         .product_review_container {
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: space-between;
+            gap: 10px;
             font-size: 11px;
             color: #888888;
             font-weight: 600;
-            margin-top: auto;
+            margin-top: 0;
             min-height: 16px;
+        }
+
+        .review-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .heart-icon, .star-icon {
@@ -464,6 +553,19 @@
             .sale-banner {
                 height: 250px;
             }
+
+            .card-product-info {
+                min-height: 160px;
+            }
+
+            .urgency-container {
+                min-width: 70px;
+            }
+
+            .product_review_container {
+                font-size: 10px;
+                gap: 8px;
+            }
         }
 
         /* 태블릿 (1024px 이하) */
@@ -491,6 +593,19 @@
 
             .sale-banner {
                 height: 220px;
+            }
+
+            .card-product-info {
+                min-height: 150px;
+            }
+
+            .urgency-container {
+                min-width: 65px;
+            }
+
+            .product_review_container {
+                font-size: 10px;
+                gap: 8px;
             }
         }
 
@@ -524,6 +639,7 @@
 
             .product_review_container {
                 font-size: 10px;
+                gap: 6px;
             }
 
             .filter-container {
@@ -538,6 +654,23 @@
 
             .sale-banner {
                 height: 200px;
+            }
+
+            .card-product-info {
+                min-height: 140px;
+            }
+
+            .stock-info, .time-info {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+
+            .urgency-container {
+                min-width: 60px;
+            }
+
+            .price-urgency-container {
+                gap: 8px;
             }
         }
 
@@ -638,6 +771,29 @@
                 height: 36px;
                 font-size: 13px;
             }
+
+            .card-product-info {
+                min-height: 130px;
+            }
+
+            .stock-info, .time-info {
+                font-size: 9px;
+                padding: 3px 5px;
+                gap: 4px;
+            }
+
+            .urgency-container {
+                min-width: 55px;
+            }
+
+            .product_review_container {
+                font-size: 9px;
+                gap: 5px;
+            }
+
+            .price-urgency-container {
+                gap: 6px;
+            }
         }
 
         /* 모바일 세로 소형 (600px 이하) */
@@ -714,6 +870,60 @@
                 height: 32px;
                 font-size: 12px;
             }
+
+            .card-product-info {
+                min-height: 120px;
+            }
+
+            .stock-info, .time-info {
+                font-size: 8px;
+            }
+
+            .product_review_container {
+                font-size: 9px;
+                min-height: 14px;
+                gap: 4px;
+            }
+
+            .heart-icon, .star-icon {
+                width: 10px;
+                height: 10px;
+            }
+
+            .sale-banner {
+                height: 160px;
+            }
+
+            .filter-section {
+                padding: 12px 0;
+            }
+
+            .filter-container {
+                padding: 0 14px;
+            }
+
+            .pagination a,
+            .pagination span {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .card-product-info {
+                min-height: 120px;
+            }
+
+            .stock-info, .time-info {
+                font-size: 8px;
+            }
+
+            .urgency-container {
+                min-width: 50px;
+            }
+
+            .price-urgency-container {
+                gap: 4px;
+            }
         }
 
         /* 모바일 세로 극소형 (480px 이하) */
@@ -741,7 +951,7 @@
             }
 
             .card-product-info {
-                min-height: 90px;
+                min-height: 110px;
                 gap: 2px;
             }
 
@@ -804,6 +1014,24 @@
                 height: 28px;
                 font-size: 11px;
             }
+
+            .stock-info, .time-info {
+                font-size: 7px;
+            }
+
+            .urgency-container {
+                min-width: 45px;
+            }
+
+            .product_review_container {
+                font-size: 8px;
+                min-height: 12px;
+                gap: 3px;
+            }
+
+            .price-urgency-container {
+                gap: 3px;
+            }
         }
 
         /* 모바일 세로 초소형 (360px 이하) */
@@ -823,6 +1051,27 @@
 
             .delivery-text {
                 font-size: 7px;
+            }
+
+            .stock-info, .time-info {
+                font-size: 6px;
+            }
+
+            .stock-icon, .time-icon {
+                font-size: 6px;
+            }
+
+            .urgency-container {
+                min-width: 40px;
+            }
+
+            .product_review_container {
+                font-size: 7px;
+                gap: 2px;
+            }
+
+            .price-urgency-container {
+                gap: 2px;
             }
         }
     </style>
@@ -878,10 +1127,6 @@
             <article class="v4-product" th:each="product : ${saleProducts}">
                 <a class="card-product-widget" th:href="@{'/product/' + ${product.productId}}">
                     <div class="card-product-img">
-                        <!-- 특가 배지 -->
-<!--                        <div class="card-product-top-text">-->
-<!--                            <span th:text="${product.specialSalePer} + '% OFF'">68% OFF</span>-->
-<!--                        </div>-->
                         <!-- 상품 이미지 -->
                         <img class="product-img"
                              th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageUrl}"
@@ -891,14 +1136,26 @@
                         <!-- 상품명 -->
                         <p class="card-product-title" th:text="${product.productName}">상품 이름</p>
 
-                        <!-- 가격 정보 -->
-                        <div class="card-product-price">
-                            <!-- 할인율 -->
-                            <div class="sale-perc" th:text="${product.specialSalePer} + '%'">68%</div>
-                            <!-- 특가 가격 -->
-                            <div class="sale_price" th:text="${#numbers.formatInteger(product.specialSalePrice, 3, 'COMMA')} + '원'">10,000원</div>
-                            <!-- 원래 가격 -->
-                            <div class="regular_price" th:text="${#numbers.formatInteger(product.priceOriginal, 3, 'COMMA')} + '원'">30,900원</div>
+                        <!-- 가격과 긴급성 정보 -->
+                        <div class="price-urgency-container">
+                            <!-- 가격 정보 -->
+                            <div class="card-product-price">
+                                <!-- 할인율 -->
+                                <div class="sale-perc" th:text="${product.specialSalePer} + '%'">68%</div>
+                                <!-- 특가 가격 -->
+                                <div class="sale_price" th:text="${#numbers.formatInteger(product.specialSalePrice, 3, 'COMMA')} + '원'">10,000원</div>
+                                <!-- 원래 가격 -->
+                                <div class="regular_price" th:text="${#numbers.formatInteger(product.priceOriginal, 3, 'COMMA')} + '원'">30,900원</div>
+                            </div>
+
+                            <!-- 긴급성 정보 - 재고만 -->
+                            <div class="urgency-container">
+                                <!-- 남은 수량 정보 -->
+                                <div class="stock-info low-stock">
+                                    <i class="stock-icon fas fa-cube"></i>
+                                    <span>재고 3개</span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- 배송 메시지 -->
@@ -907,12 +1164,20 @@
                             <span class="delivery-text">1시 이전 주문 시 당일발송</span>
                         </div>
 
-                        <!-- 리뷰 정보 (기본값으로 설정) -->
+                        <!-- 리뷰 정보와 시간 정보 -->
                         <div class="product_review_container">
-                            <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>0</span>
-                            <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>0.0 (0)</span>
+                            <div class="review-info">
+                                <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span th:text="${product.wishlistCount}">0</span>
+                                <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <span th:text="${product.reviewAvg}+' ('+${product.reviewCount}+')'">0.0 (0)</span>
+                            </div>
+
+                            <!-- 남은 시간 정보 -->
+                            <div class="time-info urgent">
+                                <i class="time-icon fas fa-clock"></i>
+                                <span class="countdown-timer">05:23:47</span>
+                            </div>
                         </div>
                     </div>
                 </a>
@@ -958,6 +1223,22 @@
         setInterval(updateDeliveryMessages, 60000);
         $(window).on('focus', updateDeliveryMessages);
 
+        // 카운트다운 타이머 초기화 (수정된 버전 사용)
+        initCountdownTimers();
+        setInterval(updateCountdownTimers, 1000);
+
+        // 자정이 지나면 다시 초기화 (매분마다 체크)
+        setInterval(function() {
+            const now = new Date();
+            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                // 자정이면 타이머 다시 초기화
+                initCountdownTimers();
+            }
+        }, 60000); // 1분마다 체크
+
+        // 재고 수량 임의 생성 및 표시
+        generateStockNumbers();
+
         // 필터 변경 이벤트 (현재는 클라이언트 사이드만 구현)
         $('#sortSelect, #discountSelect').on('change', function() {
             const sort = $('#sortSelect').val();
@@ -965,17 +1246,6 @@
 
             console.log('정렬:', sort, '할인율:', discount);
             // 서버로 요청 보내는 로직 추가 필요
-        });
-
-        // 위시리스트 버튼 클릭 이벤트
-        $('.wishlist-btn').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const productCode = $(this).data('product-code');
-            console.log('위시리스트 추가:', productCode);
-
-            // 위시리스트 처리 로직 구현 필요
         });
     });
 
@@ -1010,6 +1280,118 @@
             } else {
                 $message.addClass('hidden');
             }
+        });
+    }
+
+    // 재고 수량 임의 생성 함수
+    function generateStockNumbers() {
+        $('.stock-info').each(function() {
+            const $stockInfo = $(this);
+            const $span = $stockInfo.find('span');
+
+            // 1~30 사이의 랜덤 재고 수량 생성
+            const randomStock = Math.floor(Math.random() * 30) + 1;
+            $span.text(`재고 ${randomStock}개`);
+
+            // 재고에 따른 클래스 업데이트
+            $stockInfo.removeClass('low-stock medium-stock high-stock');
+            if (randomStock <= 5) {
+                $stockInfo.addClass('low-stock');     // 빨간색 텍스트
+            } else if (randomStock <= 15) {
+                $stockInfo.addClass('medium-stock');  // 주황색 텍스트
+            } else {
+                $stockInfo.addClass('high-stock');    // 초록색 텍스트
+            }
+        });
+    }
+
+    function isLastDayOfMonth() {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        // 내일의 월이 오늘의 월과 다르면 오늘이 마지막 날
+        return tomorrow.getMonth() !== today.getMonth();
+    }
+
+    // 해당 월의 마지막 시점(23:59:59)까지의 밀리초 반환
+    function getEndOfMonth() {
+        const today = new Date();
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
+        return endOfMonth.getTime();
+    }
+
+    // 카운트다운 타이머 초기화
+    function initCountdownTimers() {
+        $('.time-info').each(function() {
+            const $container = $(this);
+
+            // 현재 날짜가 월의 마지막 날인지 확인
+            if (isLastDayOfMonth()) {
+                // 마지막 날이면 그날 밤 12시까지의 시간으로 설정
+                const endTime = getEndOfMonth();
+                $container.data('end-time', endTime);
+
+                // 남은 시간 계산해서 urgent 클래스 적용 여부 결정
+                const now = new Date().getTime();
+                const distance = endTime - now;
+                const hoursLeft = Math.floor(distance / (1000 * 60 * 60));
+
+                // 6시간 이하면 urgent 클래스 추가
+                $container.removeClass('urgent');
+                if (hoursLeft <= 6) {
+                    $container.addClass('urgent');
+                }
+
+                // 타이머 표시
+                $container.removeClass('hidden');
+            } else {
+                // 마지막 날이 아니면 타이머 숨김
+                $container.addClass('hidden');
+            }
+        });
+    }
+
+    // 카운트다운 타이머 업데이트
+    function updateCountdownTimers() {
+        // 먼저 현재 날짜가 월의 마지막 날인지 다시 확인
+        if (!isLastDayOfMonth()) {
+            $('.time-info').addClass('hidden');
+            return;
+        }
+
+        $('.time-info').each(function() {
+            const $container = $(this);
+            const $timer = $container.find('.countdown-timer');
+            const endTime = $container.data('end-time');
+
+            if (!endTime) return;
+
+            const now = new Date().getTime();
+            const distance = endTime - now;
+
+            if (distance < 0) {
+                // 시간이 끝나면 "종료됨" 표시
+                $timer.text('종료됨');
+                $container.removeClass('urgent').css('opacity', '0.5');
+                return;
+            }
+
+            const hours = Math.floor(distance / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // 타이머 표시
+            $container.removeClass('hidden');
+
+            // 6시간 이하인 경우 urgent 클래스 추가
+            $container.removeClass('urgent');
+            if (hours <= 6) {
+                $container.addClass('urgent');
+            }
+
+            // 시간 표시
+            $timer.text(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
         });
     }
 </script>

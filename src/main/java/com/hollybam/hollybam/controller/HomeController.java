@@ -7,6 +7,7 @@ import com.hollybam.hollybam.dto.ProductDto;
 import com.hollybam.hollybam.services.*;
 import com.hollybam.hollybam.services.admin.AdminBannerServiceImpl;
 import com.hollybam.hollybam.services.admin.AdminPopupService;
+import com.hollybam.hollybam.services.admin.AdminSpecialSaleService;
 import com.hollybam.hollybam.services.nice.NiceCryptoTokenService;
 import com.hollybam.hollybam.util.NiceCryptoUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,6 +47,8 @@ public class HomeController {
     private AdminBannerServiceImpl adminBannerService;
     @Autowired
     private AdminPopupService adminPopupService;
+    @Autowired
+    private AdminSpecialSaleService adminSpecialSaleService;
 
     @GetMapping("/")
     public String introPage(HttpServletRequest request, Model model) {
@@ -156,10 +159,12 @@ public class HomeController {
         }
         for(int i = 0; i < proList.size(); i++){
             proList.get(i).setWishCount(productService.getWishCount(proList.get(i).getProductCode()));
+            proList.get(i).getPriceDtoList().get(0).setPercentage((proList.get(i).getPriceDtoList().get(0).getPriceOriginal() - proList.get(i).getPriceDtoList().get(0).getPriceSelling()) * 100 / proList.get(i).getPriceDtoList().get(0).getPriceOriginal());
         }
         List<ProductDto> newProList = productService.selectNewProducts();
         for(int i = 0; i < newProList.size(); i++){
             newProList.get(i).setWishCount(productService.getWishCount(newProList.get(i).getProductCode()));
+            newProList.get(i).getPriceDtoList().get(0).setPercentage((newProList.get(i).getPriceDtoList().get(0).getPriceOriginal() - newProList.get(i).getPriceDtoList().get(0).getPriceSelling()) * 100 / newProList.get(i).getPriceDtoList().get(0).getPriceOriginal());
         }
 
         // ⭐ 기존 코드를 최소 수정: 베스트 리뷰 조회 시 사용자별 좋아요 상태 포함
@@ -185,6 +190,25 @@ public class HomeController {
 
     @GetMapping("/special/sale")
     public ModelAndView specialSalePage(ModelAndView mav, HttpServletRequest request, HttpSession session){
+        // 현재 날짜 정보
+        LocalDate now = LocalDate.now();
+
+
+        // 파라미터가 없으면 현재 날짜 사용
+        int targetYear = now.getYear();
+        int targetMonth = now.getMonthValue();
+
+        // 날짜 문자열 생성 (YYYY-MM-01 형식)
+        String date = String.format("%d-%02d-01", targetYear, targetMonth);
+
+        System.out.println("조회할 날짜: " + date);
+
+        // 특가 상품 리스트 조회
+        List<Map<String, Object>> saleList = adminSpecialSaleService.selectSpecialSaleList(date);
+        System.out.println("saleList : "+saleList);
+        // 템플릿과 매칭되는 이름으로 전달
+        mav.addObject("saleProducts", saleList);
+        mav.addObject("totalCount", saleList.size()); // 총 상품 개수
         mav.setViewName("salePage");
         return mav;
     }

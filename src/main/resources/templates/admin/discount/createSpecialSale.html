@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이달의 특가 설정 - 관리자</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* 레이아웃 */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid #e9ecef;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .sidebar-header h1 {
+            color: #212529;
+            font-size: 20px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            color: #adb5bd;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 25px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #212529;
+            background: #f8f9fa;
+            border-left-color: #212529;
+        }
+
+        .nav-link.has-submenu::after {
+            content: '+';
+            font-size: 16px;
+            font-weight: 300;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link.has-submenu.open::after {
+            transform: rotate(45deg);
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .submenu-link {
+            display: block;
+            padding: 12px 25px 12px 50px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+        }
+
+        .submenu-link:hover,
+        .submenu-link.active {
+            color: #212529;
+            background: #fff;
+            border-left-color: #212529;
+        }
+
+        /* 메인 컨텐츠 영역 */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+        }
+
+        /* 헤더 */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 40px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-info {
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 300;
+        }
+
+        .logout-btn {
+            background: #fff;
+            color: #212529;
+            border: 1px solid #212529;
+            padding: 8px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #212529;
+            color: #fff;
+        }
+
+        /* 컨테이너 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 페이지 타이틀 */
+        .page-title {
+            margin-bottom: 40px;
+        }
+
+        .page-title h2 {
+            color: #212529;
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .page-title p {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        /* 섹션 컨테이너 */
+        .section-container {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            padding: 30px 40px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            color: #212529;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .section-content {
+            padding: 40px;
+        }
+
+        /* 날짜 선택 영역 */
+        .date-selector {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .date-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-label {
+            color: #6c757d;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 400;
+            min-width: 40px;
+        }
+
+        .date-select {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            color: #212529;
+            font-size: 14px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .date-select:focus {
+            outline: none;
+            border-color: #212529;
+        }
+
+        .date-select:disabled {
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .search-btn {
+            background: #212529;
+            color: #fff;
+            border: 1px solid #212529;
+            padding: 12px 24px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #000;
+        }
+
+        /* 액션 버튼 영역 */
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .result-info {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .add-btn {
+            background: #fff;
+            color: #212529;
+            border: 1px solid #212529;
+            padding: 12px 24px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: #212529;
+            color: #fff;
+        }
+
+        /* 테이블 스타일 */
+        .special-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .special-table th,
+        .special-table td {
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .special-table th {
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        .special-table td {
+            color: #212529;
+        }
+
+        .special-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* 상품 정보 열만 왼쪽 정렬 */
+        .special-table td:first-child,
+        .special-table th:first-child {
+            text-align: left;
+        }
+
+        /* 상품 정보 스타일 */
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 1px solid #e9ecef;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-name {
+            color: #212529;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .product-code {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        /* 가격 정보 */
+        .price-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .original-price {
+            color: #6c757d;
+            text-decoration: line-through;
+            font-size: 13px;
+        }
+
+        .sale-price {
+            color: #dc3545;
+            font-weight: 400;
+        }
+
+        /* 할인율 표시 */
+        .discount-badge {
+            background: #dc3545;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        /* 액션 버튼들 */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-edit {
+            background: #fff;
+            color: #28a745;
+            border: 1px solid #28a745;
+            padding: 8px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .btn-delete {
+            background: #fff;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 8px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid #e9ecef;
+            width: 80%;
+            max-width: 1000px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 30px 40px 20px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+
+        .modal-title {
+            color: #212529;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .modal-search {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .category-search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            color: #212529;
+            font-size: 14px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #212529;
+        }
+
+        .modal-search-btn {
+            background: #212529;
+            color: #fff;
+            border: 1px solid #212529;
+            padding: 12px 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-search-btn:hover {
+            background: #000;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 40px;
+        }
+
+        .modal-footer {
+            padding: 20px 40px;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* 상품 선택 테이블 */
+        .product-select-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-select-table th,
+        .product-select-table td {
+            padding: 15px 10px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .product-select-table th {
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        .product-select-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* 상품 정보 열만 왼쪽 정렬 */
+        .product-select-table td:nth-child(2),
+        .product-select-table th:nth-child(2) {
+            text-align: left;
+        }
+
+        .product-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* 할인율 입력 */
+        .discount-input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .discount-input:focus {
+            outline: none;
+            border-color: #212529;
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state .empty-text {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state .empty-subtext {
+            font-size: 14px;
+            color: #adb5bd;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 0 20px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .section-content {
+                padding: 25px 20px;
+            }
+
+            .date-selector {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .date-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .action-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: stretch;
+            }
+
+            .special-table,
+            .product-select-table {
+                font-size: 12px;
+            }
+
+            .special-table th,
+            .special-table td,
+            .product-select-table th,
+            .product-select-table td {
+                padding: 10px 8px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 2% auto;
+                max-height: 90vh;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding: 20px;
+            }
+
+            .modal-search {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .category-search-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+
+        /* 엔터키 검색 지원 */
+        .search-input {
+            flex: 1;
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #212529;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="admin-layout">
+    <!-- 사이드바 -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1>HOLLYBAM</h1>
+            <p>Administrator</p>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-item">
+                <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+            </div>
+
+            <!-- 상품 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">상품 관리</a>
+                <div class="submenu">
+                    <a href="/admin/product/create" class="submenu-link">상품 등록</a>
+                    <a href="/admin/product/edit" class="submenu-link">상품 수정</a>
+                    <a href="/admin/product/list" class="submenu-link">상품 목록</a>
+                    <a href="#" class="submenu-link">재고 관리</a>
+                    <a href="#" class="submenu-link">상품 리뷰</a>
+                </div>
+            </div>
+
+            <!-- 할인권 관리 -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu open" onclick="toggleSubmenu(this)">할인권 관리</a>
+                <div class="submenu open">
+                    <a href="/admin/coupon/create" class="submenu-link">쿠폰 생성</a>
+                    <a href="/admin/discount/create" class="submenu-link">할인코드 생성</a>
+                    <a href="#" class="submenu-link active">이달의 특가 설정</a>
+                    <a href="#" class="submenu-link">쿠폰 사용내역</a>
+                    <a href="#" class="submenu-link">적립금 관리</a>
+                </div>
+            </div>
+
+            <!-- 기타 메뉴들 (간소화) -->
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">카테고리 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">카테고리 등록</a>
+                    <a href="#" class="submenu-link">카테고리 수정</a>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">주문 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">주문 현황</a>
+                    <a href="#" class="submenu-link">배송 관리</a>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">시스템 관리</a>
+                <div class="submenu">
+                    <a href="#" class="submenu-link">사이트 설정</a>
+                    <a href="#" class="submenu-link">관리자 계정</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="main-content">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="header-actions">
+                <div class="admin-info">
+                    관리자님 환영합니다
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    Sign Out
+                </button>
+            </div>
+        </header>
+
+        <!-- 컨테이너 -->
+        <div class="container">
+            <!-- 페이지 타이틀 -->
+            <div class="page-title">
+                <h2>이달의 특가 설정</h2>
+                <p>월별 특가 상품을 관리합니다</p>
+            </div>
+
+            <!-- 검색 조건 섹션 -->
+            <div class="section-container">
+                <div class="section-header">
+                    <h3 class="section-title">검색 조건</h3>
+                </div>
+                <div class="section-content">
+                    <div class="date-selector">
+                        <div class="date-group">
+                            <label class="date-label">년도</label>
+                            <select class="date-select" id="yearSelect">
+                                <option value="2024" th:selected="${currentYear == 2024}">2024년</option>
+                                <option value="2025" th:selected="${currentYear == 2025}">2025년</option>
+                                <option value="2026" th:selected="${currentYear == 2026}">2026년</option>
+                            </select>
+                        </div>
+                        <div class="date-group">
+                            <label class="date-label">월</label>
+                            <select class="date-select" id="monthSelect">
+                                <option value="1" th:selected="${currentMonth == 1}">1월</option>
+                                <option value="2" th:selected="${currentMonth == 2}">2월</option>
+                                <option value="3" th:selected="${currentMonth == 3}">3월</option>
+                                <option value="4" th:selected="${currentMonth == 4}">4월</option>
+                                <option value="5" th:selected="${currentMonth == 5}">5월</option>
+                                <option value="6" th:selected="${currentMonth == 6}">6월</option>
+                                <option value="7" th:selected="${currentMonth == 7}">7월</option>
+                                <option value="8" th:selected="${currentMonth == 8}">8월</option>
+                                <option value="9" th:selected="${currentMonth == 9}">9월</option>
+                                <option value="10" th:selected="${currentMonth == 10}">10월</option>
+                                <option value="11" th:selected="${currentMonth == 11}">11월</option>
+                                <option value="12" th:selected="${currentMonth == 12}">12월</option>
+                            </select>
+                        </div>
+                        <!-- onclick을 searchSpecialSalesSimple로 변경 -->
+                        <button class="search-btn" onclick="searchSpecialSalesSimple()">조회</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 특가 상품 리스트 섹션 -->
+            <div class="section-container">
+                <div class="section-header">
+                    <h3 class="section-title">특가 상품 목록</h3>
+                </div>
+                <div class="section-content">
+                    <div class="action-header">
+                        <div class="result-info" id="resultInfo">
+                <span th:text="|${currentYear}년 ${currentMonth}월 특가 상품 총 ${#lists.size(saleList)}개|">
+                    2025년 8월 특가 상품 총 0개
+                </span>
+                        </div>
+                        <button class="add-btn" onclick="openAddModal()">특가 상품 추가</button>
+                    </div>
+
+                    <!-- 특가 상품 테이블 -->
+                    <table class="special-table" id="specialTable" th:if="${!#lists.isEmpty(saleList)}">
+                        <thead>
+                        <tr>
+                            <th width="28%">상품 정보</th>
+                            <th width="12%">원래 가격</th>
+                            <th width="12%">판매가</th>
+                            <th width="10%">할인율</th>
+                            <th width="12%">특가</th>
+                            <th width="11%">시작일</th>
+                            <th width="15%">관리</th>
+                        </tr>
+                        </thead>
+                        <tbody id="specialTableBody">
+                        <tr th:each="sale : ${saleList}">
+                            <td>
+                                <div class="product-info">
+                                    <img th:src="|https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/${sale.imageUrl}|"
+                                         th:alt="${sale.productName}"
+                                         class="product-image"
+                                         onerror="this.src='https://via.placeholder.com/60x60'">
+                                    <div class="product-details">
+                                        <div class="product-name" th:text="${sale.productName}">상품명</div>
+                                        <div class="product-code" th:text="${sale.productId}">상품코드</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                                    <span th:text="|${#numbers.formatInteger(sale.priceOriginal, 0, 'COMMA')}|+'원'">₩0</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                                    <span th:text="|${#numbers.formatInteger(sale.priceSelling, 0, 'COMMA')}|+'원'">₩0</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="discount-badge"
+                                     th:text="${sale.specialSalePer} + '%'">
+                                    0%
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                        <span class="sale-price"
+                              th:text="|${#numbers.formatInteger(sale.specialSalePrice, 0, 'COMMA')}|+'원'">₩0</span>
+                                </div>
+                            </td>
+                            <td th:text="${sale.startDate}">2025-08-01</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-edit"
+                                            th:onclick="|editSpecialSale(${sale.specialSaleCode})|">수정</button>
+                                    <button class="btn-delete"
+                                            th:onclick="|deleteSpecialSale(${sale.specialSaleCode})|">삭제</button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 빈 상태 -->
+                    <div class="empty-state" id="emptyState" th:if="${#lists.isEmpty(saleList)}">
+                        <div class="empty-icon">📦</div>
+                        <div class="empty-text">등록된 특가 상품이 없습니다</div>
+                        <div class="empty-subtext">특가 상품을 추가해보세요</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 상품 추가 모달 -->
+<div id="addProductModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">특가 상품 추가</h3>
+            <div class="modal-search">
+                <div class="category-search-container">
+                    <select class="date-select" id="parentCategorySelect" style="min-width: 130px;">
+                        <option value="">상위 카테고리</option>
+                        <option th:each="category : ${cateList}"
+                                th:value="${category.categoryCode}"
+                                th:text="${category.categoryName}">
+                        </option>
+                    </select>
+                    <select class="date-select" id="childCategorySelect" style="min-width: 130px;" disabled>
+                        <option value="">하위 카테고리</option>
+                    </select>
+                </div>
+                <input type="text" class="search-input" id="productSearchInput" placeholder="상품명 또는 상품코드로 검색">
+                <button class="modal-search-btn" onclick="searchProducts()">검색</button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <table class="product-select-table">
+                <thead>
+                <tr>
+                    <th width="8%">선택</th>
+                    <th width="50%">상품 정보</th>
+                    <th width="20%">가격</th>
+                    <th width="22%">특가</th>
+                </tr>
+                </thead>
+                <tbody id="productSelectTableBody">
+                <!-- 샘플 상품 데이터 -->
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-delete" onclick="closeAddModal()">취소</button>
+            <button class="search-btn" onclick="addSelectedProducts()">추가</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 서브메뉴 토글
+    function toggleSubmenu(element) {
+        event.preventDefault();
+
+        const submenu = element.nextElementSibling;
+        const isOpen = submenu.classList.contains('open');
+
+        // 모든 서브메뉴 닫기
+        document.querySelectorAll('.submenu').forEach(menu => {
+            menu.classList.remove('open');
+        });
+        document.querySelectorAll('.nav-link.has-submenu').forEach(link => {
+            link.classList.remove('open');
+        });
+
+        // 클릭된 서브메뉴만 토글
+        if (!isOpen) {
+            submenu.classList.add('open');
+            element.classList.add('open');
+        }
+    }
+
+    // 로그아웃 처리
+    function logout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            fetch('/admin/auth/logout', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/admin/login';
+                    }
+                })
+                .catch(error => {
+                    console.error('로그아웃 오류:', error);
+                    window.location.href = '/admin/login';
+                });
+        }
+    }
+
+    // 특가 상품 조회 - AJAX로 수정
+    function searchSpecialSales() {
+        const year = document.getElementById('yearSelect').value;
+        const month = document.getElementById('monthSelect').value;
+
+        console.log('특가 상품 조회:', { year, month });
+
+        // 로딩 상태 표시
+        const tableBody = document.getElementById('specialTableBody');
+        const resultInfo = document.getElementById('resultInfo');
+        const specialTable = document.getElementById('specialTable');
+        const emptyState = document.getElementById('emptyState');
+
+        // 기존 테이블 숨기고 로딩 표시
+        if (specialTable) specialTable.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'none';
+
+        // 로딩 메시지 표시
+        resultInfo.innerHTML = '<div class="loading"><div class="loading-spinner"></div> 조회 중...</div>';
+
+        // AJAX로 데이터 조회
+        $.ajax({
+            url: window.location.pathname, // 현재 URL 사용
+            type: 'GET',
+            data: {
+                year: year,
+                month: month
+            },
+            success: function(response) {
+                // 성공시 페이지 리로드 (서버사이드 렌더링)
+                window.location.href = `${window.location.pathname}?year=${year}&month=${month}`;
+            },
+            error: function(err) {
+                console.error('조회 실패:', err);
+                resultInfo.textContent = '조회 중 오류가 발생했습니다.';
+
+                // 에러시 빈 상태 표시
+                if (emptyState) {
+                    emptyState.style.display = 'block';
+                }
+            }
+        });
+    }
+
+    // 또는 단순히 페이지 리로드하는 방식 (더 간단함)
+    function searchSpecialSalesSimple() {
+        const year = document.getElementById('yearSelect').value;
+        const month = document.getElementById('monthSelect').value;
+
+        // URL 파라미터로 이동
+        window.location.href = `${window.location.pathname}?year=${year}&month=${month}`;
+    }
+
+    // 모달 열기
+    function openAddModal() {
+        document.getElementById('addProductModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+
+        // 검색 필드 초기화
+        document.getElementById('productSearchInput').value = '';
+        document.getElementById('parentCategorySelect').value = '';
+        document.getElementById('childCategorySelect').value = '';
+        document.getElementById('childCategorySelect').disabled = true;
+
+        // 초기 상품 목록 로드
+        loadSearchResults('', '', '');
+    }
+
+    // 모달 닫기
+    function closeAddModal() {
+        document.getElementById('addProductModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+
+        // 체크박스 초기화
+        document.querySelectorAll('.product-checkbox').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+
+        // 할인율 입력 초기화
+        document.querySelectorAll('.discount-input').forEach(input => {
+            input.value = '';
+        });
+
+        // 검색 필드 초기화
+        document.getElementById('productSearchInput').value = '';
+        document.getElementById('parentCategorySelect').value = '';
+        document.getElementById('childCategorySelect').value = '';
+        document.getElementById('childCategorySelect').disabled = true;
+    }
+
+    // 상품 검색
+    function searchProducts() {
+        const searchTerm = document.getElementById('productSearchInput').value;
+        const parentCategory = document.getElementById('parentCategorySelect').value;
+        const childCategory = document.getElementById('childCategorySelect').value;
+
+        console.log('상품 검색:', {
+            keyword: searchTerm,
+            parentCategory: parentCategory,
+            childCategory: childCategory
+        });
+
+        // 로딩 상태 표시
+        const tableBody = document.getElementById('productSelectTableBody');
+        tableBody.innerHTML = '<tr><td colspan="4" class="loading"><div class="loading-spinner"></div> 검색 중...</td></tr>';
+
+        // 실제 구현에서는 AJAX로 상품 검색
+        setTimeout(() => {
+            loadSearchResults(searchTerm, parentCategory, childCategory);
+        }, 500);
+    }
+
+    // 검색 결과 로드
+    function loadSearchResults(keyword, parentCategory, childCategory) {
+        const tableBody = document.getElementById('productSelectTableBody');
+
+        $.ajax({
+            url: '/admin/special/sale/product',
+            type: 'GET',
+            data: {
+                keyword: keyword,
+                cateCode: parentCategory,
+                cdCode: childCategory
+            },
+            success: function(response) {
+                let results = '';
+
+                // 서버에서 받은 상품 리스트 (이미 필터링된 상태)
+                const products = response.products || [];
+
+                products.forEach(product => {
+                    results += createProductRow(product);
+                });
+
+                if (!results) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="empty-state">검색 결과가 없습니다.</td></tr>';
+                } else {
+                    tableBody.innerHTML = results;
+                }
+            },
+            error: function(err) {
+                console.error('상품 검색 실패:', err);
+                tableBody.innerHTML = '<tr><td colspan="4" class="empty-state">검색 중 오류가 발생했습니다.</td></tr>';
+            }
+        });
+    }
+
+    // 상품 행 생성 함수
+    function createProductRow(product) {
+        // 정가와 판매가 포맷팅
+        const formattedOriginalPrice = `${product.productOriginal.toLocaleString()}원`;
+        const formattedSellingPrice = `${product.productSelling.toLocaleString()}원`;
+
+        return `
+    <tr>
+        <td>
+            <input type="checkbox" class="product-checkbox" value="${product.productCode}">
+        </td>
+        <td>
+            <div class="product-info">
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/${product.productImage}"
+                     alt="상품 이미지"
+                     class="product-image"
+                     onerror="this.src='https://via.placeholder.com/60x60'">
+                <div class="product-details">
+                    <div class="product-name">${product.productName}</div>
+                    <div class="product-code">${product.productId}</div>
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="price-info">
+                <div class="original-price">${formattedOriginalPrice}</div>
+                <div>${formattedSellingPrice}</div>
+            </div>
+        </td>
+        <td>
+            <input type="number" class="discount-input" placeholder="특가 입력">
+        </td>
+    </tr>`;
+    }
+
+    // 상위 카테고리 변경 시 하위 카테고리 로드
+    function loadChildCategories(parentCategoryCode) {
+        const $childCategorySelect = $('#childCategorySelect');
+
+        // 초기화
+        $childCategorySelect.html('<option value="">하위 카테고리</option>');
+
+        if (parentCategoryCode) {
+            $childCategorySelect.prop('disabled', false);
+
+            $.ajax({
+                url: '/admin/special/sale/cate/detail',
+                type: 'GET',
+                data: { categoryCode: parentCategoryCode },
+                success: function (response) {
+                    const categories = response.cdList || [];
+
+                    categories.forEach(category => {
+                        const option = `<option value="${category.cdCode}">${category.cdName}</option>`;
+                        $childCategorySelect.append(option);
+                    });
+                },
+                error: function (err) {
+                    console.error('조회 실패:', err);
+                    alert('카테고리 조회 중 오류가 발생했습니다.');
+                }
+            });
+        } else {
+            $childCategorySelect.prop('disabled', true);
+        }
+    }
+
+    // 선택된 상품들을 특가로 추가
+    function addSelectedProducts() {
+        const selectedProducts = [];
+        const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+
+        checkboxes.forEach(checkbox => {
+            const row = checkbox.closest('tr');
+            const productCode = checkbox.value;
+            const discountInput = row.querySelector('.discount-input');
+            const salePrice = discountInput.value;
+            const yearStr = $('#yearSelect').val();
+            const monthStr = $('#monthSelect').val();
+
+            if (!salePrice || salePrice <= 0) {
+                alert('올바른 특가를 입력해주세요.');
+                discountInput.focus();
+                return;
+            }
+
+            selectedProducts.push({
+                year: yearStr,
+                month: monthStr,
+                productCode: productCode,
+                salePrice: salePrice
+            });
+        });
+
+        if (selectedProducts.length === 0) {
+            alert('추가할 상품을 선택해주세요.');
+            return;
+        }
+
+        $.ajax({
+            url: '/admin/special/sale/add',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(selectedProducts),
+            success: function(response) {
+                alert(`${selectedProducts.length}개 상품이 특가로 추가되었습니다.`);
+                closeAddModal();
+                // 현재 페이지 새로고침
+                location.reload();
+            },
+            error: function(err) {
+                console.error('특가 추가 실패:', err);
+                alert(err.responseJSON?.message || '특가 추가에 실패했습니다.');
+            }
+        });
+    }
+
+    // 특가 수정
+    function editSpecialSale(specialSaleCode) {
+        const newPrice = prompt('새로운 특가를 입력하세요:');
+
+        if (newPrice && !isNaN(newPrice) && newPrice > 0) {
+            $.ajax({
+                url: `/admin/special/sale/edit/${specialSaleCode}`,
+                type: 'PUT',
+                data: {
+                    specialSalePrice: newPrice
+                },
+                success: function(response) {
+                    alert('특가가 수정되었습니다.');
+                    location.reload();
+                },
+                error: function(err) {
+                    console.error('특가 수정 실패:', err);
+                    alert('특가 수정에 실패했습니다.');
+                }
+            });
+        }
+    }
+
+    // 특가 삭제
+    function deleteSpecialSale(specialSaleCode) {
+        if (confirm('이 특가를 삭제하시겠습니까?')) {
+            $.ajax({
+                url: `/admin/special/sale/delete/${specialSaleCode}`,
+                type: 'DELETE',
+                success: function(response) {
+                    alert('특가가 삭제되었습니다.');
+                    location.reload();
+                },
+                error: function(err) {
+                    console.error('특가 삭제 실패:', err);
+                    alert('특가 삭제에 실패했습니다.');
+                }
+            });
+        }
+    }
+
+    // 모달 외부 클릭 시 닫기
+    window.onclick = function(event) {
+        const modal = document.getElementById('addProductModal');
+        if (event.target === modal) {
+            closeAddModal();
+        }
+    }
+
+    // 초기 로드
+    document.addEventListener('DOMContentLoaded', function() {
+        // URL 파라미터에서 현재값 읽기
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentYear = urlParams.get('year') || new Date().getFullYear();
+        const currentMonth = urlParams.get('month') || (new Date().getMonth() + 1);
+
+        // 선택값 설정
+        document.getElementById('yearSelect').value = currentYear;
+        document.getElementById('monthSelect').value = currentMonth;
+
+        // 검색창 엔터키 이벤트
+        document.getElementById('productSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchProducts();
+            }
+        });
+
+        // 상위 카테고리 변경 이벤트
+        document.getElementById('parentCategorySelect').addEventListener('change', function() {
+            const selectedCategory = this.value;
+            loadChildCategories(selectedCategory);
+            // 카테고리 변경시 자동 검색
+            setTimeout(() => searchProducts(), 100);
+        });
+
+        // 하위 카테고리 변경 이벤트
+        document.getElementById('childCategorySelect').addEventListener('change', function() {
+            searchProducts();
+        });
+    });
+</script>
+</body>
+</html>

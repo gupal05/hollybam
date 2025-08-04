@@ -17,4 +17,6 @@ public class PriceDto {
     private int priceMargin;    // 이윤
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
+
+    private int percentage;
 }

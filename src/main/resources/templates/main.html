@@ -2398,7 +2398,7 @@
                             상품 설명
                         </div>
                         <div class="card-product-price">
-                            <div class="sale-perc">25%</div>
+                            <div class="sale-perc" th:text="${product.priceDtoList[0].percentage}+'%'">0%</div>
                             <div class="sale_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '원'">150,000원</div>
                             <div class="regular_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">200,000원</div>
                         </div>
@@ -2526,7 +2526,7 @@
                             상품 설명
                         </div>
                         <div class="card-product-price">
-                            <div class="sale-perc">15%</div>
+                            <div class="sale-perc" th:text="${product.priceDtoList[0].percentage}+'%'">0%</div>
                             <div class="sale_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '원'">150,000원</div>
                             <div class="regular_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">200,000원</div>
                         </div>
@@ -3234,7 +3234,7 @@
         // 페이지 로드 시 팝업 표시 (1초 지연)
         setTimeout(function() {
             showPopups();
-        }, 1000);
+        }, 0);
     });
 </script>
 

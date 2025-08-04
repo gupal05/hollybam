@@ -325,40 +325,6 @@
             transition: opacity 0.4s ease-in-out;
         }
 
-        /* Sold Out 처리 */
-        .v4-product.sold-out {
-            opacity: 0.7;
-        }
-
-        .v4-product.sold-out:hover {
-            transform: none;
-        }
-
-        .v4-product.sold-out .card-product-img img {
-            filter: grayscale(50%);
-        }
-
-        .v4-product.sold-out:hover .card-product-img img {
-            transform: none;
-        }
-
-        .sold-out-badge {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #e74c3c;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            z-index: 2;
-            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
-        }
-
         /* 배송 메시지 */
         .delivery-message {
             display: flex;
@@ -858,65 +824,6 @@
             .delivery-text {
                 font-size: 7px;
             }
-
-            .content {
-                padding: 20px 10px 0;
-            }
-
-            .section-title {
-                font-size: 16px;
-                margin-bottom: 12px;
-            }
-
-            .section-title::after {
-                width: 22px;
-            }
-
-            .product-row {
-                gap: 10px;
-            }
-
-            .card-product-title {
-                font-size: 9px;
-            }
-
-            .card-product-info {
-                min-height: 80px;
-                gap: 1px;
-            }
-
-            .sale_price {
-                font-size: 11px;
-            }
-
-            .regular_price {
-                font-size: 8px;
-            }
-
-            .card-product-description {
-                font-size: 7px;
-            }
-
-            .product_review_container {
-                font-size: 7px;
-                min-height: 10px;
-            }
-
-            .heart-icon, .star-icon {
-                width: 8px;
-                height: 8px;
-            }
-
-            .sale-banner {
-                height: 120px;
-            }
-
-            .pagination a,
-            .pagination span {
-                width: 24px;
-                height: 24px;
-                font-size: 10px;
-            }
         }
     </style>
 </head>
@@ -967,52 +874,50 @@
     <div class="inner-box">
         <div class="section-title">이달의 특가</div>
         <div class="product-row">
-            <article class="v4-product"
-                     th:each="product : ${saleProducts}"
-                     th:classappend="${product.productQuantity == null or product.productQuantity == 0} ? 'sold-out' : ''">
+            <!-- 특가 상품 동적 렌더링 -->
+            <article class="v4-product" th:each="product : ${saleProducts}">
                 <a class="card-product-widget" th:href="@{'/product/' + ${product.productId}}">
                     <div class="card-product-img">
-                        <!-- Sold Out 뱃지 -->
-                        <div class="sold-out-badge"
-                             th:if="${product.productQuantity == null or product.productQuantity == 0}">
-                            Sold Out
-                        </div>
+                        <!-- 특가 배지 -->
+<!--                        <div class="card-product-top-text">-->
+<!--                            <span th:text="${product.specialSalePer} + '% OFF'">68% OFF</span>-->
+<!--                        </div>-->
+                        <!-- 상품 이미지 -->
                         <img class="product-img"
-                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
-                             th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
-                             th:attr="data-hover=${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageWebp}"
-                             alt="상품 이미지" />
-                        <img class="product-img"
-                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
-                             th:unless="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
-                             alt="상품 이미지" />
+                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageUrl}"
+                             th:alt="${product.productName}" />
                     </div>
                     <div class="card-product-info">
+                        <!-- 상품명 -->
                         <p class="card-product-title" th:text="${product.productName}">상품 이름</p>
-                        <div class="card-product-description" th:text="${product.productDescription}">
-                            상품 설명
-                        </div>
+
+                        <!-- 가격 정보 -->
                         <div class="card-product-price">
-                            <!-- 할인율 계산 및 표시 -->
-                            <div class="sale-perc"
-                                 th:text="${T(java.lang.Math).round((1 - (product.priceDtoList[0].priceSelling / product.priceDtoList[0].priceOriginal)) * 100)} + '%'">
-                                25%
-                            </div>
-                            <div class="sale_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '원'">150,000원</div>
-                            <div class="regular_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">200,000원</div>
+                            <!-- 할인율 -->
+                            <div class="sale-perc" th:text="${product.specialSalePer} + '%'">68%</div>
+                            <!-- 특가 가격 -->
+                            <div class="sale_price" th:text="${#numbers.formatInteger(product.specialSalePrice, 3, 'COMMA')} + '원'">10,000원</div>
+                            <!-- 원래 가격 -->
+                            <div class="regular_price" th:text="${#numbers.formatInteger(product.priceOriginal, 3, 'COMMA')} + '원'">30,900원</div>
                         </div>
-                        <div class="delivery-message" th:unless="${product.productQuantity == null or product.productQuantity == 0}">
+
+                        <!-- 배송 메시지 -->
+                        <div class="delivery-message">
                             <i class="fas fa-shipping-fast delivery-icon"></i>
                             <span class="delivery-text">1시 이전 주문 시 당일발송</span>
                         </div>
+
+                        <!-- 리뷰 정보 (기본값으로 설정) -->
                         <div class="product_review_container">
                             <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span th:text="${product.wishCount}">0</span>
+                            <span>0</span>
                             <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + ')'">0.0 (0)</span>
+                            <span>0.0 (0)</span>
                         </div>
                     </div>
                 </a>
+
+                <!-- 위시리스트 버튼 -->
                 <div class="wishlist-wrap">
                     <button class="wishlist-btn"
                             th:data-product-code="${product.productCode}"
@@ -1030,41 +935,6 @@
             <h3 style="margin: 0 0 10px 0; font-size: 20px;">세일 상품이 없습니다</h3>
             <p style="margin: 0; font-size: 16px;">곧 새로운 할인 상품을 준비하겠습니다.</p>
         </div>
-
-        <!-- 페이지네이션 -->
-        <div class="pagination-section" th:if="${totalPages > 1}">
-            <div class="pagination">
-                <!-- 이전 페이지 -->
-                <a th:if="${currentPage > 1}"
-                   th:href="@{/sale(page=${currentPage - 1}, sort=${sort}, discount=${discount})}"
-                   title="이전 페이지">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-                <span th:unless="${currentPage > 1}" class="disabled">
-                    <i class="fas fa-chevron-left"></i>
-                </span>
-
-                <!-- 페이지 번호들 -->
-                <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
-                    <a th:if="${page != currentPage}"
-                       th:href="@{/sale(page=${page}, sort=${sort}, discount=${discount})}"
-                       th:text="${page}">1</a>
-                    <span th:if="${page == currentPage}"
-                          class="current"
-                          th:text="${page}">1</span>
-                </th:block>
-
-                <!-- 다음 페이지 -->
-                <a th:if="${currentPage < totalPages}"
-                   th:href="@{/sale(page=${currentPage + 1}, sort=${sort}, discount=${discount})}"
-                   title="다음 페이지">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-                <span th:unless="${currentPage < totalPages}" class="disabled">
-                    <i class="fas fa-chevron-right"></i>
-                </span>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -1073,57 +943,29 @@
 
 <script>
     $(document).ready(function() {
-        // 상품 이미지 호버 효과
-        const imgs = document.querySelectorAll(".product-img");
-        imgs.forEach(img => {
-            const originalSrc = img.getAttribute("src");
-            const hoverSrc = img.getAttribute("data-hover");
-
-            if (hoverSrc && hoverSrc !== 'blob' && hoverSrc.trim() !== '') {
-                img.addEventListener("mouseenter", () => {
-                    img.setAttribute("src", hoverSrc);
-                });
-
-                img.addEventListener("mouseleave", () => {
-                    img.setAttribute("src", originalSrc);
-                });
+        // 상품 이미지 호버 효과 (hover 이미지가 없으므로 scale 효과만)
+        $('.v4-product').hover(
+            function() {
+                $(this).find('.card-product-img img').css('transform', 'scale(1.05)');
+            },
+            function() {
+                $(this).find('.card-product-img img').css('transform', 'scale(1)');
             }
-        });
+        );
 
         // 배송 메시지 업데이트
         updateDeliveryMessages();
         setInterval(updateDeliveryMessages, 60000);
         $(window).on('focus', updateDeliveryMessages);
 
-        // 필터 변경 이벤트
+        // 필터 변경 이벤트 (현재는 클라이언트 사이드만 구현)
         $('#sortSelect, #discountSelect').on('change', function() {
             const sort = $('#sortSelect').val();
             const discount = $('#discountSelect').val();
 
-            const url = new URL(window.location);
-            url.searchParams.set('page', '1'); // 필터 변경 시 첫 페이지로
-            url.searchParams.set('sort', sort);
-
-            if (discount) {
-                url.searchParams.set('discount', discount);
-            } else {
-                url.searchParams.delete('discount');
-            }
-
-            window.location.href = url.toString();
+            console.log('정렬:', sort, '할인율:', discount);
+            // 서버로 요청 보내는 로직 추가 필요
         });
-
-        // URL 파라미터로 필터 상태 복원
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentSort = urlParams.get('sort');
-        const currentDiscount = urlParams.get('discount');
-
-        if (currentSort) {
-            $('#sortSelect').val(currentSort);
-        }
-        if (currentDiscount) {
-            $('#discountSelect').val(currentDiscount);
-        }
 
         // 위시리스트 버튼 클릭 이벤트
         $('.wishlist-btn').on('click', function(e) {
@@ -1131,8 +973,9 @@
             e.stopPropagation();
 
             const productCode = $(this).data('product-code');
-            // 위시리스트 처리 로직 구현
             console.log('위시리스트 추가:', productCode);
+
+            // 위시리스트 처리 로직 구현 필요
         });
     });
 

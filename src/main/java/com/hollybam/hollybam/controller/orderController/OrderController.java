@@ -909,10 +909,75 @@ public class OrderController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createDirectTransfer(HttpSession session, @RequestBody Map<String, Object> orderData) throws Exception {
         Map<String, Object> response = new HashMap<>();
-        System.out.println("오더 : "+orderData);
         OrderDto order = orderService.createDirectOrderByTrans(orderData, session);
         response.put("success", true);
         response.put("orderId", order.getOrderId());
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 🚀 결제창 닫힘 즉시 주문 삭제 API
+     * - 지연 시간 없이 바로 DELETE 처리
+     * - 빠른 응답을 위해 최적화
+     */
+    @PostMapping("/delete-unpaid-instant")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteUnpaidOrderInstant(
+            @RequestBody Map<String, Object> deleteData,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            String orderId = (String) deleteData.get("orderId");
+            Integer orderCode = (Integer) deleteData.get("orderCode");
+            String reason = (String) deleteData.get("reason");
+
+            log.info("⚡ 즉시 주문 삭제 요청 - orderId: {}", orderId);
+
+            // 🚀 빠른 처리를 위해 간소화된 검증
+
+            // 1. 기본 검증만 수행 (시간 절약)
+            if (orderId == null || orderCode == null) {
+                result.put("success", false);
+                result.put("message", "필수 정보가 누락되었습니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            // 2. 권한 확인 (간소화)
+            if (!hasValidSession(session)) {
+                result.put("success", false);
+                result.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            // 3. 🎯 즉시 삭제 실행 (상세 검증 생략하고 바로 처리)
+            boolean deleted = orderService.instantDeleteOrder(orderId, reason);
+
+            if (deleted) {
+                result.put("success", true);
+                result.put("message", "주문이 즉시 삭제되었습니다.");
+                log.info("✅ 즉시 주문 삭제 완료 - orderId: {}", orderId);
+            } else {
+                result.put("success", false);
+                result.put("message", "주문 삭제에 실패했습니다.");
+            }
+
+        } catch (Exception e) {
+            log.error("❌ 즉시 주문 삭제 실패", e);
+            result.put("success", false);
+            result.put("message", "처리 중 오류가 발생했습니다.");
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 세션 유효성 간단 확인
+     */
+    private boolean hasValidSession(HttpSession session) {
+        MemberDto member = (MemberDto) session.getAttribute("member");
+        GuestDto guest = (GuestDto) session.getAttribute("guest");
+        return (member != null || guest != null);
     }
 }

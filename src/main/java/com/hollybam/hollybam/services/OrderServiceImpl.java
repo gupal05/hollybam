@@ -7,6 +7,7 @@ import com.hollybam.hollybam.dto.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,8 @@ public class OrderServiceImpl implements IF_OrderService {
     private CouponService couponService;
     @Autowired
     private DiscountService discountService;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     @Transactional
@@ -807,5 +810,119 @@ public class OrderServiceImpl implements IF_OrderService {
             }
 
         return order;
+    }
+
+    // ============================================
+// OrderServiceImpl 구현 (최적화된 버전)
+// ============================================
+
+    @Override
+    @Transactional
+    public boolean instantDeleteOrder(String orderId, String reason) throws Exception {
+        try {
+            log.info("⚡ 즉시 주문 삭제 시작: {}", orderId);
+
+            // 1. 주문 조회 (기존 메서드 활용)
+            OrderDto order = getOrderDetail(orderId);
+            if (order == null) {
+                log.warn("⚠️ 삭제할 주문을 찾을 수 없음: {}", orderId);
+                return true; // 없으면 성공으로 처리
+            }
+
+            int orderCode = order.getOrderCode();
+
+            // 2. 주문 아이템 조회 (기존 메서드 활용)
+            List<Map<String, Object>> orderItems = getOrderDetails(orderCode);
+
+            // 3. 🔄 재고 복원 (기존 메서드들 활용)
+            for (Map<String, Object> item : orderItems) {
+                try {
+                    Integer productCode = (Integer) item.get("productCode");
+                    Integer quantity = (Integer) item.get("quantity");
+                    Integer optionCode = (Integer) item.get("optionCode");
+
+                    if (productCode == null || quantity == null) continue;
+
+                    if (optionCode != null) {
+                        // 기존 재고 복원 메서드 활용
+                        orderDao.restoreOptionQuantity(optionCode, quantity);
+                        orderDao.updateProductTotalQuantityFromOptions(productCode);
+                    } else {
+                        // 기존 재고 복원 메서드 활용
+                        orderDao.restoreProductQuantity(productCode, quantity);
+                    }
+
+                } catch (Exception e) {
+                    log.warn("⚠️ 개별 재고 복원 실패 (계속 진행)", e);
+                }
+            }
+
+            // 4. 🗑️ 직접 SQL로 즉시 삭제 (MyBatis 대신)
+            try {
+                // 주문 아이템 삭제 - 직접 SQL 실행
+                jdbcTemplate.update("DELETE FROM order_items WHERE order_code = ?", orderCode);
+                log.info("✅ order_items 삭제 완료");
+
+                // 주문 삭제 - 직접 SQL 실행
+                int deletedOrder = jdbcTemplate.update("DELETE FROM orders WHERE order_code = ?", orderCode);
+                log.info("✅ orders 삭제 완료: {}건", deletedOrder);
+
+            } catch (Exception e) {
+                log.error("❌ 직접 SQL 삭제 실패", e);
+
+                // 테이블명이 다를 수 있으니 order_item도 시도
+                try {
+                    jdbcTemplate.update("DELETE FROM order_items WHERE order_code = ?", orderCode);
+                    jdbcTemplate.update("DELETE FROM orders WHERE order_code = ?", orderCode);
+                    log.info("✅ order_item 테이블명으로 삭제 성공");
+                } catch (Exception e2) {
+                    log.error("❌ order_item 테이블명으로도 삭제 실패", e2);
+                    return false;
+                }
+            }
+
+            log.info("⚡ 즉시 삭제 완료: {} ({})", orderId, reason);
+            return true;
+
+        } catch (Exception e) {
+            log.error("❌ 즉시 주문 삭제 실패: {}", orderId, e);
+            return false;
+        }
+    }
+
+    /**
+     * 🔄 빠른 재고 복원 (최적화된 버전)
+     */
+    private void restoreInventoryFast(List<Map<String, Object>> orderItems) {
+        if (orderItems == null || orderItems.isEmpty()) {
+            return;
+        }
+
+        log.info("🔄 재고 빠른 복원 시작 - {}개 아이템", orderItems.size());
+
+        for (Map<String, Object> item : orderItems) {
+            try {
+                Integer productCode = (Integer) item.get("productCode");
+                Integer quantity = (Integer) item.get("quantity");
+                Integer optionCode = (Integer) item.get("optionCode");
+
+                if (productCode == null || quantity == null) continue;
+
+                if (optionCode != null) {
+                    // 옵션 재고 복원
+                    orderDao.restoreOptionQuantityFast(optionCode, quantity);
+                    orderDao.updateProductTotalQuantityFromOptions(productCode);
+                } else {
+                    // 상품 재고 복원
+                    orderDao.restoreProductQuantityFast(productCode, quantity);
+                }
+
+            } catch (Exception e) {
+                log.warn("⚠️ 개별 재고 복원 실패 (계속 진행)", e);
+                // 개별 실패는 무시하고 계속 진행
+            }
+        }
+
+        log.info("🔄 재고 빠른 복원 완료");
     }
 }

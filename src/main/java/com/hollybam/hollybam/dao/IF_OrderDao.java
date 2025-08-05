@@ -69,4 +69,39 @@ public interface IF_OrderDao {
     void updatePaymentStatus(@Param("orderId") String orderId, @Param("status") String status);
 
     Map<String, Object> getCartProductName(@Param("orderCode") int orderCode);
+
+    /**
+     * 🗑️ 주문 아이템 삭제
+     */
+    int deleteOrderItems(int orderCode);
+
+    /**
+     * 🗑️ 주문 삭제 (조건부)
+     */
+    int deleteOrder(int orderCode);
+
+    /**
+     * 🗑️ 즉시 주문 삭제 (조건 없음)
+     */
+    int deleteOrderInstant(int orderCode);
+
+    /**
+     * 🚀 삭제용 주문 코드 조회
+     */
+    Integer getOrderCodeByIdForDelete(String orderId);
+
+    /**
+     * 🚀 재고 복원용 주문 아이템 조회
+     */
+    List<Map<String, Object>> getOrderItemsForRestore(int orderCode);
+
+    /**
+     * 🔄 빠른 옵션 재고 복원
+     */
+    int restoreOptionQuantityFast(@Param("optionCode") int optionCode, @Param("quantity") int quantity);
+
+    /**
+     * 🔄 빠른 상품 재고 복원
+     */
+    int restoreProductQuantityFast(@Param("productCode") int productCode, @Param("quantity") int quantity);
 }

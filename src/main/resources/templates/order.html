@@ -3251,6 +3251,350 @@
                 alert('주문 처리 중 네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.');
             });
     }
+
+
+
+
+    // ============================================
+    // 🚀 즉시 DELETE 방식 - 결제창 닫힌 순간 바로 삭제
+    // ============================================
+
+    let createdOrderInfo = null;
+    let isPaymentCompleted = false;
+    let instantDeletePolling = null;
+
+    // ============================================
+    // 방법 1: 초고속 폴링 (가장 빠른 감지)
+    // ============================================
+
+    function startInstantDeletePolling() {
+        console.log('⚡ 초고속 결제창 감지 시작 (100ms 간격)');
+
+        let focusLostTime = null;
+        let wasFocused = document.hasFocus();
+
+        instantDeletePolling = setInterval(() => {
+            const isFocused = document.hasFocus();
+            const isVisible = !document.hidden;
+
+            // 포커스를 잃었을 때 (결제창이 열렸을 가능성)
+            if (wasFocused && !isFocused) {
+                focusLostTime = Date.now();
+                console.log('👁️ 포커스 잃음 - 결제창 열림 감지');
+            }
+
+            // 포커스를 다시 얻었을 때 (결제창이 닫혔을 가능성)
+            if (!wasFocused && isFocused && focusLostTime) {
+                const timeLost = Date.now() - focusLostTime;
+                console.log(`👁️ 포커스 복원 - ${timeLost}ms 후`);
+
+                // 500ms 이상 포커스를 잃었다가 다시 얻으면 결제창 닫힘으로 판단
+                if (timeLost > 500 && !isPaymentCompleted && createdOrderInfo) {
+                    console.log('⚡ 결제창 닫힘 즉시 감지 - 주문 삭제 실행');
+                    clearInterval(instantDeletePolling);
+                    deleteOrderInstantly();
+                    return;
+                }
+
+                focusLostTime = null;
+            }
+
+            wasFocused = isFocused;
+
+        }, 100); // 100ms마다 체크 (매우 빠른 감지)
+    }
+
+    // ============================================
+    // 방법 2: 이벤트 기반 즉시 감지
+    // ============================================
+
+    function setupInstantDeleteEvents() {
+        console.log('⚡ 즉시 삭제 이벤트 설정');
+
+        let isWindowFocused = true;
+
+        // 창 포커스 잃음 (결제창 열림)
+        window.addEventListener('blur', function() {
+            isWindowFocused = false;
+            console.log('👁️ 창 포커스 잃음');
+        });
+
+        // 창 포커스 복원 (결제창 닫힘)
+        window.addEventListener('focus', function() {
+            if (!isWindowFocused && !isPaymentCompleted && createdOrderInfo) {
+                console.log('⚡ 창 포커스 복원 - 즉시 주문 삭제');
+                deleteOrderInstantly();
+            }
+            isWindowFocused = true;
+        });
+
+        // Page Visibility API (모바일 대응)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && !isPaymentCompleted && createdOrderInfo) {
+                console.log('⚡ 페이지 재활성화 - 즉시 주문 삭제');
+                deleteOrderInstantly();
+            }
+        });
+    }
+
+    // ============================================
+    // 방법 3: 키보드 이벤트 감지 (ESC 키)
+    // ============================================
+
+    function setupEscapeKeyDetection() {
+        console.log('⚡ ESC 키 감지 설정');
+
+        document.addEventListener('keydown', function(e) {
+            // ESC 키를 누르면 즉시 삭제 (결제창에서 ESC로 나가는 경우)
+            if (e.key === 'Escape' && !isPaymentCompleted && createdOrderInfo) {
+                console.log('⚡ ESC 키 감지 - 즉시 주문 삭제');
+
+                // 아주 짧은 딜레이 후 삭제 (ESC 처리 완료 대기)
+                setTimeout(() => {
+                    if (!isPaymentCompleted) {
+                        deleteOrderInstantly();
+                    }
+                }, 100);
+            }
+        });
+    }
+
+    // ============================================
+    // 방법 4: 마우스 이벤트 조합 감지
+    // ============================================
+
+    function setupMouseEventDetection() {
+        console.log('⚡ 마우스 이벤트 감지 설정');
+
+        let mouseOutTime = null;
+
+        // 마우스가 윈도우를 벗어남
+        window.addEventListener('mouseout', function(e) {
+            // 윈도우 바깥으로 나간 경우만 (자식 요소로 이동한 게 아님)
+            if (!e.relatedTarget || e.relatedTarget.nodeName === 'HTML') {
+                mouseOutTime = Date.now();
+            }
+        });
+
+        // 마우스가 윈도우로 다시 들어옴
+        window.addEventListener('mouseover', function(e) {
+            if (mouseOutTime && !isPaymentCompleted && createdOrderInfo) {
+                const timeOut = Date.now() - mouseOutTime;
+
+                // 1초 이상 마우스가 윈도우 밖에 있었다면 결제창에서 돌아온 것으로 판단
+                if (timeOut > 1000) {
+                    console.log('⚡ 마우스 복귀 감지 - 즉시 주문 삭제');
+                    deleteOrderInstantly();
+                }
+
+                mouseOutTime = null;
+            }
+        });
+    }
+
+    // ============================================
+    // 즉시 주문 삭제 실행
+    // ============================================
+
+    function deleteOrderInstantly() {
+        if (!createdOrderInfo || isPaymentCompleted) {
+            return;
+        }
+
+        console.log('🗑️ 즉시 주문 삭제 실행:', createdOrderInfo.orderId);
+
+        // 중복 실행 방지
+        const orderToDelete = createdOrderInfo;
+        createdOrderInfo = null; // 즉시 null로 설정
+
+        // 폴링 중지
+        if (instantDeletePolling) {
+            clearInterval(instantDeletePolling);
+            instantDeletePolling = null;
+        }
+
+        // 서버에 즉시 삭제 요청
+        fetch('/order/delete-unpaid-instant', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                orderId: orderToDelete.orderId,
+                orderCode: orderToDelete.orderCode,
+                reason: 'PAYMENT_WINDOW_CLOSED_INSTANT'
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ 주문 즉시 삭제 완료:', orderToDelete.orderId);
+                    showInstantMessage('결제가 취소되어 주문이 즉시 삭제되었습니다.');
+                } else {
+                    console.error('❌ 주문 즉시 삭제 실패:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('❌ 주문 즉시 삭제 요청 오류:', error);
+            })
+            .finally(() => {
+                cleanupInstantDelete();
+            });
+    }
+
+    // ============================================
+    // 즉시 삭제 시스템 정리
+    // ============================================
+
+    function cleanupInstantDelete() {
+        console.log('🧹 즉시 삭제 시스템 정리');
+
+        if (instantDeletePolling) {
+            clearInterval(instantDeletePolling);
+            instantDeletePolling = null;
+        }
+
+        // 이벤트 리스너는 자동으로 정리됨 (페이지 수준)
+        createdOrderInfo = null;
+    }
+
+    // ============================================
+    // 수정된 주문 생성 함수 (즉시 감지 버전)
+    // ============================================
+
+    function createOrder(orderData) {
+        if (!validatePaymentAmount(orderData)) {
+            return;
+        }
+
+        const endpoint = isDirect ? '/order/create-direct-order' : '/order/create-order';
+
+        console.log('📝 주문 생성 요청:', orderData);
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(orderData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ 주문 생성 완료 - DB에 INSERT됨:', data.orderId);
+
+                    // 🎯 생성된 주문 정보 저장
+                    createdOrderInfo = {
+                        orderId: data.orderId,
+                        orderCode: data.orderCode,
+                        createdAt: new Date().getTime()
+                    };
+
+                    isPaymentCompleted = false;
+
+                    // ⚡ 즉시 감지 시스템들 모두 활성화
+                    startInstantDeletePolling();    // 방법 1: 100ms 폴링
+                    setupInstantDeleteEvents();     // 방법 2: 이벤트 기반
+                    setupEscapeKeyDetection();      // 방법 3: ESC 키 감지
+                    setupMouseEventDetection();     // 방법 4: 마우스 이벤트
+
+                    // PG 폼 데이터 설정
+                    document.getElementById("goodsNm").value = data.goodsNm;
+                    document.getElementById("ordNo").value = data.orderId;
+                    document.getElementById("ordNm").value = data.ordNm;
+                    document.getElementById("ordTel").value = data.ordTel;
+                    document.getElementById("ordEmail").value = data.ordEmail;
+                    document.getElementById("goodsAmt").value = data.goodsAmt;
+                    document.getElementById("ediDate").value = data.ediDate;
+                    document.getElementById("encData").value = data.encData;
+                    document.getElementById("userIp").value = data.userIp;
+
+                    isPaymentProcessing = true;
+
+                    console.log('🚀 결제창 호출 - 즉시 삭제 시스템 활성화됨');
+
+                    // PG 결제창 호출
+                    document.getElementById('payBtn').click();
+
+                } else {
+                    alert('주문 생성 실패: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('주문 생성 오류:', error);
+                alert('주문 처리 중 오류가 발생했습니다.');
+            });
+    }
+
+    // ============================================
+    // 결제 완료 처리 (삭제 방지)
+    // ============================================
+
+    function pay_result_submit() {
+        console.log('💳 결제 완료 신호 - 즉시 삭제 방지');
+
+        // 🛡️ 결제 완료 플래그 설정 (가장 중요!)
+        isPaymentCompleted = true;
+
+        // 🧹 즉시 삭제 시스템 모두 정리
+        cleanupInstantDelete();
+
+        console.log('✅ 주문 데이터 보존됨 - 결제 완료 처리');
+
+        // 기존 결제 완료 처리
+        payResultSubmit();
+    }
+
+    // ============================================
+    // 즉시 메시지 표시
+    // ============================================
+
+    function showInstantMessage(message) {
+        console.log(`[INSTANT] ${message}`);
+
+        // 사용자에게 즉시 피드백 (기존 메시지 시스템 활용)
+        if (typeof showUserMessage === 'function') {
+            showUserMessage(message, 'success');
+        } else {
+            // 간단한 알림
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+            position: fixed; top: 20px; right: 20px;
+            background: #4CAF50; color: white;
+            padding: 15px; border-radius: 5px;
+            z-index: 10000; font-size: 14px;
+        `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+    }
+
+    // ============================================
+    // 디버깅 함수
+    // ============================================
+
+    window.debugInstantDelete = function() {
+        console.log('=== 즉시 삭제 시스템 상태 ===');
+        console.log('생성된 주문:', createdOrderInfo);
+        console.log('결제 완료 여부:', isPaymentCompleted);
+        console.log('폴링 활성:', instantDeletePolling ? '활성' : '비활성');
+        console.log('========================');
+    };
+
+    window.forceInstantDelete = function() {
+        console.log('🧪 테스트: 강제 즉시 삭제');
+        if (createdOrderInfo) {
+            deleteOrderInstantly();
+        } else {
+            console.log('삭제할 주문이 없습니다.');
+        }
+    };
 </script>
 </body>
 </html>

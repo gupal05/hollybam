@@ -50,4 +50,10 @@ public interface IF_OrderService {
     Map<String, Object> getCartProductName(int orderCode);
     OrderDto createOrderByBank(Map<String, Object> orderData, HttpSession session) throws Exception;
     OrderDto createDirectOrderByTrans(Map<String, Object> orderData, HttpSession session) throws Exception;
+
+    /**
+     * ⚡ 즉시 주문 삭제 (빠른 처리)
+     */
+    boolean instantDeleteOrder(String orderId, String reason) throws Exception;
+
 }

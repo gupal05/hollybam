@@ -520,4 +520,59 @@
                 WHERE order_code = 130
             ) AS itemCount;
     </select>
+
+    <!-- 🗑️ 주문 아이템 삭제 (즉시 삭제용) -->
+    <delete id="deleteOrderItems">
+        DELETE FROM order_items
+        WHERE order_code = #{orderCode}
+    </delete>
+
+    <!-- 🗑️ 주문 삭제 (즉시 삭제용) -->
+    <delete id="deleteOrder">
+        DELETE FROM orders
+        WHERE order_code = #{orderCode}
+          AND order_status = 'PENDING'
+          AND payment_status = 'PENDING'
+    </delete>
+
+    <!-- 🗑️ 즉시 주문 삭제 (조건 최소화) -->
+    <delete id="deleteOrderInstant">
+        DELETE FROM orders
+        WHERE order_code = #{orderCode}
+    </delete>
+
+    <!-- 🚀 주문 코드만 빠르게 조회 (삭제용) -->
+    <select id="getOrderCodeByIdForDelete" resultType="java.lang.Integer">
+        SELECT order_code
+        FROM orders
+        WHERE order_id = #{orderId}
+        AND order_status = 'PENDING'
+        AND payment_status = 'PENDING'
+        AND TIMESTAMPDIFF(MINUTE, create_at, NOW()) &lt;= 30
+        LIMIT 1
+    </select>
+
+    <!-- 🚀 재고 복원용 주문 아이템 빠른 조회 -->
+    <select id="getOrderItemsForRestore" resultType="java.util.HashMap">
+        SELECT
+            oi.product_code as productCode,
+            oi.quantity,
+            oi.option_code as optionCode
+        FROM order_items oi
+        WHERE oi.order_code = #{orderCode}
+    </select>
+
+    <!-- 🔄 빠른 옵션 재고 복원 -->
+    <update id="restoreOptionQuantityFast">
+        UPDATE product_option
+        SET option_quantity = option_quantity + #{quantity}
+        WHERE option_code = #{optionCode}
+    </update>
+
+    <!-- 🔄 빠른 상품 재고 복원 -->
+    <update id="restoreProductQuantityFast">
+        UPDATE product
+        SET product_quantity = product_quantity + #{quantity}
+        WHERE product_code = #{productCode}
+    </update>
 </mapper>

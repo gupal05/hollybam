@@ -1217,6 +1217,78 @@
                 padding-bottom: 70px;
             }
         }
+
+        .bank-transfer-section {
+            margin-top: 24px;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+
+        .bank-accounts {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bank-account {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .copy-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #5a6268;
+        }
+
+        .transfer-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: #e9ecef;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.5;
+        }
+
+        .transfer-info p {
+            margin: 0 0 4px 0;
+        }
+
+        .transfer-info p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 반응형 처리 */
+        @media (max-width: 768px) {
+            .bank-account {
+                flex-direction: column;
+                gap: 8px;
+                align-items: stretch;
+            }
+
+            .copy-btn {
+                align-self: flex-end;
+                width: fit-content;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1446,7 +1518,35 @@
                     </div>
                     <div class="payment-method">
                         <input type="radio" id="trans" name="payment" value="trans">
-                        <label for="trans">실시간계좌이체</label>
+                        <label for="trans">무통장입금</label>
+                    </div>
+                </div>
+
+                <!-- 🆕 무통장입금 선택 시 나타날 계좌정보 섹션 -->
+                <div class="bank-transfer-section" id="bankTransferSection" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">입금 계좌</label>
+                        <div class="bank-accounts">
+                            <div class="bank-account">
+                                <span>기업은행 381-129451-04-015 (주)혜안파트너스</span>
+                                <button type="button" class="copy-btn" onclick="copyAccountNumber('381-129451-04-015')">복사</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">입금자명</label>
+                        <input type="text"
+                               id="depositorName"
+                               class="form-input"
+                               placeholder="입금하실 분의 성함을 입력해주세요"
+                               maxlength="20">
+                        <div class="field-error" id="depositorName-error"></div>
+                    </div>
+
+                    <div class="transfer-info">
+                        <p>• 주문 후 24시간 이내 입금 / 입금 금액: <strong id="transferAmount">₩0</strong></p>
+                        <p>• 입금자명이 주문자명과 다를 경우 고객센터로 연락해주세요</p>
                     </div>
                 </div>
             </div>
@@ -1641,7 +1741,8 @@
         receiverAddr: false,
         agreeTerms: false,
         agreePrivacy: false,
-        agreeAdult: false
+        agreeAdult: false,
+        depositorName: true
     };
 
     $(document).ready(function() {
@@ -1882,6 +1983,13 @@
             $('.payment-method').removeClass('active');
             $(this).addClass('active');
             $(this).find('input[type="radio"]').prop('checked', true);
+
+            // 🆕 무통장입금 선택 시 계좌정보 표시/숨김
+            toggleBankTransferSection();
+        });
+
+        $('#depositorName').on('input', function() {
+            validateField('depositorName');
         });
 
         // 주문자 정보와 동일 체크박스
@@ -2219,6 +2327,10 @@
 
         // 적립금 관련 업데이트
         updateRewardAmount();
+
+        if ($('input[name="payment"]:checked').val() === 'trans') {
+            updateTransferAmount();
+        }
     }
 
     // 쿠폰 정보 업데이트
@@ -2354,6 +2466,16 @@
                     const addrDetail = $('#receiverAddrDetail').val().trim();
                     isValid = zip.length > 0 && addr.length > 0 && addrDetail.length > 0;
                     errorMessage = isValid ? '' : '주소를 모두 입력해주세요.';
+                }
+                break;
+
+            case 'depositorName':
+                const selectedPayment = $('input[name="payment"]:checked').val();
+                if (selectedPayment === 'trans') {
+                    isValid = value.length >= 2;
+                    errorMessage = isValid ? '' : '입금자명을 2글자 이상 입력해주세요.';
+                } else {
+                    isValid = true; // 무통장입금이 아닌 경우 검증 건너뛰기
                 }
                 break;
         }
@@ -2676,7 +2798,20 @@
                 resetPaymentButton();
             }
         } else if (selected === 'trans') {
-            alert('실시간 계좌이체가 선택되었습니다. 계좌이체 안내 메시지...');
+            try {
+                const orderData = collectOrderData();
+                if (!validateOrderData(orderData)) {
+                    return;
+                }
+
+                // 무통장입금 주문 생성
+                // createBankTransferOrder(orderData);
+                createOrderByTrans(orderData);
+
+            } catch (error) {
+                console.error('무통장입금 주문 처리 중 오류:', error);
+                alert('주문 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+            }
         }
     });
 
@@ -2697,6 +2832,7 @@
         const agreeAdult = document.getElementById('agree-adult').checked;
         const couponCode = document.getElementById('couponSelect')?.value || '';
         const discountCode = document.getElementById('discountCode')?.value || '';
+        const depositorName = document.getElementById('depositorName')?.value.trim() || '';
 
         let productCode, optionCode, quantity;
 
@@ -2737,7 +2873,8 @@
             // 🔥 추가 정보: 서버에서 할인 검증을 위한 데이터
             appliedCouponId: activeDiscount?.type === 'coupon' ? activeDiscount.couponId : null,
             appliedDiscountCode: activeDiscount?.type === 'code' ? activeDiscount.code : null,
-            totalDiscountAmount: totalDiscountAmount
+            totalDiscountAmount: totalDiscountAmount,
+            depositorName: depositorName
         };
     }
 
@@ -2879,6 +3016,54 @@
             });
     }
 
+    function createOrderByTrans(orderData) {
+        if (!validatePaymentAmount(orderData)) {
+            // resetPaymentButton();
+            return;
+        }
+
+        const endpoint = isDirect ? '/order/create-direct-transfer' : '/order/create-bank-transfer';
+
+        console.log('주문 생성 요청:', orderData);
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(orderData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('주문 생성 응답:', data);
+
+                if (data.success) {
+                    const serverFinalAmount = data.goodsAmt || data.finalAmount || orderData.finalAmount;
+
+                    console.log('서버 결제 금액:', serverFinalAmount);
+                    console.log('클라이언트 결제 금액:', orderData.finalAmount);
+
+                    isPaymentProcessing = true;
+
+                    window.location.href = `/order/order-complete/${data.orderId}`;
+                } else {
+                    alert('주문 처리 실패: ' + (data.message || '알 수 없는 오류가 발생했습니다.'));
+                    // resetPaymentButton();
+                }
+            })
+            .catch(error => {
+                console.error('주문 요청 오류:', error);
+                alert('주문 처리 중 네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.');
+                // resetPaymentButton();
+            });
+    }
+
     // 결제 완료 후 PG SDK가 호출
     function pay_result_submit(){
         payResultSubmit();  // 위 form을 returnUrl로 POST
@@ -2993,6 +3178,79 @@
         console.log('금액 일치 여부:', validatePaymentAmount(orderData));
         console.log('==================');
     };
+
+    function toggleBankTransferSection() {
+        const selectedPayment = $('input[name="payment"]:checked').val();
+        const bankSection = $('#bankTransferSection');
+
+        if (selectedPayment === 'trans') {
+            bankSection.slideDown(300);
+            updateTransferAmount();
+            // 입금자명 유효성 검사 활성화
+            validationState.depositorName = false;
+            updatePaymentButton();
+        } else {
+            bankSection.slideUp(300);
+            // 입금자명 유효성 검사 비활성화
+            validationState.depositorName = true;
+            clearFieldError('depositorName');
+            updatePaymentButton();
+        }
+    }
+
+    function updateTransferAmount() {
+        $('#transferAmount').text('₩' + currentTotalAmount.toLocaleString());
+    }
+
+    function copyAccountNumber(accountNumber) {
+        navigator.clipboard.writeText(accountNumber).then(function() {
+            showUserMessage(`계좌번호가 복사되었습니다: ${accountNumber}`, 'success');
+        }).catch(function() {
+            // 구버전 브라우저 대응
+            const textArea = document.createElement('textarea');
+            textArea.value = accountNumber;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showUserMessage(`계좌번호가 복사되었습니다: ${accountNumber}`, 'success');
+        });
+    }
+
+    function createBankTransferOrder(orderData) {
+        const endpoint = isDirect ? '/order/create-direct-bank-transfer' : '/order/create-bank-transfer';
+
+        console.log('무통장입금 주문 생성 요청:', orderData);
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(orderData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('무통장입금 주문 생성 응답:', data);
+
+                if (data.success) {
+                    // 주문 완료 페이지로 이동
+                    window.location.href = `/order/bank-transfer-complete/${data.orderId}`;
+                } else {
+                    alert('주문 처리 실패: ' + (data.message || '알 수 없는 오류가 발생했습니다.'));
+                }
+            })
+            .catch(error => {
+                console.error('무통장입금 주문 요청 오류:', error);
+                alert('주문 처리 중 네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.');
+            });
+    }
 </script>
 </body>
 </html>

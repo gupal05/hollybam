@@ -2,6 +2,8 @@
 package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dto.*;
+import jakarta.servlet.http.HttpSession;
+
 import java.util.List;
 import java.util.Map;
 
@@ -46,4 +48,6 @@ public interface IF_OrderService {
     void updatePaymentStatus(String orderId, String status);
 
     Map<String, Object> getCartProductName(int orderCode);
+    OrderDto createOrderByBank(Map<String, Object> orderData, HttpSession session) throws Exception;
+    OrderDto createDirectOrderByTrans(Map<String, Object> orderData, HttpSession session) throws Exception;
 }

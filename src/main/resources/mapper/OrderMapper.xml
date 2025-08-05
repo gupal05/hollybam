@@ -40,12 +40,12 @@
             order_id, mem_code, guest_code, orderer_name, orderer_phone, orderer_email,
             receiver_name, receiver_phone, receiver_zip, receiver_addr, receiver_addr_detail,
             delivery_request, payment_method, total_amount, discount_amount, delivery_fee,
-            final_amount, payment_status, adult_verified, adult_verified_at
+            final_amount, payment_status, adult_verified, adult_verified_at, depositor_name
         ) VALUES (
                      #{orderId}, #{memCode}, #{guestCode}, #{ordererName}, #{ordererPhone}, #{ordererEmail},
                      #{receiverName}, #{receiverPhone}, #{receiverZip}, #{receiverAddr}, #{receiverAddrDetail},
                      #{deliveryRequest}, #{paymentMethod}, #{totalAmount}, #{discountAmount}, #{deliveryFee},
-                     #{finalAmount}, #{paymentStatus}, #{adultVerified}, #{adultVerifiedAt}
+                     #{finalAmount}, #{paymentStatus}, #{adultVerified}, #{adultVerifiedAt}, #{depositorName}
                  )
     </insert>
 
@@ -92,14 +92,13 @@
             o.discount_amount,
             o.delivery_fee,
             o.final_amount,
-            o.pg_provider,
-            o.pg_tid,
             o.order_status,
             o.payment_status,
             o.adult_verified,
             o.adult_verified_at,
             o.create_at,
             o.update_at,
+            o.depositor_name,
             -- 사용된 적립금 포인트(음수 합계를 ABS()로 양수 변환, 없으면 0)
             COALESCE(
                     ABS(

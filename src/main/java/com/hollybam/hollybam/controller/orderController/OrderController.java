@@ -893,4 +893,26 @@ public class OrderController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/create-bank-transfer")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createBankTransfer(HttpSession session, @RequestBody Map<String, Object> orderData) throws Exception {
+        Map<String, Object> response = new HashMap<>();
+        System.out.println("오더 : "+orderData);
+        OrderDto order = orderService.createOrderByBank(orderData, session);
+        response.put("success", true);
+        response.put("orderId", order.getOrderId());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/create-direct-transfer")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createDirectTransfer(HttpSession session, @RequestBody Map<String, Object> orderData) throws Exception {
+        Map<String, Object> response = new HashMap<>();
+        System.out.println("오더 : "+orderData);
+        OrderDto order = orderService.createDirectOrderByTrans(orderData, session);
+        response.put("success", true);
+        response.put("orderId", order.getOrderId());
+        return ResponseEntity.ok(response);
+    }
 }

@@ -233,11 +233,13 @@ public class OrderServiceImpl implements IF_OrderService {
         OrderDto order = new OrderDto();
         order.setOrderId(generateOrderId());
 
-        if (orderData.get("memCode") != null) {
-            order.setMemCode((Integer) orderData.get("memCode"));
+        if(session.getAttribute("member") != null){
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            order.setMemCode(member.getMemberCode());
         }
-        if (orderData.get("guestCode") != null) {
-            order.setGuestCode((Integer) orderData.get("guestCode"));
+        if(session.getAttribute("guest") != null){
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+            order.setGuestCode(guest.getGuestCode());
         }
 
         order.setOrdererName((String) orderData.get("ordererName"));
@@ -260,7 +262,7 @@ public class OrderServiceImpl implements IF_OrderService {
 
         order.setAdultVerified((Boolean) orderData.getOrDefault("adultVerified", true));
         order.setAdultVerifiedAt(LocalDateTime.now());
-        order.setPgProvider("payster"); // 결제 기능 추가
+        order.setDepositorName((String) orderData.get("depositorName"));
 
         return order;
     }
@@ -671,5 +673,139 @@ public class OrderServiceImpl implements IF_OrderService {
     @Transactional
     public void updatePaymentStatus(String orderId, String status){
         orderDao.updatePaymentStatus(orderId, status);
+    }
+
+    @Override
+    @Transactional
+    public OrderDto createOrderByBank(Map<String, Object> orderData, HttpSession session) throws Exception {
+        int usePoints = Integer.parseInt(String.valueOf(orderData.get("usePoints")));
+        List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
+        List<CartDto> cartItems = paymentDao.selectCartItemsWithDetails(cartCodes);
+        OrderDto order = createOrderFromData(orderData, cartItems);
+        order.setDiscountAmount(order.getDiscountAmount() + usePoints);
+        orderDao.insertOrder(order);
+        List<OrderItemDto> orderItems = createOrderItemsFromCart(order.getOrderCode(), cartItems);
+        orderDao.insertOrderItems(orderItems);
+
+        int orderCode = order.getOrderCode();
+
+        if(session.getAttribute("member") != null){
+            MemberDto member =  (MemberDto) session.getAttribute("member");
+            Integer points = Integer.valueOf(String.valueOf(orderData.get("usePoints")));
+            int totalAmount = Integer.parseInt(String.valueOf(orderData.get("totalAmount")));
+            String couponCodeStr = String.valueOf(orderData.get("couponCode"));
+            String discountCodeStr = String.valueOf(orderData.get("discountCode"));
+            if (couponCodeStr != null && !couponCodeStr.trim().isEmpty()) {
+                int couponCode = Integer.parseInt(couponCodeStr);
+                int discountAmount = Integer.parseInt(String.valueOf(orderData.get("discountAmount")));
+                if (points != null && points > 0) {
+                    int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
+                    System.out.println(couponCode);
+                    System.out.println(orderCode);
+                    couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
+                    this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
+                } else {
+                    // ✅ 쿠폰만 사용
+                    int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
+                    couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
+                }
+            } else if (discountCodeStr != null && !discountCodeStr.trim().isEmpty()) {
+                DiscountDto discountDto = discountService.getDiscountByCode(discountCodeStr);
+                Integer discountCode = discountDto.getDiscountCode();
+                Integer discountAmount = Integer.valueOf(String.valueOf(orderData.get("discountAmount")));
+                if (points != null && points > 0) {
+                    // ✅ 할인코드 + 포인트 사용
+                    discountService.recordDiscountCodeUsage(discountCode, member.getMemberCode(), orderCode, discountAmount);
+                    this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
+                } else {
+                    // ✅ 할인코드만 사용
+                    discountService.recordDiscountCodeUsage(discountCode, member.getMemberCode(), orderCode, discountAmount);
+                }
+            } else if (points != null && points > 0) {
+                // ✅ 포인트만 사용
+                this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
+            } else {
+                // ❗ 아무 것도 안 쓴 경우
+                this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
+            }
+        }
+
+        updateInventory(orderItems);
+        orderDao.deleteCartItems(cartCodes);
+        for(OrderItemDto orderItem : orderItems) {
+                orderDao.updateOrderCount(orderItem);
+            }
+
+        return order;
+    }
+
+    @Override
+    @Transactional
+    public OrderDto createDirectOrderByTrans(Map<String, Object> orderData, HttpSession session) throws Exception {
+        int usePoints = Integer.parseInt(String.valueOf(orderData.get("usePoints")));
+        OrderDto order = createOrderFromData(orderData, null);
+        order.setDiscountAmount(order.getDiscountAmount() + usePoints);
+        orderDao.insertOrder(order);
+        int productCode = (Integer) orderData.get("productCode");
+        Integer optionCode = (Integer) orderData.get("optionCode");
+        int quantity = (Integer) orderData.get("quantity");
+        PriceDto priceDto = paymentDao.selectProductPrice(productCode);
+        ProductOptionDto optionDto = null;
+        if (optionCode != null) {
+            optionDto = paymentDao.selectProductOption(optionCode);
+        }
+        List<OrderItemDto> orderItems = createDirectOrderItems(order.getOrderCode(), productCode, optionCode, quantity, priceDto, optionDto);
+        orderDao.insertOrderItems(orderItems);
+
+        int orderCode = order.getOrderCode();
+
+        if(session.getAttribute("member") != null){
+            MemberDto member =  (MemberDto) session.getAttribute("member");
+            Integer points = Integer.valueOf(String.valueOf(orderData.get("usePoints")));
+            int totalAmount = Integer.parseInt(String.valueOf(orderData.get("totalAmount")));
+            String couponCodeStr = String.valueOf(orderData.get("couponCode"));
+            String discountCodeStr = String.valueOf(orderData.get("discountCode"));
+            if (couponCodeStr != null && !couponCodeStr.trim().isEmpty()) {
+                int couponCode = Integer.parseInt(couponCodeStr);
+                int discountAmount = Integer.parseInt(String.valueOf(orderData.get("discountAmount")));
+                if (points != null && points > 0) {
+                    int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
+                    System.out.println(couponCode);
+                    System.out.println(orderCode);
+                    couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
+                    this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
+                } else {
+                    // ✅ 쿠폰만 사용
+                    System.out.println(couponCode);
+                    int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
+                    couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
+                }
+            } else if (discountCodeStr != null && !discountCodeStr.trim().isEmpty()) {
+                DiscountDto discountDto = discountService.getDiscountByCode(discountCodeStr);
+                Integer discountCode = discountDto.getDiscountCode();
+                Integer discountAmount = Integer.valueOf(String.valueOf(orderData.get("discountAmount")));
+                if (points != null && points > 0) {
+                    // ✅ 할인코드 + 포인트 사용
+                    discountService.recordDiscountCodeUsage(discountCode, member.getMemberCode(), orderCode, discountAmount);
+                    this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
+                } else {
+                    // ✅ 할인코드만 사용
+                    discountService.recordDiscountCodeUsage(discountCode, member.getMemberCode(), orderCode, discountAmount);
+                }
+            } else if (points != null && points > 0) {
+                // ✅ 포인트만 사용
+                this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
+            } else {
+                // ❗ 아무 것도 안 쓴 경우
+                this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
+            }
+        }
+
+        updateInventory(orderItems);
+        for(OrderItemDto orderItem : orderItems) {
+                orderDao.updateOrderCount(orderItem);
+            }
+
+        return order;
     }
 }

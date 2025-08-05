@@ -2647,16 +2647,16 @@
         const selected = document.querySelector('input[name="payment"]:checked').value;
         if (selected === 'card') {
             // 결제 진행 중 상태로 변경
-            this.disabled = true;
-            this.classList.add('processing');
-            this.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>주문 처리 중...';
-
-            const mobileButton = document.getElementById('mobilePaymentButton');
-            if (mobileButton) {
-                mobileButton.disabled = true;
-                mobileButton.classList.add('processing');
-                mobileButton.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>주문 처리 중...';
-            }
+            // this.disabled = true;
+            // this.classList.add('processing');
+            // this.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>주문 처리 중...';
+            //
+            // const mobileButton = document.getElementById('mobilePaymentButton');
+            // if (mobileButton) {
+            //     mobileButton.disabled = true;
+            //     mobileButton.classList.add('processing');
+            //     mobileButton.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>주문 처리 중...';
+            // }
 
             try {
                 // 주문 데이터 수집
@@ -2695,9 +2695,8 @@
         const agreeTerms = document.getElementById('agree-terms').checked;
         const agreePrivacy = document.getElementById('agree-privacy').checked;
         const agreeAdult = document.getElementById('agree-adult').checked;
-        const couponCode   = document.getElementById('couponSelect')?.value   || '';
-        const discountCode = document.getElementById('discountCode')?.value   || '';
-
+        const couponCode = document.getElementById('couponSelect')?.value || '';
+        const discountCode = document.getElementById('discountCode')?.value || '';
 
         let productCode, optionCode, quantity;
 
@@ -2711,7 +2710,18 @@
             quantity = null;
         }
 
-        // 🆕 적립금 정보 추가
+        // 🔥 수정된 부분: 할인과 적립금이 적용된 실제 최종 금액 사용
+        const actualFinalAmount = currentTotalAmount; // 할인과 적립금이 모두 적용된 실제 결제 금액
+        const totalDiscountAmount = (activeDiscount ? activeDiscount.amount : 0) + currentUsePoints;
+
+        console.log('=== 주문 데이터 수집 ===');
+        console.log('원래 상품 금액:', paymentInfo.totalAmount?.toLocaleString());
+        console.log('활성 할인 금액:', activeDiscount ? activeDiscount.amount.toLocaleString() : '0');
+        console.log('사용 적립금:', currentUsePoints.toLocaleString());
+        console.log('총 할인 금액:', totalDiscountAmount.toLocaleString());
+        console.log('실제 최종 결제 금액:', actualFinalAmount.toLocaleString());
+        console.log('=====================');
+
         return {
             ordererName, ordererPhone, ordererEmail,
             receiverName, receiverPhone, receiverZip, receiverAddr, receiverAddrDetail, deliveryRequest,
@@ -2719,12 +2729,15 @@
             totalAmount: paymentInfo.totalAmount,
             discountAmount: activeDiscount ? activeDiscount.amount : 0,
             deliveryFee: paymentInfo.deliveryFee,
-            finalAmount: paymentInfo.finalAmount,
-            // finalAmount: 100,
+            finalAmount: actualFinalAmount, // 🔥 할인이 적용된 실제 최종 금액
             cartCodes: isDirect ? [] : cartCodes,
             productCode, optionCode, quantity,
             couponCode, discountCode, agreeTerms, agreePrivacy, agreeAdult,
-            usePoints: currentUsePoints  // 🆕 적립금 사용 정보 추가
+            usePoints: currentUsePoints,
+            // 🔥 추가 정보: 서버에서 할인 검증을 위한 데이터
+            appliedCouponId: activeDiscount?.type === 'coupon' ? activeDiscount.couponId : null,
+            appliedDiscountCode: activeDiscount?.type === 'code' ? activeDiscount.code : null,
+            totalDiscountAmount: totalDiscountAmount
         };
     }
 
@@ -2805,6 +2818,11 @@
 
     // 주문 생성 요청
     function createOrder(orderData) {
+        if (!validatePaymentAmount(orderData)) {
+            // resetPaymentButton();
+            return;
+        }
+
         const endpoint = isDirect ? '/order/create-direct-order' : '/order/create-order';
 
         console.log('주문 생성 요청:', orderData);
@@ -2827,6 +2845,11 @@
                 console.log('주문 생성 응답:', data);
 
                 if (data.success) {
+                    const serverFinalAmount = data.goodsAmt || data.finalAmount || orderData.finalAmount;
+
+                    console.log('서버 결제 금액:', serverFinalAmount);
+                    console.log('클라이언트 결제 금액:', orderData.finalAmount);
+
                     document.getElementById("goodsNm").value = data.goodsNm;
                     document.getElementById("ordNo").value = data.orderId;
                     document.getElementById("ordNm").value = data.ordNm;
@@ -2837,6 +2860,8 @@
                     document.getElementById("encData").value = data.encData;
                     document.getElementById("userIp").value = data.userIp;
 
+                    isPaymentProcessing = true;
+
                     document.getElementById('payBtn').click();
                     // window.location.href = `/pay`;
                     //window.location.href = `/order/order-complete/${data.orderId}`;
@@ -2844,13 +2869,13 @@
                     // processPayment(data.orderCode, orderData.finalAmount);
                 } else {
                     alert('주문 처리 실패: ' + (data.message || '알 수 없는 오류가 발생했습니다.'));
-                    resetPaymentButton();
+                    // resetPaymentButton();
                 }
             })
             .catch(error => {
                 console.error('주문 요청 오류:', error);
                 alert('주문 처리 중 네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.');
-                resetPaymentButton();
+                // resetPaymentButton();
             });
     }
 
@@ -2858,25 +2883,35 @@
     function pay_result_submit(){
         payResultSubmit();  // 위 form을 returnUrl로 POST
     }
-    function pay_result_close(){
-        // 팝업 닫힘 처리 (선택)
+    function pay_result_close() {
+        console.log('결제 팝업이 닫혔습니다. 버튼 상태를 복원합니다.');
+
+        // 결제 처리 중 상태 해제
+        isPaymentProcessing = false;
+
+        // 버튼 상태 복원
+        // resetPaymentButton();
+
+        // 사용자에게 알림 (선택사항)
+        showUserMessage('결제가 취소되었습니다.', 'info');
     }
 
     // 결제 버튼 상태 초기화
     function resetPaymentButton() {
-        // 데스크톱 버튼
-        const button = document.getElementById('paymentButton');
-        button.disabled = false;
-        button.classList.remove('processing');
-        button.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="paymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
+        console.log('버튼 리셋 함수 호출됨 (하지만 버튼 상태는 변경하지 않음)');
 
-        // 🆕 모바일 버튼도 동일하게 리셋
-        const mobileButton = document.getElementById('mobilePaymentButton');
-        if (mobileButton) {
-            mobileButton.disabled = false;
-            mobileButton.classList.remove('processing');
-            mobileButton.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="mobilePaymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
-        }
+        // 🔥 모든 버튼 상태 변경 코드 제거
+        // const button = document.getElementById('paymentButton');
+        // button.disabled = false;
+        // button.classList.remove('processing');
+        // button.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="paymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
+
+        // const mobileButton = document.getElementById('mobilePaymentButton');
+        // if (mobileButton) {
+        //     mobileButton.disabled = false;
+        //     mobileButton.classList.remove('processing');
+        //     mobileButton.innerHTML = `<i class="fas fa-lock" style="margin-right: 8px;"></i><span id="mobilePaymentButtonText">₩${currentTotalAmount.toLocaleString()} 결제하기</span>`;
+        // }
     }
 
     // 🆕 적립금 관련 글로벌 함수 노출
@@ -2924,6 +2959,40 @@
     function hideCouponMessage() {
         $('#couponMessage').removeClass('show');
     }
+
+    function validatePaymentAmount(orderData) {
+        const expectedAmount = calculateCurrentFinalAmount();
+
+        if (Math.abs(orderData.finalAmount - expectedAmount) > 1) { // 1원 차이까지는 허용 (반올림 오차)
+            console.error('결제 금액 불일치:', {
+                orderDataAmount: orderData.finalAmount,
+                expectedAmount: expectedAmount,
+                difference: Math.abs(orderData.finalAmount - expectedAmount)
+            });
+
+            alert(`결제 금액에 오류가 있습니다.\n예상 금액: ${expectedAmount.toLocaleString()}원\n주문 금액: ${orderData.finalAmount.toLocaleString()}원\n\n페이지를 새로고침하고 다시 시도해주세요.`);
+            return false;
+        }
+
+        return true;
+    }
+
+    window.debugPaymentAmount = function() {
+        console.log('=== 결제 금액 디버그 ===');
+        console.log('원본 상품 금액:', originalAmount?.toLocaleString());
+        console.log('서버 최종 금액:', paymentInfo.finalAmount?.toLocaleString());
+        console.log('현재 화면 최종 금액:', currentTotalAmount?.toLocaleString());
+        console.log('활성 할인:', activeDiscount);
+        console.log('사용 적립금:', currentUsePoints?.toLocaleString());
+        console.log('계산된 최종 금액:', calculateCurrentFinalAmount()?.toLocaleString());
+
+        const orderData = collectOrderData();
+        console.log('주문 데이터 최종 금액:', orderData.finalAmount?.toLocaleString());
+
+        console.log('=== 검증 결과 ===');
+        console.log('금액 일치 여부:', validatePaymentAmount(orderData));
+        console.log('==================');
+    };
 </script>
 </body>
 </html>

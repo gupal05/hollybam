@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>홀리밤</title>
   <!-- 설명 (검색 결과에 노출) -->
-  <meta name="description" content="홀리밤은 프리미엄 성인용품을 빠르고 안전하게 배송합니다.">
+  <meta name="description" content="홀리밤은 리얼돌, 딜도, 콘돔, 러브젤 등 프리미엄 성인용품을 안전하게 빠른배송하는 온라인 성인용품 쇼핑몰입니다. 19세 이상만 이용 가능합니다.">
 
   <!-- 키워드 (큰 영향은 없지만 추가 가능) -->
   <meta name="keywords" content="성인용품, 리얼돌, 딜도, 러브젤, 콘돔, 성인쇼핑몰">
@@ -540,13 +540,42 @@
         font-size: 17px;
       }
     }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      border: 0;
+      padding: 0;
+      white-space: nowrap;
+      clip-path: inset(100%);
+      clip: rect(0 0 0 0);
+      overflow: hidden;
+    }
   </style>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "홀리밤",
+      "url": "https://holly-bam.com",
+      "logo": "https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/hollybam_logo.webp",
+      "sameAs": [
+        "https://www.instagram.com/holly._.bam",
+        "https://www.youtube.com/@%ED%99%80%EB%A6%AC%EB%B0%A4"
+      ]
+    }
+  </script>
+
 </head>
 <body>
 <!-- 리뉴얼 안내 모달 -->
 <div id="renewalModal" class="renewal-modal-overlay">
   <div class="renewal-modal">
     <div class="renewal-modal-header">
+      <h1 class="visually-hidden">홀리밤 - 프리미엄 성인용품 쇼핑몰 | 리얼돌·딜도·러브젤 빠른배송</h1>
       <h2 class="renewal-modal-title">홀리밤</h2>
       <p class="renewal-modal-subtitle">홀리밤 서비스 리뉴얼 안내</p>
       <p class="renewal-modal-subtitle">더 나은 서비스를 위한 시스템 개선</p>
@@ -599,7 +628,7 @@
 
   <!-- 경고 안내 영역 -->
   <div class="section">
-    <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/intro_he01.gif'" alt="19세 이상">
+    <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/intro_he01.gif'" alt="홀리밤 리얼돌 딜도 러브젤 콘돔 성인용품 쇼핑몰">
     <p>
       이 정보내용은 청소년 유해매체물로서 정보통신망 이용촉진법 및<br>
       정보보호 등에 관한 법률 및 청소년 보호법의 규정에 의하여<br>
@@ -619,10 +648,10 @@
 
     <div class="social-buttons">
       <div style="cursor: pointer;" onclick="openNaverLogin()">
-        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/btnG_padded_320x40.png'" alt="네이버 로그인" style="margin: 0; width: 100%; height: 100%;">
+        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/btnG_padded_320x40.png'" alt="홀리밤 네이버 로그인" style="margin: 0; width: 100%; height: 100%;">
       </div>
       <div style="cursor: pointer; display: none">
-        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/kakao_login_clean_320x40.png'" alt="카카오 로그인" style="margin: 0; width: 100%; height: 100%;">
+        <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/kakao_login_clean_320x40.png'" alt="홀리밤 카카오 로그인" style="margin: 0; width: 100%; height: 100%;">
       </div>
       <div id="g_id_signin"></div>
 
@@ -648,6 +677,13 @@
       본인 명의의 휴대폰 또는 간편 인증 수단으로 본인인증을 진행합니다.<br>
       명의자의 나이 정보로 19세 미만 여부를 확인합니다.
     </p>
+  </div>
+  <div style="width: 100%; height: 1px; background-color: #eee;"></div>
+  <div style="text-align:center; font-size:14px; color:#555; line-height:1.6; margin-top:40px;">
+    <strong>홀리밤</strong>은 <b>성인용품 쇼핑몰</b>로 <b>리얼돌, 딜도, 러브젤, 콘돔</b> 등
+    고품질 성인용 제품을 <b>안전하고 빠르게 배송</b>합니다.
+    고객님의 프라이버시를 최우선으로 생각하며,
+    19세 이상 성인만 이용 가능합니다.
   </div>
 </div>
 

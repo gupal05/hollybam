@@ -11,6 +11,7 @@ import com.hollybam.hollybam.services.PayService;
 import com.hollybam.hollybam.services.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping("/pay")
 public class PayController {
@@ -83,161 +85,163 @@ public class PayController {
             @RequestParam Map<String, String> p,
             Model m, HttpSession session
     ) throws Exception {
-        // 1) PG 모듈이 준 모든 파라미터(resultCode, resultMsg, tid, signData 등)
+
+        // 1) PG 모듈이 준 모든 파라미터
         m.addAttribute("params", p);
 
         // 2) 인증 결과가 성공인 경우에만 승인 요청
         if ("0000".equals(p.get("resultCode"))) {
-            String tid      = p.get("tid");
-            String ediDate  = p.get("ediDate");
+            String tid = p.get("tid");
+            String ediDate = p.get("ediDate");
             String goodsAmt = p.get("goodsAmt");
-            String ordNo =  p.get("ordNo");
+            String ordNo = p.get("ordNo");
 
-
-            // a) encData 재생성 (mid + ediDate + goodsAmt + merchantKey)
+            // a) encData 재생성
             String encData = service.makeEncData(ediDate, goodsAmt);
-
-            // b) PG가 준 signData
             String signData = p.get("signData");
 
-            // c) 승인 API 호출용 form
-            MultiValueMap<String,String> form = new LinkedMultiValueMap<>();
-            form.add("mid",      prop.getMid());
-            form.add("tid",      tid);
+            // b) 승인 API 호출용 form
+            MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+            form.add("mid", prop.getMid());
+            form.add("tid", tid);
             form.add("goodsAmt", goodsAmt);
-            form.add("ediDate",  ediDate);
-            form.add("charSet",  "UTF-8");
-            form.add("encData",  encData);
+            form.add("ediDate", ediDate);
+            form.add("charSet", "UTF-8");
+            form.add("encData", encData);
             form.add("signData", signData);
 
-            // d) 서버→서버 승인 요청
+            // c) 🎯 핵심: PG사에 승인 요청
             String approveRes = rest.postForObject(prop.getUrlApprove(), form, String.class);
             m.addAttribute("approveRes", approveRes);
-            System.out.println(approveRes);
-            // JSON 파싱
+            System.out.println("PG 승인 응답: " + approveRes);
+
+            // d) JSON 파싱
             JsonNode root = mapper.readTree(approveRes);
-            String resultCd  = root.path("resultCd").asText();
+            String resultCd = root.path("resultCd").asText();
             String resultMsg = root.path("resultMsg").asText();
 
-            if("3001".equals(resultCd)){
-                orderService.updatePaymentStatus(ordNo, "PAID");
-                // 🚫 즉시 삭제 방지를 위한 세션 플래그 설정
-                session.setAttribute("paymentResultProcessed_" + ordNo, true);
-                session.setAttribute("paymentStatus_" + ordNo, "SUCCESS");
+            if ("3001".equals(resultCd)) {
+                // ✅ 실제 승인 성공 - 주문 생성
+                try {
+                    Map<String, Object> orderData = (Map<String, Object>) session.getAttribute("pendingOrderData");
+                    MemberDto member = (MemberDto) session.getAttribute("pendingMember");
+                    GuestDto guest = (GuestDto) session.getAttribute("pendingGuest");
 
-                // 주문 관련 데이터 꺼내기
-                MemberDto member = (MemberDto)session.getAttribute("member");
-                Map<String, Object> orderData = (Map<String, Object>) session.getAttribute("orderData");
-                OrderDto order = (OrderDto) session.getAttribute("order");
-                List<OrderItemDto> orderItems = (List<OrderItemDto>) session.getAttribute("orderItems");
-
-                // 포인트 관련
-                Integer usePoints = (Integer) orderData.get("usePoints");
-                if (usePoints == null) usePoints = 0;
-
-                // 쿠폰 사용
-                if(member != null) {
-                    if(orderData.get("couponCode") != null && !orderData.get("couponCode").toString().isEmpty()) {
-                        int memCode = Integer.parseInt(orderData.get("memCode").toString());
-                        int couponCode = Integer.parseInt(orderData.get("couponCode").toString());
-                        int couponMemberCode = couponService.getCouponMemberCode(memCode, couponCode);
-                        int discountAmount = Integer.parseInt(orderData.get("discountAmount").toString());
-                        couponService.useCoupon(couponMemberCode, order.getOrderCode(), discountAmount);
+                    if (orderData == null) {
+                        throw new Exception("주문 정보를 찾을 수 없습니다.");
                     }
-                }
 
-                // 적립금 처리
-                if (order.getMemCode() != null && usePoints >= 0) {
-                    orderService.processOrderPoints(
-                            order.getOrderCode(),
-                            order.getMemCode(),
-                            usePoints,
-                            (int)orderData.get("totalAmount")
-                    );
-                }
+                    // 🎯 장바구니/바로구매 구분해서 주문 생성
+                    OrderDto order;
+                    @SuppressWarnings("unchecked")
+                    List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
 
-                // 주문 수량 증가
-                for(OrderItemDto orderItem : orderItems) {
-                    orderDao.updateOrderCount(orderItem);
-                }
+                    if (cartCodes != null && !cartCodes.isEmpty()) {
+                        // 장바구니 결제
+                        order = orderService.createOrderFromCart(orderData);
+                    } else if (orderData.containsKey("productCode")) {
+                        // 바로구매
+                        order = orderService.createDirectOrder(orderData);
+                    } else {
+                        throw new Exception("주문 타입을 판단할 수 없습니다.");
+                    }
 
-                // 재고 차감
-                orderService.updateInventory(orderItems);
+                    // PAID 상태로 설정
+                    orderService.updatePaymentStatus(order.getOrderId(), "PAID");
 
-                // 할인코드 사용내역 저장
-                if(session.getAttribute("member") != null){
-                    orderService.recordDiscountCodeUsageIfApplied(orderData, order.getMemCode(), order.getOrderCode());
-                }
-
-                List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
-                if (cartCodes != null && !cartCodes.isEmpty()) {
-                    orderDao.deleteCartItems(cartCodes);
-                }
-
-                PaymentLogDto paymentLogDto = new PaymentLogDto();
-                if(member != null){
+                    // 결제 로그 저장
+                    PaymentLogDto paymentLogDto = new PaymentLogDto();
                     paymentLogDto.setTid(tid);
                     paymentLogDto.setPayMethod("card");
-                    paymentLogDto.setAmount((Integer)orderData.get("finalAmount"));
-                    paymentLogDto.setResultCode(resultCd);
+                    paymentLogDto.setAmount(Integer.parseInt(goodsAmt));
+                    paymentLogDto.setResultCode(resultCd); // "3001"
                     paymentLogDto.setResultMsg(resultMsg);
                     paymentLogDto.setOrderCode(order.getOrderCode());
-                    paymentLogDto.setMemberCode(member.getMemberCode());
-                } else {
-                    GuestDto guestDto = (GuestDto)session.getAttribute("guest");
-                    paymentLogDto.setTid(tid);
-                    paymentLogDto.setPayMethod("card");
-                    paymentLogDto.setAmount((Integer)orderData.get("finalAmount"));
-                    paymentLogDto.setResultCode(resultCd);
-                    paymentLogDto.setResultMsg(resultMsg);
-                    paymentLogDto.setOrderCode(order.getOrderCode());
-                    paymentLogDto.setGuestCode(guestDto.getGuestCode());
+
+                    if (member != null) {
+                        paymentLogDto.setMemberCode(member.getMemberCode());
+                    } else if (guest != null) {
+                        paymentLogDto.setGuestCode(guest.getGuestCode());
+                    }
+
+                    paymentService.insertPaymentLog(paymentLogDto);
+
+                    // 세션 정리
+                    session.removeAttribute("pendingOrderData");
+                    session.removeAttribute("pendingMember");
+                    session.removeAttribute("pendingGuest");
+                    session.removeAttribute("tempOrderId");
+
+                    return "redirect:/order/order-complete/" + order.getOrderId();
+
+                } catch (Exception e) {
+                    log.error("결제 성공 후 주문 생성 실패", e);
+                    m.addAttribute("errorMsg", "결제는 성공했지만 주문 처리 중 오류가 발생했습니다.");
+                    return "paymentFail";
                 }
 
-                paymentService.insertPaymentLog(paymentLogDto);
-
-                session.removeAttribute("orderData");
-                session.removeAttribute("order");
-                session.removeAttribute("orderItems");
-                return "redirect:/order/order-complete/" + ordNo;
             } else {
-                MemberDto member = (MemberDto)session.getAttribute("member");
-                Map<String, Object> orderData = (Map<String, Object>) session.getAttribute("orderData");
-                OrderDto order = (OrderDto) session.getAttribute("order");
-                // 결제 실패
-                PaymentLogDto paymentLogDto = new PaymentLogDto();
-                if(member != null){
-                    paymentLogDto.setTid(tid);
-                    paymentLogDto.setPayMethod("card");
-                    paymentLogDto.setAmount((Integer)orderData.get("finalAmount"));
-                    paymentLogDto.setResultCode(resultCd);
-                    paymentLogDto.setResultMsg(resultMsg);
-                    paymentLogDto.setOrderCode(order.getOrderCode());
-                    paymentLogDto.setMemberCode(member.getMemberCode());
-                } else {
-                    GuestDto guestDto = (GuestDto)session.getAttribute("guest");
-                    paymentLogDto.setTid(tid);
-                    paymentLogDto.setPayMethod("card");
-                    paymentLogDto.setAmount((Integer)orderData.get("finalAmount"));
-                    paymentLogDto.setResultCode(resultCd);
-                    paymentLogDto.setResultMsg(resultMsg);
-                    paymentLogDto.setOrderCode(order.getOrderCode());
-                    paymentLogDto.setGuestCode(guestDto.getGuestCode());
+                // ❌ PG 승인 실패 - 결제 실패 처리
+                try {
+                    Map<String, Object> orderData = (Map<String, Object>) session.getAttribute("pendingOrderData");
+                    MemberDto member = (MemberDto) session.getAttribute("pendingMember");
+                    GuestDto guest = (GuestDto) session.getAttribute("pendingGuest");
+
+                    if (orderData != null) {
+                        OrderDto order;
+                        @SuppressWarnings("unchecked")
+                        List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
+
+                        if (cartCodes != null && !cartCodes.isEmpty()) {
+                            order = orderService.createOrderFromCart(orderData);
+                        } else if (orderData.containsKey("productCode")) {
+                            order = orderService.createDirectOrder(orderData);
+                        } else {
+                            throw new Exception("주문 타입을 판단할 수 없습니다.");
+                        }
+
+                        orderService.updatePaymentStatus(order.getOrderId(), "FAILED");
+
+                        // 결제 실패 로그 저장
+                        PaymentLogDto paymentLogDto = new PaymentLogDto();
+                        paymentLogDto.setTid(tid);
+                        paymentLogDto.setPayMethod("card");
+                        paymentLogDto.setAmount(Integer.parseInt(goodsAmt));
+                        paymentLogDto.setResultCode(resultCd);
+                        paymentLogDto.setResultMsg(resultMsg);
+                        paymentLogDto.setOrderCode(order.getOrderCode());
+
+                        if (member != null) {
+                            paymentLogDto.setMemberCode(member.getMemberCode());
+                        } else if (guest != null) {
+                            paymentLogDto.setGuestCode(guest.getGuestCode());
+                        }
+
+                        paymentService.insertPaymentLog(paymentLogDto);
+                    }
+
+                } catch (Exception e) {
+                    log.error("결제 실패 처리 중 오류", e);
                 }
 
-                paymentService.insertPaymentLog(paymentLogDto);
-                System.out.println("❌ 결제 실패: code=" + resultCd + ", msg=" + resultMsg);
-                orderService.updatePaymentStatus(ordNo, "FAILED");
+                // 세션 정리
+                session.removeAttribute("pendingOrderData");
+                session.removeAttribute("pendingMember");
+                session.removeAttribute("pendingGuest");
+                session.removeAttribute("tempOrderId");
 
-                // 🚫 즉시 삭제 방지를 위한 세션 플래그 설정
-                session.setAttribute("paymentResultProcessed_" + ordNo, true);
-                session.setAttribute("paymentStatus_" + ordNo, "FAILED");
-                m.addAttribute("errorMsg", "결제 실패: " + resultMsg);
+                m.addAttribute("errorMsg", "결제 승인 실패: " + resultMsg);
                 return "paymentFail";
             }
 
         } else {
-            orderService.updatePaymentStatus(p.get("resultCode"), "FAILED");
+            // ❌ 인증 실패
+            session.removeAttribute("pendingOrderData");
+            session.removeAttribute("pendingMember");
+            session.removeAttribute("pendingGuest");
+            session.removeAttribute("tempOrderId");
+
+            m.addAttribute("errorMsg", "결제 인증 실패: " + p.get("resultMsg"));
             return "paymentFail";
         }
     }

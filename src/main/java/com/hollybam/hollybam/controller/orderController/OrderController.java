@@ -1057,4 +1057,131 @@ public class OrderController {
         GuestDto guest = (GuestDto) session.getAttribute("guest");
         return (member != null || guest != null);
     }
+
+    /**
+     * 🆕 결제 준비 API - DB INSERT 없이 PG 연동 데이터만 준비
+     */
+    @PostMapping("/prepare-payment")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> preparePayment(
+            @RequestBody Map<String, Object> orderData,
+            HttpSession session, HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+            if (member == null && guest == null) {
+                result.put("success", false);
+                result.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.ok(result);
+            }
+            // 🎯 핵심: 주문 데이터를 세션에 저장 (DB INSERT는 안 함!)
+            session.setAttribute("pendingOrderData", orderData);
+            session.setAttribute("pendingMember", member);
+            session.setAttribute("pendingGuest", guest);
+
+            // 임시 주문 ID 생성
+            String tempOrderId = orderService.generateOrderId();
+            session.setAttribute("tempOrderId", tempOrderId);
+
+            // 장바구니 상품 정보 조회해서 상품명 생성
+            @SuppressWarnings("unchecked")
+            List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
+
+            Map<String, Object> orderNameInfo = getOrderNameFromCartCodes(cartCodes);
+            String goodsNm = orderNameInfo.get("firstProductName") + " 외 " +
+                    (Integer.parseInt(orderNameInfo.get("itemCount").toString()) - 1) + "개";
+            // PG 연동 데이터 생성
+            String ediDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            Integer finalAmount = (Integer) orderData.get("finalAmount");
+
+            result.put("success", true);
+            result.put("orderId", tempOrderId);
+            result.put("goodsNm", goodsNm);
+            result.put("ordNm", orderData.get("ordererName"));
+            result.put("ordTel", orderData.get("ordererPhone"));
+            result.put("ordEmail", orderData.get("ordererEmail"));
+            result.put("goodsAmt", finalAmount);
+            result.put("ediDate", ediDate);
+            result.put("encData", service.makeEncData(ediDate, finalAmount.toString()));
+            result.put("userIp", ipUtils.getClientIp(request));
+        } catch (Exception e) {
+            log.error("결제 준비 실패", e);
+            result.put("success", false);
+            result.put("message", "결제 준비 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 🆕 바로구매 결제 준비 API - DB INSERT 없이 PG 연동 데이터만 준비
+     */
+    @PostMapping("/prepare-direct-payment")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> prepareDirectPayment(
+            @RequestBody Map<String, Object> orderData,
+            HttpSession session, HttpServletRequest request) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+
+            if (member == null && guest == null) {
+                result.put("success", false);
+                result.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            // 🎯 핵심: 주문 데이터를 세션에 저장 (DB INSERT는 안 함!)
+            session.setAttribute("pendingOrderData", orderData);
+            session.setAttribute("pendingMember", member);
+            session.setAttribute("pendingGuest", guest);
+
+            // 임시 주문 ID 생성
+            String tempOrderId = orderService.generateOrderId();
+            session.setAttribute("tempOrderId", tempOrderId);
+
+            // 바로구매 상품 정보 조회해서 상품명 생성
+            int productCode = (Integer) orderData.get("productCode");
+            String productName = orderService.getProductName(productCode);
+
+            // 바로구매는 단일 상품이므로 "상품명" 형태
+            String goodsNm = productName;
+
+            // PG 연동 데이터 생성
+            String ediDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            Integer finalAmount = (Integer) orderData.get("finalAmount");
+
+            result.put("success", true);
+            result.put("orderId", tempOrderId);
+            result.put("goodsNm", goodsNm);
+            result.put("ordNm", orderData.get("ordererName"));
+            result.put("ordTel", orderData.get("ordererPhone"));
+            result.put("ordEmail", orderData.get("ordererEmail"));
+            result.put("goodsAmt", finalAmount);
+            result.put("ediDate", ediDate);
+            result.put("encData", service.makeEncData(ediDate, finalAmount.toString()));
+            result.put("userIp", ipUtils.getClientIp(request));
+
+        } catch (Exception e) {
+            log.error("바로구매 결제 준비 실패", e);
+            result.put("success", false);
+            result.put("message", "결제 준비 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    // 헬퍼 메서드 (장바구니용)
+    private Map<String, Object> getOrderNameFromCartCodes(List<Integer> cartCodes) {
+        List<CartDto> cartItems = paymentService.getCartItemsWithDetails(cartCodes);
+        String firstProductName = cartItems.get(0).getProductDto().getProductName();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("firstProductName", firstProductName);
+        result.put("itemCount", cartItems.size());
+        return result;
+    }
 }

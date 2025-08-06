@@ -3045,14 +3045,10 @@
 
     // 주문 생성 요청
     function createOrder(orderData) {
-        if (!validatePaymentAmount(orderData)) {
-            // resetPaymentButton();
-            return;
-        }
+        // ⭐ 핵심: 새로운 결제 준비 API 호출
+        const endpoint = isDirect ? '/order/prepare-direct-payment' : '/order/prepare-payment';
 
-        const endpoint = isDirect ? '/order/create-direct-order' : '/order/create-order';
-
-        console.log('주문 생성 요청:', orderData);
+        console.log('결제 준비 요청:', orderData);
 
         fetch(endpoint, {
             method: 'POST',
@@ -3062,21 +3058,12 @@
             },
             body: JSON.stringify(orderData)
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('주문 생성 응답:', data);
+                console.log('결제 준비 응답:', data);
 
                 if (data.success) {
-                    const serverFinalAmount = data.goodsAmt || data.finalAmount || orderData.finalAmount;
-
-                    console.log('서버 결제 금액:', serverFinalAmount);
-                    console.log('클라이언트 결제 금액:', orderData.finalAmount);
-
+                    // PG 폼 데이터 설정
                     document.getElementById("goodsNm").value = data.goodsNm;
                     document.getElementById("ordNo").value = data.orderId;
                     document.getElementById("ordNm").value = data.ordNm;
@@ -3089,20 +3076,17 @@
 
                     isPaymentProcessing = true;
 
+                    // 💳 PG 결제 팝업 호출 (변경 없음)
                     document.getElementById('payBtn').click();
-                    // window.location.href = `/pay`;
-                    //window.location.href = `/order/order-complete/${data.orderId}`;
-                    // 결제 기능 추가 시 여기서 PG사 결제 처리
-                    // processPayment(data.orderCode, orderData.finalAmount);
                 } else {
-                    alert('주문 처리 실패: ' + (data.message || '알 수 없는 오류가 발생했습니다.'));
-                    // resetPaymentButton();
+                    alert('결제 준비 실패: ' + (data.message || '알 수 없는 오류가 발생했습니다.'));
+                    resetPaymentButton();
                 }
             })
             .catch(error => {
-                console.error('주문 요청 오류:', error);
-                alert('주문 처리 중 네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.');
-                // resetPaymentButton();
+                console.error('결제 준비 오류:', error);
+                alert('결제 준비 중 네트워크 오류가 발생했습니다.');
+                resetPaymentButton();
             });
     }
 
@@ -3238,16 +3222,16 @@
     function validatePaymentAmount(orderData) {
         const expectedAmount = calculateCurrentFinalAmount();
 
-        // if (Math.abs(orderData.finalAmount - expectedAmount) > 1) { // 1원 차이까지는 허용 (반올림 오차)
-        //     console.error('결제 금액 불일치:', {
-        //         orderDataAmount: orderData.finalAmount,
-        //         expectedAmount: expectedAmount,
-        //         difference: Math.abs(orderData.finalAmount - expectedAmount)
-        //     });
-        //
-        //     alert(`결제 금액에 오류가 있습니다.\n예상 금액: ${expectedAmount.toLocaleString()}원\n주문 금액: ${orderData.finalAmount.toLocaleString()}원\n\n페이지를 새로고침하고 다시 시도해주세요.`);
-        //     return false;
-        // }
+        if (Math.abs(orderData.finalAmount - expectedAmount) > 1) { // 1원 차이까지는 허용 (반올림 오차)
+            console.error('결제 금액 불일치:', {
+                orderDataAmount: orderData.finalAmount,
+                expectedAmount: expectedAmount,
+                difference: Math.abs(orderData.finalAmount - expectedAmount)
+            });
+
+            alert(`결제 금액에 오류가 있습니다.\n예상 금액: ${expectedAmount.toLocaleString()}원\n주문 금액: ${orderData.finalAmount.toLocaleString()}원\n\n페이지를 새로고침하고 다시 시도해주세요.`);
+            return false;
+        }
 
         return true;
     }

@@ -138,9 +138,11 @@ public class PayController {
 
                     if (cartCodes != null && !cartCodes.isEmpty()) {
                         // 장바구니 결제
+                        orderData.put("payResult", true);
                         order = orderService.createOrderFromCart(orderData);
                     } else if (orderData.containsKey("productCode")) {
                         // 바로구매
+                        orderData.put("payResult", true);
                         order = orderService.createDirectOrder(orderData);
                     } else {
                         throw new Exception("주문 타입을 판단할 수 없습니다.");
@@ -193,8 +195,10 @@ public class PayController {
                         List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
 
                         if (cartCodes != null && !cartCodes.isEmpty()) {
+                            orderData.put("payResult", false);
                             order = orderService.createOrderFromCart(orderData);
                         } else if (orderData.containsKey("productCode")) {
+                            orderData.put("payResult", false);
                             order = orderService.createDirectOrder(orderData);
                         } else {
                             throw new Exception("주문 타입을 판단할 수 없습니다.");

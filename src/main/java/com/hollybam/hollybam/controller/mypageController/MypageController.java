@@ -200,6 +200,7 @@ public class MypageController {
     // 영문 상태를 한글로 매핑하는 메서드 추가
     private String getStatusText(String englishStatus) {
         switch (englishStatus) {
+            case "PENDING": return "결제대기";
             case "PAID": return "결제완료";
             case "SHIPPED": return "배송중";
             case "DELIVERED": return "배송완료";

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>홀리밤</title>
@@ -19,541 +19,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:,">
 
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
-  <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap"></noscript>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <link rel="stylesheet" th:href="@{/css/footer.css}"/>
+  <link rel="preload" as="style" href="/css/intro.css" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/intro.css"></noscript>
 
-
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Noto Sans KR', sans-serif;
-      background-color: white;
-      color: #333;
-    }
-    .container {
-      width: 100%;
-      max-width: 360px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    .section {
-      margin-bottom: 48px;
-      text-align: center;
-    }
-    .section img {
-      width: 100px;
-      margin-bottom: 16px;
-    }
-    .section p {
-      font-size: 14px;
-      line-height: 1.6;
-      margin: 0 0 12px;
-    }
-    .section b {
-      color: #e74c3c;
-    }
-    .section a.button {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 0;
-      width: 100%;
-      background-color: #444;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      font-size: 14px;
-      transition: background-color 0.2s;
-    }
-    .section a.button:hover {
-      background-color: #222;
-    }
-    h3 {
-      text-align: left;
-      font-size: 15px;
-      margin-bottom: 15px;
-      border-left: 4px solid #888;
-      padding-left: 10px;
-    }
-    form input[type="text"],
-    form input[type="password"],
-    form input[type="submit"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    form input[type="submit"] {
-      background-color: #444;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    form input[type="submit"]:hover {
-      background-color: #222;
-    }
-    .social-buttons button {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
-      font-size: 14px;
-      background-color: #f0f0f0;
-      color: #333;
-      cursor: pointer;
-    }
-    .social-buttons button:hover {
-      background-color: #ddd;
-    }
-    .divider {
-      height: 1px;
-      background-color: #ddd;
-      margin: 40px 0;
-    }
-    .certify input[type="button"] {
-      width: 100%;
-      padding: 10px;
-      background-color: #f0f0f0;
-      border: none;
-      color: #333;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-    .certify input[type="button"]:hover {
-      background-color: #ddd;
-    }
-    .certify input[type="button"]:disabled {
-      background-color: #ccc;
-      color: #999;
-      cursor: not-allowed;
-    }
-    .certify p {
-      font-size: 13px;
-      color: #666;
-      line-height: 1.5;
-      margin-top: 12px;
-      text-align: left;
-    }
-
-    /* NICE 인증용 추가 스타일 (기존 디자인과 완전히 동일) */
-    .message {
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 4px;
-      text-align: center;
-      font-size: 14px;
-      display: none;
-    }
-    .message.error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    .message.success {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    .message.info {
-      background-color: #d1ecf1;
-      color: #0c5460;
-      border: 1px solid #bee5eb;
-    }
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 10px;
-      font-style: italic;
-      color: #666;
-      font-size: 14px;
-    }
-    #googleLoginBtn {
-      display: inline-flex;
-      align-items: center;
-      cursor: pointer;
-      background-color: #4285f4;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: 500;
-      font-family: 'Roboto', Arial, sans-serif;
-      user-select: none;
-      transition: background-color 0.3s;
-    }
-    #googleLoginBtn:hover {
-      background-color: #357ae8;
-    }
-    #googleLoginBtn img {
-      width: 18px;
-      height: 18px;
-      margin-right: 10px;
-    }
-
-    /* 리뉴얼 안내 모달 스타일 */
-    .renewal-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-
-    .renewal-modal {
-      background-color: #ffffff;
-      width: 90%;
-      max-width: 400px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      padding: 0;
-      text-align: center;
-      overflow: hidden;
-    }
-
-    .renewal-modal-header {
-      background-color: #f8f9fa;
-      padding: 24px 20px 20px;
-      border-bottom: 1px solid #e9ecef;
-    }
-
-    .renewal-modal-title {
-      font-size: 25px;
-      font-weight: bold;
-      color: #2d3436;
-      margin: 0 0 8px 0;
-      letter-spacing: -0.5px;
-    }
-
-    .renewal-modal-subtitle {
-      font-size: 14px;
-      color: #636e72;
-      margin: 0;
-      font-weight: 400;
-    }
-
-    .renewal-modal-body {
-      padding: 28px 24px;
-    }
-
-    .renewal-modal-content {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #2d3436;
-      margin-bottom: 20px;
-    }
-
-    .renewal-modal-highlight {
-      background-color: #f1f3f4;
-      padding: 16px;
-      border-radius: 8px;
-      border-left: 4px solid #74b9ff;
-      margin: 20px 0;
-    }
-
-    .renewal-modal-highlight-text {
-      font-size: 14px;
-      color: #2d3436;
-      margin: 0;
-      font-weight: 500;
-    }
-
-    .renewal-modal-footer {
-      padding: 0 24px 28px;
-    }
-
-    .renewal-modal-button {
-      width: 100%;
-      padding: 14px 0;
-      background-color: #636e72;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      font-family: 'Noto Sans KR', sans-serif;
-    }
-
-    .renewal-modal-button:hover {
-      background-color: #2d3436;
-    }
-
-    .renewal-modal-apology {
-      font-size: 13px;
-      color: #74b9ff;
-      margin-top: 12px;
-      font-weight: 500;
-    }
-
-    #g_id_signin {
-      width: 100% !important;
-      height: 40px !important;
-      max-width: 320px;
-      margin: 0 auto;
-    }
-
-    /* 모바일 반응형 스타일 - 768px 이하에서만 적용 */
-    @media (max-width: 768px) {
-      .container {
-        max-width: 95%;
-        margin: 25px auto;
-        padding: 0 20px;
-      }
-
-      .section {
-        margin-bottom: 50px;
-      }
-
-      .section img {
-        width: 150px;
-        margin-bottom: 25px;
-      }
-
-      .section p {
-        font-size: 18px;
-        line-height: 1.8;
-        margin: 0 0 20px;
-      }
-
-      .section a.button {
-        padding: 18px 0;
-        font-size: 18px;
-        border-radius: 8px;
-      }
-
-      h3 {
-        font-size: 20px;
-        margin-bottom: 22px;
-        padding-left: 15px;
-        border-left: 6px solid #888;
-      }
-
-      form input[type="text"],
-      form input[type="password"],
-      form input[type="submit"] {
-        padding: 18px;
-        margin-bottom: 15px;
-        font-size: 18px;
-        border-radius: 8px;
-      }
-
-      .social-buttons button {
-        padding: 18px;
-        margin-bottom: 15px;
-        font-size: 18px;
-        border-radius: 8px;
-      }
-
-      .social-buttons div {
-        margin-bottom: 15px;
-      }
-
-      .social-buttons img {
-        border-radius: 8px;
-      }
-
-      .divider {
-        margin: 45px 0;
-      }
-
-      .certify input[type="button"] {
-        padding: 18px;
-        font-size: 18px;
-        border-radius: 8px;
-        margin-bottom: 15px;
-      }
-
-      .certify p {
-        font-size: 16px;
-        line-height: 1.7;
-        margin-top: 20px;
-      }
-
-      .message {
-        padding: 15px;
-        font-size: 17px;
-        margin-bottom: 22px;
-      }
-
-      .loading {
-        padding: 15px;
-        font-size: 17px;
-      }
-
-      #googleLoginBtn {
-        padding: 18px 28px;
-        font-size: 18px;
-        border-radius: 8px;
-      }
-
-      #googleLoginBtn img {
-        width: 22px;
-        height: 22px;
-        margin-right: 15px;
-      }
-
-      /* 구글 로그인 버튼 컨테이너 크기 조정 */
-      #g_id_signin {
-        width: 100% !important;
-        height: 56px !important;
-        max-width: none;
-      }
-
-      /* 리뉴얼 모달 모바일 최적화 */
-      .renewal-modal {
-        width: 92%;
-        max-width: 450px;
-      }
-
-      .renewal-modal-title {
-        font-size: 21px;
-      }
-
-      .renewal-modal-subtitle {
-        font-size: 17px;
-      }
-
-      .renewal-modal-content {
-        font-size: 18px;
-        line-height: 1.8;
-      }
-
-      .renewal-modal-highlight-text {
-        font-size: 17px;
-      }
-
-      .renewal-modal-button {
-        padding: 18px 0;
-        font-size: 18px;
-      }
-
-      .renewal-modal-apology {
-        font-size: 16px;
-      }
-    }
-
-    /* 작은 모바일 화면 (480px 이하) */
-    @media (max-width: 480px) {
-      .container {
-        max-width: 98%;
-        margin: 20px auto;
-        padding: 0 15px;
-      }
-
-      .section {
-        margin-bottom: 45px;
-      }
-
-      .section img {
-        width: 130px;
-        margin-bottom: 22px;
-      }
-
-      .section p {
-        font-size: 17px;
-        line-height: 1.8;
-      }
-
-      .section a.button {
-        padding: 16px 0;
-        font-size: 17px;
-      }
-
-      h3 {
-        font-size: 19px;
-        margin-bottom: 20px;
-      }
-
-      form input[type="text"],
-      form input[type="password"],
-      form input[type="submit"] {
-        padding: 16px;
-        font-size: 17px;
-        margin-bottom: 14px;
-      }
-
-      .social-buttons button {
-        padding: 16px;
-        font-size: 17px;
-        margin-bottom: 14px;
-      }
-
-      .social-buttons div {
-        margin-bottom: 14px;
-      }
-
-      .certify input[type="button"] {
-        padding: 16px;
-        font-size: 17px;
-        margin-bottom: 14px;
-      }
-
-      .certify p {
-        font-size: 15px;
-        line-height: 1.7;
-      }
-
-      #googleLoginBtn {
-        padding: 16px 24px;
-        font-size: 17px;
-      }
-
-      #g_id_signin {
-        height: 54px !important;
-      }
-
-      .renewal-modal {
-        width: 96%;
-      }
-
-      .renewal-modal-title {
-        font-size: 20px;
-      }
-
-      .renewal-modal-content {
-        font-size: 17px;
-      }
-
-      .renewal-modal-highlight-text {
-        font-size: 16px;
-      }
-
-      .renewal-modal-button {
-        padding: 17px 0;
-        font-size: 17px;
-      }
-    }
-
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      margin: -1px;
-      border: 0;
-      padding: 0;
-      white-space: nowrap;
-      clip-path: inset(100%);
-      clip: rect(0 0 0 0);
-      overflow: hidden;
-    }
-  </style>
 
   <script type="application/ld+json">
     {
@@ -628,7 +99,8 @@
 
   <!-- 경고 안내 영역 -->
   <div class="section">
-    <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/intro_he01.gif'" alt="홀리밤 리얼돌 딜도 러브젤 콘돔 성인용품 쇼핑몰">
+    <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/intro_he01-0000 (1).jpg'" alt="홀리밤 리얼돌 딜도 러브젤 콘돔 성인용품 쇼핑몰" width="100" height="100"
+         loading="lazy">
     <p>
       이 정보내용은 청소년 유해매체물로서 정보통신망 이용촉진법 및<br>
       정보보호 등에 관한 법률 및 청소년 보호법의 규정에 의하여<br>
@@ -686,21 +158,58 @@
     19세 이상 성인만 이용 가능합니다.
   </div>
 </div>
-
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script>
-  // 리뉴얼 모달 관련 스크립트
+  // 리뉴얼 모달 관련 스크립트 (FCP 최적화 및 중복 방지)
+  window.renewalModalState = window.renewalModalState || {
+    shown: false,
+    timeoutId: null
+  };
+
   function closeRenewalModal() {
     document.getElementById('renewalModal').style.display = 'none';
+    window.renewalModalState.shown = false; // 새로고침 시 다시 보이게 하기 위함
+
+    // timeout이 실행 중이면 취소
+    if (window.renewalModalState.timeoutId) {
+      clearTimeout(window.renewalModalState.timeoutId);
+      window.renewalModalState.timeoutId = null;
+    }
   }
 
-  // 페이지 로드 시 모달 표시
-  window.addEventListener('load', function() {
-    document.getElementById('renewalModal').style.display = 'flex';
-  });
+  function showRenewalModal() {
+    const modal = document.getElementById('renewalModal');
+
+    // 이미 표시되었거나 현재 보이는 상태라면 중복 실행 방지
+    if (window.renewalModalState.shown ||
+            modal.style.display === 'flex' ||
+            window.renewalModalState.timeoutId) {
+      return;
+    }
+
+    // FCP 최적화를 위해 더 긴 지연 시간 적용
+    window.renewalModalState.timeoutId = setTimeout(function () {
+      // timeout 실행 시점에 다시 한번 체크
+      if (!window.renewalModalState.shown && modal.style.display !== 'flex') {
+        modal.style.display = 'flex';
+        window.renewalModalState.shown = true;
+      }
+      window.renewalModalState.timeoutId = null;
+    }, 1500); // FCP 개선을 위해 1.5초로 증가
+  }
+
+  // 페이지 로드 시 모달 표시 (FCP 고려)
+  if (document.readyState === 'loading') {
+    window.addEventListener('load', showRenewalModal);
+  } else {
+    // 이미 로드된 경우 즉시 실행
+    showRenewalModal();
+  }
 </script>
 
 <script>
-  window.onload = function () {
+  // 구글 로그인 초기화를 requestIdleCallback으로 지연 (FCP 최적화)
+  function initializeGoogleLogin() {
     google.accounts.id.initialize({
       client_id: "92346439771-d4b0tga52c1klh9f0qnrc31h51i8vfqm.apps.googleusercontent.com",
       callback: handleCredentialResponse,
@@ -713,11 +222,20 @@
             {
               theme: "outline",
               size: "large",
-              width: isMobile ? window.innerWidth - 40 : 320, // 모바일에서는 동적 너비
+              width: isMobile ? window.innerWidth - 40 : 320,
               height: isMobile ? 56 : 40
             }
     );
   }
+
+  // FCP 최적화: 브라우저가 한가할 때 초기화
+  window.addEventListener('load', () => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(showRenewalModal);
+    } else {
+      setTimeout(showRenewalModal, 1500);
+    }
+  });
 
   // 창 크기 변경 시 버튼 재렌더링
   window.addEventListener('resize', function() {
@@ -833,7 +351,6 @@
       console.log("구글 회원가입 실패");
     }
 
-
     // 팝업 닫기 시도
     if (authPopup && !authPopup.closed) {
       authPopup.close();
@@ -867,7 +384,6 @@
     document.form_chk.target = "popupChk";
     document.form_chk.submit();
   }
-
 
   /**
    * 기존 로그인 폼 처리 (완전히 유지)
@@ -922,7 +438,9 @@
    * 페이지 이탈 시 정리
    */
   window.addEventListener('beforeunload', function() {
-    resetAuthState();
+    if (typeof resetAuthState === 'function') {
+      resetAuthState();
+    }
   });
 </script>
 

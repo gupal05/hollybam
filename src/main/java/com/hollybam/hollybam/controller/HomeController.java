@@ -52,6 +52,11 @@ public class HomeController {
 
     @GetMapping("/")
     public String introPage(HttpServletRequest request, Model model) {
+        if(session.getAttribute("member") != null){
+            session.removeAttribute("member");
+        } else if(session.getAttribute("guest") != null){
+            session.removeAttribute("guest");
+        }
         try {
             log.info("=== NICE 암호화 토큰 요청 시작 ===");
             Map<String, String> result = niceCryptoTokenService.requestCryptoToken();

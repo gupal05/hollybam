@@ -639,110 +639,24 @@
         @media (max-width: 1024px) {
             .container {
                 flex-direction: column;
-                padding: 120px 20px 60px;
+                padding: 110px 20px 50px;
+                gap: 24px;
             }
 
             .sidebar {
                 width: 100%;
                 position: static;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 120px 16px 40px;
+                padding: 24px;
             }
 
-            .page-header,
-            .orders-content,
-            .sidebar {
-                padding: 25px 20px;
-                border-radius: 15px;
-            }
-
-            .page-title {
-                font-size: 26px;
-            }
-
-            .orders-filter {
-                flex-direction: column;
-                gap: 15px;
-                align-items: stretch;
-            }
-
-            .filter-tabs {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-
-            .order-search {
-                justify-content: center;
-            }
-
-            .search-input {
-                width: 150px;
-            }
-
-            .order-header {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-
-            .order-info {
-                flex-direction: column;
-                gap: 8px;
-                align-items: flex-start;
-            }
-
-            .product-item {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .product-image {
-                width: 60px;
-                height: 60px;
-            }
-
-            .order-summary {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .order-actions {
+            .main-content {
                 width: 100%;
-                justify-content: center;
-                flex-wrap: wrap;
             }
         }
 
-        @media (max-width: 480px) {
-            .order-body {
-                padding: 20px 15px;
-            }
 
-            .order-header {
-                padding: 15px 20px;
-            }
 
-            .filter-tab {
-                padding: 6px 12px;
-                font-size: 13px;
-            }
 
-            .empty-icon {
-                font-size: 60px;
-            }
-
-            .empty-title {
-                font-size: 20px;
-            }
-
-            .empty-desc {
-                font-size: 14px;
-            }
-        }
         .mypage-order-modal {
             display: none;
             position: fixed;
@@ -1071,56 +985,424 @@
             color: white;
         }
 
+        /* 계좌정보 스타일 추가 */
+        .account-info {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+
+        .account-info:hover {
+            background: #f1f5f9;
+        }
+
+        .account-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .account-details {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .account-holder {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .copy-hint {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .copy-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+            animation: fadeInOut 2s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
         /* 반응형 디자인 */
         @media (max-width: 768px) {
+            .container {
+                padding: 100px 12px 40px;
+                gap: 20px;
+            }
+
+            .sidebar {
+                padding: 20px;
+                border-radius: 12px;
+            }
+
+            .page-header {
+                padding: 24px 20px;
+                border-radius: 12px;
+                margin-bottom: 20px;
+            }
+
+            .page-title {
+                font-size: 22px;
+                margin-bottom: 8px;
+            }
+
+            .page-subtitle {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+
+            .orders-content {
+                padding: 20px;
+                border-radius: 12px;
+            }
+
+            .filter-tabs {
+                gap: 6px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .filter-tab {
+                padding: 8px 16px;
+                font-size: 13px;
+                border-radius: 16px;
+            }
+
+            .order-item {
+                border-radius: 12px;
+                margin-bottom: 16px;
+            }
+
+            .order-header {
+                padding: 16px 20px;
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .order-info {
+                width: 100%;
+                flex-direction: column;
+                gap: 6px;
+                align-items: flex-start;
+            }
+
+            .order-number {
+                font-size: 15px;
+            }
+
+            .order-date {
+                font-size: 13px;
+            }
+
+            .order-status {
+                align-self: flex-end;
+                margin-top: -20px;
+            }
+
+            .order-body {
+                padding: 20px;
+            }
+
+            .product-item {
+                padding: 12px 0;
+            }
+
+            .product-image {
+                width: 60px;
+                height: 60px;
+                border-radius: 8px;
+            }
+
+            .product-name {
+                font-size: 15px;
+                margin-bottom: 6px;
+            }
+
+            .product-options {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+
+            .product-price {
+                font-size: 16px;
+            }
+
+            .product-quantity {
+                font-size: 13px;
+            }
+
+            .order-total {
+                font-size: 16px;
+            }
+
+            .order-actions {
+                gap: 8px;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 13px;
+                border-radius: 6px;
+            }
+
+            /* 모바일 모달 스타일 */
             .mypage-order-modal-content {
-                width: 95%;
+                width: 96%;
                 margin: 2% auto;
+                max-height: 90vh;
+                border-radius: 12px;
+            }
+
+            .mypage-order-header {
+                padding: 20px 24px;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .mypage-order-title {
+                font-size: 18px;
             }
 
             .mypage-order-body {
-                padding: 20px;
+                padding: 16px 20px 20px;
+            }
+
+            .mypage-section {
+                margin-bottom: 16px;
+                border-radius: 8px;
+            }
+
+            .mypage-section-title {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .mypage-section-content {
+                padding: 16px;
             }
 
             .mypage-info-grid {
                 grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .mypage-product-item {
-                flex-direction: column;
-                text-align: center;
-                padding: 20px 16px;
-            }
-
-            .mypage-product-image {
-                margin-right: 0;
+                gap: 8px;
                 margin-bottom: 12px;
             }
 
-            .mypage-product-price {
-                text-align: center;
-                margin-top: 12px;
-                min-width: auto;
-            }
-
             .mypage-info-item {
+                padding: 8px 0;
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 4px;
             }
 
+            .mypage-info-label {
+                font-size: 13px;
+            }
+
             .mypage-info-value {
+                font-size: 14px;
+                text-align: left;
+                font-weight: 500;
+            }
+
+            .mypage-product-item {
+                padding: 12px;
+                flex-direction: row;
+                align-items: flex-start;
                 text-align: left;
             }
 
+            .mypage-product-image {
+                width: 50px;
+                height: 50px;
+                margin-right: 12px;
+                margin-bottom: 0;
+            }
+
+            .mypage-product-name {
+                font-size: 14px;
+                margin-bottom: 4px;
+            }
+
+            .mypage-product-option {
+                font-size: 12px;
+                padding: 1px 6px;
+            }
+
+            .mypage-product-quantity {
+                font-size: 12px;
+            }
+
+            .mypage-product-price {
+                text-align: right;
+                margin-top: 0;
+                min-width: 70px;
+            }
+
+            .mypage-unit-price {
+                font-size: 11px;
+            }
+
+            .mypage-total-price {
+                font-size: 14px;
+            }
+
+            .mypage-payment-summary {
+                padding: 16px;
+                border-radius: 8px;
+            }
+
+            .mypage-summary-row {
+                font-size: 13px;
+                margin-bottom: 8px;
+            }
+
+            .mypage-summary-row.final {
+                font-size: 16px;
+                padding-top: 10px;
+                margin-top: 10px;
+            }
+
             .mypage-modal-actions {
-                flex-direction: column;
+                margin-top: 16px;
+                padding-top: 16px;
+                gap: 8px;
             }
 
             .mypage-modal-btn {
-                width: 100%;
+                padding: 10px 16px;
+                font-size: 13px;
+                border-radius: 6px;
+                flex: 1;
                 text-align: center;
+            }
+
+            /* 계좌정보 모바일 스타일 */
+            .account-info {
+                padding: 12px;
+                margin-top: 12px;
+                border-radius: 6px;
+            }
+
+            .account-title {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+
+            .account-details {
+                font-size: 15px;
+                margin-bottom: 3px;
+            }
+
+            .account-holder {
+                font-size: 13px;
+            }
+
+            .copy-hint {
+                font-size: 11px;
+                margin-top: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 100px 8px 30px;
+                gap: 16px;
+            }
+
+            .sidebar {
+                padding: 16px;
+            }
+
+            .page-header {
+                padding: 20px 16px;
+            }
+
+            .orders-content {
+                padding: 16px;
+            }
+
+            .order-header {
+                padding: 12px 16px;
+            }
+
+            .order-body {
+                padding: 16px;
+            }
+
+            .filter-tab {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .empty-icon {
+                font-size: 50px;
+            }
+
+            .empty-title {
+                font-size: 18px;
+            }
+
+            .empty-desc {
+                font-size: 13px;
+            }
+
+            /* 모달 추가 최적화 */
+            .mypage-order-modal-content {
+                width: 98%;
+                margin: 1% auto;
+            }
+
+            .mypage-order-header {
+                padding: 16px 20px;
+            }
+
+            .mypage-order-title {
+                font-size: 16px;
+            }
+
+            .mypage-order-body {
+                padding: 12px 16px 16px;
+            }
+
+            .mypage-section-content {
+                padding: 12px;
+            }
+
+            .mypage-product-item {
+                padding: 10px;
+            }
+
+            .account-info {
+                padding: 10px;
+            }
+
+            .account-details {
+                font-size: 14px;
             }
         }
 
@@ -1136,18 +1418,6 @@
             padding: 6px 12px;
             font-size: 12px;
             border-radius: 6px;
-        }
-
-        @media (max-width: 768px) {
-            .product-actions {
-                justify-content: center;
-                margin-top: 15px;
-            }
-
-            .product-actions .btn {
-                flex: 1;
-                text-align: center;
-            }
         }
     </style>
 </head>
@@ -1616,7 +1886,7 @@
         if (currentTrackingNumber && currentTrackingNumber !== 'null' && currentTrackingNumber !== '') {
             // 여기에 배송조회 기능을 구현하세요
             console.log('모달에서 배송조회 운송장번호:', currentTrackingNumber);
-            alert('배송조회 기능을 구현해주세요. 운송장번호: ' + currentTrackingNumber);
+            window.location.href="https://trace.cjlogistics.com/next/tracking.html?wblNo="+currentTrackingNumber;
         } else {
             alert('배송조회 정보가 없습니다.');
         }
@@ -1677,6 +1947,76 @@
         });
     });
 
+    // 계좌번호 복사 함수
+    function copyAccountInfo() {
+        const accountInfo = 'IBK 기업은행 381-129451-04-015';
+
+        if (navigator.clipboard) {
+            // 최신 브라우저 clipboard API 사용
+            navigator.clipboard.writeText(accountInfo).then(function() {
+                showCopyMessage('계좌번호가 복사되었습니다!');
+            }).catch(function(err) {
+                console.error('복사 실패:', err);
+                fallbackCopyTextToClipboard(accountInfo);
+            });
+        } else {
+            // 구형 브라우저 대체 방법
+            fallbackCopyTextToClipboard(accountInfo);
+        }
+    }
+
+    // 구형 브라우저용 복사 함수
+    function fallbackCopyTextToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+
+        // 화면에서 숨기기
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showCopyMessage('계좌번호가 복사되었습니다!');
+            } else {
+                showCopyMessage('복사에 실패했습니다.');
+            }
+        } catch (err) {
+            console.error('복사 실패:', err);
+            showCopyMessage('복사에 실패했습니다.');
+        }
+
+        document.body.removeChild(textArea);
+    }
+
+    // 복사 완료 메시지 표시
+    function showCopyMessage(message) {
+        // 기존 메시지가 있으면 제거
+        const existingMessage = document.querySelector('.copy-message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+
+        // 새 메시지 생성
+        const messageElement = document.createElement('div');
+        messageElement.className = 'copy-message';
+        messageElement.textContent = message;
+        document.body.appendChild(messageElement);
+
+        // 2초 후 자동 제거
+        setTimeout(() => {
+            if (messageElement && messageElement.parentNode) {
+                messageElement.parentNode.removeChild(messageElement);
+            }
+        }, 2000);
+    }
+
     function openMypageOrderModal(data) {
         console.log(data);
         document.getElementById('mypageOrderModal').style.display = 'block';
@@ -1691,6 +2031,7 @@
 
         // 주문 상태 뱃지 클래스
         const statusMap = {
+            PENDING: 'mypage-status-paid',
             PAID: 'mypage-status-paid',
             SHIPPED: 'mypage-status-shipped',
             DELIVERED: 'mypage-status-delivered',
@@ -1698,6 +2039,7 @@
             REFUNDED: 'mypage-status-refunded'
         };
         const statusTextMap = {
+            PENDING: "결제대기",
             PAID: '결제완료',
             SHIPPED: '배송중',
             DELIVERED: '배송완료',
@@ -1734,6 +2076,16 @@
       <span class="mypage-info-value">
         <span class="mypage-tracking-number">${first.trackingNumber}</span>
       </span>
+    </div>
+  ` : '';
+
+        // 계좌정보 HTML 생성 (무통장입금일 때만)
+        const accountInfoHtml = (first.paymentMethod !== 'card') ? `
+    <div class="account-info" onclick="copyAccountInfo()">
+      <div class="account-title">입금 계좌정보</div>
+      <div class="account-details">IBK 기업은행 381-129451-04-015</div>
+      <div class="account-holder">예금주 : (주)혜안파트너스</div>
+      <div class="copy-hint">클릭하여 계좌번호 복사</div>
     </div>
   ` : '';
 
@@ -1778,9 +2130,10 @@
           </div>
           <div class="mypage-info-item">
             <span class="mypage-info-label">결제방법</span>
-            <span class="mypage-info-value">${first.paymentMethod === 'card' ? '카드결제' : first.paymentMethod}</span>
+            <span class="mypage-info-value">${first.paymentMethod === 'card' ? '카드결제' : '무통장입금'}</span>
           </div>
         </div>
+        ${accountInfoHtml}
       </div>
     </div>
 

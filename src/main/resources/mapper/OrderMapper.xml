@@ -260,7 +260,6 @@
                  LEFT JOIN price pr ON p.product_code = pr.product_code
                  LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
         WHERE o.mem_code = #{memberCode}
-            AND o.payment_status != 'PENDING'
             AND o.payment_status != 'FAILED'
         ORDER BY o.create_at desc
     </select>
@@ -289,7 +288,6 @@
                  LEFT JOIN image i ON p.product_code = i.product_code AND i.image_type = 'title'
 
         WHERE o.guest_code = #{guestCode}
-          AND o.payment_status != 'PENDING'
           AND o.payment_status != 'FAILED'
         ORDER BY o.create_at DESC
     </select>

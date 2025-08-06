@@ -305,7 +305,16 @@ public class OrderServiceImpl implements IF_OrderService {
         orderItem.setOptionCode(optionCode);
         orderItem.setQuantity(quantity);
 
-        int unitPrice = priceDto.getPriceSelling();
+        // 🆕 특가 가격 확인 및 적용
+        int unitPrice;
+        if (productService.isSpecialSale(productCode) > 0) {
+            // 특가 상품인 경우 특가 가격 사용
+            unitPrice = productService.getProductDetailSalePrice(productCode);
+        } else {
+            // 일반 상품인 경우 판매가 사용
+            unitPrice = priceDto.getPriceSelling();
+        }
+
         int optionPrice = optionDto != null ? optionDto.getOptionPrice() : 0;
         int totalPrice = (unitPrice + optionPrice) * quantity;
 

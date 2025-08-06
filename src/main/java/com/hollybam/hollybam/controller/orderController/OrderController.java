@@ -312,6 +312,27 @@ public class OrderController {
             // ProductService를 통해 상품 상세 정보 조회
             ProductDto product = productService.getProductByCode(productCode);
 
+            // 🆕 특가 정보 설정 (상품 상세페이지와 동일한 로직)
+            if (productService.isSpecialSale(productCode) > 0) {
+                product.setSale(true);
+                product.setSalePrice(productService.getProductDetailSalePrice(productCode));
+
+                // 할인율 계산
+                int originalPrice = product.getPriceDtoList() != null && !product.getPriceDtoList().isEmpty()
+                        ? product.getPriceDtoList().get(0).getPriceOriginal()
+                        : 0;
+                int salePrice = product.getSalePrice();
+
+                if (originalPrice > 0) {
+                    int discountRate = (int) Math.round(((originalPrice - salePrice) / (double) originalPrice) * 100);
+                    product.setSpecialDiscountRate(discountRate);
+                }
+            } else {
+                product.setSale(false);
+                product.setSalePrice(0);
+                product.setSpecialDiscountRate(0);
+            }
+
             CartDto cartItem = new CartDto();
             cartItem.setProductCode(productCode);
             cartItem.setOptionCode(optionCode);
@@ -339,6 +360,7 @@ public class OrderController {
 
         } catch (Exception e) {
             e.printStackTrace();
+            log.error("바로구매 상품 정보 생성 실패: productCode={}", productCode, e);
             return new ArrayList<>();
         }
     }
@@ -364,6 +386,31 @@ public class OrderController {
                 return ResponseEntity.ok(result);
             }
 
+            // 🆕 서버에서 금액 재계산 및 검증
+            @SuppressWarnings("unchecked")
+            List<Integer> cartCodes = (List<Integer>) orderData.get("cartCodes");
+            Integer clientFinalAmount = (Integer) orderData.get("finalAmount");
+
+            // 서버에서 현재 특가를 반영한 금액 재계산
+            PaymentRequestDto serverPaymentInfo = paymentService.calculateOrderFromCart(
+                    cartCodes,
+                    member != null ? member.getMemberCode() : null,
+                    guest != null ? guest.getGuestCode() : null
+            );
+
+            // 🔥 프론트엔드 금액과 서버 재계산 금액 비교 (할인 전 기준)
+            int serverBaseAmount = serverPaymentInfo.getTotalAmount() + serverPaymentInfo.getDeliveryFee();
+            int clientTotalAmount = (Integer) orderData.get("totalAmount");
+            int clientDeliveryFee = (Integer) orderData.get("deliveryFee");
+            int clientBaseAmount = clientTotalAmount + clientDeliveryFee;
+
+            if (Math.abs(serverBaseAmount - clientBaseAmount) > 1) { // 1원 이하 차이는 허용
+                log.error("금액 불일치 감지 - 서버: {}, 클라이언트: {}", serverBaseAmount, clientBaseAmount);
+                result.put("success", false);
+                result.put("message", "주문 금액에 오류가 있습니다. 페이지를 새로고침 후 다시 시도해주세요.");
+                return ResponseEntity.ok(result);
+            }
+
             if (member != null) {
                 orderData.put("memCode", member.getMemberCode());
                 orderData.put("adultVerified", member.isAdultVerified());
@@ -386,6 +433,10 @@ public class OrderController {
             result.put("orderId", order.getOrderId());
             result.put("orderCode", order.getOrderCode());
 
+            // 🆕 PG 연동용 데이터 - 실제 결제 금액 사용
+            int actualFinalAmount = order.getFinalAmount(); // DB에 저장된 실제 최종 금액
+            result.put("goodsAmt", actualFinalAmount);
+
             Map<String, Object> orderNameInfo = orderService.getCartProductName(order.getOrderCode());
             String firstProductName = orderNameInfo.get("firstProductName").toString();
             Object raw = orderNameInfo.get("itemCount");
@@ -405,8 +456,8 @@ public class OrderController {
             result.put("ordTel",  orderData.get("ordererPhone"));
             // 주문자 이메일
             result.put("ordEmail", orderData.get("ordererEmail"));
-            // 결제 금액
-            result.put("goodsAmt", orderData.get("finalAmount"));
+//            // 결제 금액
+//            result.put("goodsAmt", orderData.get("finalAmount"));
             // 주문 일시(ediDate)
             String ediDate  = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             result.put("ediDate", ediDate);
@@ -448,6 +499,31 @@ public class OrderController {
                 return ResponseEntity.ok(result);
             }
 
+            // 🆕 서버에서 금액 재계산 및 검증
+            int productCode = (Integer) orderData.get("productCode");
+            Integer optionCode = (Integer) orderData.get("optionCode");
+            int quantity = (Integer) orderData.get("quantity");
+
+            // 서버에서 현재 특가를 반영한 금액 재계산
+            PaymentRequestDto serverPaymentInfo = paymentService.calculateDirectPurchase(
+                    productCode, optionCode, quantity,
+                    member != null ? member.getMemberCode() : null,
+                    guest != null ? guest.getGuestCode() : null
+            );
+
+            // 🔥 프론트엔드 금액과 서버 재계산 금액 비교
+            int serverBaseAmount = serverPaymentInfo.getTotalAmount() + serverPaymentInfo.getDeliveryFee();
+            int clientTotalAmount = (Integer) orderData.get("totalAmount");
+            int clientDeliveryFee = (Integer) orderData.get("deliveryFee");
+            int clientBaseAmount = clientTotalAmount + clientDeliveryFee;
+
+            if (Math.abs(serverBaseAmount - clientBaseAmount) > 1) { // 1원 이하 차이는 허용
+                log.error("바로구매 금액 불일치 감지 - 서버: {}, 클라이언트: {}", serverBaseAmount, clientBaseAmount);
+                result.put("success", false);
+                result.put("message", "주문 금액에 오류가 있습니다. 페이지를 새로고침 후 다시 시도해주세요.");
+                return ResponseEntity.ok(result);
+            }
+
             if (member != null) {
                 orderData.put("memCode", member.getMemberCode());
                 orderData.put("adultVerified", member.isAdultVerified());
@@ -477,8 +553,9 @@ public class OrderController {
             result.put("ordTel",  orderData.get("ordererPhone"));
             // 주문자 이메일
             result.put("ordEmail", orderData.get("ordererEmail"));
-            // 결제 금액
-            result.put("goodsAmt", orderData.get("finalAmount"));
+            // 🆕 PG 연동용 데이터 - 실제 결제 금액 사용
+            int actualFinalAmount = order.getFinalAmount(); // DB에 저장된 실제 최종 금액
+            result.put("goodsAmt", actualFinalAmount);
             // 주문 일시(ediDate)
             String ediDate  = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             result.put("ediDate", ediDate);

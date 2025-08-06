@@ -8,10 +8,14 @@
     <select id="selectCartItemsWithDetails" parameterType="list" resultMap="CartResultMap">
         SELECT
         c.cart_code, c.mem_code, c.guest_code, c.product_code, c.option_code, c.quantity, c.selected,
-        p.product_name, p.product_description,
-        pr.price_selling,
+        p.product_name, p.product_description, p.product_quantity,
+        pr.price_selling, pr.price_original,
         po.option_name, po.option_value, po.option_price,
-        i.image_url
+        i.image_url,
+        -- 🆕 특가 정보 추가
+        CASE WHEN ss.active = 1 THEN 1 ELSE 0 END as is_special_sale,
+        COALESCE(ss.special_sale_price, 0) as special_sale_price,
+        COALESCE(ss.special_sale_per, 0) as special_sale_per
         FROM cart c
         INNER JOIN product p ON c.product_code = p.product_code
         INNER JOIN price pr ON p.product_code = pr.product_code
@@ -22,6 +26,8 @@
         FROM image
         WHERE image_type = 'title'
         ) i ON p.product_code = i.product_code AND i.rn = 1
+        -- 🆕 특가 테이블 LEFT JOIN 추가
+        LEFT JOIN special_sale ss ON p.product_code = ss.product_code AND ss.active = 1
         WHERE c.cart_code IN
         <foreach collection="cartCodes" item="cartCode" open="(" separator="," close=")">
             #{cartCode}
@@ -42,10 +48,16 @@
         <association property="productDto" javaType="com.hollybam.hollybam.dto.ProductDto">
             <result property="productName" column="product_name"/>
             <result property="productDescription" column="product_description"/>
+            <result property="productQuantity" column="product_quantity"/>
+            <!-- 🆕 특가 정보 매핑 -->
+            <result property="isSale" column="is_special_sale"/>
+            <result property="salePrice" column="special_sale_price"/>
+            <result property="specialDiscountRate" column="special_sale_per"/>
         </association>
 
         <association property="priceDto" javaType="com.hollybam.hollybam.dto.PriceDto">
             <result property="priceSelling" column="price_selling"/>
+            <result property="priceOriginal" column="price_original"/>
         </association>
 
         <association property="productOptionDto" javaType="com.hollybam.hollybam.dto.ProductOptionDto">

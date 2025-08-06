@@ -20,6 +20,8 @@ public class PaymentService implements IF_PaymentService {
 
     @Autowired
     private IF_PaymentDao paymentDao;
+    @Autowired
+    private IF_ProductService productService;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -36,10 +38,21 @@ public class PaymentService implements IF_PaymentService {
 
         int totalAmount = 0;
         for (CartDto cartItem : cartItems) {
-            int itemPrice = cartItem.getPriceDto().getPriceSelling();
+            // 🆕 특가 가격 우선 적용
+            int itemPrice;
+            if (cartItem.getProductDto().isSale()) {
+                // 특가 상품인 경우 특가 가격 사용
+                itemPrice = cartItem.getProductDto().getSalePrice();
+            } else {
+                // 일반 상품인 경우 판매가 사용
+                itemPrice = cartItem.getPriceDto().getPriceSelling();
+            }
+
+            // 옵션 가격 추가
             if (cartItem.getOptionCode() != null) {
                 itemPrice += cartItem.getProductOptionDto().getOptionPrice();
             }
+
             totalAmount += itemPrice * cartItem.getQuantity();
         }
 
@@ -72,7 +85,16 @@ public class PaymentService implements IF_PaymentService {
 
             // 상품 가격 조회
             PriceDto priceDto = paymentDao.selectProductPrice(productCode);
-            int itemPrice = priceDto.getPriceSelling();
+
+            // 🆕 특가 가격 확인 및 적용
+            int itemPrice;
+            if (productService.isSpecialSale(productCode) > 0) {
+                // 특가 상품인 경우 특가 가격 사용
+                itemPrice = productService.getProductDetailSalePrice(productCode);
+            } else {
+                // 일반 상품인 경우 판매가 사용
+                itemPrice = priceDto.getPriceSelling();
+            }
 
             // 옵션 가격 추가 (옵션이 있는 경우)
             if (optionCode != null) {

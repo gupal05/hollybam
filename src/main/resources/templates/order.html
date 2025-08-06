@@ -1289,6 +1289,66 @@
                 width: fit-content;
             }
         }
+
+        .special-sale-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .special-sale-badge i {
+            animation: fire 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes fire {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .price-display {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .special-price-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .original-price-crossed {
+            font-size: 12px;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .special-price-amount {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ee5a24;
+        }
+
+        .product-amount {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -1585,20 +1645,50 @@
             <div id="productList">
                 <!-- Thymeleaf로 상품 목록 표시 -->
                 <div th:each="item : ${cartItems}" class="product-item">
-                    <img th:src="${item.imageDto?.imageUrl != null ?
-                            'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + item.imageDto.imageUrl :
-                            'https://via.placeholder.com/80x80/f0f0f0/999?text=Product'}"
+                    <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${item.imageDto?.imageUrl}"
+                         alt="상품 이미지"
                          class="product-image"
-                         alt="상품 이미지" />
+                         onerror="this.src='https://via.placeholder.com/80x80'">
                     <div class="product-info">
                         <div class="product-name" th:text="${item.productDto.productName}">상품명</div>
-                        <div class="product-options" th:if="${item.productOptionDto != null}">
-                            <span th:text="${item.productOptionDto.optionName}">옵션명</span>:
-                            <span th:text="${item.productOptionDto.optionValue}">옵션값</span>
+
+                        <!-- 옵션 정보 표시 -->
+                        <div th:if="${item.optionCode != null}" class="product-options">
+                            <span th:text="${item.productOptionDto.optionName + ': ' + item.productOptionDto.optionValue}">옵션</span>
                         </div>
+
+                        <!-- 🆕 특가 상품인 경우 특별 표시 -->
+                        <div th:if="${item.productDto.isSale}" class="special-sale-badge">
+                            <i class="fas fa-fire"></i>
+                            <span>이달의 특가 -</span>
+                            <span th:text="${item.productDto.specialDiscountRate + '%'}">68%</span>
+                        </div>
+
                         <div class="product-price">
                             <span class="product-quantity" th:text="'수량 ' + ${item.quantity} + '개'">수량 1개</span>
-                            <span class="product-amount" th:text="'₩' + ${#numbers.formatInteger((item.priceDto.priceSelling + (item.productOptionDto != null ? item.productOptionDto.optionPrice : 0)) * item.quantity, 0, 'COMMA')}">₩150,000</span>
+
+                            <!-- 🆕 특가 가격 우선 표시 -->
+                            <div class="price-display">
+                                <!-- 특가 상품인 경우 -->
+                                <div th:if="${item.productDto.isSale}" class="special-price-container">
+                                    <!-- 원가 (취소선) -->
+                                    <span class="original-price-crossed"
+                                          th:text="'₩' + ${#numbers.formatInteger(item.priceDto.priceOriginal + (item.optionCode != null ? item.productOptionDto.optionPrice : 0), 0, 'COMMA')}">
+                        ₩50,000
+                    </span>
+                                    <!-- 특가 (강조) -->
+                                    <span class="special-price-amount"
+                                          th:text="'₩' + ${#numbers.formatInteger((item.productDto.salePrice + (item.optionCode != null ? item.productOptionDto.optionPrice : 0)) * item.quantity, 0, 'COMMA')}">
+                        ₩32,000
+                    </span>
+                                </div>
+
+                                <!-- 일반 상품인 경우 -->
+                                <span th:if="${!item.productDto.isSale}" class="product-amount"
+                                      th:text="'₩' + ${#numbers.formatInteger((item.priceDto.priceSelling + (item.optionCode != null ? item.productOptionDto.optionPrice : 0)) * item.quantity, 0, 'COMMA')}">
+                    ₩150,000
+                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

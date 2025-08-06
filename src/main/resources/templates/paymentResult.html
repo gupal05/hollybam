@@ -512,6 +512,8 @@
 <script>
     // 페이지 로드 시 애니메이션 효과
     $(document).ready(function() {
+        // ========== 기존 애니메이션 코드들... ==========
+
         // 성공 아이콘 애니메이션
         $('.success-icon').css({
             'transform': 'scale(0)',
@@ -534,13 +536,83 @@
         // 결제 완료 정보를 로컬 스토리지에서 제거 (보안)
         localStorage.removeItem('paymentInfo');
         sessionStorage.removeItem('paymentData');
+
+        // ========== 🆕 즉시 삭제 방지 로직 추가 ==========
+        console.log('💳 결제 성공 페이지 로드 - 즉시 삭제 시스템 정리');
+
+        // 1) 부모 창(opener)의 즉시 삭제 시스템 정리
+        try {
+            if (window.opener && typeof window.opener.cleanupInstantDelete === 'function') {
+                console.log('🧹 부모 창의 즉시 삭제 시스템 정리');
+                window.opener.cleanupInstantDelete();
+
+                // 결제 완료 플래그 설정
+                if (typeof window.opener.isPaymentCompleted !== 'undefined') {
+                    window.opener.isPaymentCompleted = true;
+                }
+
+                // 결제 결과 처리 완료 플래그 설정
+                if (typeof window.opener.isPaymentResultProcessed !== 'undefined') {
+                    window.opener.isPaymentResultProcessed = true;
+                }
+            }
+        } catch (e) {
+            console.warn('부모 창 접근 실패 (정상적인 경우일 수 있음):', e.message);
+        }
+
+        // 2) 서버에 결제 결과 처리 완료 알림
+        // Thymeleaf에서 orderId 가져오기 (템플릿에서 이미 사용중인 변수)
+        var orderId = /*[[${order?.orderId}]]*/ null;
+
+        if (orderId) {
+            fetch('/order/payment-result-received', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    orderId: orderId,
+                    status: 'SUCCESS'
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('✅ 서버에 결제 성공 결과 처리 완료 알림 성공');
+                    } else {
+                        console.warn('⚠️ 결제 성공 결과 처리 알림 실패:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ 결제 성공 결과 처리 알림 요청 오류:', error);
+                });
+        }
+
+        console.log('✅ 결제 성공 페이지 초기화 완료');
     });
+
+    // ========== 기존 뒤로가기 방지 코드... ==========
 
     // 브라우저 뒤로가기 방지 (결제 완료 후)
     history.pushState(null, null, location.href);
     window.addEventListener('popstate', function(event) {
         alert('결제가 완료되었습니다. 주문내역 페이지를 이용해주세요.');
         history.pushState(null, null, location.href);
+    });
+
+    // ========== 🆕 페이지가 닫힐 때도 정리 ==========
+    window.addEventListener('beforeunload', function() {
+        try {
+            if (window.opener && typeof window.opener.cleanupInstantDelete === 'function') {
+                window.opener.cleanupInstantDelete();
+            }
+            if (window.opener && typeof window.opener.isPaymentResultProcessed !== 'undefined') {
+                window.opener.isPaymentResultProcessed = true;
+            }
+        } catch (e) {
+            // 무시
+        }
     });
 </script>
 </body>

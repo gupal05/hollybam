@@ -121,6 +121,9 @@ public class PayController {
 
             if("3001".equals(resultCd)){
                 orderService.updatePaymentStatus(ordNo, "PAID");
+                // 🚫 즉시 삭제 방지를 위한 세션 플래그 설정
+                session.setAttribute("paymentResultProcessed_" + ordNo, true);
+                session.setAttribute("paymentStatus_" + ordNo, "SUCCESS");
 
                 // 주문 관련 데이터 꺼내기
                 MemberDto member = (MemberDto)session.getAttribute("member");
@@ -225,6 +228,10 @@ public class PayController {
                 paymentService.insertPaymentLog(paymentLogDto);
                 System.out.println("❌ 결제 실패: code=" + resultCd + ", msg=" + resultMsg);
                 orderService.updatePaymentStatus(ordNo, "FAILED");
+
+                // 🚫 즉시 삭제 방지를 위한 세션 플래그 설정
+                session.setAttribute("paymentResultProcessed_" + ordNo, true);
+                session.setAttribute("paymentStatus_" + ordNo, "FAILED");
                 m.addAttribute("errorMsg", "결제 실패: " + resultMsg);
                 return "paymentFail";
             }

@@ -312,7 +312,6 @@
                  SELECT order_code
                  FROM orders
                  WHERE mem_code = #{memberCode}
-                   AND payment_status != 'PENDING'
                    AND payment_status != 'FAILED'
                  ORDER BY create_at DESC
                  LIMIT 2
@@ -349,7 +348,6 @@
                  SELECT order_code
                  FROM orders
                  WHERE guest_code = #{guestCode}
-                   AND payment_status != 'PENDING'
                    AND payment_status != 'FAILED'
                  ORDER BY create_at DESC
                  LIMIT 2
@@ -573,4 +571,10 @@
         SET product_quantity = product_quantity + #{quantity}
         WHERE product_code = #{productCode}
     </update>
+
+    <select id="getOrderCodeNumber" parameterType="String" resultType="int">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE order_id LIKE CONCAT(#{date}, '\_%')
+    </select>
 </mapper>

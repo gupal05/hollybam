@@ -445,9 +445,9 @@ public class OrderServiceImpl implements IF_OrderService {
 
     @Override
     public String generateOrderId() {
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-        String randomSuffix = String.format("%03d", (int)(Math.random() * 1000));
-        return "ORDER_" + timestamp + "_" + randomSuffix;
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        int count = orderDao.getOrderCodeNumber(timestamp);
+        return String.format("%s_%08d", timestamp, count + 1);
     }
 
     @Override
@@ -596,6 +596,7 @@ public class OrderServiceImpl implements IF_OrderService {
     @Override
     @Transactional
     public void processOrderPoints(int orderCode, Integer memCode, int usePoints, int finalAmount) {
+        System.out.println("확인 : "+usePoints+" & "+finalAmount);
         if (memCode == null) {
             return; // 비회원은 적립금 처리 불가
         }
@@ -715,29 +716,16 @@ public class OrderServiceImpl implements IF_OrderService {
             if (couponCodeStr != null && !couponCodeStr.trim().isEmpty()) {
                 int couponCode = Integer.parseInt(couponCodeStr);
                 int discountAmount = Integer.parseInt(String.valueOf(orderData.get("discountAmount")));
-                if (points != null && points > 0) {
-                    int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
-                    System.out.println(couponCode);
-                    System.out.println(orderCode);
-                    couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
-                    this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
-                } else {
-                    // ✅ 쿠폰만 사용
-                    int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
-                    couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
-                }
+                int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
+                couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
+                this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
             } else if (discountCodeStr != null && !discountCodeStr.trim().isEmpty()) {
                 DiscountDto discountDto = discountService.getDiscountByCode(discountCodeStr);
                 Integer discountCode = discountDto.getDiscountCode();
                 Integer discountAmount = Integer.valueOf(String.valueOf(orderData.get("discountAmount")));
-                if (points != null && points > 0) {
-                    // ✅ 할인코드 + 포인트 사용
-                    discountService.recordDiscountCodeUsage(discountCode, member.getMemberCode(), orderCode, discountAmount);
-                    this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
-                } else {
-                    // ✅ 할인코드만 사용
-                    discountService.recordDiscountCodeUsage(discountCode, member.getMemberCode(), orderCode, discountAmount);
-                }
+                // ✅ 할인코드 + 포인트 사용
+                discountService.recordDiscountCodeUsage(discountCode, member.getMemberCode(), orderCode, discountAmount);
+                this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
             } else if (points != null && points > 0) {
                 // ✅ 포인트만 사용
                 this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
@@ -785,30 +773,16 @@ public class OrderServiceImpl implements IF_OrderService {
             if (couponCodeStr != null && !couponCodeStr.trim().isEmpty()) {
                 int couponCode = Integer.parseInt(couponCodeStr);
                 int discountAmount = Integer.parseInt(String.valueOf(orderData.get("discountAmount")));
-                if (points != null && points > 0) {
-                    int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
-                    System.out.println(couponCode);
-                    System.out.println(orderCode);
-                    couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
-                    this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
-                } else {
-                    // ✅ 쿠폰만 사용
-                    System.out.println(couponCode);
-                    int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
-                    couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
-                }
+                int couponMemberCode = couponService.getCouponMemberCode(member.getMemberCode(), couponCode);
+                couponService.useCoupon(couponMemberCode, orderCode, discountAmount); //orderCode, discountAmount, couponMemberCode
+                this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
             } else if (discountCodeStr != null && !discountCodeStr.trim().isEmpty()) {
                 DiscountDto discountDto = discountService.getDiscountByCode(discountCodeStr);
                 Integer discountCode = discountDto.getDiscountCode();
                 Integer discountAmount = Integer.valueOf(String.valueOf(orderData.get("discountAmount")));
-                if (points != null && points > 0) {
                     // ✅ 할인코드 + 포인트 사용
                     discountService.recordDiscountCodeUsage(discountCode, member.getMemberCode(), orderCode, discountAmount);
                     this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);
-                } else {
-                    // ✅ 할인코드만 사용
-                    discountService.recordDiscountCodeUsage(discountCode, member.getMemberCode(), orderCode, discountAmount);
-                }
             } else if (points != null && points > 0) {
                 // ✅ 포인트만 사용
                 this.processOrderPoints(orderCode, member.getMemberCode(), usePoints, totalAmount);

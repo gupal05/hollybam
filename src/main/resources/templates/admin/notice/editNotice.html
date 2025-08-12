@@ -4,201 +4,268 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>HollyBam - 공지사항 수정</title>
+
+    <!-- 외부 라이브러리 -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
 
+    <!-- 관리자 사이드바 CSS/JS -->
+    <link rel="stylesheet" href="/css/adminSidebar.css">
+    <script src="/js/adminSidebar.js"></script>
+
     <style>
-        * {
-            box-sizing: border-box;
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
             margin: 0;
             padding: 0;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            color: #333;
-            background-color: #f8f9fa;
+        /* 헤더 */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 40px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        /* 관리자 헤더 */
-        .admin-header {
-            background: #2c3e50;
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-        .header-content {
+        .admin-info {
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 300;
+        }
+
+        .logout-btn {
+            background: #fff;
+            color: #212529;
+            border: 1px solid #212529;
+            padding: 8px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #212529;
+            color: #fff;
+        }
+
+        /* 컨테이너 */
+        .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 40px 20px;
         }
 
-        .admin-title {
-            font-size: 1.5rem;
-            font-weight: 600;
+        /* 페이지 타이틀 */
+        .page-title {
+            margin-bottom: 40px;
         }
 
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #bdc3c7;
-            font-size: 0.9rem;
+        .page-title h2 {
+            color: #212529;
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
         }
 
-        .breadcrumb a {
-            color: #ecf0f1;
-            text-decoration: none;
+        .page-title p {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 300;
         }
 
-        .breadcrumb a:hover {
-            color: white;
-        }
-
-        /* 메인 컨테이너 */
-        .main-container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        /* 폼 컨테이너 */
-        .form-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        /* 공지사항 정보 카드 */
+        .notice-info-card {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
             overflow: hidden;
         }
 
-        .form-header {
-            padding: 2rem;
-            border-bottom: 1px solid #e9ecef;
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-            color: white;
+        .notice-info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #212529 0%, #6c757d 100%);
         }
 
-        .form-title {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
+        .notice-info-header {
+            margin-bottom: 20px;
         }
 
-        .form-description {
-            opacity: 0.9;
-            font-size: 1rem;
+        .notice-info-title {
+            color: #212529;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
         }
 
-        .notice-info {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
+        .notice-info-subtitle {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .notice-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
         }
 
         .info-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 300;
         }
 
-        .form-body {
-            padding: 2rem;
+        .info-item i {
+            color: #212529;
+            width: 16px;
         }
 
+        /* 폼 섹션 */
+        .section {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            padding: 30px 40px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            color: #212529;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .section-body {
+            padding: 40px;
+        }
+
+        /* 폼 그룹 */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 30px;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #495057;
-            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: #212529;
+            font-size: 13px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .required {
-            color: #e74c3c;
-            margin-left: 0.25rem;
+            color: #dc3545;
+            margin-left: 4px;
         }
 
         .form-input {
             width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
+            padding: 15px 20px;
+            border: 1px solid #e9ecef;
+            font-size: 14px;
+            color: #212529;
+            font-weight: 300;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #f39c12;
-            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+            border-color: #212529;
         }
 
         .form-textarea {
             width: 100%;
             min-height: 300px;
-            padding: 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
-            font-size: 0.95rem;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            font-size: 14px;
+            color: #212529;
+            font-weight: 300;
             resize: vertical;
-            line-height: 1.5;
+            line-height: 1.6;
             font-family: inherit;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
         }
 
         .form-textarea:focus {
             outline: none;
-            border-color: #f39c12;
-            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+            border-color: #212529;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 8px;
+            font-weight: 300;
         }
 
         /* 체크박스 그룹 */
         .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .checkbox-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
+            gap: 15px;
+            padding: 20px;
             background: #f8f9fa;
-            border-radius: 6px;
-            border: 2px solid #e9ecef;
-            transition: all 0.2s ease;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
 
         .checkbox-item:hover {
-            background: #e9ecef;
+            border-color: #212529;
         }
 
         .checkbox-item.checked {
-            background: #fff3cd;
-            border-color: #f39c12;
+            background: #fff;
+            border-color: #212529;
         }
 
         .checkbox-input {
-            width: 1.25rem;
-            height: 1.25rem;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
         }
 
@@ -207,88 +274,79 @@
         }
 
         .checkbox-title {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 0.25rem;
+            color: #212529;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 4px;
         }
 
         .checkbox-description {
-            font-size: 0.85rem;
             color: #6c757d;
+            font-size: 12px;
+            font-weight: 300;
         }
 
-        /* 도움말 텍스트 */
-        .help-text {
-            font-size: 0.85rem;
-            color: #6c757d;
-            margin-top: 0.5rem;
-        }
-
-        /* 폼 액션 */
-        .form-actions {
-            padding: 1.5rem 2rem;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
+        /* 버튼 */
         .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 6px;
+            background: #fff;
+            color: #212529;
+            border: 1px solid #dee2e6;
+            padding: 12px 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            min-width: 120px;
-            justify-content: center;
+            gap: 8px;
+            min-width: auto;
+            box-sizing: border-box;
+            font-weight: 400;
+        }
+
+        .btn:hover {
+            border-color: #212529;
+        }
+
+        .btn:active,
+        .btn:focus {
+            outline: none;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-primary {
-            background: #3498db;
-            color: white;
+            background: #212529;
+            color: #fff;
+            border-color: #212529;
         }
 
         .btn-primary:hover {
-            background: #2980b9;
-            transform: translateY(-1px);
+            background: #000;
         }
 
         .btn-secondary {
-            background: #95a5a6;
-            color: white;
+            background: #6c757d;
+            color: #fff;
+            border-color: #6c757d;
         }
 
         .btn-secondary:hover {
-            background: #7f8c8d;
+            background: #5a6268;
         }
 
         .btn-warning {
-            background: #f39c12;
-            color: white;
+            background: #ffc107;
+            color: #212529;
+            border-color: #ffc107;
         }
 
         .btn-warning:hover {
-            background: #e67e22;
+            background: #e0a800;
         }
 
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-
-        /* 로딩 상태 */
         .btn.loading {
             opacity: 0.7;
             cursor: not-allowed;
@@ -296,13 +354,13 @@
 
         .btn.loading::after {
             content: '';
-            width: 1rem;
-            height: 1rem;
+            width: 12px;
+            height: 12px;
             border: 2px solid transparent;
-            border-top: 2px solid white;
+            border-top: 2px solid currentColor;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-left: 0.5rem;
+            margin-left: 8px;
         }
 
         @keyframes spin {
@@ -310,73 +368,102 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* 폼 액션 */
+        .form-actions {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 15px;
+        }
+
         /* 반응형 */
         @media (max-width: 768px) {
-            .main-container {
-                padding: 0 1rem;
+            .header {
+                padding: 0 20px;
             }
 
-            .form-header,
-            .form-body,
+            .container {
+                padding: 20px 15px;
+            }
+
+            .section-header,
+            .section-body,
             .form-actions {
-                padding: 1.5rem;
+                padding: 20px;
             }
 
-            .notice-info {
-                flex-direction: column;
-                gap: 0.5rem;
+            .notice-info-card {
+                padding: 20px;
             }
 
-            .form-actions {
-                flex-direction: column-reverse;
-                align-items: stretch;
-            }
-
-            .btn {
-                width: 100%;
+            .notice-info-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
 
             .checkbox-group {
-                gap: 0.75rem;
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
 
-            .checkbox-item {
-                padding: 0.75rem;
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .action-group {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .btn {
+                flex: 1;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
+<!-- 사이드바 레이아웃 포함 -->
+<div th:replace="~{layout/adminSidebar :: sidebar}"></div>
 
-<!-- 관리자 헤더 -->
-<header class="admin-header">
-    <div class="header-content">
-        <h1 class="admin-title">HollyBam 관리자</h1>
-        <nav class="breadcrumb">
-            <a href="/admin">대시보드</a>
-            <span>›</span>
-            <a href="/notice/admin/list">공지사항 관리</a>
-            <span>›</span>
-            <span>공지사항 수정</span>
-        </nav>
-    </div>
-</header>
+<!-- 메인 컨텐츠 -->
+<div class="main-content">
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-actions">
+            <div class="admin-info">
+                관리자님 환영합니다
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                Sign Out
+            </button>
+        </div>
+    </header>
 
-<!-- 메인 컨테이너 -->
-<div class="main-container">
-    <div class="form-container">
-        <!-- 폼 헤더 -->
-        <div class="form-header">
-            <h2 class="form-title">
-                <i class="fas fa-edit"></i>
-                공지사항 수정
-            </h2>
-            <p class="form-description">
-                기존 공지사항의 내용을 수정하거나 설정을 변경할 수 있습니다.
-            </p>
+    <!-- 컨테이너 -->
+    <div class="container">
+        <!-- 페이지 타이틀 -->
+        <div class="page-title">
+            <h2>공지사항 수정</h2>
+            <p>기존 공지사항의 내용을 수정하거나 설정을 변경할 수 있습니다.</p>
+        </div>
 
-            <!-- 공지사항 정보 -->
-            <div class="notice-info">
+        <!-- 공지사항 정보 카드 -->
+        <div class="notice-info-card">
+            <div class="notice-info-header">
+                <div class="notice-info-title">공지사항 정보</div>
+                <div class="notice-info-subtitle">현재 수정 중인 공지사항의 기본 정보입니다</div>
+            </div>
+            <div class="notice-info-grid">
                 <div class="info-item">
                     <i class="fas fa-calendar"></i>
                     <span>작성일: </span>
@@ -389,53 +476,63 @@
                 </div>
                 <div class="info-item" th:if="${notice.updatedAt != null}">
                     <i class="fas fa-clock"></i>
-                    <span>수정일: </span>
+                    <span>최종수정: </span>
                     <span th:text="${#temporals.format(notice.updatedAt, 'yyyy-MM-dd HH:mm')}">2024-12-20 15:45</span>
                 </div>
             </div>
         </div>
 
-        <!-- 폼 본문 -->
+        <!-- 폼 섹션 -->
         <form id="noticeForm" th:object="${notice}">
             <input type="hidden" th:field="*{noticeCode}">
 
-            <div class="form-body">
-                <!-- 제목 -->
-                <div class="form-group">
-                    <label class="form-label" for="noticeTitle">
-                        공지사항 제목 <span class="required">*</span>
-                    </label>
-                    <input type="text"
-                           id="noticeTitle"
-                           name="noticeTitle"
-                           th:field="*{noticeTitle}"
-                           class="form-input"
-                           placeholder="공지사항 제목을 입력하세요"
-                           required>
-                    <div class="help-text">
-                        명확하고 간결한 제목을 작성해주세요. (최대 100자)
+            <!-- 기본 정보 섹션 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">기본 정보</div>
+                </div>
+                <div class="section-body">
+                    <!-- 제목 -->
+                    <div class="form-group">
+                        <label class="form-label" for="noticeTitle">
+                            공지사항 제목 <span class="required">*</span>
+                        </label>
+                        <input type="text"
+                               id="noticeTitle"
+                               name="noticeTitle"
+                               th:field="*{noticeTitle}"
+                               class="form-input"
+                               placeholder="공지사항 제목을 입력하세요"
+                               required>
+                        <div class="help-text">
+                            명확하고 간결한 제목을 작성해주세요. (최대 100자)
+                        </div>
+                    </div>
+
+                    <!-- 내용 -->
+                    <div class="form-group">
+                        <label class="form-label" for="noticeContent">
+                            공지사항 내용 <span class="required">*</span>
+                        </label>
+                        <textarea id="noticeContent"
+                                  name="noticeContent"
+                                  th:field="*{noticeContent}"
+                                  class="form-textarea"
+                                  placeholder="공지사항 내용을 상세히 작성해주세요"
+                                  required></textarea>
+                        <div class="help-text">
+                            HTML 태그를 사용할 수 있습니다. 줄바꿈은 자동으로 처리됩니다.
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- 내용 -->
-                <div class="form-group">
-                    <label class="form-label" for="noticeContent">
-                        공지사항 내용 <span class="required">*</span>
-                    </label>
-                    <textarea id="noticeContent"
-                              name="noticeContent"
-                              th:field="*{noticeContent}"
-                              class="form-textarea"
-                              placeholder="공지사항 내용을 상세히 작성해주세요"
-                              required></textarea>
-                    <div class="help-text">
-                        HTML 태그를 사용할 수 있습니다. 줄바꿈은 자동으로 처리됩니다.
-                    </div>
+            <!-- 설정 섹션 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">공지사항 설정</div>
                 </div>
-
-                <!-- 공지사항 옵션 -->
-                <div class="form-group">
-                    <label class="form-label">공지사항 설정</label>
+                <div class="section-body">
                     <div class="checkbox-group">
                         <!-- 중요공지 -->
                         <label class="checkbox-item" th:classappend="${notice.isImportant} ? 'checked' : ''" onclick="toggleCheckbox('isImportant')">
@@ -446,7 +543,7 @@
                                    class="checkbox-input">
                             <div class="checkbox-content">
                                 <div class="checkbox-title">
-                                    <i class="fas fa-star" style="color: #f39c12;"></i>
+                                    <i class="fas fa-star" style="color: #ffc107; margin-right: 5px;"></i>
                                     중요공지로 설정
                                 </div>
                                 <div class="checkbox-description">
@@ -464,7 +561,7 @@
                                    class="checkbox-input">
                             <div class="checkbox-content">
                                 <div class="checkbox-title">
-                                    <i class="fas fa-eye" style="color: #27ae60;"></i>
+                                    <i class="fas fa-eye" style="color: #28a745; margin-right: 5px;"></i>
                                     공개 상태
                                 </div>
                                 <div class="checkbox-description">
@@ -477,28 +574,30 @@
             </div>
 
             <!-- 폼 액션 -->
-            <div class="form-actions">
-                <div style="display: flex; gap: 1rem;">
-                    <a href="/notice/admin/list" class="btn btn-secondary">
-                        <i class="fas fa-times"></i>
-                        취소
-                    </a>
-                    <a th:href="@{/notice/detail/{noticeCode}(noticeCode=${notice.noticeCode})}"
-                       class="btn btn-primary" target="_blank">
-                        <i class="fas fa-external-link-alt"></i>
-                        미리보기
-                    </a>
-                </div>
+            <div class="section">
+                <div class="form-actions">
+                    <div class="action-group">
+                        <a href="/notice/admin/list" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            취소
+                        </a>
+                        <a th:href="@{/notice/detail/{noticeCode}(noticeCode=${notice.noticeCode})}"
+                           class="btn btn-primary" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            미리보기
+                        </a>
+                    </div>
 
-                <div style="display: flex; gap: 1rem;">
-                    <button type="button" onclick="saveAsDraft()" class="btn btn-warning">
-                        <i class="fas fa-save"></i>
-                        임시저장
-                    </button>
-                    <button type="submit" class="btn btn-warning">
-                        <i class="fas fa-check"></i>
-                        수정 완료
-                    </button>
+                    <div class="action-group">
+                        <button type="button" onclick="saveAsDraft()" class="btn btn-warning">
+                            <i class="fas fa-save"></i>
+                            임시저장
+                        </button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-check"></i>
+                            수정 완료
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -623,6 +722,24 @@
                 item.classList.add('checked');
             }
         });
+
+        // 사이드바 공지사항 관리 메뉴 active 설정 및 서브메뉴 열기
+        const noticeManagementLink = document.querySelector('a[href="/notice/admin/list"]');
+        if (noticeManagementLink) {
+            noticeManagementLink.classList.add('active');
+
+            // 컨텐츠 관리 서브메뉴 자동으로 열기
+            const submenu = noticeManagementLink.closest('.submenu');
+            if (submenu) {
+                submenu.style.display = 'block';
+
+                // 컨텐츠 관리 메인 링크에도 active 표시
+                const parentNavLink = submenu.previousElementSibling;
+                if (parentNavLink && parentNavLink.classList.contains('has-submenu')) {
+                    parentNavLink.classList.add('active');
+                }
+            }
+        }
     });
 
     // 변경사항 있을 때 페이지 떠나기 전 확인

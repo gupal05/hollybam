@@ -5,134 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이벤트 등록 - 관리자</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- 관리자 사이드바 CSS/JS -->
+    <link rel="stylesheet" href="/css/adminSidebar.css">
+    <script src="/js/adminSidebar.js"></script>
+
     <style>
-        * {
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        /* 레이아웃 */
-        .admin-layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* 사이드바 */
-        .sidebar {
-            width: 280px;
-            background: #fff;
-            border-right: 1px solid #e9ecef;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding: 30px 25px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .sidebar-header h1 {
-            color: #212529;
-            font-size: 20px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-
-        .sidebar-header p {
-            color: #adb5bd;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-nav {
-            padding: 20px 0;
-        }
-
-        .nav-item {
-            margin-bottom: 5px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 25px;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border-left: 2px solid transparent;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: #212529;
-            background: #f8f9fa;
-            border-left-color: #212529;
-        }
-
-        .nav-link.has-submenu::after {
-            content: '+';
-            font-size: 16px;
-            font-weight: 300;
-            transition: transform 0.3s ease;
-        }
-
-        .nav-link.has-submenu.open::after {
-            transform: rotate(45deg);
-        }
-
-        .submenu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            background: #f8f9fa;
-        }
-
-        .submenu.open {
-            max-height: 500px;
-        }
-
-        .submenu-link {
-            display: block;
-            padding: 12px 25px 12px 50px;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border-left: 2px solid transparent;
-        }
-
-        .submenu-link:hover,
-        .submenu-link.active {
-            color: #212529;
-            background: #fff;
-            border-left-color: #212529;
-        }
-
-        /* 메인 컨텐츠 영역 */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
         }
 
         /* 헤더 */
@@ -225,26 +110,16 @@
             border-color: #f5c2c7;
         }
 
-        /* 폼 컨테이너 */
-        .form-container {
+        /* 섹션 */
+        .section {
             background: #fff;
             border: 1px solid #e9ecef;
             margin-bottom: 40px;
         }
 
-        .form-section {
-            padding: 40px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .form-section:last-child {
-            border-bottom: none;
-        }
-
         .section-header {
-            padding-bottom: 20px;
+            padding: 30px 40px;
             border-bottom: 1px solid #e9ecef;
-            margin-bottom: 30px;
         }
 
         .section-title {
@@ -252,6 +127,10 @@
             font-size: 18px;
             font-weight: 300;
             letter-spacing: 0.5px;
+        }
+
+        .section-body {
+            padding: 40px;
         }
 
         /* 폼 요소들 */
@@ -288,13 +167,14 @@
         .form-select,
         .form-textarea {
             width: 100%;
-            padding: 15px;
-            border: 1px solid #dee2e6;
+            padding: 15px 20px;
+            border: 1px solid #e9ecef;
             background: #fff;
             color: #212529;
             font-size: 14px;
             font-weight: 300;
             transition: all 0.3s ease;
+            box-sizing: border-box;
         }
 
         .form-input:focus,
@@ -331,7 +211,7 @@
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
-            border: 1px dashed #dee2e6;
+            border: 1px dashed #e9ecef;
             background: #f8f9fa;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -363,7 +243,7 @@
             background: #fff;
             color: #212529;
             border: 1px solid #dee2e6;
-            padding: 15px 30px;
+            padding: 12px 20px;
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -374,10 +254,19 @@
             gap: 8px;
             min-width: 120px;
             justify-content: center;
+            text-decoration: none;
+            box-sizing: border-box;
         }
 
         .btn:hover {
             border-color: #212529;
+        }
+
+        .btn:active,
+        .btn:focus {
+            outline: none;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-primary {
@@ -391,19 +280,19 @@
         }
 
         .btn-secondary {
-            background: #fff;
-            color: #212529;
-            border: 1px solid #dee2e6;
+            background: #6c757d;
+            color: #fff;
+            border-color: #6c757d;
         }
 
         .btn-secondary:hover {
-            border-color: #212529;
+            background: #5a6268;
         }
 
         /* 폼 액션 */
         .form-actions {
             background: #f8f9fa;
-            padding: 40px;
+            padding: 30px 40px;
             display: flex;
             justify-content: flex-end;
             gap: 15px;
@@ -419,19 +308,6 @@
 
         /* 반응형 */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
             .header {
                 padding: 0 20px;
             }
@@ -440,8 +316,10 @@
                 padding: 20px 15px;
             }
 
-            .form-section {
-                padding: 25px 20px;
+            .section-header,
+            .section-body,
+            .form-actions {
+                padding: 20px;
             }
 
             .form-grid {
@@ -450,7 +328,6 @@
 
             .form-actions {
                 flex-direction: column-reverse;
-                padding: 25px 20px;
             }
 
             .btn {
@@ -460,396 +337,189 @@
     </style>
 </head>
 <body>
-<div class="admin-layout">
-    <!-- 사이드바 -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h1>HOLLYBAM</h1>
-            <p>Administrator</p>
+<!-- 사이드바 레이아웃 포함 -->
+<div th:replace="~{layout/adminSidebar :: sidebar}"></div>
+
+<!-- 메인 컨텐츠 -->
+<div class="main-content">
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-actions">
+            <div class="admin-info">
+                관리자님 환영합니다
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                Sign Out
+            </button>
         </div>
-        <div class="sidebar-nav">
-            <div class="nav-item">
-                <a href="/admin/dashboard" class="nav-link">Dashboard</a>
-            </div>
+    </header>
 
-            <!-- 상품 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">상품 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">상품 등록</a>
-                    <a href="/admin/product/edit" class="submenu-link">상품 수정</a>
-                    <a href="/admin/product/list" class="submenu-link">상품 목록</a>
-                    <a href="#" class="submenu-link">재고 관리</a>
-                    <a href="#" class="submenu-link">상품 리뷰</a>
-                </div>
-            </div>
-
-            <!-- 카테고리 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">카테고리 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">카테고리 등록</a>
-                    <a href="#" class="submenu-link">카테고리 수정</a>
-                    <a href="#" class="submenu-link">카테고리 순서</a>
-                </div>
-            </div>
-
-            <!-- 주문 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">주문 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">주문 현황</a>
-                    <a href="#" class="submenu-link">배송 관리</a>
-                    <a href="#" class="submenu-link">취소/환불</a>
-                    <a href="#" class="submenu-link">교환/반품</a>
-                </div>
-            </div>
-
-            <!-- 회원 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">회원 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">회원 목록</a>
-                    <a href="#" class="submenu-link">본인인증 관리</a>
-                    <a href="#" class="submenu-link">회원 등급</a>
-                    <a href="#" class="submenu-link">탈퇴 회원</a>
-                    <a href="#" class="submenu-link">블랙리스트</a>
-                </div>
-            </div>
-
-            <!-- 할인권 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">할인권 관리</a>
-                <div class="submenu">
-                    <a href="/admin/coupon/create" class="submenu-link">쿠폰 생성</a>
-                    <a href="/admin/discount/create" class="submenu-link">할인코드 생성</a>
-                    <a href="#" class="submenu-link">쿠폰 사용내역</a>
-                    <a href="#" class="submenu-link">적립금 관리</a>
-                </div>
-            </div>
-
-            <!-- 이벤트 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu open" onclick="toggleSubmenu(this)">이벤트 관리</a>
-                <div class="submenu open">
-                    <a href="#" class="submenu-link active">이벤트 등록</a>
-                    <a href="#" class="submenu-link">이벤트 현황</a>
-                    <a href="#" class="submenu-link">당첨자 관리</a>
-                </div>
-            </div>
-
-            <!-- 게시판 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">게시판 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">공지사항</a>
-                    <a href="#" class="submenu-link">FAQ</a>
-                    <a href="#" class="submenu-link">1:1 문의</a>
-                    <a href="#" class="submenu-link">상품 Q&A</a>
-                    <a href="#" class="submenu-link">리뷰 관리</a>
-                </div>
-            </div>
-
-            <!-- 통계 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">통계 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">매출 통계</a>
-                    <a href="#" class="submenu-link">상품 통계</a>
-                    <a href="#" class="submenu-link">회원 통계</a>
-                    <a href="#" class="submenu-link">접속 통계</a>
-                    <a href="#" class="submenu-link">검색어 분석</a>
-                </div>
-            </div>
-
-            <!-- 정산 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">정산 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">매출 정산</a>
-                    <a href="#" class="submenu-link">결제 수수료</a>
-                    <a href="#" class="submenu-link">세금계산서</a>
-                    <a href="#" class="submenu-link">재무 보고서</a>
-                </div>
-            </div>
-
-            <!-- 배송 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">배송 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">배송비 설정</a>
-                    <a href="#" class="submenu-link">택배사 관리</a>
-                    <a href="#" class="submenu-link">배송 추적</a>
-                    <a href="#" class="submenu-link">무료배송 설정</a>
-                </div>
-            </div>
-
-            <!-- 마케팅 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">마케팅 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">이메일 발송</a>
-                    <a href="#" class="submenu-link">SMS 발송</a>
-                    <a href="#" class="submenu-link">푸시 알림</a>
-                    <a href="#" class="submenu-link">추천 상품</a>
-                    <a href="#" class="submenu-link">베스트 상품</a>
-                </div>
-            </div>
-
-            <!-- 시스템 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">시스템 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">사이트 설정</a>
-                    <a href="#" class="submenu-link">결제 설정</a>
-                    <a href="#" class="submenu-link">본인인증 설정</a>
-                    <a href="#" class="submenu-link">약관 관리</a>
-                    <a href="#" class="submenu-link">개인정보처리방침</a>
-                    <a href="#" class="submenu-link">성인인증 설정</a>
-                    <a href="#" class="submenu-link">관리자 계정</a>
-                    <a href="#" class="submenu-link">백업 관리</a>
-                    <a href="#" class="submenu-link">로그 관리</a>
-                </div>
-            </div>
-
-            <!-- 컨텐츠 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">컨텐츠 관리</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">메인 배너</a>
-                    <a href="#" class="submenu-link">팝업 관리</a>
-                    <a href="#" class="submenu-link">상품 동영상</a>
-                    <a href="#" class="submenu-link">이미지 관리</a>
-                    <a href="#" class="submenu-link">성인용품 가이드</a>
-                </div>
-            </div>
-
-            <!-- 모니터링 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">모니터링</a>
-                <div class="submenu">
-                    <a href="#" class="submenu-link">실시간 접속</a>
-                    <a href="#" class="submenu-link">서버 상태</a>
-                    <a href="#" class="submenu-link">오류 로그</a>
-                    <a href="#" class="submenu-link">보안 이벤트</a>
-                    <a href="#" class="submenu-link">API 사용량</a>
-                </div>
-            </div>
+    <!-- 컨테이너 -->
+    <div class="container">
+        <!-- 페이지 타이틀 -->
+        <div class="page-title">
+            <h2>이벤트 등록</h2>
+            <p>새로운 이벤트를 등록합니다</p>
         </div>
-    </nav>
 
-    <!-- 메인 컨텐츠 -->
-    <div class="main-content">
-        <!-- 헤더 -->
-        <header class="header">
-            <div class="header-actions">
-                <div class="admin-info">
-                    관리자님 환영합니다
+        <!-- 성공/에러 메시지 -->
+        <div th:if="${success}" class="alert alert-success">
+            <span th:text="${success}">이벤트가 등록되었습니다.</span>
+        </div>
+
+        <div th:if="${error}" class="alert alert-error">
+            <span th:text="${error}">오류가 발생했습니다.</span>
+        </div>
+
+        <!-- 폼 컨테이너 -->
+        <form th:action="@{/admin/event/create}" th:object="${event}" method="post" enctype="multipart/form-data">
+
+            <!-- 기본 정보 섹션 -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">기본 정보</h3>
                 </div>
-                <button class="logout-btn" onclick="logout()">
-                    Sign Out
-                </button>
-            </div>
-        </header>
-
-        <!-- 컨테이너 -->
-        <div class="container">
-            <!-- 페이지 타이틀 -->
-            <div class="page-title">
-                <h2>이벤트 등록</h2>
-                <p>새로운 이벤트를 등록합니다</p>
-            </div>
-
-            <!-- 성공/에러 메시지 -->
-            <div th:if="${success}" class="alert alert-success">
-                <span th:text="${success}">이벤트가 등록되었습니다.</span>
-            </div>
-
-            <div th:if="${error}" class="alert alert-error">
-                <span th:text="${error}">오류가 발생했습니다.</span>
-            </div>
-
-            <!-- 폼 컨테이너 -->
-            <div class="form-container">
-                <form th:action="@{/admin/event/create}" th:object="${event}" method="post" enctype="multipart/form-data">
-
-                    <!-- 기본 정보 섹션 -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h3 class="section-title">기본 정보</h3>
+                <div class="section-body">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label" for="eventTitle">
+                                이벤트 제목 <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" id="eventTitle"
+                                   th:field="*{eventTitle}" placeholder="이벤트 제목을 입력하세요" required>
                         </div>
-                        <div class="form-grid">
-                            <div class="form-group full-width">
-                                <label class="form-label" for="eventTitle">
-                                    이벤트 제목 <span class="required">*</span>
-                                </label>
-                                <input type="text" class="form-input" id="eventTitle"
-                                       th:field="*{eventTitle}" placeholder="이벤트 제목을 입력하세요" required>
-                            </div>
 
-                            <div class="form-group full-width">
-                                <label class="form-label" for="eventDescription">
-                                    간략 설명
-                                </label>
-                                <textarea class="form-textarea" id="eventDescription"
-                                          th:field="*{eventDescription}" placeholder="이벤트에 대한 간략한 설명을 입력하세요"></textarea>
-                            </div>
+                        <div class="form-group full-width">
+                            <label class="form-label" for="eventDescription">
+                                간략 설명
+                            </label>
+                            <textarea class="form-textarea" id="eventDescription"
+                                      th:field="*{eventDescription}" placeholder="이벤트에 대한 간략한 설명을 입력하세요"></textarea>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- 기간 설정 섹션 -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h3 class="section-title">이벤트 기간</h3>
+            <!-- 기간 설정 섹션 -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">이벤트 기간</h3>
+                </div>
+                <div class="section-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="eventStart">
+                                시작일 <span class="required">*</span>
+                            </label>
+                            <input type="date" class="form-input" id="eventStart"
+                                   th:field="*{eventStart}" required>
+                            <div class="help-text">이벤트가 시작되는 날짜를 선택하세요</div>
                         </div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label" for="eventStart">
-                                    시작일 <span class="required">*</span>
-                                </label>
-                                <input type="date" class="form-input" id="eventStart"
-                                       th:field="*{eventStart}" required>
-                                <div class="help-text">이벤트가 시작되는 날짜를 선택하세요</div>
-                            </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="eventEnd">
-                                    종료일
-                                </label>
-                                <input type="date" class="form-input" id="eventEnd"
-                                       th:field="*{eventEnd}">
-                                <div class="help-text">이벤트가 종료되는 날짜를 선택하세요 (선택사항)</div>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label" for="eventEnd">
+                                종료일
+                            </label>
+                            <input type="date" class="form-input" id="eventEnd"
+                                   th:field="*{eventEnd}">
+                            <div class="help-text">이벤트가 종료되는 날짜를 선택하세요 (선택사항)</div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- 이미지 관리 섹션 -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h3 class="section-title">이미지 관리</h3>
-                        </div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    썸네일 이미지 <span class="required">*</span>
-                                </label>
-                                <div class="file-upload">
-                                    <input type="file" class="file-input" name="thumbnailFile" id="thumbnailFile" accept="image/*" required>
-                                    <div class="file-label">
-                                        <div class="file-text">썸네일 이미지 업로드</div>
-                                        <div class="file-subtext">JPG, PNG 파일 업로드</div>
-                                    </div>
+            <!-- 이미지 관리 섹션 -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">이미지 관리</h3>
+                </div>
+                <div class="section-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                썸네일 이미지 <span class="required">*</span>
+                            </label>
+                            <div class="file-upload">
+                                <input type="file" class="file-input" name="thumbnailFile" id="thumbnailFile" accept="image/*" required>
+                                <div class="file-label">
+                                    <div class="file-text">썸네일 이미지 업로드</div>
+                                    <div class="file-subtext">JPG, PNG 파일 업로드</div>
                                 </div>
-                                <div class="help-text">이벤트 목록에서 보여질 썸네일 이미지를 업로드하세요</div>
                             </div>
+                            <div class="help-text">이벤트 목록에서 보여질 썸네일 이미지를 업로드하세요</div>
+                        </div>
 
-                            <div class="form-group">
-                                <label class="form-label">
-                                    이벤트 상세 이미지 <span class="required">*</span>
-                                </label>
-                                <div class="file-upload">
-                                    <input type="file" class="file-input" name="imageFile" id="imageFile" accept="image/*" required>
-                                    <div class="file-label">
-                                        <div class="file-text">상세 이미지 업로드</div>
-                                        <div class="file-subtext">JPG, PNG 파일 업로드</div>
-                                    </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                이벤트 상세 이미지 <span class="required">*</span>
+                            </label>
+                            <div class="file-upload">
+                                <input type="file" class="file-input" name="imageFile" id="imageFile" accept="image/*" required>
+                                <div class="file-label">
+                                    <div class="file-text">상세 이미지 업로드</div>
+                                    <div class="file-subtext">JPG, PNG 파일 업로드</div>
                                 </div>
-                                <div class="help-text">이벤트 상세 페이지에서 보여질 메인 이미지를 업로드하세요</div>
                             </div>
+                            <div class="help-text">이벤트 상세 페이지에서 보여질 메인 이미지를 업로드하세요</div>
                         </div>
                     </div>
-
-                    <!-- 링크 설정 섹션 -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h3 class="section-title">추가 설정</h3>
-                        </div>
-                        <div class="form-grid">
-                            <div class="form-group full-width">
-                                <label class="form-label" for="eventDetailActionUrl">
-                                    이동 URL
-                                </label>
-                                <input type="url" class="form-input" id="eventDetailActionUrl"
-                                       name="eventDetailActionUrl" placeholder="https://example.com">
-                                <div class="help-text">이벤트 클릭 시 이동할 URL (선택사항)</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 액션 버튼 -->
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="history.back()">
-                            취소
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            이벤트 등록
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
+
+            <!-- 링크 설정 섹션 -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">추가 설정</h3>
+                </div>
+                <div class="section-body">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label" for="eventDetailActionUrl">
+                                이동 URL
+                            </label>
+                            <input type="url" class="form-input" id="eventDetailActionUrl"
+                                   name="eventDetailActionUrl" placeholder="https://example.com">
+                            <div class="help-text">이벤트 클릭 시 이동할 URL (선택사항)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 액션 버튼 -->
+            <div class="section">
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="history.back()">
+                        취소
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        이벤트 등록
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
-    // 서브메뉴 토글
-    function toggleSubmenu(element) {
-        event.preventDefault();
+    document.addEventListener('DOMContentLoaded', function() {
+        // 사이드바 "이벤트 생성" 메뉴 active 설정 및 서브메뉴 열기
+        const eventCreateLink = document.querySelector('a[href="/admin/event/create"]');
+        if (eventCreateLink) {
+            eventCreateLink.classList.add('active');
 
-        const submenu = element.nextElementSibling;
-        const isOpen = submenu.classList.contains('open');
+            // 할인 관리 서브메뉴 자동으로 열기
+            const submenu = eventCreateLink.closest('.submenu');
+            if (submenu) {
+                submenu.style.display = 'block';
 
-        // 모든 서브메뉴 닫기
-        document.querySelectorAll('.submenu').forEach(menu => {
-            menu.classList.remove('open');
-        });
-        document.querySelectorAll('.nav-link.has-submenu').forEach(link => {
-            link.classList.remove('open');
-        });
-
-        // 클릭된 서브메뉴만 토글
-        if (!isOpen) {
-            submenu.classList.add('open');
-            element.classList.add('open');
-        }
-    }
-
-    // 네비게이션 아이템 클릭 처리
-    document.querySelectorAll('.nav-link, .submenu-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            if (!this.classList.contains('has-submenu')) {
-                // 모든 active 클래스 제거
-                document.querySelectorAll('.nav-link, .submenu-link').forEach(item => {
-                    item.classList.remove('active');
-                });
-
-                // 클릭된 아이템에 active 클래스 추가
-                this.classList.add('active');
+                // 할인 관리 메인 링크에도 active 표시
+                const parentNavLink = submenu.previousElementSibling;
+                if (parentNavLink && parentNavLink.classList.contains('has-submenu')) {
+                    parentNavLink.classList.add('active');
+                }
             }
-        });
-    });
-
-    // 로그아웃 처리
-    function logout() {
-        if (confirm('로그아웃 하시겠습니까?')) {
-            fetch('/admin/auth/logout', {
-                method: 'POST'
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = '/admin/login';
-                    }
-                })
-                .catch(error => {
-                    console.error('로그아웃 오류:', error);
-                    // 오류가 발생해도 로그인 페이지로 이동
-                    window.location.href = '/admin/login';
-                });
         }
-    }
 
-    $(document).ready(function() {
         // 파일 업로드 시 파일명 표시
         $('.file-input').on('change', function() {
             const $label = $(this).next();

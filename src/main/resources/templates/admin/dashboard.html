@@ -4,135 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOLLYBAM - Admin Dashboard</title>
+    <!-- 외부 라이브러리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/ko.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
+    <!-- 관리자 사이드바 CSS/JS -->
+    <link rel="stylesheet" href="/css/adminSidebar.css">
+    <script src="/js/adminSidebar.js"></script>
+
+    <style>
+        /* 대시보드 전용 스타일 */
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background: #f8f9fa;
             color: #212529;
             line-height: 1.6;
-        }
-
-        /* 레이아웃 */
-        .admin-layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* 사이드바 */
-        .sidebar {
-            width: 280px;
-            background: #212529;
-            color: #fff;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding: 30px 25px;
-            border-bottom: 1px solid #343a40;
-        }
-
-        .sidebar-header h1 {
-            font-size: 20px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-
-        .sidebar-header p {
-            font-size: 11px;
-            color: #adb5bd;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-nav {
-            padding: 20px 0;
-        }
-
-        .nav-item {
-            margin-bottom: 5px;
-        }
-
-        .nav-link {
-            display: block;
-            padding: 15px 25px;
-            color: #adb5bd;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: #fff;
-            background: #343a40;
-            border-left-color: #fff;
-        }
-
-        .nav-link.has-submenu::after {
-            content: '▼';
-            float: right;
-            font-size: 10px;
-            transition: transform 0.3s ease;
-        }
-
-        .nav-link.has-submenu.open::after {
-            transform: rotate(180deg);
-        }
-
-        .submenu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            background: #1a1e21;
-        }
-
-        .submenu.open {
-            max-height: 500px;
-        }
-
-        .submenu-link {
-            display: block;
-            padding: 12px 25px 12px 50px;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border-left: 2px solid transparent;
-        }
-
-        .submenu-link:hover,
-        .submenu-link.active {
-            color: #212529;
-            background: #fff;
-            border-left-color: #212529;
-        }
-
-        /* 메인 컨텐츠 영역 */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
+            margin: 0;
+            padding: 0;
         }
 
         /* 헤더 */
@@ -777,135 +668,6 @@
             color: #721c24;
         }
 
-        /* 반응형 */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .header {
-                padding: 0 20px;
-            }
-
-            .container {
-                padding: 20px 15px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .section-header {
-                padding: 20px;
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .section-actions {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .period-selector {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-
-            .date-range-selector {
-                border-left: none;
-                border-top: 1px solid #dee2e6;
-                margin-left: 0;
-                padding-top: 10px;
-                padding-left: 0;
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 5px;
-            }
-
-            .date-input {
-                flex-shrink: 0;
-            }
-
-            .nav-tabs {
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            .table-container {
-                overflow-x: auto;
-            }
-
-            .sales-stats-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .sales-stats-container {
-                padding: 20px;
-            }
-
-            .chart-placeholder {
-                padding: 20px;
-                min-height: 250px;
-            }
-
-            .chart-content {
-                height: 200px;
-            }
-
-            .btn {
-                padding: 6px 12px;
-                font-size: 10px;
-            }
-
-            .chart-header {
-                padding: 15px 20px;
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
-            }
-
-            .chart-controls {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .chart-date-range {
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 5px;
-            }
-
-            .chart-date-input {
-                flex-shrink: 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .sales-stats-grid {
-                gap: 10px;
-            }
-
-            .sales-stat-item {
-                padding: 20px 15px;
-            }
-
-            .stat-amount {
-                font-size: 20px;
-            }
-        }
-
         /* 주문 상태 모니터링 */
         .order-status-section {
             margin-bottom: 60px;
@@ -1023,13 +785,106 @@
         }
 
         /* 반응형 */
-        @media (min-width: 769px) {
-            .order-status-grid {
-                grid-template-columns: repeat(9, 1fr);
-            }
-        }
-
         @media (max-width: 768px) {
+            .header {
+                padding: 0 20px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .section-header {
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .section-actions {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .period-selector {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .date-range-selector {
+                border-left: none;
+                border-top: 1px solid #dee2e6;
+                margin-left: 0;
+                padding-top: 10px;
+                padding-left: 0;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .date-input {
+                flex-shrink: 0;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .sales-stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .sales-stats-container {
+                padding: 20px;
+            }
+
+            .chart-placeholder {
+                padding: 20px;
+                min-height: 250px;
+            }
+
+            .chart-content {
+                height: 200px;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 10px;
+            }
+
+            .chart-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .chart-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .chart-date-range {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .chart-date-input {
+                flex-shrink: 0;
+            }
+
             .order-status-grid {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 1px;
@@ -1063,154 +918,28 @@
                 font-size: 14px;
             }
         }
+
+        @media (max-width: 480px) {
+            .sales-stats-grid {
+                gap: 10px;
+            }
+
+            .sales-stat-item {
+                padding: 20px 15px;
+            }
+
+            .stat-amount {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="admin-layout">
-    <!-- 사이드바 -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h1>HOLLYBAM</h1>
-            <p>Administrator</p>
-        </div>
-        <div class="sidebar-nav">
-            <div class="nav-item">
-                <a href="/admin/dashboard" class="nav-link active">Dashboard</a>
-            </div>
+<!-- 사이드바 레이아웃 포함 -->
+<div th:replace="~{layout/adminSidebar :: sidebar}"></div>
 
-            <!-- 상품 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">상품 관리</a>
-                <div class="submenu">
-                    <a href="/admin/add/product" class="submenu-link">상품 등록</a>
-                    <a href="/admin/product/edit" class="submenu-link">상품 수정</a>
-                    <a href="/admin/product/list" class="submenu-link">상품 목록</a>
-                </div>
-            </div>
 
-            <!-- 카테고리 관리 -->
-<!--            <div class="nav-item">-->
-<!--                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">카테고리 관리</a>-->
-<!--                <div class="submenu">-->
-<!--                    <a href="#" class="submenu-link">카테고리 등록</a>-->
-<!--                    <a href="#" class="submenu-link">카테고리 수정</a>-->
-<!--                    <a href="#" class="submenu-link">카테고리 순서</a>-->
-<!--                </div>-->
-<!--            </div>-->
-
-            <!-- 주문 관리 -->
-<!--            <div class="nav-item">-->
-<!--                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">주문 관리</a>-->
-<!--                <div class="submenu">-->
-<!--                    <a href="#" class="submenu-link">주문 현황</a>-->
-<!--                    <a href="#" class="submenu-link">배송 관리</a>-->
-<!--                    <a href="#" class="submenu-link">취소/환불</a>-->
-<!--                    <a href="#" class="submenu-link">교환/반품</a>-->
-<!--                </div>-->
-<!--            </div>-->
-
-            <!-- 회원 관리 -->
-<!--            <div class="nav-item">-->
-<!--                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">회원 관리</a>-->
-<!--                <div class="submenu">-->
-<!--                    <a href="#" class="submenu-link">회원 목록</a>-->
-<!--                    <a href="#" class="submenu-link">회원 등급</a>-->
-<!--                    <a href="#" class="submenu-link">적립금 관리</a>-->
-<!--                    <a href="#" class="submenu-link">본인인증 관리</a>-->
-<!--                    <a href="#" class="submenu-link">휴면 계정</a>-->
-<!--                </div>-->
-<!--            </div>-->
-
-            <!-- 할인 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">할인 관리</a>
-                <div class="submenu">
-                    <a href="/admin/discount/coupon/create" class="submenu-link">쿠폰 생성</a>
-<!--                    <a href="#" class="submenu-link">쿠폰 관리</a>-->
-                    <a href="/admin/discount/create" class="submenu-link">할인코드 생성</a>
-                    <a href="/admin/special/sale" class="submenu-link active">이달의 특가 설정</a>
-<!--                    <a href="#" class="submenu-link">할인코드 관리</a>-->
-                    <a href="/admin/event/create" class="submenu-link">이벤트 생성</a>
-                </div>
-            </div>
-
-            <!-- 정산 관리 -->
-<!--            <div class="nav-item">-->
-<!--                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">정산 관리</a>-->
-<!--                <div class="submenu">-->
-<!--                    <a href="#" class="submenu-link">매출 정산</a>-->
-<!--                    <a href="#" class="submenu-link">결제 수수료</a>-->
-<!--                    <a href="#" class="submenu-link">세금계산서</a>-->
-<!--                    <a href="#" class="submenu-link">재무 보고서</a>-->
-<!--                </div>-->
-<!--            </div>-->
-
-            <!-- 배송 관리 -->
-<!--            <div class="nav-item">-->
-<!--                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">배송 관리</a>-->
-<!--                <div class="submenu">-->
-<!--                    <a href="#" class="submenu-link">배송비 설정</a>-->
-<!--                    <a href="#" class="submenu-link">택배사 관리</a>-->
-<!--                    <a href="#" class="submenu-link">배송 추적</a>-->
-<!--                    <a href="#" class="submenu-link">무료배송 설정</a>-->
-<!--                </div>-->
-<!--            </div>-->
-
-            <!-- 마케팅 관리 -->
-<!--            <div class="nav-item">-->
-<!--                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">마케팅 관리</a>-->
-<!--                <div class="submenu">-->
-<!--                    <a href="#" class="submenu-link">이메일 발송</a>-->
-<!--                    <a href="#" class="submenu-link">SMS 발송</a>-->
-<!--                    <a href="#" class="submenu-link">푸시 알림</a>-->
-<!--                    <a href="#" class="submenu-link">추천 상품</a>-->
-<!--                    <a href="#" class="submenu-link">베스트 상품</a>-->
-<!--                </div>-->
-<!--            </div>-->
-
-            <!-- 시스템 관리 -->
-<!--            <div class="nav-item">-->
-<!--                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">시스템 관리</a>-->
-<!--                <div class="submenu">-->
-<!--                    <a href="#" class="submenu-link">사이트 설정</a>-->
-<!--                    <a href="#" class="submenu-link">결제 설정</a>-->
-<!--                    <a href="#" class="submenu-link">본인인증 설정</a>-->
-<!--                    <a href="#" class="submenu-link">약관 관리</a>-->
-<!--                    <a href="#" class="submenu-link">개인정보처리방침</a>-->
-<!--                    <a href="#" class="submenu-link">성인인증 설정</a>-->
-<!--                    <a href="#" class="submenu-link">관리자 계정</a>-->
-<!--                    <a href="#" class="submenu-link">백업 관리</a>-->
-<!--                    <a href="#" class="submenu-link">로그 관리</a>-->
-<!--                </div>-->
-<!--            </div>-->
-
-            <!-- 컨텐츠 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">컨텐츠 관리</a>
-                <div class="submenu">
-                    <a href="/admin/banner/list" class="submenu-link">메인 슬라이드 배너</a>
-                    <a href="#" class="submenu-link">팝업 관리</a>
-<!--                    <a href="#" class="submenu-link">상품 동영상</a>-->
-<!--                    <a href="#" class="submenu-link">이미지 관리</a>-->
-<!--                    <a href="#" class="submenu-link">성인용품 가이드</a>-->
-                </div>
-            </div>
-
-            <!-- 모니터링 -->
-<!--            <div class="nav-item">-->
-<!--                <a href="#" class="nav-link has-submenu" onclick="toggleSubmenu(this)">모니터링</a>-->
-<!--                <div class="submenu">-->
-<!--                    <a href="#" class="submenu-link">실시간 접속</a>-->
-<!--                    <a href="#" class="submenu-link">서버 상태</a>-->
-<!--                    <a href="#" class="submenu-link">오류 로그</a>-->
-<!--                    <a href="#" class="submenu-link">보안 이벤트</a>-->
-<!--                    <a href="#" class="submenu-link">API 사용량</a>-->
-<!--                </div>-->
-<!--            </div>-->
-        </div>
-    </nav>
-
-    <!-- 메인 컨텐츠 -->
+<!-- 메인 컨텐츠 -->
     <div class="main-content">
         <!-- 헤더 -->
         <header class="header">
@@ -1259,6 +988,10 @@
             <!-- 주문 상태 모니터링 -->
             <div class="order-status-section">
                 <div class="order-status-grid">
+                    <div class="order-status-item" data-status="payPending">
+                        <div class="order-status-label">결제 대기</div>
+                        <div class="order-status-count" id="payPendingCount" th:text="${payPendingCount}">0</div>
+                    </div>
                     <div class="order-status-item" data-status="payment">
                         <div class="order-status-label">결제 완료</div>
                         <div class="order-status-count" id="paymentCompleteCount" th:text="${paidCount}">0</div>
@@ -1266,10 +999,6 @@
                     <div class="order-status-item" data-status="order">
                         <div class="order-status-label">주문 접수</div>
                         <div class="order-status-count" id="orderReceivedCount" th:text="${pendingCount}">0</div>
-                    </div>
-                    <div class="order-status-item" data-status="preparing">
-                        <div class="order-status-label">상품 준비중</div>
-                        <div class="order-status-count" id="preparingCount" th:text="${preparingCount}">0</div>
                     </div>
                     <div class="order-status-item" data-status="shipped">
                         <div class="order-status-label">출고 완료</div>
@@ -1350,10 +1079,6 @@
                                 <div class="stat-label">취소/환불 금액</div>
                                 <div id="statCancelAmount" class="stat-amount negative">0원</div>
                             </div>
-                            <div class="sales-stat-item">
-                                <div class="stat-label">순수익(할인 제외)</div>
-                                <div id="statMargin" class="stat-amount profit">0원</div>
-                            </div>
                         </div>
                     </div>
 
@@ -1406,8 +1131,6 @@
             <div class="nav-tabs">
                 <a href="#" class="nav-tab active">최근 주문</a>
                 <a href="#" class="nav-tab">회원 관리</a>
-                <a href="#" class="nav-tab">상품 관리</a>
-                <a href="#" class="nav-tab">본인인증 로그</a>
             </div>
 
             <!-- 최근 주문 테이블 -->
@@ -1431,46 +1154,50 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>#ORD-2025-001</td>
-                        <td>김**</td>
-                        <td>성인용품 A</td>
-                        <td>₩35,000</td>
-                        <td><span class="status-badge active">배송완료</span></td>
-                        <td>2025-01-15 14:30</td>
+                    <tr th:each="orderList : ${orderList}">
+                        <td th:text="${orderList.orderId}">o</td>
+                        <td th:text="${orderList.ordererName}">김**</td>
+                        <td th:text="${orderList.productName}">성인용품 A</td>
+                        <td th:text="|${#numbers.formatInteger(orderList.finalAmount, 0, 'COMMA')}|+'원'">₩35,000</td>
+                        <td th:if="${orderList.status == 'PENDING'}"><span class="status-badge pending">결제대기</span></td>
+                        <td th:if="${orderList.status == 'PAID'}"><span class="status-badge active">결제완료</span></td>
+                        <td th:if="${orderList.status == 'SHIPPING'}"><span class="status-badge pending">배송중</span></td>
+                        <td th:if="${orderList.status == 'DELIVERED'}"><span class="status-badge active">배송완료</span></td>
+                        <td th:if="${orderList.status == 'CANCELLED'}"><span class="status-badge cancelled">취소/환불</span></td>
+                        <td th:text="${orderList.createAt}">2025-01-15 14:30</td>
                     </tr>
-                    <tr>
-                        <td>#ORD-2025-002</td>
-                        <td>이**</td>
-                        <td>성인용품 B</td>
-                        <td>₩52,000</td>
-                        <td><span class="status-badge pending">배송중</span></td>
-                        <td>2025-01-15 13:45</td>
-                    </tr>
-                    <tr>
-                        <td>#ORD-2025-003</td>
-                        <td>박**</td>
-                        <td>성인용품 C</td>
-                        <td>₩28,000</td>
-                        <td><span class="status-badge cancelled">취소</span></td>
-                        <td>2025-01-15 12:20</td>
-                    </tr>
-                    <tr>
-                        <td>#ORD-2025-004</td>
-                        <td>정**</td>
-                        <td>성인용품 D</td>
-                        <td>₩46,000</td>
-                        <td><span class="status-badge active">배송완료</span></td>
-                        <td>2025-01-15 11:15</td>
-                    </tr>
-                    <tr>
-                        <td>#ORD-2025-005</td>
-                        <td>최**</td>
-                        <td>성인용품 E</td>
-                        <td>₩39,000</td>
-                        <td><span class="status-badge pending">준비중</span></td>
-                        <td>2025-01-15 10:30</td>
-                    </tr>
+<!--                    <tr>-->
+<!--                        <td>#ORD-2025-002</td>-->
+<!--                        <td>이**</td>-->
+<!--                        <td>성인용품 B</td>-->
+<!--                        <td>₩52,000</td>-->
+<!--                        <td><span class="status-badge pending">배송중</span></td>-->
+<!--                        <td>2025-01-15 13:45</td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td>#ORD-2025-003</td>-->
+<!--                        <td>박**</td>-->
+<!--                        <td>성인용품 C</td>-->
+<!--                        <td>₩28,000</td>-->
+<!--                        <td><span class="status-badge cancelled">취소</span></td>-->
+<!--                        <td>2025-01-15 12:20</td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td>#ORD-2025-004</td>-->
+<!--                        <td>정**</td>-->
+<!--                        <td>성인용품 D</td>-->
+<!--                        <td>₩46,000</td>-->
+<!--                        <td><span class="status-badge active">배송완료</span></td>-->
+<!--                        <td>2025-01-15 11:15</td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td>#ORD-2025-005</td>-->
+<!--                        <td>최**</td>-->
+<!--                        <td>성인용품 E</td>-->
+<!--                        <td>₩39,000</td>-->
+<!--                        <td><span class="status-badge pending">준비중</span></td>-->
+<!--                        <td>2025-01-15 10:30</td>-->
+<!--                    </tr>-->
                     </tbody>
                 </table>
             </div>
@@ -1479,47 +1206,6 @@
 </div>
 
 <script>
-    function toggleSubmenu(element) {
-        const submenu = element.nextElementSibling;
-        const isOpen = submenu.classList.contains('open');
-
-        // 모든 서브메뉴 닫기
-        document.querySelectorAll('.submenu').forEach(menu => {
-            menu.classList.remove('open');
-        });
-        document.querySelectorAll('.nav-link.has-submenu').forEach(link => {
-            link.classList.remove('open');
-        });
-
-        // 클릭한 서브메뉴만 토글
-        if (!isOpen) {
-            submenu.classList.add('open');
-            element.classList.add('open');
-        }
-    }
-
-    function logout() {
-        if (confirm('로그아웃 하시겠습니까?')) {
-            window.location.href = '/admin/logout';
-        }
-    }
-
-    // 반응형 사이드바 토글
-    function toggleSidebar() {
-        const sidebar = document.querySelector('.sidebar');
-        sidebar.classList.toggle('open');
-    }
-
-    // 모바일에서 사이드바 외부 클릭 시 닫기
-    document.addEventListener('click', function(event) {
-        const sidebar = document.querySelector('.sidebar');
-        const isClickInsideSidebar = sidebar.contains(event.target);
-
-        if (!isClickInsideSidebar && window.innerWidth <= 768) {
-            sidebar.classList.remove('open');
-        }
-    });
-
     // 매출 차트 생성
     document.addEventListener('DOMContentLoaded', function() {
         // Flatpickr 한국어 로케일 설정
@@ -1994,7 +1680,6 @@
                     return '매출 (배송비 포함)';
             }
         }
-
     });
 </script>
 </body>

@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOLLYBAM - 주문 관리</title>
+    <!-- 외부 라이브러리 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/ko.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!-- 관리자 사이드바 CSS/JS -->
+    <link rel="stylesheet" href="/css/adminSidebar.css">
+    <script src="/js/adminSidebar.js"></script>
+
+    <style>
+        /* 기본 스타일 (대시보드와 동일) */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 헤더 */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 40px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-info {
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 300;
+        }
+
+        .logout-btn {
+            background: #fff;
+            color: #212529;
+            border: 1px solid #212529;
+            padding: 8px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #212529;
+            color: #fff;
+        }
+
+        /* 컨테이너 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 페이지 타이틀 */
+        .page-title {
+            margin-bottom: 40px;
+        }
+
+        .page-title h2 {
+            color: #212529;
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .page-title p {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        /* 주문 상태 탭 */
+        .order-status-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .status-tab {
+            padding: 15px 30px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .status-tab:hover,
+        .status-tab.active {
+            color: #212529;
+            border-bottom-color: #212529;
+        }
+
+        .status-tab .count {
+            background: #e9ecef;
+            color: #6c757d;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            margin-left: 8px;
+            font-weight: 400;
+        }
+
+        .status-tab.active .count {
+            background: #212529;
+            color: #fff;
+        }
+
+        /* 필터 섹션 */
+        .filter-section {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            margin-bottom: 30px;
+        }
+
+        .filter-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+
+        .filter-title {
+            color: #212529;
+            font-size: 16px;
+            font-weight: 300;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-content {
+            padding: 30px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-label {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 80px;
+        }
+
+        .filter-input,
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            font-size: 13px;
+            font-weight: 300;
+            background: #fff;
+            color: #212529;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: #212529;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-separator {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .btn {
+            background: #fff;
+            color: #212529;
+            border: 1px solid #dee2e6;
+            padding: 8px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            border-color: #212529;
+        }
+
+        .btn-primary {
+            background: #212529;
+            color: #fff;
+            border-color: #212529;
+        }
+
+        .btn-primary:hover {
+            background: #000;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+            border-color: #ffc107;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: #fff;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* 주문 테이블 */
+        .orders-section {
+            background: #fff;
+            border: 1px solid #e9ecef;
+        }
+
+        .section-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-title {
+            color: #212529;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 11px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table td {
+            color: #212529;
+            font-size: 13px;
+            font-weight: 300;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .table th:first-child,
+        .table td:first-child {
+            width: 50px;
+            text-align: center;
+        }
+
+        /* 주문 정보 셀 */
+        .order-info {
+            min-width: 120px;
+        }
+
+        .order-id {
+            font-weight: 400;
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        .order-id:hover {
+            text-decoration: underline;
+        }
+
+        .order-date {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        /* 고객 정보 셀 */
+        .customer-info {
+            min-width: 120px;
+        }
+
+        .customer-name {
+            font-weight: 400;
+        }
+
+        .customer-phone {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        /* 상품 정보 셀 */
+        .product-info {
+            min-width: 200px;
+        }
+
+        .product-name {
+            font-weight: 400;
+            margin-bottom: 4px;
+        }
+
+        .product-details {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        /* 금액 셀 */
+        .amount-info {
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .amount-value {
+            font-weight: 400;
+        }
+
+        .amount-details {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        /* 배송 정보 셀 */
+        .delivery-info {
+            min-width: 150px;
+        }
+
+        .delivery-address {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .delivery-request {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* 상태 배지 */
+        .status-badge {
+            padding: 4px 12px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 12px;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        .status-badge.pay-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.paid {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-badge.confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.shipped {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .status-badge.shipping {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-badge.delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* 액션 버튼 */
+        .action-cell {
+            min-width: 200px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 9px;
+            min-width: auto;
+        }
+
+        /* 체크박스 */
+        .checkbox-cell {
+            text-align: center;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* 페이지네이션 */
+        .pagination-section {
+            padding: 30px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .pagination-info {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover,
+        .page-btn.active {
+            background: #212529;
+            color: #fff;
+            border-color: #212529;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 일괄 처리 섹션 */
+        .bulk-actions {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .bulk-label {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        /* ================== 개선된 모달 스타일 ================== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            background: #fff;
+            margin: 2% auto;
+            padding: 0;
+            border: none;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 25px 35px;
+            border-bottom: 1px solid #e9ecef;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .modal-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 35px;
+            right: 35px;
+            height: 2px;
+            background: linear-gradient(90deg, #212529 0%, #6c757d 100%);
+        }
+
+        .modal-title {
+            color: #212529;
+            font-size: 22px;
+            font-weight: 400;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .close {
+            color: #6c757d;
+            font-size: 28px;
+            font-weight: 300;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            color: #212529;
+            background: #f8f9fa;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 0;
+            max-height: calc(90vh - 100px);
+            overflow-y: auto;
+        }
+
+        /* 주문 상세 컨텐츠 스타일 */
+        .order-detail-container {
+            display: grid;
+            gap: 0;
+        }
+
+        .detail-section {
+            background: #fff;
+            border-bottom: 1px solid #f1f3f4;
+            transition: all 0.3s ease;
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .detail-section:hover {
+            background: #fafbfc;
+        }
+
+        .section-header-detail {
+            padding: 25px 35px 20px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .section-header-detail h5 {
+            color: #212529;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #212529;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .section-content {
+            padding: 25px 35px;
+        }
+
+        /* 주문 정보 그리드 */
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            color: #212529;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        .info-value.highlight {
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .info-value.status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 주문 진행 상태 타임라인 */
+        .order-timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            height: 2px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+            transition: width 0.5s ease;
+            z-index: 2;
+        }
+
+        .timeline-step {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            flex: 1;
+        }
+
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 3px solid #e9ecef;
+            background: #fff;
+            color: #6c757d;
+        }
+
+        .timeline-step.completed .timeline-icon {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .timeline-step.current .timeline-icon {
+            background: #007bff;
+            border-color: #007bff;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+        }
+
+        .timeline-label {
+            font-size: 11px;
+            color: #6c757d;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .timeline-step.completed .timeline-label,
+        .timeline-step.current .timeline-label {
+            color: #212529;
+            font-weight: 600;
+        }
+
+        /* 상품 목록 테이블 */
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .products-table th,
+        .products-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .products-table th {
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .products-table td {
+            color: #212529;
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .products-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .product-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #e9ecef;
+        }
+
+        .product-name-cell {
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .product-option {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 3px;
+        }
+
+        .price-cell {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .quantity-cell {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* 결제 요약 카드 */
+        .payment-summary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-top: 15px;
+            margin-top: 10px;
+            border-top: 2px solid #212529;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .summary-label {
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .summary-value {
+            color: #212529;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .summary-row:last-child .summary-label,
+        .summary-row:last-child .summary-value {
+            color: #212529;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* 배송 정보 카드 */
+        .delivery-card {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .delivery-address-full {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .delivery-request-full {
+            font-size: 12px;
+            color: #6c757d;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #007bff;
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            text-align: center;
+            padding: 60px 40px;
+            color: #6c757d;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f1f3f4;
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* 상태 변경 드롭다운 */
+        .status-select {
+            padding: 4px 8px;
+            font-size: 11px;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            min-width: 100px;
+        }
+
+        .status-select:focus {
+            outline: none;
+            border-color: #212529;
+        }
+
+        /* 검색 결과 하이라이트 */
+        .highlight {
+            background: #fff3cd;
+            padding: 1px 2px;
+        }
+
+        /* 반응형 모달 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 98%;
+                margin: 1% auto;
+                border-radius: 8px;
+            }
+
+            .modal-header {
+                padding: 20px 25px;
+            }
+
+            .modal-header::after {
+                left: 25px;
+                right: 25px;
+            }
+
+            .modal-title {
+                font-size: 18px;
+            }
+
+            .section-content,
+            .section-header-detail {
+                padding: 20px 25px;
+            }
+
+            .order-info-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .timeline-step {
+                font-size: 10px;
+            }
+
+            .timeline-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+
+            .products-table th,
+            .products-table td {
+                padding: 10px 8px;
+                font-size: 11px;
+            }
+
+            .payment-summary {
+                padding: 20px;
+            }
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 20px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-label {
+                min-width: auto;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .section-actions {
+                justify-content: center;
+            }
+
+            .table th,
+            .table td {
+                padding: 10px 8px;
+                font-size: 11px;
+            }
+
+            .pagination-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .bulk-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .btn-small {
+                padding: 6px 8px;
+                font-size: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 사이드바 레이아웃 포함 -->
+<div th:replace="~{layout/adminSidebar :: sidebar}"></div>
+
+<!-- 메인 컨텐츠 -->
+<div class="main-content">
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-actions">
+            <div class="admin-info">
+                관리자님 환영합니다
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                Sign Out
+            </button>
+        </div>
+    </header>
+
+    <!-- 컨테이너 -->
+    <div class="container">
+        <!-- 페이지 타이틀 -->
+        <div class="page-title">
+            <h2>주문 관리</h2>
+            <p>주문 현황 조회 및 상태 관리</p>
+        </div>
+
+        <!-- 주문 상태 탭 -->
+        <div class="order-status-tabs">
+            <button class="status-tab" th:classappend="${currentStatus == 'ALL'} ? 'active' : ''" data-status="ALL">
+                전체 <span class="count" th:text="${totalCount}">156</span>
+            </button>
+            <button class="status-tab" th:classappend="${currentStatus == 'payPending'} ? 'active' : ''" data-status="payPending">
+                결제 대기 <span class="count" th:text="${orderCount.payPending}">12</span>
+            </button>
+            <button class="status-tab" th:classappend="${currentStatus == 'paid'} ? 'active' : ''" data-status="paid">
+                결제 완료 <span class="count" th:text="${orderCount.paid}">28</span>
+            </button>
+            <button class="status-tab" th:classappend="${currentStatus == 'orderPending'} ? 'active' : ''" data-status="orderPending">
+                주문 접수 <span class="count" th:text="${orderCount.orderPending}">45</span>
+            </button>
+            <button class="status-tab" th:classappend="${currentStatus == 'shipped'} ? 'active' : ''" data-status="shipped">
+                출고 완료 <span class="count" th:text="${orderCount.shipped}">31</span>
+            </button>
+            <button class="status-tab" th:classappend="${currentStatus == 'shipping'} ? 'active' : ''" data-status="shipping">
+                배송중 <span class="count" th:text="${orderCount.shipping}">23</span>
+            </button>
+            <button class="status-tab" th:classappend="${currentStatus == 'delivered'} ? 'active' : ''" data-status="delivered">
+                배송완료 <span class="count" th:text="${orderCount.delivered}">17</span>
+            </button>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filter-section">
+            <div class="filter-header">
+                <h3 class="filter-title">검색 및 필터</h3>
+            </div>
+            <div class="filter-content">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">주문번호</label>
+                        <input type="text" class="filter-input" id="orderIdFilter" placeholder="주문번호 입력">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">고객명</label>
+                        <input type="text" class="filter-input" id="customerNameFilter" placeholder="고객명 입력">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">상품명</label>
+                        <input type="text" class="filter-input" id="productNameFilter" placeholder="상품명 입력">
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">주문일시</label>
+                        <div class="date-range">
+                            <input type="date" class="filter-input" id="startDate">
+                            <span class="date-separator">~</span>
+                            <input type="date" class="filter-input" id="endDate">
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">결제방법</label>
+                        <select class="filter-select" id="paymentMethodFilter">
+                            <option value="">전체</option>
+                            <option value="CARD">카드결제</option>
+                            <option value="BANK_TRANSFER">무통장입금</option>
+                            <option value="VIRTUAL_ACCOUNT">가상계좌</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn btn-primary" onclick="searchOrders()">검색</button>
+                        <button class="btn" onclick="resetFilters()">초기화</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 주문 목록 섹션 -->
+        <div class="orders-section">
+            <div class="section-header">
+                <div class="section-title">
+                    주문 목록
+                    <span style="font-size: 14px; color: #6c757d; font-weight: 300;">
+                        (총 <span id="orderCount" th:text="${totalCount}">156</span>건)
+                    </span>
+                </div>
+                <div class="section-actions">
+                    <select class="filter-select" id="pageSize" onchange="changePageSize()">
+                        <option value="20">20개씩 보기</option>
+                        <option value="50">50개씩 보기</option>
+                        <option value="100">100개씩 보기</option>
+                    </select>
+                    <button class="btn" onclick="exportOrders()">Excel 내보내기</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" class="checkbox" id="selectAll" onchange="toggleAllCheckboxes()">
+                        </th>
+                        <th>주문정보</th>
+                        <th>고객정보</th>
+                        <th>상품정보</th>
+                        <th>결제금액</th>
+                        <th>배송정보</th>
+                        <th>상태</th>
+                        <th>관리</th>
+                    </tr>
+                    </thead>
+                    <tbody id="orderTableBody">
+                    <!-- 데이터는 서버에서 렌더링 또는 AJAX로 로드 -->
+                    <tr th:each="order : ${orderList}">
+                        <td class="checkbox-cell">
+                            <input type="checkbox" class="checkbox order-checkbox" th:value="${order.orderCode}">
+                        </td>
+                        <td class="order-info">
+                            <div class="order-id" th:text="${order.orderId}" onclick="showOrderDetail(this.textContent)">
+                                ORD-2025-001
+                            </div>
+                            <div class="order-date" th:text="${order.createAt}">
+                                2025-01-15 14:30
+                            </div>
+                        </td>
+                        <td class="customer-info">
+                            <div class="customer-name" th:text="${order.receiverName}">김**</div>
+                            <div class="customer-phone" th:text="${order.receiverPhone}">010-****-1234</div>
+                        </td>
+                        <td class="product-info">
+                            <div class="product-name" th:if="${order.productTypeCount > 1}" th:text="${order.productName}" style="color: #ee386d">성인용품 A</div>
+                            <div class="product-name" th:if="${order.productTypeCount == 1}" th:text="${order.productName}">성인용품 A</div>
+                        </td>
+                        <td class="amount-info">
+                            <div class="amount-value" th:text="|${#numbers.formatInteger(order.finalAmount, 0, 'COMMA')}원|">
+                                45,000원
+                            </div>
+                        </td>
+                        <td class="delivery-info">
+                            <div class="delivery-address" th:text="${order.receiverAddr}">
+                                서울시 강남구 테헤란로...
+                            </div>
+                            <div class="delivery-request" th:text="${order.deliveryRequest}">
+                                부재시 문앞에 놓아주세요
+                            </div>
+                        </td>
+                        <td>
+                                <span class="status-badge"
+                                      th:classappend="${order.status == 'PAYPENDING' ? 'pay-pending' :
+                      (order.status == 'PAID' ? 'paid' :
+                      (order.status == 'ORDERPENDING' ? 'confirmed' :
+                      (order.status == 'SHIPPED' ? 'shipped' :
+                      (order.status == 'SHIPPING' ? 'shipping' :
+                      (order.status == 'DELIVERED' ? 'delivered' : '' )))))}"
+                                      th:text="${order.status == 'PAYPENDING' ? '결제대기' :
+                (order.status == 'PAID' ? '결제완료' :
+                (order.status == 'ORDERPENDING' ? '주문접수' :
+                (order.status == 'SHIPPED' ? '출고완료' :
+                (order.status == 'SHIPPING' ? '배송중' :
+                (order.status == 'DELIVERED' ? '배송완료' : '알수없음')))))}">
+  결제완료
+</span>
+                        </td>
+                        <td class="action-cell">
+                            <div class="action-buttons">
+                                <button class="btn btn-small"
+                                        th:attr="data-order-id=${order.orderId}"
+                                        onclick="showOrderDetail(this.dataset.orderId)">
+                                    상세
+                                </button>
+                                <select class="status-select" th:data-order-id="${order.orderId}" onchange="changeOrderStatus(this)">
+                                    <option value="">상태변경</option>
+                                    <option value="PAY_PENDING">결제대기</option>
+                                    <option value="PAID">결제완료</option>
+                                    <option value="CONFIRMED">주문접수</option>
+                                    <option value="SHIPPED">출고완료</option>
+                                    <option value="SHIPPING">배송중</option>
+                                    <option value="DELIVERED">배송완료</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 일괄 처리 섹션 -->
+            <div class="bulk-actions">
+                <span class="bulk-label">선택된 주문:</span>
+                <select class="filter-select" id="bulkStatusChange">
+                    <option value="">상태 일괄 변경</option>
+                    <option value="CONFIRMED">주문접수로 변경</option>
+                    <option value="SHIPPED">출고완료로 변경</option>
+                    <option value="SHIPPING">배송중으로 변경</option>
+                    <option value="DELIVERED">배송완료로 변경</option>
+                </select>
+                <button class="btn btn-primary" onclick="bulkStatusChange()">일괄 적용</button>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div class="pagination-section">
+                <div class="pagination-info">
+                    <span th:text="|${startIndex} - ${endIndex}번째 항목 (총 ${totalCount}개)|">
+                        1-20번째 항목 (총 156개)
+                    </span>
+                </div>
+                <div class="pagination">
+                    <a href="#" class="page-btn" onclick="goToPage(1)">&laquo;</a>
+                    <a href="#" class="page-btn" th:onclick="|goToPage(${currentPage - 1})|">&lsaquo;</a>
+
+                    <!-- 페이지 번호들 -->
+                    <a href="#" class="page-btn" th:each="page : ${pageNumbers}"
+                       th:classappend="${page == currentPage} ? 'active' : ''"
+                       th:onclick="|goToPage(${page})|"
+                       th:text="${page}">1</a>
+
+                    <a href="#" class="page-btn" th:onclick="|goToPage(${currentPage + 1})|">&rsaquo;</a>
+                    <a href="#" class="page-btn" th:onclick="|goToPage(${totalPages})|">&raquo;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 개선된 주문 상세 모달 -->
+<div id="orderDetailModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">주문 상세 정보</h4>
+            <button class="close" onclick="closeOrderDetail()">&times;</button>
+        </div>
+        <div class="modal-body" id="orderDetailContent">
+            <!-- 주문 상세 내용이 여기에 동적으로 로드됩니다 -->
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>주문 정보를 불러오는 중...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Flatpickr 한국어 로케일 설정
+        flatpickr.localize(flatpickr.l10ns.ko);
+
+        // 날짜 선택기 초기화
+        flatpickr("#startDate", {
+            dateFormat: "Y-m-d",
+            locale: "ko",
+            allowInput: true
+        });
+
+        flatpickr("#endDate", {
+            dateFormat: "Y-m-d",
+            locale: "ko",
+            allowInput: true
+        });
+
+        // 상태 탭 클릭 이벤트
+        document.querySelectorAll('.status-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 모든 탭에서 active 클래스 제거
+                document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+
+                // 클릭된 탭에 active 클래스 추가
+                this.classList.add('active');
+
+                // 해당 상태의 주문 목록 로드
+                const status = this.dataset.status;
+                loadOrdersByStatus(status);
+            });
+        });
+    });
+
+    // 주문 상태별 로드
+    function loadOrdersByStatus(status) {
+        console.log('주문 상태별 로드:', status);
+        window.location.href = window.location.pathname + '?status=' + status;
+    }
+
+    // 주문 검색
+    function searchOrders() {
+        const filters = {
+            orderId: document.getElementById('orderIdFilter').value,
+            customerName: document.getElementById('customerNameFilter').value,
+            productName: document.getElementById('productNameFilter').value,
+            startDate: document.getElementById('startDate').value,
+            endDate: document.getElementById('endDate').value,
+            paymentMethod: document.getElementById('paymentMethodFilter').value,
+            status: document.querySelector('.status-tab.active').dataset.status
+        };
+
+        console.log('주문 검색:', filters);
+    }
+
+    // 필터 초기화
+    function resetFilters() {
+        document.getElementById('orderIdFilter').value = '';
+        document.getElementById('customerNameFilter').value = '';
+        document.getElementById('productNameFilter').value = '';
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        document.getElementById('paymentMethodFilter').value = '';
+
+        // 전체 탭 활성화
+        document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector('.status-tab[data-status="ALL"]').classList.add('active');
+
+        loadOrdersByStatus('ALL');
+    }
+
+    // 개선된 주문 상세 보기
+    function showOrderDetail(orderId) {
+        console.log('주문 상세 보기:', orderId);
+
+        document.getElementById('orderDetailModal').style.display = 'block';
+
+        // 실제 구현에서는 AJAX로 주문 상세 정보 로드
+
+        $.ajax({
+            url: `/admin/order/${orderId}`,
+            type: 'GET',
+            success: function(data) {
+                console.log(data);
+                document.getElementById('orderDetailContent').innerHTML = renderOrderDetailContent(data);
+            },
+            error: function() {
+                document.getElementById('orderDetailContent').innerHTML = '<p>주문 정보를 불러올 수 없습니다.</p>';
+            }
+        });
+
+
+        // 개선된 임시 상세 정보
+        // setTimeout(() => {
+        //     document.getElementById('orderDetailContent').innerHTML = renderOrderDetailContent(orderId);
+        // }, 800);
+    }
+
+    // 개선된 주문 상세 컨텐츠 렌더링
+    function renderOrderDetailContent(data) {
+        // ===== 유틸 함수 =====
+        function formatKRW(n) {
+            if (n == null) return '';
+            return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
+        }
+        function escapeHtml(s) {
+            return String(s ?? '').replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        // ===== 진행 상태 계산 =====
+        const currentStatus = data.orderDetailData?.status || 'PAYPENDING';
+        const statusSteps = ['PAYPENDING', 'PAID', 'ORDERPENDING', 'SHIPPED', 'SHIPPING', 'DELIVERED'];
+        const currentStepIndex = statusSteps.indexOf(currentStatus);
+        const progressWidth = currentStepIndex >= 0 ? ((currentStepIndex + 1) / statusSteps.length) * 100 : 0;
+
+        // ===== 주문 상품 목록 HTML 생성 =====
+        const products = data?.orderDetailProductInfo ?? [];
+        const rowsHtml = products.map(p => `
+        <tr>
+            <td>
+                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/${p.imageUrl}"
+                     alt="상품 이미지" class="product-image"
+                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNGOEY5RkEiLz48cGF0aCBkPSJNMjAgMjBIMzBWMzBIMjBW MjBaIiBmaWxsPSIjNkM3NTdEIi8+PC9zdmc+'">
+            </td>
+            <td><div class="product-name-cell">${escapeHtml(p.productName)}</div></td>
+            <td>${p.optionName ? `<div class="product-option">${escapeHtml(p.optionName)} : ${escapeHtml(p.optionValue)}</div>` : ''}</td>
+            <td class="quantity-cell">${p.quantity}</td>
+            <td class="price-cell">${formatKRW(p.unitWithOption)}</td>
+            <td class="price-cell">${formatKRW(p.totalPrice)}</td>
+        </tr>
+    `).join('');
+
+        // ===== 전체 HTML 반환 =====
+        return `
+        <div class="order-detail-container">
+            <!-- 주문 기본 정보 섹션 -->
+            <div class="detail-section">
+                <div class="section-header-detail">
+                    <h5><span class="section-icon">1</span>주문 기본 정보</h5>
+                </div>
+                <div class="section-content">
+                    <div class="order-info-grid">
+                        <div class="info-item"><span class="info-label">주문번호</span><span class="info-value highlight">${data.orderDetailData.orderId}</span></div>
+                        <div class="info-item"><span class="info-label">주문일시</span><span class="info-value">${data.orderDetailData.orderCreateAt}</span></div>
+                        <div class="info-item"><span class="info-label">주문상태</span><span class="info-value status shipping">${data.orderDetailData.status}</span></div>
+                        <div class="info-item"><span class="info-label">결제방법</span><span class="info-value">${data.orderDetailData.paymentMethod === "card" ? "카드결제" : "무통장입금"}</span></div>
+                    </div>
+                    <!-- 진행 타임라인 -->
+                    <div class="order-timeline">
+                        <div class="timeline-line"><div class="timeline-progress" style="width: ${progressWidth}%"></div></div>
+                        ${statusSteps.map((step, idx) => `
+                            <div class="timeline-step ${idx < currentStepIndex ? 'completed' : idx === currentStepIndex ? 'current' : ''}">
+                                <div class="timeline-icon">${['⏳','💳','✅','📦','🚚','🏠'][idx]}</div>
+                                <div class="timeline-label">${['결제대기','결제완료','주문접수','출고완료','배송중','배송완료'][idx]}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 고객 정보 섹션 -->
+            <div class="detail-section">
+                <div class="section-header-detail">
+                    <h5><span class="section-icon">2</span>고객 정보</h5>
+                </div>
+                <div class="section-content">
+                    <div class="order-info-grid">
+                        <div class="info-item"><span class="info-label">고객명</span><span class="info-value">${data.orderDetailData.ordererName}</span></div>
+                        <div class="info-item"><span class="info-label">연락처</span><span class="info-value">${data.orderDetailData.ordererPhone}</span></div>
+                        <div class="info-item"><span class="info-label">이메일</span><span class="info-value">${data.orderDetailData.ordererEmail}</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주문 상품 섹션 -->
+            <div class="detail-section">
+                <div class="section-header-detail">
+                    <h5><span class="section-icon">3</span>주문 상품</h5>
+                </div>
+                <div class="section-content">
+                    <table class="products-table">
+                        <thead>
+                            <tr><th>이미지</th><th>상품명</th><th>옵션</th><th>수량</th><th>단가</th><th>합계</th></tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml || `<tr><td colspan="6" class="empty">주문 상품이 없습니다.</td></tr>`}
+                        </tbody>
+                    </table>
+                    <!-- 결제 요약 -->
+                    <div class="payment-summary">
+                        <div class="summary-row"><span class="summary-label">상품금액</span><span class="summary-value">${formatKRW(data.orderDetailData.totalAmount)}</span></div>
+                        <div class="summary-row"><span class="summary-label">배송비</span><span class="summary-value">${formatKRW(data.orderDetailData.deliveryFee)}</span></div>
+                        <div class="summary-row"><span class="summary-label">할인금액</span><span class="summary-value">-${formatKRW(data.orderDetailData.discountAmount)}</span></div>
+                        <div class="summary-row"><span class="summary-label">최종 결제금액</span><span class="summary-value">${formatKRW(data.orderDetailData.finalAmount)}</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 배송 정보 섹션 -->
+            <div class="detail-section">
+                <div class="section-header-detail">
+                    <h5><span class="section-icon">4</span>배송 정보</h5>
+                </div>
+                <div class="section-content">
+                    <div class="order-info-grid">
+                        <div class="info-item"><span class="info-label">받는 분</span><span class="info-value">${data.orderDetailData.receiverName}</span></div>
+                        <div class="info-item"><span class="info-label">연락처</span><span class="info-value">${data.orderDetailData.receiverPhone}</span></div>
+                        ${data.orderDetailData.trackingNumber ? `<div class="info-item">
+                         <span class="info-label">송장번호</span>
+                         <span class="info-value highlight">${data.orderDetailData.trackingNumber}</span>
+                       </div>`
+                            : ''}
+                    </div>
+                    <div class="delivery-card">
+                        <div class="delivery-address-full"><strong>배송주소:</strong><br>${data.orderDetailData.receiverAddr}<br>상세주소: ${data.orderDetailData.receiverAddrDetail || ''}</div>
+                        <div class="delivery-request-full"><strong>배송 요청사항:</strong> ${data.orderDetailData.deliveryRequest || ''}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 결제 정보 섹션 -->
+            <div class="detail-section">
+                <div class="section-header-detail">
+                    <h5><span class="section-icon">5</span>결제 정보</h5>
+                </div>
+                <div class="section-content">
+                    <div class="order-info-grid">
+                        <div class="info-item"><span class="info-label">결제방법</span><span class="info-value">${data.orderDetailData.paymentMethod === "card" ? "카드결제" : "무통장입금"}</span></div>
+                        ${data.orderDetailData.paymentMethod === "card" ? `<div class="info-item"><span class="info-label">결제일시</span><span class="info-value">${data.orderDetailData.payCreateAt}</span></div>` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    }
+
+
+    // 주문 상세 모달 닫기
+    function closeOrderDetail() {
+        document.getElementById('orderDetailModal').style.display = 'none';
+    }
+
+    // 주문 상태 변경
+    function changeOrderStatus(selectElement) {
+        const orderId = selectElement.dataset.orderId;
+        const newStatus = selectElement.value;
+
+        if (!newStatus) return;
+
+        if (confirm(`주문 ${orderId}의 상태를 변경하시겠습니까?`)) {
+            console.log(`주문 상태 변경: ${orderId} -> ${newStatus}`);
+            alert('주문 상태가 변경되었습니다.');
+        } else {
+            selectElement.value = '';
+        }
+    }
+
+    // 전체 선택 체크박스
+    function toggleAllCheckboxes() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.order-checkbox');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+    }
+
+    // 일괄 상태 변경
+    function bulkStatusChange() {
+        const selectedOrders = getSelectedOrders();
+        const newStatus = document.getElementById('bulkStatusChange').value;
+
+        if (selectedOrders.length === 0) {
+            alert('변경할 주문을 선택해주세요.');
+            return;
+        }
+
+        if (!newStatus) {
+            alert('변경할 상태를 선택해주세요.');
+            return;
+        }
+
+        if (confirm(`선택된 ${selectedOrders.length}개 주문의 상태를 변경하시겠습니까?`)) {
+            console.log('일괄 상태 변경:', selectedOrders, newStatus);
+            alert('선택된 주문의 상태가 변경되었습니다.');
+        }
+    }
+
+    // 선택된 주문 ID 가져오기
+    function getSelectedOrders() {
+        const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    // 페이지 크기 변경
+    function changePageSize() {
+        const pageSize = document.getElementById('pageSize').value;
+        console.log('페이지 크기 변경:', pageSize);
+    }
+
+    // 페이지 이동
+    function goToPage(page) {
+        console.log('페이지 이동:', page);
+    }
+
+    // Excel 내보내기
+    function exportOrders() {
+        console.log('Excel 내보내기');
+        alert('Excel 파일을 다운로드합니다.');
+    }
+
+    // 로그아웃
+    function logout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            location.href = '/admin/logout';
+        }
+    }
+
+    // 모달 외부 클릭시 닫기
+    window.onclick = function(event) {
+        const modal = document.getElementById('orderDetailModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

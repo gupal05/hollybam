@@ -5,8 +5,10 @@ import com.hollybam.hollybam.controller.adminController.AdminProductController.A
 import com.hollybam.hollybam.dto.CategoryDto;
 import com.hollybam.hollybam.dto.ProductDto;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IF_AdminProductService {
 
@@ -62,4 +64,14 @@ public interface IF_AdminProductService {
      * @param status 변경할 상태
      */
     void adminBulkUpdateProductStatus(List<Integer> productCodes, int status) throws Exception;
+
+    Map<String, Object> getProductInfo(int productCode);
+
+    List<Map<String, Object>> getEditProductThumbnail(@Param("productCode") int productCode);
+
+    List<Map<String, Object>> getEditProductDetail(@Param("productCode") int productCode);
+
+    String getOptionName(@Param("productCode") int productCode);
+
+    List<Map<String, Object>> getProductOption(@Param("productCode") int productCode);
 }

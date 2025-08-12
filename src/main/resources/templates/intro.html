@@ -2,36 +2,60 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>홀리밤</title>
-  <!-- 설명 (검색 결과에 노출) -->
-  <meta name="description" content="홀리밤은 리얼돌, 딜도, 콘돔, 러브젤 등 프리미엄 성인용품을 안전하게 빠른배송하는 온라인 성인용품 쇼핑몰입니다. 19세 이상만 이용 가능합니다.">
+  <title>홀리밤 - 프리미엄 성인용품 쇼핑몰 | 리얼돌, 딜도, 러브젤</title>
 
-  <!-- 키워드 (큰 영향은 없지만 추가 가능) -->
+  <!-- 검색 설명 -->
+  <meta name="description" content="홀리밤은 리얼돌, 딜도, 콘돔, 러브젤 등 프리미엄 성인용품을 안전하게 빠른배송하는 온라인 성인용품 쇼핑몰입니다. 19세 이상만 이용 가능합니다.">
   <meta name="keywords" content="성인용품, 리얼돌, 딜도, 러브젤, 콘돔, 성인쇼핑몰">
 
-  <!-- Open Graph (SNS 공유 최적화) -->
-  <meta property="og:title" content="홀리밤 - 성인용품 전문 쇼핑몰">
+  <!-- 인덱싱/미리보기 힌트 -->
+  <meta name="robots" content="index,follow, max-image-preview:large">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:title" content="홀리밤 - 프리미엄 성인용품 쇼핑몰 | 리얼돌, 딜도, 러브젤">
   <meta property="og:description" content="프리미엄 성인용품을 빠르게 배송받으세요.">
   <meta property="og:image" content="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/hollybam_logo.webp">
-  <meta property="og:url" content="https://holly-bam.com">
+  <meta property="og:url" content="https://holly-bam.com/"><!-- canonical과 동일하게 슬래시 포함 -->
+
+  <!-- Twitter Card (X) -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="홀리밤 - 프리미엄 성인용품 쇼핑몰 | 리얼돌, 딜도, 러브젤">
+  <meta name="twitter:description" content="프리미엄 성인용품을 빠르게 배송받으세요.">
+  <meta name="twitter:image" content="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/hollybam_logo.webp">
+
+  <!-- hreflang -->
+  <link rel="alternate" href="https://holly-bam.com/" hreflang="ko-KR">
+  <link rel="alternate" href="https://holly-bam.com/" hreflang="x-default">
 
   <!-- 모바일 최적화 -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:,">
 
+  <!-- 폰트 최적화: preconnect 추가 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap"></noscript>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- CSS -->
   <link rel="preload" as="style" href="/css/intro.css" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="/css/intro.css"></noscript>
 
+  <!-- Canonical: 대표 URL을 / 로 고정 -->
+  <link rel="canonical" href="https://holly-bam.com/"/>
 
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- 구조화 데이터 -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "홀리밤",
-      "url": "https://holly-bam.com",
+      "url": "https://holly-bam.com/",
       "logo": "https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/images/hollybam_logo.webp",
       "sameAs": [
         "https://www.instagram.com/holly._.bam",
@@ -39,7 +63,6 @@
       ]
     }
   </script>
-
 </head>
 <body>
 <!-- 리뉴얼 안내 모달 -->
@@ -86,10 +109,10 @@
 
 <!-- 자바스크립트에서 안전하게 가져와 alert -->
 <script>
-  const msg = document.getElementById('message')?.textContent;
-  if (msg) {
-    alert(msg);
-  }
+  // const msg = document.getElementById('message')?.textContent;
+  // if (msg) {
+  //   alert(msg);
+  // }
 </script>
 
 <div class="container">
@@ -158,7 +181,6 @@
     19세 이상 성인만 이용 가능합니다.
   </div>
 </div>
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script>
   // 리뉴얼 모달 관련 스크립트 (FCP 최적화 및 중복 방지)

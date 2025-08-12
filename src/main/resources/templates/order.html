@@ -2745,12 +2745,6 @@
 
     let isPaymentProcessing = false;
 
-    window.addEventListener('beforeunload', function(e) {
-        if (isPaymentProcessing) {
-            e.preventDefault();
-            e.returnValue = '결제가 진행 중입니다. 페이지를 떠나시겠습니까?';
-        }
-    });
 
     // 글로벌 함수 노출
     window.forceResetPaymentButton = forceResetPaymentButton;

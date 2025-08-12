@@ -325,4 +325,15 @@ public class AdminProductController {
         public int getStatus() { return status; }
         public void setStatus(int status) { this.status = status; }
     }
+
+    @GetMapping("/edit")
+    public String adminEditProduct(@RequestParam  int productCode, Model model) {
+        model.addAttribute("product", adminProductService.getProductInfo(productCode));
+        model.addAttribute("thumbnails", adminProductService.getEditProductThumbnail(productCode));
+        model.addAttribute("details", adminProductService.getEditProductDetail(productCode));
+        model.addAttribute("optionName",  adminProductService.getOptionName(productCode));
+        model.addAttribute("options",  adminProductService.getProductOption(productCode));
+        System.out.println(adminProductService.getProductOption(productCode));
+        return "admin/product/editProduct";
+    }
 }

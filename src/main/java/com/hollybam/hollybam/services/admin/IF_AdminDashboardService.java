@@ -3,6 +3,7 @@ package com.hollybam.hollybam.services.admin;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 public interface IF_AdminDashboardService {
@@ -73,4 +74,5 @@ public interface IF_AdminDashboardService {
     int getPaymentStatusCount(String status);
     int getOrderStatusCount(String status);
     int getDeliveryStatusCount(String status);
+    List<Map<String, Object>> getDescOrder();
 }

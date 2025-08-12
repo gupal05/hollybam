@@ -222,11 +222,16 @@
             COUNT(*)
                 - COALESCE(
                     SUM(
-                            CASE WHEN payment_status IN ('CANCELLED','REFUNDED') THEN 1 ELSE 0 END
+                            CASE
+                                WHEN payment_status IN ('CANCELLED','REFUNDED') THEN 1
+                                ELSE 0
+                                END
                     ), 0
                   )
         FROM orders
+        WHERE payment_status != 'FAILED'
     </select>
+
 
     <!-- 회원 수 조회 -->
     <select id="adminSelectMemberCount" resultType="int">
@@ -243,9 +248,10 @@
     <!-- 총 결제 금액(취소/환불 고려X) -->
     <select id="adminSelectTotalPaymentAmount" resultType="long" parameterType="map">
         SELECT
-        IFNULL( SUM(o.final_amount), 0 )
+        IFNULL(SUM(o.final_amount), 0)
         FROM hollybam.orders o
         <where>
+            o.payment_status = 'PAID'
             <if test="startDate != null">
                 AND o.create_at &gt;= #{startDate}
             </if>
@@ -414,7 +420,11 @@
                                  END
                          ), 0) as salesAmount
         FROM date_range dr
-                 LEFT JOIN hollybam.orders o ON DATE(o.create_at) = dr.date_value
+                 LEFT JOIN (
+            SELECT *
+            FROM hollybam.orders
+            WHERE payment_status = 'PAID'
+        ) o ON DATE(o.create_at) = dr.date_value
         GROUP BY dr.date_value
         ORDER BY dr.date_value ASC
         ]]>
@@ -445,6 +455,7 @@
                          ), 0) as salesAmount
         FROM month_range mr
                  LEFT JOIN hollybam.orders o ON DATE_FORMAT(o.create_at, '%Y-%m') = DATE_FORMAT(mr.month_end, '%Y-%m')
+        WHERE payment_status = 'PAID'
         GROUP BY DATE_FORMAT(mr.month_end, '%Y-%m')
         ORDER BY DATE_FORMAT(mr.month_end, '%Y-%m') ASC
         ]]>
@@ -475,6 +486,7 @@
                          ), 0) as salesAmount
         FROM year_range yr
                  LEFT JOIN hollybam.orders o ON YEAR(o.create_at) = yr.year_value
+        WHERE payment_status = 'PAID'
         GROUP BY yr.year_value
         ORDER BY yr.year_value ASC
         ]]>
@@ -494,5 +506,33 @@
         select count(*)
         from hollybam.delivery
         where delivery_status = #{status}
+    </select>
+
+    <select id="getDescOrder" resultType="map">
+        SELECT
+            o.order_code as orderCode,
+            o.order_id as orderId,
+            o.orderer_name as ordererName,
+            o.create_at as createAt,
+            o.final_amount as finalAmount,
+            COUNT(oi.order_item_code) AS itemCount,
+            o.simple_status as status,
+            MIN(p.product_name) AS productName  -- 대표 상품 하나만 (가장 빠른 이름 기준)
+        FROM
+            orders o
+                JOIN
+            order_items oi ON o.order_code = oi.order_code
+                JOIN
+            product p ON oi.product_code = p.product_code
+        GROUP BY
+            o.order_code,
+            o.order_id,
+            o.orderer_name,
+            o.create_at,
+            o.final_amount,
+            o.simple_status
+        ORDER BY
+            o.create_at DESC
+        LIMIT 5;
     </select>
 </mapper>

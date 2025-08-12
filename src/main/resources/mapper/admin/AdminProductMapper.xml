@@ -286,4 +286,56 @@
         </foreach>
     </update>
 
+    <select id="getProductInfo" parameterType="int" resultType="map">
+        SELECT
+            p.product_code AS productCode,
+            p.product_id AS productId,
+            p.product_name AS productName,
+            p.product_description AS productDescription,
+            p.product_quantity AS productQuantity,
+            p.product_active AS productActive,
+            pr.price_cost AS priceCost,
+            pr.price_original AS priceOriginal,
+            pr.price_selling AS priceSelling,
+            img.image_url AS titleImageUrl
+        FROM hollybam.product p
+                 LEFT JOIN hollybam.price pr ON p.product_code = pr.product_code
+                 LEFT JOIN hollybam.image img
+                           ON p.product_code = img.product_code AND img.image_type = 'title'
+        WHERE p.product_code = #{productCode}
+    </select>
+
+    <select id="getEditProductThumbnail" parameterType="int" resultType="map">
+        select image_url as imageUrl
+        from image
+        where product_code = #{productCode} and image_type = 'thumbnail'
+    </select>
+
+    <select id="getEditProductDetail" parameterType="int" resultType="map">
+        select image_url as imageUrl
+        from image
+        where product_code = #{productCode} and image_type = 'content'
+    </select>
+
+    <select id="getProductOption" parameterType="int" resultType="map">
+        SELECT
+            po.option_code as optionCode,
+            po.option_value as optionValue,
+            po.option_price as optionPrice,
+            po.option_quantity as optionQuantity,
+            op.option_price_cost as optionPriceCost
+        FROM product_option po
+                 JOIN option_price op
+                      ON po.option_code = op.option_code
+        WHERE po.product_code = #{productCode}
+    </select>
+
+    <select id="getOptionName" parameterType="int" resultType="String">
+        SELECT option_name
+        FROM product_option
+        WHERE product_code = #{productCode}
+        ORDER BY option_code ASC
+        LIMIT 1
+    </select>
+
 </mapper>

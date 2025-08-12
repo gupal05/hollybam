@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface IF_AdminProductDao {
@@ -52,4 +53,14 @@ public interface IF_AdminProductDao {
      * @param status 상태 (1: 활성, 0: 비활성, -1: 삭제)
      */
     void adminBulkUpdateProductStatus(@Param("productCodes") List<Integer> productCodes, @Param("status") int status) throws Exception;
+
+    Map<String, Object> getProductInfo(@Param("productCode") int productCode);
+
+    List<Map<String, Object>> getEditProductThumbnail(@Param("productCode") int productCode);
+
+    List<Map<String, Object>> getEditProductDetail(@Param("productCode") int productCode);
+
+    String getOptionName(@Param("productCode") int productCode);
+
+    List<Map<String, Object>> getProductOption(@Param("productCode") int productCode);
 }

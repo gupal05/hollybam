@@ -9,6 +9,7 @@ import com.hollybam.hollybam.dto.ProductDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -292,5 +294,35 @@ public class AdminProductServiceImpl implements IF_AdminProductService {
             log.error("상품 일괄 상태 변경 중 오류 발생", e);
             throw new Exception("상품 상태 일괄 변경에 실패했습니다.", e);
         }
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Object> getProductInfo(int productCode) {
+        return adminProductDao.getProductInfo(productCode);
+    }
+
+    @Override
+    @Transactional
+    public List<Map<String, Object>> getEditProductThumbnail(@Param("productCode") int productCode){
+        return adminProductDao.getEditProductThumbnail(productCode);
+    }
+
+    @Override
+    @Transactional
+    public List<Map<String, Object>> getEditProductDetail(@Param("productCode") int productCode){
+        return adminProductDao.getEditProductDetail(productCode);
+    }
+
+    @Override
+    @Transactional
+    public List<Map<String, Object>> getProductOption(@Param("productCode") int productCode){
+        return adminProductDao.getProductOption(productCode);
+    }
+
+    @Override
+    @Transactional
+    public String getOptionName(@Param("productCode") int productCode){
+        return adminProductDao.getOptionName(productCode);
     }
 }

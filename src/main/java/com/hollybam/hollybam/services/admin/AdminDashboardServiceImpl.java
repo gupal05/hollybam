@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
@@ -176,5 +178,26 @@ public class AdminDashboardServiceImpl implements IF_AdminDashboardService {
     @Transactional
     public int getDeliveryStatusCount(String status){
         return adminDashboardDao.getDeliveryStatusCount(status);
+    }
+
+    @Override
+    @Transactional
+    public List<Map<String, Object>> getDescOrder(){
+        List<Map<String, Object>> orderList = adminDashboardDao.getDescOrder();
+        if(!orderList.isEmpty()){
+            for(int i=0; i<orderList.size();i++){
+                String isoDateTime = orderList.get(i).get("createAt").toString();
+                LocalDateTime dateTime = LocalDateTime.parse(isoDateTime); // T가 포함된 형식도 자동 인식
+                String formatted = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                orderList.get(i).put("createAt", formatted);
+                String itemCountStr = orderList.get(i).get("itemCount").toString();
+                Integer itemCount = Integer.parseInt(itemCountStr);
+                if(itemCount != null && itemCount > 1){
+                    String proName = (String)orderList.get(i).get("productName");
+                    orderList.get(i).put("productName", proName+" 외"+(itemCount-1)+"개");
+                }
+            }
+        }
+        return orderList;
     }
 }

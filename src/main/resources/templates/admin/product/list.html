@@ -4,133 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품 목록 관리 - HOLLYBAM</title>
+
+    <!-- 관리자 사이드바 CSS/JS -->
+    <link rel="stylesheet" href="/css/adminSidebar.css">
+    <script src="/js/adminSidebar.js"></script>
+
     <style>
-        * {
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        /* 레이아웃 */
-        .admin-layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* 사이드바 (기존 대시보드와 동일) */
-        .sidebar {
-            width: 280px;
-            background: #fff;
-            border-right: 1px solid #e9ecef;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding: 30px 25px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .sidebar-header h1 {
-            color: #212529;
-            font-size: 20px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-
-        .sidebar-header p {
-            color: #adb5bd;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-nav {
-            padding: 20px 0;
-        }
-
-        .nav-item {
-            margin-bottom: 5px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 25px;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border-left: 2px solid transparent;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: #212529;
-            background: #f8f9fa;
-            border-left-color: #212529;
-        }
-
-        .nav-link.has-submenu::after {
-            content: '+';
-            font-size: 16px;
-            font-weight: 300;
-            transition: transform 0.3s ease;
-        }
-
-        .nav-link.has-submenu.open::after {
-            transform: rotate(45deg);
-        }
-
-        .submenu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            background: #f8f9fa;
-        }
-
-        .submenu.open {
-            max-height: 500px;
-        }
-
-        .submenu-link {
-            display: block;
-            padding: 12px 25px 12px 50px;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border-left: 2px solid transparent;
-        }
-
-        .submenu-link:hover,
-        .submenu-link.active {
-            color: #212529;
-            background: #fff;
-            border-left-color: #212529;
-        }
-
-        /* 메인 컨텐츠 영역 */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
         }
 
         /* 헤더 */
@@ -202,18 +88,37 @@
             font-weight: 300;
         }
 
-        /* 검색 및 필터 영역 */
-        .search-filters {
+        /* 섹션 */
+        .section {
             background: #fff;
             border: 1px solid #e9ecef;
-            padding: 30px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
+        .section-header {
+            padding: 30px 40px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            color: #212529;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .section-body {
+            padding: 40px;
+        }
+
+        /* 검색 및 필터 영역 */
         .search-row {
             display: flex;
             gap: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
             align-items: end;
         }
 
@@ -224,19 +129,24 @@
         .search-group label {
             display: block;
             color: #6c757d;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            font-weight: 400;
             margin-bottom: 8px;
         }
 
         .search-group select,
         .search-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #dee2e6;
+            padding: 15px 20px;
+            border: 1px solid #e9ecef;
             font-size: 14px;
+            font-weight: 300;
             transition: border-color 0.3s ease;
+            background: #fff;
+            color: #212529;
+            box-sizing: border-box;
         }
 
         .search-group select:focus,
@@ -245,22 +155,35 @@
             border-color: #212529;
         }
 
+        /* 버튼 */
         .btn {
             background: #fff;
             color: #212529;
             border: 1px solid #dee2e6;
             padding: 12px 20px;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: auto;
+            justify-content: center;
+            box-sizing: border-box;
         }
 
         .btn:hover {
             border-color: #212529;
+        }
+
+        .btn:active,
+        .btn:focus {
+            outline: none;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-primary {
@@ -295,28 +218,14 @@
 
         .btn-sm {
             padding: 6px 12px;
-            font-size: 11px;
+            font-size: 10px;
+            min-width: auto;
         }
 
-        /* 상품 목록 테이블 */
-        .product-list {
-            background: #fff;
-            border: 1px solid #e9ecef;
-        }
-
-        .list-header {
-            padding: 30px 40px;
-            border-bottom: 1px solid #e9ecef;
+        /* 액션 버튼 그룹 */
+        .action-buttons {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .list-title {
-            color: #212529;
-            font-size: 18px;
-            font-weight: 300;
-            letter-spacing: 0.5px;
+            gap: 5px;
         }
 
         .list-actions {
@@ -324,6 +233,7 @@
             gap: 15px;
         }
 
+        /* 상품 목록 테이블 */
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -457,12 +367,6 @@
             font-size: 13px;
         }
 
-        /* 액션 버튼 그룹 */
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
         /* 반응형 */
         @media (max-width: 1200px) {
             .search-row {
@@ -475,21 +379,17 @@
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
+            .header {
+                padding: 0 20px;
             }
 
             .container {
                 padding: 20px 15px;
+            }
+
+            .section-header,
+            .section-body {
+                padding: 20px;
             }
 
             .search-row {
@@ -504,68 +404,51 @@
             .table td {
                 padding: 15px 10px;
             }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .list-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="admin-layout">
-    <!-- 사이드바 -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h1>HOLLYBAM</h1>
-            <p>Administrator</p>
+<!-- 사이드바 레이아웃 포함 -->
+<div th:replace="~{layout/adminSidebar :: sidebar}"></div>
+
+<!-- 메인 컨텐츠 -->
+<div class="main-content">
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-actions">
+            <div class="admin-info">
+                관리자님 환영합니다
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                Sign Out
+            </button>
         </div>
-        <div class="sidebar-nav">
-            <div class="nav-item">
-                <a href="/admin/dashboard" class="nav-link">Dashboard</a>
-            </div>
+    </header>
 
-            <!-- 상품 관리 -->
-            <div class="nav-item">
-                <a href="#" class="nav-link has-submenu open" onclick="toggleSubmenu(this)">상품 관리</a>
-                <div class="submenu open">
-                    <a href="/admin/add/product" class="submenu-link">상품 등록</a>
-                    <a href="/admin/product/edit" class="submenu-link">상품 수정</a>
-                    <a href="/admin/product/list" class="submenu-link active">상품 목록</a>
-                    <a href="/admin/product/stock" class="submenu-link">재고 관리</a>
-                    <a href="/admin/product/review" class="submenu-link">상품 리뷰</a>
-                </div>
-            </div>
-
-            <!-- 기타 메뉴들... (간소화) -->
-            <div class="nav-item">
-                <a href="/admin/orders" class="nav-link">주문 관리</a>
-            </div>
-            <div class="nav-item">
-                <a href="/admin/members" class="nav-link">회원 관리</a>
-            </div>
+    <!-- 컨테이너 -->
+    <div class="container">
+        <!-- 페이지 타이틀 -->
+        <div class="page-title">
+            <h2>상품 목록 관리</h2>
+            <p>등록된 상품들을 조회하고 관리할 수 있습니다</p>
         </div>
-    </nav>
 
-    <!-- 메인 컨텐츠 -->
-    <div class="main-content">
-        <!-- 헤더 -->
-        <header class="header">
-            <div class="header-actions">
-                <div class="admin-info">
-                    관리자님 환영합니다
-                </div>
-                <button class="logout-btn" onclick="logout()">
-                    Sign Out
-                </button>
+        <!-- 검색 및 필터 영역 -->
+        <div class="section">
+            <div class="section-header">
+                <h3 class="section-title">검색 및 필터</h3>
             </div>
-        </header>
-
-        <!-- 컨테이너 -->
-        <div class="container">
-            <!-- 페이지 타이틀 -->
-            <div class="page-title">
-                <h2>상품 목록 관리</h2>
-                <p>등록된 상품들을 조회하고 관리할 수 있습니다</p>
-            </div>
-
-            <!-- 검색 및 필터 영역 -->
-            <div class="search-filters">
+            <div class="section-body">
                 <form th:action="@{/admin/product/list}" method="get" id="searchForm">
                     <div class="search-row">
                         <div class="search-group">
@@ -630,176 +513,197 @@
                     <input type="hidden" name="size" th:value="${size}">
                 </form>
             </div>
+        </div>
 
-            <!-- 상품 목록 -->
-            <div class="product-list">
-                <div class="stats-info">
-                    총 <strong th:text="${totalCount}">0</strong>개의 상품이 있습니다.
-                    (페이지당 <span th:text="${size}">20</span>개씩 표시)
-                </div>
-
-                <div class="list-header">
-                    <div class="list-title">상품 목록</div>
-                    <div class="list-actions">
-                        <a href="/admin/add/product" class="btn btn-primary">상품 등록</a>
-                        <button class="btn" onclick="exportExcel()">Excel 내보내기</button>
-                    </div>
-                </div>
-
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>이미지</th>
-                        <th>상품코드</th>
-                        <th>상품명</th>
-                        <th>가격</th>
-                        <th>재고</th>
-                        <th>판매량</th>
-                        <th>상태</th>
-                        <th>등록일</th>
-                        <th>관리</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:if="${#lists.isEmpty(products)}">
-                        <td colspan="9" style="text-align: center; padding: 60px; color: #adb5bd;">
-                            등록된 상품이 없습니다.
-                        </td>
-                    </tr>
-
-                    <tr th:each="product : ${products}">
-                        <td>
-                            <div th:if="${product.titleImageUrl != null and product.titleImageUrl != ''}">
-                                <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.titleImageUrl}"
-                                     alt="상품 이미지" class="product-image" />
-                            </div>
-
-                            <div th:if="${product.titleImageUrl == null and product.imageDtoList != null and !#lists.isEmpty(product.imageDtoList)}">
-                                <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
-                                     alt="상품 이미지" class="product-image" />
-                            </div>
-                            <!-- 이미지가 없는 경우 -->
-                            <div th:if="${product.titleImageUrl == null and (product.imageDtoList == null or #lists.isEmpty(product.imageDtoList))}"
-                                 class="no-image">
-                                이미지 없음
-                            </div>
-                        </td>
-
-                        <td>
-                            <strong th:text="${product.productId}">PRD-001</strong>
-                        </td>
-
-                        <td>
-                            <div>
-                                <strong th:text="${product.productName}">상품명</strong>
-                            </div>
-                            <div style="font-size: 12px; color: #6c757d; margin-top: 5px;"
-                                 th:text="${#strings.abbreviate(product.productDescription, 50)}">
-                                상품 설명...
-                            </div>
-                        </td>
-
-                        <td>
-                            <div th:if="${product.sellingPrice != null and product.sellingPrice > 0}">
-                                <div class="price-original" th:if="${product.originalPrice != null and product.originalPrice != product.sellingPrice}">
-                                    ₩<span th:text="${#numbers.formatInteger(product.originalPrice, 3, 'COMMA')}">100,000</span>
-                                </div>
-                                <div class="price-selling">
-                                    ₩<span th:text="${#numbers.formatInteger(product.sellingPrice, 3, 'COMMA')}">79,000</span>
-                                </div>
-                            </div>
-                            <div th:unless="${product.sellingPrice != null and product.sellingPrice > 0}">
-                                가격 미설정
-                            </div>
-                        </td>
-
-                        <td>
-                            <span th:text="${product.productQuantity}">10</span>개
-                            <div th:if="${product.productQuantity <= 5}" style="color: #dc3545; font-size: 11px;">
-                                재고 부족
-                            </div>
-                        </td>
-
-                        <td th:text="${product.productOrderCount}">25</td>
-
-                        <td>
-                            <span th:if="${product.productActive == 1}" class="status-badge active">판매중</span>
-                            <span th:if="${product.productActive == 0}" class="status-badge inactive">판매중지</span>
-                        </td>
-
-                        <td th:text="${#temporals.format(product.createAt, 'yyyy-MM-dd')}">2025-01-15</td>
-
-                        <td>
-                            <div class="action-buttons">
-                                <a th:href="@{/admin/product/edit(productCode=${product.productCode})}"
-                                   class="btn btn-sm">수정</a>
-
-                                <a th:href="@{/admin/product/toggle-status(productCode=${product.productCode})}"
-                                   class="btn btn-sm"
-                                   th:classappend="${product.productActive == 1} ? 'btn-danger' : 'btn-success'"
-                                   th:text="${product.productActive == 1} ? '중지' : '활성'"
-                                   onclick="return confirm('상품 상태를 변경하시겠습니까?')">
-                                </a>
-
-                                <a th:href="@{/admin/product/delete(productCode=${product.productCode})}"
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')">
-                                    삭제
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+        <!-- 상품 목록 -->
+        <div class="section">
+            <div class="stats-info">
+                총 <strong th:text="${totalCount}">0</strong>개의 상품이 있습니다.
+                (페이지당 <span th:text="${size}">20</span>개씩 표시)
             </div>
 
-            <!-- 페이징 -->
-            <div class="pagination" th:if="${totalPages > 1}">
-                <!-- 이전 페이지 -->
-                <a th:if="${currentPage > 1}"
-                   th:href="@{/admin/product/list(page=${currentPage - 1}, size=${size}, categoryCode=${searchDto?.categoryCode}, searchType=${searchDto?.searchType}, searchKeyword=${searchDto?.searchKeyword}, status=${searchDto?.status}, sortBy=${searchDto?.sortBy}, sortOrder=${searchDto?.sortOrder})}"
-                   th:text="'‹ 이전'">이전</a>
-                <span th:unless="${currentPage > 1}" class="disabled">‹ 이전</span>
-
-                <!-- 페이지 번호 -->
-                <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
-                    <a th:if="${pageNum != currentPage}"
-                       th:href="@{/admin/product/list(page=${pageNum}, size=${size}, categoryCode=${searchDto?.categoryCode}, searchType=${searchDto?.searchType}, searchKeyword=${searchDto?.searchKeyword}, status=${searchDto?.status}, sortBy=${searchDto?.sortBy}, sortOrder=${searchDto?.sortOrder})}"
-                       th:text="${pageNum}">1</a>
-                    <span th:if="${pageNum == currentPage}" class="current" th:text="${pageNum}">1</span>
-                </span>
-
-                <!-- 다음 페이지 -->
-                <a th:if="${currentPage < totalPages}"
-                   th:href="@{/admin/product/list(page=${currentPage + 1}, size=${size}, categoryCode=${searchDto?.categoryCode}, searchType=${searchDto?.searchType}, searchKeyword=${searchDto?.searchKeyword}, status=${searchDto?.status}, sortBy=${searchDto?.sortBy}, sortOrder=${searchDto?.sortOrder})}"
-                   th:text="'다음 ›'">다음</a>
-                <span th:unless="${currentPage < totalPages}" class="disabled">다음 ›</span>
+            <div class="section-header">
+                <div class="section-title">상품 목록</div>
+                <div class="list-actions">
+                    <a href="/admin/add/product" class="btn btn-primary">상품 등록</a>
+                    <button class="btn" onclick="exportExcel()">Excel 내보내기</button>
+                </div>
             </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>이미지</th>
+                    <th>상품코드</th>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>재고</th>
+                    <th>판매량</th>
+                    <th>상태</th>
+                    <th>등록일</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(products)}">
+                    <td colspan="9" style="text-align: center; padding: 60px; color: #adb5bd;">
+                        등록된 상품이 없습니다.
+                    </td>
+                </tr>
+
+                <tr th:each="product : ${products}">
+                    <td>
+                        <div th:if="${product.titleImageUrl != null and product.titleImageUrl != ''}">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.titleImageUrl}"
+                                 alt="상품 이미지" class="product-image" />
+                        </div>
+
+                        <div th:if="${product.titleImageUrl == null and product.imageDtoList != null and !#lists.isEmpty(product.imageDtoList)}">
+                            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
+                                 alt="상품 이미지" class="product-image" />
+                        </div>
+                        <!-- 이미지가 없는 경우 -->
+                        <div th:if="${product.titleImageUrl == null and (product.imageDtoList == null or #lists.isEmpty(product.imageDtoList))}"
+                             class="no-image">
+                            이미지 없음
+                        </div>
+                    </td>
+
+                    <td>
+                        <strong th:text="${product.productId}">PRD-001</strong>
+                    </td>
+
+                    <td>
+                        <div>
+                            <strong th:text="${product.productName}">상품명</strong>
+                        </div>
+                        <div style="font-size: 12px; color: #6c757d; margin-top: 5px;"
+                             th:text="${#strings.abbreviate(product.productDescription, 50)}">
+                            상품 설명...
+                        </div>
+                    </td>
+
+                    <td>
+                        <div th:if="${product.sellingPrice != null and product.sellingPrice > 0}">
+                            <div class="price-original" th:if="${product.originalPrice != null and product.originalPrice != product.sellingPrice}">
+                                ₩<span th:text="${#numbers.formatInteger(product.originalPrice, 3, 'COMMA')}">100,000</span>
+                            </div>
+                            <div class="price-selling">
+                                ₩<span th:text="${#numbers.formatInteger(product.sellingPrice, 3, 'COMMA')}">79,000</span>
+                            </div>
+                        </div>
+                        <div th:unless="${product.sellingPrice != null and product.sellingPrice > 0}">
+                            가격 미설정
+                        </div>
+                    </td>
+
+                    <td>
+                        <span th:text="${product.productQuantity}">10</span>개
+                        <div th:if="${product.productQuantity <= 5}" style="color: #dc3545; font-size: 11px;">
+                            재고 부족
+                        </div>
+                    </td>
+
+                    <td th:text="${product.productOrderCount}">25</td>
+
+                    <td>
+                        <span th:if="${product.productActive == 1}" class="status-badge active">판매중</span>
+                        <span th:if="${product.productActive == 0}" class="status-badge inactive">판매중지</span>
+                    </td>
+
+                    <td th:text="${#temporals.format(product.createAt, 'yyyy-MM-dd')}">2025-01-15</td>
+
+                    <td>
+                        <div class="action-buttons">
+                            <a th:href="@{/admin/product/edit(productCode=${product.productCode})}"
+                               class="btn btn-sm">수정</a>
+
+                            <a th:href="@{/admin/product/toggle-status(productCode=${product.productCode})}"
+                               class="btn btn-sm"
+                               th:classappend="${product.productActive == 1} ? 'btn-danger' : 'btn-success'"
+                               th:text="${product.productActive == 1} ? '중지' : '활성'"
+                               onclick="return confirm('상품 상태를 변경하시겠습니까?')">
+                            </a>
+
+                            <a th:href="@{/admin/product/delete(productCode=${product.productCode})}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')">
+                                삭제
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이징 -->
+        <div class="pagination" th:if="${totalPages > 1}">
+            <!-- 이전 페이지 -->
+            <a th:if="${currentPage > 1}"
+               th:href="@{/admin/product/list(page=${currentPage - 1}, size=${size}, categoryCode=${searchDto?.categoryCode}, searchType=${searchDto?.searchType}, searchKeyword=${searchDto?.searchKeyword}, status=${searchDto?.status}, sortBy=${searchDto?.sortBy}, sortOrder=${searchDto?.sortOrder})}"
+               th:text="'‹ 이전'">이전</a>
+            <span th:unless="${currentPage > 1}" class="disabled">‹ 이전</span>
+
+            <!-- 페이지 번호 -->
+            <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+                <a th:if="${pageNum != currentPage}"
+                   th:href="@{/admin/product/list(page=${pageNum}, size=${size}, categoryCode=${searchDto?.categoryCode}, searchType=${searchDto?.searchType}, searchKeyword=${searchDto?.searchKeyword}, status=${searchDto?.status}, sortBy=${searchDto?.sortBy}, sortOrder=${searchDto?.sortOrder})}"
+                   th:text="${pageNum}">1</a>
+                <span th:if="${pageNum == currentPage}" class="current" th:text="${pageNum}">1</span>
+            </span>
+
+            <!-- 다음 페이지 -->
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{/admin/product/list(page=${currentPage + 1}, size=${size}, categoryCode=${searchDto?.categoryCode}, searchType=${searchDto?.searchType}, searchKeyword=${searchDto?.searchKeyword}, status=${searchDto?.status}, sortBy=${searchDto?.sortBy}, sortOrder=${searchDto?.sortOrder})}"
+               th:text="'다음 ›'">다음</a>
+            <span th:unless="${currentPage < totalPages}" class="disabled">다음 ›</span>
         </div>
     </div>
 </div>
 
 <script>
-    // 서브메뉴 토글
-    function toggleSubmenu(element) {
-        event.preventDefault();
-        const submenu = element.nextElementSibling;
-        const isOpen = submenu.classList.contains('open');
+    document.addEventListener('DOMContentLoaded', function() {
+        // 사이드바 "상품 목록" 메뉴 active 설정 및 서브메뉴 열기
+        const productListLink = document.querySelector('a[href="/admin/product/list"]');
+        if (productListLink) {
+            productListLink.classList.add('active');
 
-        // 모든 서브메뉴 닫기
-        document.querySelectorAll('.submenu').forEach(menu => {
-            menu.classList.remove('open');
-        });
-        document.querySelectorAll('.nav-link.has-submenu').forEach(link => {
-            link.classList.remove('open');
-        });
+            // 상품 관리 서브메뉴 자동으로 열기
+            const submenu = productListLink.closest('.submenu');
+            if (submenu) {
+                submenu.style.display = 'block';
 
-        // 클릭된 서브메뉴만 토글
-        if (!isOpen) {
-            submenu.classList.add('open');
-            element.classList.add('open');
+                // 상품 관리 메인 링크에도 active 표시
+                const parentNavLink = submenu.previousElementSibling;
+                if (parentNavLink && parentNavLink.classList.contains('has-submenu')) {
+                    parentNavLink.classList.add('active');
+                }
+            }
         }
-    }
+
+        // 검색 폼 상태 복원
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 폼 필드들을 URL 파라미터로 채우기
+        const form = document.getElementById('searchForm');
+        const formElements = form.elements;
+
+        for (let param of urlParams) {
+            const [name, value] = param;
+            const element = formElements[name];
+            if (element) {
+                element.value = value;
+            }
+        }
+
+        // 상품 선택 체크박스 이벤트 리스너
+        document.querySelectorAll('input[name="selectedProducts"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateBulkActions);
+        });
+
+        console.log('상품 목록 페이지 로드 완료');
+    });
 
     // 로그아웃 처리
     function logout() {
@@ -959,31 +863,6 @@
         }
     });
 
-    // 페이지 로드 시 초기화
-    document.addEventListener('DOMContentLoaded', function() {
-        // 검색 폼 상태 복원
-        const urlParams = new URLSearchParams(window.location.search);
-
-        // 폼 필드들을 URL 파라미터로 채우기
-        const form = document.getElementById('searchForm');
-        const formElements = form.elements;
-
-        for (let param of urlParams) {
-            const [name, value] = param;
-            const element = formElements[name];
-            if (element) {
-                element.value = value;
-            }
-        }
-
-        // 상품 선택 체크박스 이벤트 리스너
-        document.querySelectorAll('input[name="selectedProducts"]').forEach(checkbox => {
-            checkbox.addEventListener('change', updateBulkActions);
-        });
-
-        console.log('상품 목록 페이지 로드 완료');
-    });
-
     // 실시간 검색 (디바운싱)
     let searchTimeout;
     function setupLiveSearch() {
@@ -999,8 +878,6 @@
             });
         }
     }
-
-
 </script>
 </body>
 </html>

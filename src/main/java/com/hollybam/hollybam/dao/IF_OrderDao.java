@@ -104,4 +104,6 @@ public interface IF_OrderDao {
      * 🔄 빠른 상품 재고 복원
      */
     int restoreProductQuantityFast(@Param("productCode") int productCode, @Param("quantity") int quantity);
+
+    int getOrderCodeNumber(@Param("date") String date);
 }

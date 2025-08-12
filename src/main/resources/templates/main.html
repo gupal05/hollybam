@@ -976,6 +976,28 @@
             }
         }
 
+        /* 모바일용 할인율 뱃지 스타일 */
+        .mobile-sale-perc {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #EE386D;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 3;
+            display: none; /* 기본적으로 숨김 */
+        }
+
+        /* 웹에서는 모바일 할인율 뱃지 숨김, 기존 할인율 뱃지 표시 */
+        @media (min-width: 769px) {
+            .mobile-sale-perc {
+                display: none !important;
+            }
+        }
+
         /* 모바일 세로 (768px 이하) */
         @media (max-width: 768px) {
             .sale-badge-container {
@@ -1196,6 +1218,24 @@
                 transform: translateX(-50%);
                 width: 35px;
             }
+
+            /* 🔥 모바일에서는 이미지 위의 할인율 뱃지 표시 */
+            .mobile-sale-perc {
+                display: block !important;
+                top: 8px;
+                left: 8px;
+                font-size: 11px;
+                padding: 2px 5px;
+            }
+
+            /* 🔥 모바일에서는 기존 할인율 뱃지 숨김 */
+            .card-product-price .sale-perc {
+                display: none !important;
+            }
+
+            .price-sale-container .card-product-price .sale-perc {
+                display: none !important;
+            }
         }
 
         /* 모바일 세로 소형 (600px 이하) */
@@ -1355,6 +1395,14 @@
 
             .hollybam-news-section-title::after {
                 width: 30px;
+            }
+
+            /* 🔥 모바일 소형에서 할인율 뱃지 위치 조정 */
+            .mobile-sale-perc {
+                top: 6px;
+                left: 6px;
+                font-size: 10px;
+                padding: 2px 5px;
             }
         }
 
@@ -1616,6 +1664,14 @@
                 right: 10px;
                 font-size: 24px;
             }
+
+            /* 🔥 모바일 극소형에서 할인율 뱃지 위치 조정 */
+            .mobile-sale-perc {
+                top: 6px;
+                left: 6px;
+                font-size: 9px;
+                padding: 1px 4px;
+            }
         }
 
         /* 모바일 세로 초소형 (360px 이하) */
@@ -1837,6 +1893,14 @@
 
             .hollybam-news-section-title::after {
                 width: 22px;
+            }
+
+            /* 🔥 모바일 초소형에서 할인율 뱃지 위치 조정 */
+            .mobile-sale-perc {
+                top: 5px;
+                left: 5px;
+                font-size: 8px;
+                padding: 1px 3px;
             }
         }
 
@@ -2496,6 +2560,17 @@
                              th:if="${product.productQuantity == null or product.productQuantity == 0}">
                             Sold Out
                         </div>
+
+                        <!-- 🔥 모바일용 할인율 뱃지 추가 - 일반 상품 -->
+                        <div class="mobile-sale-perc"
+                             th:if="${!product.isSale}"
+                             th:text="${product.priceDtoList[0].percentage}+'%'">0%</div>
+
+                        <!-- 🔥 모바일용 할인율 뱃지 추가 - 특가 상품 -->
+                        <div class="mobile-sale-perc"
+                             th:if="${product.isSale}"
+                             th:text="${product.specialDiscountRate}+'%'">0%</div>
+
                         <img class="product-img"
                              th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
                              th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
@@ -2641,6 +2716,11 @@
                              th:if="${product.productQuantity == null or product.productQuantity == 0}">
                             Sold Out
                         </div>
+
+                        <!-- 🔥 모바일용 할인율 뱃지 추가 - 신상품은 일반 상품만 -->
+                        <div class="mobile-sale-perc"
+                             th:text="${product.priceDtoList[0].percentage}+'%'">0%</div>
+
                         <img class="product-img"
                              th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
                              th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
@@ -2676,10 +2756,10 @@
                 </a>
                 <div class="wishlist-wrap">
                     <button class="wishlist-btn"
-                             th:data-product-code="${product.productCode}"
-                             title="위시리스트에 추가">
-                    <i class="far fa-heart heart-icon"></i>
-                </button>
+                            th:data-product-code="${product.productCode}"
+                            title="위시리스트에 추가">
+                        <i class="far fa-heart heart-icon"></i>
+                    </button>
                 </div>
             </article>
         </div>
@@ -2784,13 +2864,22 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
-    // 슬라이드 기능
+    // 슬라이드 기능 (터치 스와이프 기능 추가)
     let current = 0;
     const images = $('.slide img');
     const dots = $('.dot');
     const totalSlides = images.length;
     let autoSlideInterval = null;
-    const SLIDE_DELAY = 3000; // 8초
+    const SLIDE_DELAY = 3000; // 3초
+
+    // 터치 스와이프 관련 변수
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isSwipeActive = false;
+    const SWIPE_THRESHOLD = 50; // 최소 스와이프 거리 (픽셀)
+    const SWIPE_VERTICAL_THRESHOLD = 100; // 세로 스와이프 제한 (픽셀)
 
     // 슬라이드 변경 함수
     const changeSlide = (index) => {
@@ -2805,7 +2894,6 @@
 
     // 자동 슬라이드 시작
     function startAutoSlide() {
-        // 기존 타이머가 있으면 무조건 제거
         if (autoSlideInterval) {
             clearInterval(autoSlideInterval);
         }
@@ -2820,35 +2908,145 @@
         }
     }
 
+    // 터치 이벤트 핸들러
+    function handleTouchStart(e) {
+        const touch = e.touches ? e.touches[0] : e;
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        isSwipeActive = true;
+
+        // 터치 시작 시 자동 슬라이드 정지
+        stopAutoSlide();
+    }
+
+    function handleTouchMove(e) {
+        if (!isSwipeActive) return;
+
+        // 터치 이동 중 기본 동작 방지 (필요에 따라)
+        const touch = e.touches ? e.touches[0] : e;
+        const currentX = touch.clientX;
+        const currentY = touch.clientY;
+
+        // 세로 스크롤과 구분하기 위해 가로 이동이 세로 이동보다 클 때만 처리
+        const deltaX = Math.abs(currentX - touchStartX);
+        const deltaY = Math.abs(currentY - touchStartY);
+
+        if (deltaX > deltaY && deltaX > 10) {
+            e.preventDefault(); // 가로 스와이프 시에만 기본 동작 방지
+        }
+    }
+
+    function handleTouchEnd(e) {
+        if (!isSwipeActive) return;
+
+        const touch = e.changedTouches ? e.changedTouches[0] : e;
+        touchEndX = touch.clientX;
+        touchEndY = touch.clientY;
+
+        handleSwipe();
+        isSwipeActive = false;
+
+        // 터치 종료 후 1초 뒤에 자동 슬라이드 재시작
+        setTimeout(() => {
+            startAutoSlide();
+        }, 1000);
+    }
+
+    // 스와이프 처리 함수
+    function handleSwipe() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = Math.abs(touchEndY - touchStartY);
+
+        // 세로 이동이 너무 크면 스와이프로 인식하지 않음 (스크롤 우선)
+        if (deltaY > SWIPE_VERTICAL_THRESHOLD) {
+            return;
+        }
+
+        // 가로 스와이프 거리가 임계값을 넘으면 슬라이드 변경
+        if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+            if (deltaX > 0) {
+                // 오른쪽 스와이프 -> 이전 슬라이드
+                prevSlide();
+            } else {
+                // 왼쪽 스와이프 -> 다음 슬라이드
+                nextSlide();
+            }
+        }
+    }
+
     // 문서 준비 시 초기화
     $(function() {
-        // 1) 자동 슬라이드 시작
+        // 터치 이벤트가 지원되는지 확인
+        const supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        if (supportsTouch) {
+            // 터치 이벤트 리스너 추가
+            const slideElement = document.querySelector('.slide');
+
+            // 터치 이벤트
+            slideElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+            slideElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+            slideElement.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+            // 마우스 이벤트도 추가 (데스크톱에서 드래그 지원)
+            slideElement.addEventListener('mousedown', function(e) {
+                handleTouchStart(e);
+
+                // 마우스 이벤트 리스너 추가
+                const handleMouseMove = (e) => handleTouchMove(e);
+                const handleMouseUp = (e) => {
+                    handleTouchEnd(e);
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                };
+
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+            });
+        }
+
+        // 자동 슬라이드 시작
         startAutoSlide();
 
-        // 2) 네비게이션 화살표 클릭
+        // 네비게이션 화살표 클릭
         $('#nextBtn').on('click', function(e) {
             e.preventDefault();
             nextSlide();
-            startAutoSlide(); // 클릭 후 타이머 리셋
+            startAutoSlide();
         });
+
         $('#prevBtn').on('click', function(e) {
             e.preventDefault();
             prevSlide();
-            startAutoSlide(); // 클릭 후 타이머 리셋
+            startAutoSlide();
         });
 
-        // 3) 도트 네비게이션 클릭
+        // 도트 네비게이션 클릭
         dots.each((i, el) => {
             $(el).on('click', () => {
                 changeSlide(i);
-                startAutoSlide(); // 클릭 후 타이머 리셋
+                startAutoSlide();
             });
         });
 
-        // 4) 마우스 오버/아웃
-        $('.slide')
-            .on('mouseenter', stopAutoSlide)
-            .on('mouseleave', startAutoSlide);
+        // 마우스 오버/아웃 (데스크톱에서만)
+        if (!supportsTouch) {
+            $('.slide')
+                .on('mouseenter', stopAutoSlide)
+                .on('mouseleave', startAutoSlide);
+        }
+    });
+
+    // 모바일에서 슬라이드 터치 시각적 피드백 추가 (선택사항)
+    $(document).ready(function() {
+        // 터치 시작 시 살짝 어두워지는 효과
+        $('.slide').on('touchstart', function() {
+            $(this).css('opacity', '0.95');
+        });
+
+        $('.slide').on('touchend', function() {
+            $(this).css('opacity', '1');
+        });
     });
 
     // 슬라이드 클릭 이벤트 핸들러

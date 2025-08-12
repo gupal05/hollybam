@@ -49,7 +49,7 @@ public class AdminController {
         if(session.getAttribute("member") != null) {
             MemberDto member = (MemberDto) session.getAttribute("member");
             if(member.getMemberRole().equals("admin")) {
-                return  "admin/dashboard";
+                return  "redirect:/admin/dashboard";
             } else {
                 return "redirect:/";
             }
@@ -76,9 +76,14 @@ public class AdminController {
                 // 취소/환불 금액
                 model.addAttribute("cancelAmount", adminDashboardService.adminSelectCancelAmount(null, null));
                 // 총 결제 금액 - 취소/환불 금액
-                //model.addAttribute("salesAmount", adminDashboardService.adminSelectSalesAmount());
+//                model.addAttribute("salesAmount", adminDashboardService.adminSelectSalesAmount());
                 // 순수익(할인 금액을 제외한)
                 model.addAttribute("margin",  adminDashboardService.adminSelectMargin(null, null));
+
+                model.addAttribute("payPendingCount", adminDashboardService.getPaymentStatusCount("PENDING"));
+
+                System.out.println(adminDashboardService.getDescOrder());
+                model.addAttribute("orderList", adminDashboardService.getDescOrder());
 
                 model.addAttribute("paidCount", adminDashboardService.getPaymentStatusCount("PAID"));
                 model.addAttribute("pendingCount", adminDashboardService.getOrderStatusCount("PENDING"));
@@ -381,7 +386,7 @@ public class AdminController {
     }
 
     @GetMapping("/coupon/create")
-    public String moveCreteCoupon(Model model) {
+    public String moveCreateCoupon(Model model) {
         model.addAttribute("coupon", new CouponDto());
         return "admin/discount/createCoupon";
     }

@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>이달의 특가 설정 - 관리자</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -859,6 +861,28 @@
 </div>
 
 <script>
+    $(document).ready(function() {
+        // 🔥 CSRF 토큰 가져오기
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 🔥 모든 jQuery AJAX에 자동 적용
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    });
+
+    // 🔥 CSRF 토큰 가져오는 함수
+    function getCSRFToken() {
+        return document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    }
+
+    function getCSRFHeader() {
+        return document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // 사이드바 "이달의 특가 설정" 메뉴 active 설정 및 서브메뉴 열기
         const specialSaleLink = document.querySelector('a[href="/admin/special/sale"]');
@@ -912,7 +936,10 @@
     function logout() {
         if (confirm('로그아웃 하시겠습니까?')) {
             fetch('/admin/auth/logout', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    [getCSRFHeader()]: getCSRFToken() // 동적으로 헤더 추가
+                }
             })
                 .then(response => response.json())
                 .then(data => {

@@ -61,6 +61,13 @@ public class CategoryController {
             System.out.println("카테 : "+productList.size() + "코드 : "+categoryCode);
         }
 
+        for(int i=0; i<productList.size(); i++){
+            if(categoryService.isSpecialSale(productList.get(i).getProductCode()) > 0){
+                productList.get(i).getPriceDtoList().get(0).setPriceSelling(categoryService.getSpecialSalePrice(productList.get(i).getProductCode()));
+            }
+        }
+        System.out.println(productList);
+
         // 페이징 정보 계산
         int totalPages = (int) Math.ceil((double) totalCount / size);
         int startPage = Math.max(1, page - 2);

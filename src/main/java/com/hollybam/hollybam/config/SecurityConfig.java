@@ -2,11 +2,16 @@ package com.hollybam.hollybam.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 
 @Configuration
 public class SecurityConfig {
@@ -19,31 +24,46 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF는 나중에 활성화
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/",             // intro (성인 인증)
-                                "/signup",       // 회원가입 페이지
-                                "/signupResult", // 회원가입 완료 페이지
-                                "loading",
-                                "/css/**", "/js/**", "/images/**" // 정적 리소스
-                        ).permitAll()
-                        .anyRequest().permitAll() // ✅ 모든 요청 일단 허용 (로그인 구현 전이므로)
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(
+                                "/nice/**",
+                                "/naver/**",
+                                "/google/**",
+                                "/pay/**"
+                        )
                 )
-                .formLogin(form -> form.disable()); // ✅ 기본 로그인 화면 비활성화
-
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                )
+                .formLogin(form -> form.disable())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .sessionFixation().changeSessionId()
+                        .invalidSessionUrl("/")
+                        .maximumSessions(3)
+                        .maxSessionsPreventsLogin(false)
+                        .sessionRegistry(sessionRegistry())
+                )
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.deny())
+                        .contentTypeOptions(Customizer.withDefaults())
+                );
         return http.build();
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 
     @Bean
     public HttpFirewall customHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        firewall.setAllowUrlEncodedDoubleSlash(true); // URL 인코딩된 슬래시 허용
-        firewall.setAllowSemicolon(true);             // 필요에 따라 세미콜론도 허용
-        firewall.setAllowBackSlash(true);             // 백슬래시 허용 (선택)
+        firewall.setAllowUrlEncodedDoubleSlash(true);
+        firewall.setAllowSemicolon(true);
+        firewall.setAllowBackSlash(true);
         return firewall;
     }
-
 }
 
 

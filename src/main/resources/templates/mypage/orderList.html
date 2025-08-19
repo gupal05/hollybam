@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>주문 내역 - 홀리밤</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
@@ -1795,6 +1797,27 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script th:inline="javascript">
+    $(document).ready(function() {
+        // 🔥 CSRF 토큰 가져오기
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 🔥 모든 jQuery AJAX에 자동 적용
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    });
+
+    function getCSRFToken() {
+        return document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    }
+
+    function getCSRFHeader() {
+        return document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    }
+
     // 현재 모달에 표시된 운송장 번호를 저장할 변수
     let currentTrackingNumber = null;
 
@@ -2174,10 +2197,14 @@
           <span class="mypage-info-label">배송주소</span>
           <span class="mypage-info-value mypage-address-text">${first.receiverAddr} ${first.receiverAddrDetail || ''}</span>
         </div>
+        ${first.deliveryMemo
+            ? `
         <div class="mypage-info-item mypage-full-width">
           <span class="mypage-info-label">배송 요청사항</span>
           <span class="mypage-info-value">${first.deliveryMemo}</span>
         </div>
+      `
+            : ''}
         ${trackingNumberHtml}
       </div>
     </div>
@@ -2275,7 +2302,8 @@
                 fetch('/review/check-eligibility', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        [getCSRFHeader()]: getCSRFToken()
                     },
                     body: JSON.stringify({
                         orderItemCode: orderItemCode,

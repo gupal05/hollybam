@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>정보 수정 - 홀리밤</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
@@ -524,6 +526,7 @@
         <h1 class="page-title">정보 수정 ✏️</h1>
 
         <form class="edit-form" id="profileEditForm">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <!-- 기본 정보 섹션 -->
             <div class="form-section">
                 <div class="section-title">
@@ -617,6 +620,27 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
+    $(document).ready(function() {
+        // 🔥 CSRF 토큰 가져오기
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 🔥 모든 jQuery AJAX에 자동 적용
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    });
+
+    function getCSRFToken() {
+        return document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    }
+
+    function getCSRFHeader() {
+        return document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    }
+
     $(document).ready(function() {
         // 현재 페이지에 따른 사이드바 메뉴 활성화
         const currentPath = window.location.pathname;

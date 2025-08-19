@@ -276,6 +276,7 @@
         <div class="search-slide-content">
             <div class="search-container">
                 <form class="search-form" action="/search" method="get">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <div class="search-input-group">
                         <input type="text"
                                name="keyword"

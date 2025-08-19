@@ -87,8 +87,6 @@ public class AdminController {
 
                 model.addAttribute("paidCount", adminDashboardService.getPaymentStatusCount("PAID"));
                 model.addAttribute("pendingCount", adminDashboardService.getOrderStatusCount("PENDING"));
-                model.addAttribute("preparingCount", adminDashboardService.getOrderStatusCount("PREPARING"));
-                model.addAttribute("shippedCount", adminDashboardService.getOrderStatusCount("SHIPPED"));
                 model.addAttribute("shippingCount", adminDashboardService.getDeliveryStatusCount("SHIPPING"));
                 model.addAttribute("deliveredCount", adminDashboardService.getDeliveryStatusCount("DELIVERED"));
                 model.addAttribute("returnRequestedCount", adminDashboardService.getPaymentStatusCount("RETURN_REQUESTED"));

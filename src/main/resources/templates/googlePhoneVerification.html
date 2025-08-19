@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <title>구글 로그인 - 휴대폰 본인인증</title>
   <style>
@@ -190,6 +192,7 @@
   </div>
 
   <form name="form_chk" method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     <input type="hidden" name="m" value="service"/>
     <input type="hidden" name="token_version_id" th:value="${token.token_version_id}"/>
     <input type="hidden" name="enc_data" th:value="${token.enc_data}"/>
@@ -213,6 +216,18 @@
 </div>
 
 <script th:inline="javascript">
+  $(document).ready(function() {
+    // 🔥 CSRF 토큰 가져오기
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+
+    // 🔥 모든 jQuery AJAX에 자동 적용
+    $.ajaxSetup({
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader(header, token);
+      }
+    });
+  });
   let authPopup = null;
 
   window.addEventListener("message", function (event) {

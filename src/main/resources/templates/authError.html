@@ -3,6 +3,8 @@
 <head>
   <link rel="icon" href="data:,">
   <meta charset="UTF-8">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
   <title>본인인증 오류</title>
   <style>
     body {

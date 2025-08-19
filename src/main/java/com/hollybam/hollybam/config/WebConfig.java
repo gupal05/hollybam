@@ -22,11 +22,22 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/**")            // 전체 경로 검사
-                .excludePathPatterns("/", "/css/**", "/js/**", "/images/**", "/favicon.ico",
-                        "/verify-cert", "/auth/loginResult", "/order", "/cart", "/admin/**",
-                        "/test/auth/**", "/auth/nice/**", "/test/**", "/nice/**", "/authResult",
-                        "/error", "/authPopupCallbackView", "/authError", "/authPopupCallback", "/auth/login/naver", "/login/naver/callback", "/naver/nice/result", "/naver/complete-registration", "/naver/phone-verification", "/auth/google-login",
-                        "/google/nice/result", "/google/complete-registration", "/google/phone-verification", "/kiki", "/pay", "/pay/**", "robots.txt", "/sitemap.xml"); // 예외 처리
+                .excludePathPatterns(
+                        // 🔥 최소한의 경로만 제외
+                        "/robots.txt",
+                        "/sitemap.xml",
+                        "/",                    // intro 페이지
+                        "/admin",
+                        "/admin/auth/**",
+                        "/loading",             // 로딩 페이지
+                        "/css/**", "/js/**", "/images/**", "/favicon.ico", // 정적 리소스
+                        "/auth/**",             // 인증 관련
+                        "/nice/**",             // NICE 본인인증
+                        "/naver/**",            // 네이버 로그인
+                        "/google/**",           // 구글 로그인
+                        "/error"                // 에러 페이지
+                );
+        // 🚨 중요: /main, /product, /cart, /order, /admin 등은 제외하지 않음!
     }
 
     @Override

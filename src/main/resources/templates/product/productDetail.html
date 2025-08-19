@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title th:text="'홀리밤 - '+${product.productName}">title</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
@@ -2007,6 +2009,26 @@
 </script>
 
 <script>
+    $(document).ready(function() {
+        // 🔥 CSRF 토큰 가져오기
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 🔥 모든 jQuery AJAX에 자동 적용
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    });
+
+    function getCSRFToken() {
+        return document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    }
+
+    function getCSRFHeader() {
+        return document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    }
     let selectedOptions = new Map(); // 선택된 옵션들을 저장
 
     // 스크롤 네비게이션 함수
@@ -2322,6 +2344,13 @@
         form.method = 'POST';
         form.action = '/order/direct-purchase';
 
+        // 🔥 CSRF 토큰을 hidden input으로 추가
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf';  // 또는 getCSRFParameterName()
+        csrfInput.value = getCSRFToken();
+        form.appendChild(csrfInput);
+
         // 상품 코드
         const productInput = document.createElement('input');
         productInput.type = 'hidden';
@@ -2443,7 +2472,15 @@
             params.append('rating', currentRating);
         }
 
-        fetch(`/product/${productId}/reviews?${params}`)
+
+
+        fetch(`/product/${productId}/reviews?${params}`, {
+            // 🔥 헤더에 CSRF 토큰 추가
+            headers: {
+                [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                    document.querySelector('meta[name="_csrf"]').getAttribute('content')
+            }
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('네트워크 응답이 좋지 않습니다');
@@ -2598,6 +2635,8 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                    document.querySelector('meta[name="_csrf"]').getAttribute('content')
             },
             body: `reviewCode=${reviewCode}`
         })

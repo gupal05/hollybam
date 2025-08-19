@@ -1,4 +1,15 @@
 User-agent: *
-Allow: /
+Disallow: /admin/
+Disallow: /cart/
+Disallow: /order/
+Disallow: /product/
+Disallow: /category/
+
+Allow: /$
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /fonts/
+Allow: /sitemap.xml
 
 Sitemap: https://holly-bam.com/sitemap.xml

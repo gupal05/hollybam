@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title th:text="'홀리밤 - ' + ${notice.noticeTitle}">홀리밤 - 공지사항</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
@@ -344,6 +346,19 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
+    $(document).ready(function() {
+        // 🔥 CSRF 토큰 가져오기
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 🔥 모든 jQuery AJAX에 자동 적용
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    });
+
     // 공지사항 삭제 (관리자용)
     function deleteNotice() {
         if (!confirm('정말로 이 공지사항을 삭제하시겠습니까?')) {

@@ -11,6 +11,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/ko.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
+    <!-- 아이콘 폰트 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <!-- 관리자 사이드바 CSS/JS -->
     <link rel="stylesheet" href="/css/adminSidebar.css">
     <script src="/js/adminSidebar.js"></script>
@@ -675,7 +678,7 @@
 
         .order-status-grid {
             display: grid;
-            grid-template-columns: repeat(9, 1fr);
+            grid-template-columns: repeat(8, 1fr);
             gap: 1px;
             background: #e9ecef;
             border: 1px solid #e9ecef;
@@ -714,20 +717,19 @@
             height: 3px;
         }
 
-        /* 정상 처리 단계 (처음 6개) - 푸른색 테두리 */
+        /* 정상 처리 단계 (처음 5개) - 푸른색 테두리 */
         .order-status-item:nth-child(1)::before,
         .order-status-item:nth-child(2)::before,
         .order-status-item:nth-child(3)::before,
         .order-status-item:nth-child(4)::before,
-        .order-status-item:nth-child(5)::before,
-        .order-status-item:nth-child(6)::before {
+        .order-status-item:nth-child(5)::before {
             background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
         }
 
         /* 예외 처리 단계 (나머지 3개) - 붉은색 테두리 */
+        .order-status-item-double:nth-child(6)::before,
         .order-status-item-double:nth-child(7)::before,
-        .order-status-item-double:nth-child(8)::before,
-        .order-status-item-double:nth-child(9)::before {
+        .order-status-item-double:nth-child(8)::before {
             background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
         }
 
@@ -940,269 +942,233 @@
 
 
 <!-- 메인 컨텐츠 -->
-    <div class="main-content">
-        <!-- 헤더 -->
-        <header class="header">
-            <div class="header-actions">
-                <div class="admin-info">
-                    관리자님 환영합니다
-                </div>
-                <button class="logout-btn" onclick="logout()">
-                    Sign Out
-                </button>
+<div class="main-content">
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-actions">
+            <div class="admin-info">
+                관리자님 환영합니다
             </div>
-        </header>
+            <button class="logout-btn" onclick="logout()">
+                Sign Out
+            </button>
+        </div>
+    </header>
 
-        <!-- 컨테이너 -->
-        <div class="container">
-            <!-- 페이지 타이틀 -->
-            <div class="page-title">
-                <h2>Dashboard</h2>
-                <p>성인용품 쇼핑몰 관리 현황</p>
-            </div>
+    <!-- 컨테이너 -->
+    <div class="container">
+        <!-- 페이지 타이틀 -->
+        <div class="page-title">
+            <h2>Dashboard</h2>
+            <p>성인용품 쇼핑몰 관리 현황</p>
+        </div>
 
-            <!-- 통계 카드 -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-title">총 주문</div>
-                    </div>
-                    <div class="stat-value" th:text="${orderCount}" >0</div>
+        <!-- 통계 카드 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">총 주문</div>
                 </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-title">회원 수</div>
-                    </div>
-                    <div class="stat-value" th:text="${memberCount}">0</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-title">상품 수</div>
-                    </div>
-                    <div class="stat-value" th:text="${productCount}">0</div>
-                </div>
+                <div class="stat-value" th:text="${orderCount}" >0</div>
             </div>
 
-            <!-- 주문 상태 모니터링 -->
-            <div class="order-status-section">
-                <div class="order-status-grid">
-                    <div class="order-status-item" data-status="payPending">
-                        <div class="order-status-label">결제 대기</div>
-                        <div class="order-status-count" id="payPendingCount" th:text="${payPendingCount}">0</div>
-                    </div>
-                    <div class="order-status-item" data-status="payment">
-                        <div class="order-status-label">결제 완료</div>
-                        <div class="order-status-count" id="paymentCompleteCount" th:text="${paidCount}">0</div>
-                    </div>
-                    <div class="order-status-item" data-status="order">
-                        <div class="order-status-label">주문 접수</div>
-                        <div class="order-status-count" id="orderReceivedCount" th:text="${pendingCount}">0</div>
-                    </div>
-                    <div class="order-status-item" data-status="shipped">
-                        <div class="order-status-label">출고 완료</div>
-                        <div class="order-status-count" id="shippedCount" th:text="${shippedCount}">0</div>
-                    </div>
-                    <div class="order-status-item" data-status="delivery">
-                        <div class="order-status-label">배송중</div>
-                        <div class="order-status-count" id="deliveringCount" th:text="${shippingCount}">0</div>
-                    </div>
-                    <div class="order-status-item" data-status="delivered">
-                        <div class="order-status-label">배송 완료</div>
-                        <div class="order-status-count" id="deliveredCount" th:text="${deliveredCount}">0</div>
-                    </div>
-                    <div class="order-status-item-double" data-status="return-processing">
-                        <div class="order-status-double-row">
-                            <div class="order-status-label">반품 접수</div>
-                            <div class="order-status-count" id="returnRequestCount" th:text="${returnRequestedCount}">0</div>
-                        </div>
-                        <div class="order-status-double-row">
-                            <div class="order-status-label">반품 처리중</div>
-                            <div class="order-status-count" id="returnProcessingCount" th:text="${returningCount}">0</div>
-                        </div>
-                    </div>
-                    <div class="order-status-item-double" data-status="return-refund">
-                        <div class="order-status-double-row">
-                            <div class="order-status-label">반품 완료</div>
-                            <div class="order-status-count" id="returnCompleteCount" th:text="${refundedCount}">0</div>
-                        </div>
-                        <div class="order-status-double-row">
-                            <div class="order-status-label">환불 대기</div>
-                            <div class="order-status-count" id="refundWaitingCount" th:text="${refundPending}">0</div>
-                        </div>
-                    </div>
-                    <div class="order-status-item-double" data-status="refund-cancel">
-                        <div class="order-status-double-row">
-                            <div class="order-status-label">환불 완료</div>
-                            <div class="order-status-count" id="refundCompleteCount" th:text="${refundedCount}">0</div>
-                        </div>
-                        <div class="order-status-double-row">
-                            <div class="order-status-label">주문 취소</div>
-                            <div class="order-status-count" id="orderCancelCount" th:text="${cancelCount}">0</div>
-                        </div>
-                    </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">회원 수</div>
                 </div>
+                <div class="stat-value" th:text="${memberCount}">0</div>
             </div>
 
-            <!-- 매출 통계 및 차트 영역 -->
-            <div class="sales-analytics">
-                <!-- 기간 선택 및 타이틀 -->
-                <div class="section">
-                    <div class="section-header">
-                        <div class="section-title">매출 분석</div>
-                        <div class="section-actions">
-                            <div class="period-selector">
-                                <button class="btn btn-primary">전체</button>
-                                <button class="btn">최근 7일</button>
-                                <button class="btn">최근 30일</button>
-                                <button class="btn">최근 3개월</button>
-                                <button class="btn">최근 1년</button>
-                                <div class="date-range-selector">
-                                    <input type="date" class="date-input" id="startDate" value="">
-                                    <span class="date-separator">~</span>
-                                    <input type="date" class="date-input" id="endDate" value="">
-                                    <button class="btn btn-apply">조회</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 매출 통계 항목들 -->
-                    <div class="sales-stats-container">
-                        <div class="sales-stats-grid">
-                            <div class="sales-stat-item">
-                                <div class="stat-label">총 결제 금액</div>
-                                <div id="statTotalPayment" class="stat-amount">0원</div>
-                            </div>
-                            <div class="sales-stat-item">
-                                <div class="stat-label">취소/환불 금액</div>
-                                <div id="statCancelAmount" class="stat-amount negative">0원</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 매출 그래프 영역 -->
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-title-section">
-                                <h3>매출 추이</h3>
-                            </div>
-                            <div class="chart-controls">
-                                <div class="chart-tabs">
-                                    <button class="chart-tab active" data-period="daily">최근 30일 (일별)</button>
-                                    <button class="chart-tab" data-period="monthly">최근 2년 (월별)</button>
-                                    <button class="chart-tab" data-period="yearly">전체 기간 (연도별)</button>
-                                </div>
-                                <div class="chart-date-range">
-                                    <input type="date" class="chart-date-input" id="chartStartDate" value="2025-01-01">
-                                    <span class="chart-date-separator">~</span>
-                                    <input type="date" class="chart-date-input" id="chartEndDate" value="2025-01-31">
-                                    <button class="btn btn-chart-apply">조회</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chart-placeholder">
-                            <div class="chart-content">
-                                <canvas id="salesChart" width="800" height="300"></canvas>
-                                <div class="chart-mock">
-                                    <!-- 임시 차트 표시 -->
-                                    <div class="chart-bars">
-                                        <div class="chart-bar" style="height: 60%"></div>
-                                        <div class="chart-bar" style="height: 80%"></div>
-                                        <div class="chart-bar" style="height: 45%"></div>
-                                        <div class="chart-bar" style="height: 90%"></div>
-                                        <div class="chart-bar" style="height: 75%"></div>
-                                        <div class="chart-bar" style="height: 65%"></div>
-                                        <div class="chart-bar" style="height: 85%"></div>
-                                    </div>
-                                    <div class="chart-overlay">
-                                        <p>매출 그래프 영역</p>
-                                        <small>실제 데이터가 연동되면 여기에 차트가 표시됩니다</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">상품 수</div>
                 </div>
-            </div>
-
-            <!-- 네비게이션 탭 -->
-            <div class="nav-tabs">
-                <a href="#" class="nav-tab active">최근 주문</a>
-                <a href="#" class="nav-tab">회원 관리</a>
-            </div>
-
-            <!-- 최근 주문 테이블 -->
-            <div class="table-container">
-                <div class="section-header">
-                    <div class="section-title">최근 주문 내역</div>
-                    <div class="section-actions">
-                        <a href="#" class="btn">전체 보기</a>
-                        <a href="#" class="btn btn-primary">주문 관리</a>
-                    </div>
-                </div>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>주문번호</th>
-                        <th>고객명</th>
-                        <th>상품</th>
-                        <th>금액</th>
-                        <th>상태</th>
-                        <th>주문일시</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="orderList : ${orderList}">
-                        <td th:text="${orderList.orderId}">o</td>
-                        <td th:text="${orderList.ordererName}">김**</td>
-                        <td th:text="${orderList.productName}">성인용품 A</td>
-                        <td th:text="|${#numbers.formatInteger(orderList.finalAmount, 0, 'COMMA')}|+'원'">₩35,000</td>
-                        <td th:if="${orderList.status == 'PENDING'}"><span class="status-badge pending">결제대기</span></td>
-                        <td th:if="${orderList.status == 'PAID'}"><span class="status-badge active">결제완료</span></td>
-                        <td th:if="${orderList.status == 'SHIPPING'}"><span class="status-badge pending">배송중</span></td>
-                        <td th:if="${orderList.status == 'DELIVERED'}"><span class="status-badge active">배송완료</span></td>
-                        <td th:if="${orderList.status == 'CANCELLED'}"><span class="status-badge cancelled">취소/환불</span></td>
-                        <td th:text="${orderList.createAt}">2025-01-15 14:30</td>
-                    </tr>
-<!--                    <tr>-->
-<!--                        <td>#ORD-2025-002</td>-->
-<!--                        <td>이**</td>-->
-<!--                        <td>성인용품 B</td>-->
-<!--                        <td>₩52,000</td>-->
-<!--                        <td><span class="status-badge pending">배송중</span></td>-->
-<!--                        <td>2025-01-15 13:45</td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td>#ORD-2025-003</td>-->
-<!--                        <td>박**</td>-->
-<!--                        <td>성인용품 C</td>-->
-<!--                        <td>₩28,000</td>-->
-<!--                        <td><span class="status-badge cancelled">취소</span></td>-->
-<!--                        <td>2025-01-15 12:20</td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td>#ORD-2025-004</td>-->
-<!--                        <td>정**</td>-->
-<!--                        <td>성인용품 D</td>-->
-<!--                        <td>₩46,000</td>-->
-<!--                        <td><span class="status-badge active">배송완료</span></td>-->
-<!--                        <td>2025-01-15 11:15</td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td>#ORD-2025-005</td>-->
-<!--                        <td>최**</td>-->
-<!--                        <td>성인용품 E</td>-->
-<!--                        <td>₩39,000</td>-->
-<!--                        <td><span class="status-badge pending">준비중</span></td>-->
-<!--                        <td>2025-01-15 10:30</td>-->
-<!--                    </tr>-->
-                    </tbody>
-                </table>
+                <div class="stat-value" th:text="${productCount}">0</div>
             </div>
         </div>
+
+        <!-- 주문 상태 모니터링 -->
+        <div class="order-status-section">
+            <div class="order-status-grid">
+                <div class="order-status-item" data-status="payPending">
+                    <div class="order-status-label">결제 대기</div>
+                    <div class="order-status-count" id="payPendingCount" th:text="${payPendingCount}">0</div>
+                </div>
+                <div class="order-status-item" data-status="payment">
+                    <div class="order-status-label">결제 완료</div>
+                    <div class="order-status-count" id="paymentCompleteCount" th:text="${paidCount}">0</div>
+                </div>
+                <div class="order-status-item" data-status="order">
+                    <div class="order-status-label">주문 접수</div>
+                    <div class="order-status-count" id="orderReceivedCount" th:text="${pendingCount}">0</div>
+                </div>
+                <div class="order-status-item" data-status="delivery">
+                    <div class="order-status-label">배송중</div>
+                    <div class="order-status-count" id="deliveringCount" th:text="${shippingCount}">0</div>
+                </div>
+                <div class="order-status-item" data-status="delivered">
+                    <div class="order-status-label">배송 완료</div>
+                    <div class="order-status-count" id="deliveredCount" th:text="${deliveredCount}">0</div>
+                </div>
+                <div class="order-status-item-double" data-status="return-processing">
+                    <div class="order-status-double-row">
+                        <div class="order-status-label">반품 접수</div>
+                        <div class="order-status-count" id="returnRequestCount" th:text="${returnRequestedCount}">0</div>
+                    </div>
+                    <div class="order-status-double-row">
+                        <div class="order-status-label">반품 처리중</div>
+                        <div class="order-status-count" id="returnProcessingCount" th:text="${returningCount}">0</div>
+                    </div>
+                </div>
+                <div class="order-status-item-double" data-status="return-refund">
+                    <div class="order-status-double-row">
+                        <div class="order-status-label">반품 완료</div>
+                        <div class="order-status-count" id="returnCompleteCount" th:text="${refundedCount}">0</div>
+                    </div>
+                    <div class="order-status-double-row">
+                        <div class="order-status-label">환불 대기</div>
+                        <div class="order-status-count" id="refundWaitingCount" th:text="${refundPending}">0</div>
+                    </div>
+                </div>
+                <div class="order-status-item-double" data-status="refund-cancel">
+                    <div class="order-status-double-row">
+                        <div class="order-status-label">환불 완료</div>
+                        <div class="order-status-count" id="refundCompleteCount" th:text="${refundedCount}">0</div>
+                    </div>
+                    <div class="order-status-double-row">
+                        <div class="order-status-label">주문 취소</div>
+                        <div class="order-status-count" id="orderCancelCount" th:text="${cancelCount}">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 매출 통계 및 차트 영역 -->
+        <div class="sales-analytics">
+            <!-- 기간 선택 및 타이틀 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">매출 분석</div>
+                    <div class="section-actions">
+                        <div class="period-selector">
+                            <button class="btn btn-primary">전체</button>
+                            <button class="btn">최근 7일</button>
+                            <button class="btn">최근 30일</button>
+                            <button class="btn">최근 3개월</button>
+                            <button class="btn">최근 1년</button>
+                            <div class="date-range-selector">
+                                <input type="date" class="date-input" id="startDate" value="">
+                                <span class="date-separator">~</span>
+                                <input type="date" class="date-input" id="endDate" value="">
+                                <button class="btn btn-apply">조회</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 매출 통계 항목들 -->
+                <div class="sales-stats-container">
+                    <div class="sales-stats-grid">
+                        <div class="sales-stat-item">
+                            <div class="stat-label">총 결제 금액</div>
+                            <div id="statTotalPayment" class="stat-amount">0원</div>
+                        </div>
+                        <div class="sales-stat-item">
+                            <div class="stat-label">취소/환불 금액</div>
+                            <div id="statCancelAmount" class="stat-amount negative">0원</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 매출 그래프 영역 -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title-section">
+                            <h3>매출 추이</h3>
+                        </div>
+                        <div class="chart-controls">
+                            <div class="chart-tabs">
+                                <button class="chart-tab active" data-period="daily">최근 30일 (일별)</button>
+                                <button class="chart-tab" data-period="monthly">최근 2년 (월별)</button>
+                                <button class="chart-tab" data-period="yearly">전체 기간 (연도별)</button>
+                            </div>
+                            <div class="chart-date-range">
+                                <input type="date" class="chart-date-input" id="chartStartDate" value="2025-01-01">
+                                <span class="chart-date-separator">~</span>
+                                <input type="date" class="chart-date-input" id="chartEndDate" value="2025-01-31">
+                                <button class="btn btn-chart-apply">조회</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <div class="chart-content">
+                            <canvas id="salesChart" width="800" height="300"></canvas>
+                            <div class="chart-mock">
+                                <!-- 임시 차트 표시 -->
+                                <div class="chart-bars">
+                                    <div class="chart-bar" style="height: 60%"></div>
+                                    <div class="chart-bar" style="height: 80%"></div>
+                                    <div class="chart-bar" style="height: 45%"></div>
+                                    <div class="chart-bar" style="height: 90%"></div>
+                                    <div class="chart-bar" style="height: 75%"></div>
+                                    <div class="chart-bar" style="height: 65%"></div>
+                                    <div class="chart-bar" style="height: 85%"></div>
+                                </div>
+                                <div class="chart-overlay">
+                                    <p>매출 그래프 영역</p>
+                                    <small>실제 데이터가 연동되면 여기에 차트가 표시됩니다</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 네비게이션 탭 -->
+        <div class="nav-tabs">
+            <a href="#" class="nav-tab active">최근 주문</a>
+            <a href="#" class="nav-tab">회원 관리</a>
+        </div>
+
+        <!-- 최근 주문 테이블 -->
+        <div class="table-container">
+            <div class="section-header">
+                <div class="section-title">최근 주문 내역</div>
+                <div class="section-actions">
+                    <a href="#" class="btn">전체 보기</a>
+                    <a href="#" class="btn btn-primary">주문 관리</a>
+                </div>
+            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>주문번호</th>
+                    <th>고객명</th>
+                    <th>상품</th>
+                    <th>금액</th>
+                    <th>상태</th>
+                    <th>주문일시</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="orderList : ${orderList}">
+                    <td th:text="${orderList.orderId}">o</td>
+                    <td th:text="${orderList.ordererName}">김**</td>
+                    <td th:text="${orderList.productName}">성인용품 A</td>
+                    <td th:text="|${#numbers.formatInteger(orderList.finalAmount, 0, 'COMMA')}|+'원'">₩35,000</td>
+                    <td th:if="${orderList.status == 'PENDING'}"><span class="status-badge pending">결제대기</span></td>
+                    <td th:if="${orderList.status == 'PAID'}"><span class="status-badge active">결제완료</span></td>
+                    <td th:if="${orderList.status == 'SHIPPING'}"><span class="status-badge pending">배송중</span></td>
+                    <td th:if="${orderList.status == 'DELIVERED'}"><span class="status-badge active">배송완료</span></td>
+                    <td th:if="${orderList.status == 'CANCELLED'}"><span class="status-badge cancelled">취소/환불</span></td>
+                    <td th:text="${orderList.createAt}">2025-01-15 14:30</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
 </div>
 
 <script>

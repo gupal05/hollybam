@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>관리자 로그인 - Hollybam</title>
     <style>
         * {
@@ -225,6 +227,7 @@
     </div>
 
     <form class="login-form" id="loginForm">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="form-group">
             <label for="username">Username</label>
             <input
@@ -310,11 +313,23 @@
         loginData.append('memberId', formData.get('username'));
         loginData.append('memberPw', formData.get('password'));
 
+
+        function getCSRFToken() {
+            return document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        }
+
+        function getCSRFHeader() {
+            return document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        }
+
         try {
-            // 실제 로그인 API 호출 (form-data 방식)
+            // 🔥 CSRF 토큰을 headers에 추가
             const response = await fetch('/admin/auth/login', {
                 method: 'POST',
-                body: loginData  // Content-Type 헤더 제거 (자동으로 설정됨)
+                headers: {
+                    [getCSRFHeader()]: getCSRFToken()  // 🔥 CSRF 토큰 헤더 추가
+                },
+                body: loginData  // FormData는 Content-Type 자동 설정
             });
 
             if (response.ok) {
@@ -341,7 +356,7 @@
             loading.style.display = 'none';
 
             // 비밀번호 필드 초기화
-            const passwordInput = document.getElementById('password'); // passwordInput 변수가 정의되지 않았으므로 추가
+            const passwordInput = document.getElementById('password');
             passwordInput.value = '';
             passwordInput.focus();
         }

@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>HOLLYBAM - 주문 관리</title>
     <!-- 외부 라이브러리 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
@@ -1175,9 +1177,6 @@
             <button class="status-tab" th:classappend="${currentStatus == 'orderPending'} ? 'active' : ''" data-status="orderPending">
                 주문 접수 <span class="count" th:text="${orderCount.orderPending}">45</span>
             </button>
-            <button class="status-tab" th:classappend="${currentStatus == 'shipped'} ? 'active' : ''" data-status="shipped">
-                출고 완료 <span class="count" th:text="${orderCount.shipped}">31</span>
-            </button>
             <button class="status-tab" th:classappend="${currentStatus == 'shipping'} ? 'active' : ''" data-status="shipping">
                 배송중 <span class="count" th:text="${orderCount.shipping}">23</span>
             </button>
@@ -1307,15 +1306,13 @@
                                       th:classappend="${order.status == 'PAYPENDING' ? 'pay-pending' :
                       (order.status == 'PAID' ? 'paid' :
                       (order.status == 'ORDERPENDING' ? 'confirmed' :
-                      (order.status == 'SHIPPED' ? 'shipped' :
                       (order.status == 'SHIPPING' ? 'shipping' :
-                      (order.status == 'DELIVERED' ? 'delivered' : '' )))))}"
+                      (order.status == 'DELIVERED' ? 'delivered' : '' ))))}"
                                       th:text="${order.status == 'PAYPENDING' ? '결제대기' :
                 (order.status == 'PAID' ? '결제완료' :
                 (order.status == 'ORDERPENDING' ? '주문접수' :
-                (order.status == 'SHIPPED' ? '출고완료' :
                 (order.status == 'SHIPPING' ? '배송중' :
-                (order.status == 'DELIVERED' ? '배송완료' : '알수없음')))))}">
+                (order.status == 'DELIVERED' ? '배송완료' : '알수없음'))))}">
   결제완료
 </span>
                         </td>
@@ -1328,12 +1325,11 @@
                                 </button>
                                 <select class="status-select" th:data-order-id="${order.orderId}" onchange="changeOrderStatus(this)">
                                     <option value="">상태변경</option>
-                                    <option value="PAY_PENDING">결제대기</option>
-                                    <option value="PAID">결제완료</option>
-                                    <option value="CONFIRMED">주문접수</option>
-                                    <option value="SHIPPED">출고완료</option>
-                                    <option value="SHIPPING">배송중</option>
-                                    <option value="DELIVERED">배송완료</option>
+                                    <option value="PAYPENDING" th:selected="${order.status == 'PAYPENDING'}">결제대기</option>
+                                    <option value="PAID" th:selected="${order.status == 'PAID'}">결제완료</option>
+                                    <option value="ORDERPENDING" th:selected="${order.status == 'ORDERPENDING'}">주문접수</option>
+                                    <option value="SHIPPING" th:selected="${order.status == 'SHIPPING'}">배송중</option>
+                                    <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">배송완료</option>
                                 </select>
                             </div>
                         </td>
@@ -1347,8 +1343,9 @@
                 <span class="bulk-label">선택된 주문:</span>
                 <select class="filter-select" id="bulkStatusChange">
                     <option value="">상태 일괄 변경</option>
-                    <option value="CONFIRMED">주문접수로 변경</option>
-                    <option value="SHIPPED">출고완료로 변경</option>
+                    <option value="PAYPENDING">결제대기</option>
+                    <option value="PAID">결제완료</option>
+                    <option value="ORDERPENDING">주문접수로 변경</option>
                     <option value="SHIPPING">배송중으로 변경</option>
                     <option value="DELIVERED">배송완료로 변경</option>
                 </select>
@@ -1398,6 +1395,19 @@
 </div>
 
 <script>
+    $(document).ready(function() {
+        // 🔥 CSRF 토큰 가져오기
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 🔥 모든 jQuery AJAX에 자동 적용
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         // Flatpickr 한국어 로케일 설정
         flatpickr.localize(flatpickr.l10ns.ko);
@@ -1551,8 +1561,8 @@
                         <div class="timeline-line"><div class="timeline-progress" style="width: ${progressWidth}%"></div></div>
                         ${statusSteps.map((step, idx) => `
                             <div class="timeline-step ${idx < currentStepIndex ? 'completed' : idx === currentStepIndex ? 'current' : ''}">
-                                <div class="timeline-icon">${['⏳','💳','✅','📦','🚚','🏠'][idx]}</div>
-                                <div class="timeline-label">${['결제대기','결제완료','주문접수','출고완료','배송중','배송완료'][idx]}</div>
+                                <div class="timeline-icon">${['⏳','💳','✅','🚚','🏠'][idx]}</div>
+                                <div class="timeline-label">${['결제대기','결제완료','주문접수','배송중','배송완료'][idx]}</div>
                             </div>
                         `).join('')}
                     </div>
@@ -1591,7 +1601,9 @@
                     <div class="payment-summary">
                         <div class="summary-row"><span class="summary-label">상품금액</span><span class="summary-value">${formatKRW(data.orderDetailData.totalAmount)}</span></div>
                         <div class="summary-row"><span class="summary-label">배송비</span><span class="summary-value">${formatKRW(data.orderDetailData.deliveryFee)}</span></div>
-                        <div class="summary-row"><span class="summary-label">할인금액</span><span class="summary-value">-${formatKRW(data.orderDetailData.discountAmount)}</span></div>
+                        <div class="summary-row"><span class="summary-label">쿠폰 할인 : (${data.discountInfo.couponId})</span><span class="summary-value">-${formatKRW(data.discountInfo.couponDiscountAmount)}</span></div>
+                        <div class="summary-row"><span class="summary-label">할인코드 할인 : (${data.discountInfo.discountId})</span><span class="summary-value">-${formatKRW(data.discountInfo.discountAmount)}</span></div>
+                        <div class="summary-row"><span class="summary-label">적립금</span><span class="summary-value">-${formatKRW(data.discountInfo.usedPointAmount)}</span></div>
                         <div class="summary-row"><span class="summary-label">최종 결제금액</span><span class="summary-value">${formatKRW(data.orderDetailData.finalAmount)}</span></div>
                     </div>
                 </div>
@@ -1649,8 +1661,20 @@
         if (!newStatus) return;
 
         if (confirm(`주문 ${orderId}의 상태를 변경하시겠습니까?`)) {
-            console.log(`주문 상태 변경: ${orderId} -> ${newStatus}`);
-            alert('주문 상태가 변경되었습니다.');
+            $.ajax({
+                url: `/admin/order/status/${orderId}`,
+                type: 'POST',
+                data: {
+                    status: newStatus
+                },
+                success: function(data) {
+                    alert('주문 상태가 변경되었습니다.');
+                    location.reload();
+                },
+                error: function() {
+                    document.getElementById('orderDetailContent').innerHTML = '<p>주문 정보를 불러올 수 없습니다.</p>';
+                }
+            });
         } else {
             selectElement.value = '';
         }
@@ -1683,7 +1707,22 @@
 
         if (confirm(`선택된 ${selectedOrders.length}개 주문의 상태를 변경하시겠습니까?`)) {
             console.log('일괄 상태 변경:', selectedOrders, newStatus);
-            alert('선택된 주문의 상태가 변경되었습니다.');
+            $.ajax({
+                url: '/admin/order/status/batch',
+                type: 'POST',
+                traditional: true,              // ★ 중요: 배열 전송 시 꼭!
+                data: {
+                    orderCodes: selectedOrders,   // ['245','244','243'] → orderCodes=245&orderCodes=244&orderCodes=243
+                    status: newStatus
+                },
+                success: function(data) {
+                    alert('주문 상태가 변경되었습니다.');
+                    location.reload();
+                },
+                error: function() {
+                    document.getElementById('orderDetailContent').innerHTML = '<p>주문 정보를 불러올 수 없습니다.</p>';
+                }
+            });
         }
     }
 

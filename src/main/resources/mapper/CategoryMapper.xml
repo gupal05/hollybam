@@ -49,5 +49,16 @@
             c.cate_code = #{cateCode}
     </select>
 
+    <select id="isSpecialSale" parameterType="int" resultType="int">
+        select count(*)
+        from special_sale
+        where product_code = #{productCode} and active = 1
+    </select>
+
+    <select id="getSpecialSalePrice" parameterType="int" resultType="int">
+        select special_sale_price
+        from special_sale
+        where product_code = #{productCode}
+    </select>
 
 </mapper>

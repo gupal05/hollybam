@@ -4,6 +4,8 @@
     <link rel="icon" href="data:,">
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>홀리밤</title>
     <!-- 설명 (검색 결과에 노출) -->
     <meta name="description" content="홀리밤은 프리미엄 성인용품을 빠르고 안전하게 배송합니다.">
@@ -25,6 +27,9 @@
     <script type="text/javascript" th:src="@{/js/news.js}"></script>
     <!-- Font Awesome (하트 아이콘용) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <meta name="robots" content="noindex,follow">
+    <link rel="canonical" href="https://holly-bam.com/">
 
     <!-- 위시리스트 기능 -->
     <script th:src="@{/js/wishlist.js}"></script>
@@ -51,6 +56,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center center;
             position: absolute;
             top: 0;
             left: 0;
@@ -755,6 +761,11 @@
                 height: 400px;
             }
 
+            .slide img {
+                object-fit: cover;
+                object-position: center center;
+            }
+
             .slide-nav {
                 width: 55px;
                 height: 110px;
@@ -851,6 +862,11 @@
 
             .slide {
                 height: 350px;
+            }
+
+            .slide img {
+                object-fit: cover;
+                object-position: center center;
             }
 
             .dots {
@@ -955,6 +971,11 @@
                 height: 320px;
             }
 
+            .slide img {
+                object-fit: cover;
+                object-position: center center;
+            }
+
             .slide-nav {
                 width: 50px;
                 height: 100px;
@@ -1001,11 +1022,17 @@
         /* 모바일 세로 (768px 이하) */
         @media (max-width: 768px) {
             .sale-badge-container {
-                min-width: 55px;
+                flex-shrink: 0;
+                margin-left: auto;
             }
 
             .price-sale-container {
-                gap: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 8px;
+                margin-bottom: 5px;
+                min-height: 24px;
             }
 
             .monthly-sale-badge {
@@ -1132,6 +1159,11 @@
 
             .slide {
                 height: 280px;
+            }
+
+            .slide img {
+                object-fit: cover;
+                object-position: center center;
             }
 
             .slide-nav {
@@ -1365,6 +1397,11 @@
                 height: 250px;
             }
 
+            .slide img {
+                object-fit: cover;
+                object-position: center center;
+            }
+
             .card-product-title {
                 font-size: 11px;
             }
@@ -1555,6 +1592,11 @@
 
             .slide {
                 height: 220px;
+            }
+
+            .slide img {
+                object-fit: cover;
+                object-position: center center;
             }
 
             .product-row {
@@ -1801,6 +1843,11 @@
                 height: 200px;
             }
 
+            .slide img {
+                object-fit: cover;
+                object-position: center center;
+            }
+
             .review-card {
                 flex: 0 0 calc(50% - 5px) !important;
                 width: calc(50% - 5px) !important;
@@ -1930,6 +1977,15 @@
             /* 홀리밤 소식 - iPhone 14 Pro */
             .hollybam-news-section-title {
                 font-size: 16px;
+            }
+
+            .slide {
+                height: 190px;
+            }
+
+            .slide img {
+                object-fit: cover;
+                object-position: center center;
             }
         }
 
@@ -2637,29 +2693,39 @@
             <div class="reviews-slider-container">
                 <div class="reviews-slider" id="reviewsSlider">
                     <!-- 베스트 리뷰 동적 렌더링 -->
-                    <div class="review-card" th:each="review : ${bestReviews}" th:data-review-code="${review.reviewCode}">
+                    <div class="review-card">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
-                            <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${review.imageDto.imageUrl}}"
+                            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/KakaoTalk_20250724_170354656.jpg"
                                  alt="상품 이미지" class="product-thumb">
                             <!-- 상품명 -->
-                            <div class="product-name" th:text="${review.productDto.productName}">상품명</div>
+                            <div class="product-name">홀리밤 무드등 래빗 진동 흡입기</div>
                         </div>
 
                         <div class="review-content">
                             <!-- 별점 -->
                             <div class="rating-stars">
-                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                                    <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : 'empty'" viewBox="0 0 24 24">
+                                    <svg class="star" viewBox="0 0 24 24">
                                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                     </svg>
-                                </th:block>
-                                <span class="rating-number" th:text="${review.rating + '.0'}">5.0</span>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span class="rating-number">5.0</span>
                             </div>
 
                             <!-- 리뷰 내용 -->
-                            <div class="review-text" th:text="${review.content}">
-                                리뷰 내용이 여기에 표시됩니다.
+                            <div class="review-text">
+                                무드등 기능도 있고 디자인도 예쁘고 기능도 너무 좋아서 너무 만족스러웠어요!
                             </div>
                         </div>
 
@@ -2667,39 +2733,513 @@
                             <div>
                                 <div class="review-author-info">
                                     <!-- 작성자명 (이미 마스킹 처리됨) -->
-                                    <span class="review-author" th:text="${review.writerName}">작성자명</span>
+                                    <span class="review-author">이**</span>
                                     <!-- 나이대와 성별 -->
                                     <span class="review-age">
-                                <span th:text="${review.writerAge}">20대</span>
-                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '남자'}">남성</span>
-                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '여자'}">여성</span>
-                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '남자'}">남성</span>
-                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '여자'}">여성</span>
+                                <span>20대</span>
+                                <span>여성</span>
                             </span>
                                 </div>
                                 <!-- 작성일 -->
-                                <div class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy년 MM월 dd일')}">2025년 05월 1일</div>
+                                <div class="review-date">2025년 07월 24일</div>
                             </div>
 
                             <!-- ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 -->
-                            <div class="review-likes"
-                                 th:data-review-code="${review.reviewCode}"
-                                 th:classappend="${review.isLiked} ? 'liked' : ''">
+                            <div class="review-likes">
                                 <svg class="like-icon" viewBox="0 0 24 24">
                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                 </svg>
-                                <span th:text="${review.likeCount}">0</span>
+                                <span>31</span>
                             </div>
                         </div>
                     </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <!-- 상품 이미지 -->
+                            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/KakaoTalk_20250724_170354656.jpg"
+                                 alt="상품 이미지" class="product-thumb">
+                            <!-- 상품명 -->
+                            <div class="product-name">홀리밤 무드등 래빗 진동 흡입기</div>
+                        </div>
 
-                    <!-- 리뷰가 없는 경우 -->
-                    <div th:if="${bestReviews == null or bestReviews.isEmpty()}" class="review-card">
-                        <div class="no-reviews-message">
-                            <p>아직 베스트 리뷰가 없습니다.</p>
-                            <p>첫 리뷰를 작성해보세요!</p>
+                        <div class="review-content">
+                            <!-- 별점 -->
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span class="rating-number">5.0</span>
+                            </div>
+
+                            <!-- 리뷰 내용 -->
+                            <div class="review-text">
+                                무드등 기능도 있고 디자인도 예쁘고 기능도 너무 좋아서 너무 만족스러웠어요!
+                            </div>
+                        </div>
+
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <!-- 작성자명 (이미 마스킹 처리됨) -->
+                                    <span class="review-author">이**</span>
+                                    <!-- 나이대와 성별 -->
+                                    <span class="review-age">
+                                <span>20대</span>
+                                <span>여성</span>
+                            </span>
+                                </div>
+                                <!-- 작성일 -->
+                                <div class="review-date">2025년 07월 24일</div>
+                            </div>
+
+                            <!-- ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 -->
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span>31</span>
+                            </div>
                         </div>
                     </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <!-- 상품 이미지 -->
+                            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/스크린샷 2025-07-25 140134.png"
+                                 alt="상품 이미지" class="product-thumb">
+                            <!-- 상품명 -->
+                            <div class="product-name">홀리밤 낼름 오르가즘 진동기</div>
+                        </div>
+
+                        <div class="review-content">
+                            <!-- 별점 -->
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span class="rating-number">5.0</span>
+                            </div>
+
+                            <!-- 리뷰 내용 -->
+                            <div class="review-text">
+                                촉감도 좋고 색상도 고급스러워서 굉장히 만족스러워요
+                            </div>
+                        </div>
+
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <!-- 작성자명 (이미 마스킹 처리됨) -->
+                                    <span class="review-author">최**</span>
+                                    <!-- 나이대와 성별 -->
+                                    <span class="review-age">
+                                <span>30대</span>
+                                <span>여성</span>
+                            </span>
+                                </div>
+                                <!-- 작성일 -->
+                                <div class="review-date">2025년 07월 20일</div>
+                            </div>
+
+                            <!-- ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 -->
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span>27</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <!-- 상품 이미지 -->
+                            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/SM패키지_title.png"
+                                 alt="상품 이미지" class="product-thumb">
+                            <!-- 상품명 -->
+                            <div class="product-name">홀리밤 SM 20종 패키지(입문용)</div>
+                        </div>
+
+                        <div class="review-content">
+                            <!-- 별점 -->
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span class="rating-number">5.0</span>
+                            </div>
+
+                            <!-- 리뷰 내용 -->
+                            <div class="review-text">
+                                입문용인데도 구성 빵빵해서 깜짝 놀람ㅋㅋ 그냥 서로 눈 마주치고 웃으면서 쓰다 보니… 벌써 다음 단계 탐나는 중
+                            </div>
+                        </div>
+
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <!-- 작성자명 (이미 마스킹 처리됨) -->
+                                    <span class="review-author">박**</span>
+                                    <!-- 나이대와 성별 -->
+                                    <span class="review-age">
+                                <span>20대</span>
+                                <span>여성</span>
+                            </span>
+                                </div>
+                                <!-- 작성일 -->
+                                <div class="review-date">2025년 08월 01일</div>
+                            </div>
+
+                            <!-- ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 -->
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span>22</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <!-- 상품 이미지 -->
+                            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/KakaoTalk_20250724_170144490.jpg"
+                                 alt="상품 이미지" class="product-thumb">
+                            <!-- 상품명 -->
+                            <div class="product-name">홀리밤 애니멀 진동 딜도</div>
+                        </div>
+
+                        <div class="review-content">
+                            <!-- 별점 -->
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span class="rating-number">5.0</span>
+                            </div>
+
+                            <!-- 리뷰 내용 -->
+                            <div class="review-text">
+                                디자인이 너무 귀여워서 그냥 인형 같아요 😂 성인용품 같지 않아서 방에 두어도 전혀 민망하지 않고, 성능은 생각보다 훨씬 좋아서 만족합니다
+                            </div>
+                        </div>
+
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <!-- 작성자명 (이미 마스킹 처리됨) -->
+                                    <span class="review-author">김**</span>
+                                    <!-- 나이대와 성별 -->
+                                    <span class="review-age">
+                                <span>30대</span>
+                                <span>여성</span>
+                            </span>
+                                </div>
+                                <!-- 작성일 -->
+                                <div class="review-date">2025년 08월 03일</div>
+                            </div>
+
+                            <!-- ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 -->
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span>20</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <!-- 상품 이미지 -->
+                            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/스크린샷 2025-07-25 113551.png"
+                                 alt="상품 이미지" class="product-thumb">
+                            <!-- 상품명 -->
+                            <div class="product-name">홀리밤 피스톤 머신(10종 구성)</div>
+                        </div>
+
+                        <div class="review-content">
+                            <!-- 별점 -->
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span class="rating-number">5.0</span>
+                            </div>
+
+                            <!-- 리뷰 내용 -->
+                            <div class="review-text">
+                                크기 보고 살짝 겁먹었는데… 진짜 무지막지하네요 😂
+                                전자동이라 그냥 가만히 있어도 앞뒤로 착착 움직여주는 게… 와, 이래서 다들 추천하는구나 싶었어요
+                            </div>
+                        </div>
+
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <!-- 작성자명 (이미 마스킹 처리됨) -->
+                                    <span class="review-author">이**</span>
+                                    <!-- 나이대와 성별 -->
+                                    <span class="review-age">
+                                <span>30대</span>
+                                <span>여성</span>
+                            </span>
+                                </div>
+                                <!-- 작성일 -->
+                                <div class="review-date">2025년 07월 24일</div>
+                            </div>
+
+                            <!-- ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 -->
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span>11</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <!-- 상품 이미지 -->
+                            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/d35bc0a2ae1e6599bb8c083c0b725d8c.png"
+                                 alt="상품 이미지" class="product-thumb">
+                            <!-- 상품명 -->
+                            <div class="product-name">홀리밤 저소음 페어리 진동기</div>
+                        </div>
+
+                        <div class="review-content">
+                            <!-- 별점 -->
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span class="rating-number">5.0</span>
+                            </div>
+
+                            <!-- 리뷰 내용 -->
+                            <div class="review-text">
+                                사이즈 딱 적당하고 진동도 부드러운데 힘은 꽉 잡혀있어요
+                                저소음이라 몰래 써도 티 안 나고, 디자인도 깔끔해서 그냥 마사지기 같아요
+                            </div>
+                        </div>
+
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <!-- 작성자명 (이미 마스킹 처리됨) -->
+                                    <span class="review-author">박**</span>
+                                    <!-- 나이대와 성별 -->
+                                    <span class="review-age">
+                                <span>20대</span>
+                                <span>여성</span>
+                            </span>
+                                </div>
+                                <!-- 작성일 -->
+                                <div class="review-date">2025년 07월 25일</div>
+                            </div>
+
+                            <!-- ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 -->
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span>11</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <!-- 상품 이미지 -->
+                            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/KakaoTalk_20250724_170354656.jpg"
+                                 alt="상품 이미지" class="product-thumb">
+                            <!-- 상품명 -->
+                            <div class="product-name">홀리밤 무드등 래빗 진동 흡입기</div>
+                        </div>
+
+                        <div class="review-content">
+                            <!-- 별점 -->
+                            <div class="rating-stars">
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span class="rating-number">5.0</span>
+                            </div>
+
+                            <!-- 리뷰 내용 -->
+                            <div class="review-text">
+                                진짜 무드등인 줄 알고 두면 아무도 모를 듯…
+                                토끼 귀가 은근 치명적이라 그냥 귀여운 척하다가 훅 들어와요
+                            </div>
+                        </div>
+
+                        <div class="review-footer">
+                            <div>
+                                <div class="review-author-info">
+                                    <!-- 작성자명 (이미 마스킹 처리됨) -->
+                                    <span class="review-author">손**</span>
+                                    <!-- 나이대와 성별 -->
+                                    <span class="review-age">
+                                <span>20대</span>
+                                <span>여성</span>
+                            </span>
+                                </div>
+                                <!-- 작성일 -->
+                                <div class="review-date">2025년 08월 10일</div>
+                            </div>
+
+                            <!-- ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 -->
+                            <div class="review-likes">
+                                <svg class="like-icon" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span>8</span>
+                            </div>
+                        </div>
+                    </div>
+<!--                    리뷰 있으면 주석 해제 -->
+<!--                    <div class="review-card" th:each="review : ${bestReviews}" th:data-review-code="${review.reviewCode}">-->
+<!--                        <div class="review-header">-->
+<!--                            &lt;!&ndash; 상품 이미지 &ndash;&gt;-->
+<!--                            <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${review.imageDto.imageUrl}}"-->
+<!--                                 alt="상품 이미지" class="product-thumb">-->
+<!--                            &lt;!&ndash; 상품명 &ndash;&gt;-->
+<!--                            <div class="product-name" th:text="${review.productDto.productName}">상품명</div>-->
+<!--                        </div>-->
+
+<!--                        <div class="review-content">-->
+<!--                            &lt;!&ndash; 별점 &ndash;&gt;-->
+<!--                            <div class="rating-stars">-->
+<!--                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">-->
+<!--                                    <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : 'empty'" viewBox="0 0 24 24">-->
+<!--                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>-->
+<!--                                    </svg>-->
+<!--                                </th:block>-->
+<!--                                <span class="rating-number" th:text="${review.rating + '.0'}">5.0</span>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; 리뷰 내용 &ndash;&gt;-->
+<!--                            <div class="review-text" th:text="${review.content}">-->
+<!--                                리뷰 내용이 여기에 표시됩니다.-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+<!--                        <div class="review-footer">-->
+<!--                            <div>-->
+<!--                                <div class="review-author-info">-->
+<!--                                    &lt;!&ndash; 작성자명 (이미 마스킹 처리됨) &ndash;&gt;-->
+<!--                                    <span class="review-author" th:text="${review.writerName}">작성자명</span>-->
+<!--                                    &lt;!&ndash; 나이대와 성별 &ndash;&gt;-->
+<!--                                    <span class="review-age">-->
+<!--                                <span th:text="${review.writerAge}">20대</span>-->
+<!--                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '남자'}">남성</span>-->
+<!--                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '여자'}">여성</span>-->
+<!--                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '남자'}">남성</span>-->
+<!--                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '여자'}">여성</span>-->
+<!--                            </span>-->
+<!--                                </div>-->
+<!--                                &lt;!&ndash; 작성일 &ndash;&gt;-->
+<!--                                <div class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy년 MM월 dd일')}">2025년 05월 1일</div>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 &ndash;&gt;-->
+<!--                            <div class="review-likes"-->
+<!--                                 th:data-review-code="${review.reviewCode}"-->
+<!--                                 th:classappend="${review.isLiked} ? 'liked' : ''">-->
+<!--                                <svg class="like-icon" viewBox="0 0 24 24">-->
+<!--                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>-->
+<!--                                </svg>-->
+<!--                                <span th:text="${review.likeCount}">0</span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; 리뷰가 없는 경우 &ndash;&gt;-->
+<!--                    <div th:if="${bestReviews == null or bestReviews.isEmpty()}" class="review-card">-->
+<!--                        <div class="no-reviews-message">-->
+<!--                            <p>아직 베스트 리뷰가 없습니다.</p>-->
+<!--                            <p>첫 리뷰를 작성해보세요!</p>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -2864,6 +3404,19 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
+    $(document).ready(function() {
+        // 🔥 CSRF 토큰 가져오기
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 🔥 모든 jQuery AJAX에 자동 적용
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    });
+
     // 슬라이드 기능 (터치 스와이프 기능 추가)
     let current = 0;
     const images = $('.slide img');
@@ -3276,74 +3829,75 @@
         initBestReviewSlider();
     });
 
-    $(document).ready(function() {
-        // ⭐ 베스트 리뷰 좋아요 버튼 클릭 이벤트
-        $(document).on('click', '.best-reviews-section .review-likes', function(e) {
-            e.stopPropagation();
-
-            const $this = $(this);
-            const reviewCode = $this.data('review-code');
-
-            // 이미 처리 중이면 무시
-            if ($this.hasClass('processing')) return;
-
-            $this.addClass('processing');
-
-            $.ajax({
-                url: '/review/api/like',
-                method: 'POST',
-                data: {
-                    reviewCode: reviewCode
-                },
-                success: function(response) {
-                    $this.removeClass('processing');
-
-                    if (response.success) {
-                        const $likeCount = $this.find('span');
-                        const currentCount = parseInt($likeCount.text());
-
-                        if (response.isLiked) {
-                            // 좋아요 추가
-                            $this.addClass('liked');
-                            $likeCount.text(currentCount + 1);
-                        } else {
-                            // 좋아요 취소
-                            $this.removeClass('liked');
-                            $likeCount.text(Math.max(0, currentCount - 1));
-                        }
-                    } else {
-                        if (response.message) {
-                            alert(response.message);
-                        } else {
-                            alert('좋아요 처리 중 오류가 발생했습니다.');
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    $this.removeClass('processing');
-
-                    if (xhr.status === 401) {
-                        alert('로그인이 필요합니다.');
-                    } else {
-                        alert('좋아요 처리 중 오류가 발생했습니다.');
-                    }
-                }
-            });
-        });
-
-        // 베스트 리뷰 카드 클릭 시 리뷰 상세 페이지로 이동 (좋아요 버튼 제외)
-        $(document).on('click', '.best-reviews-section .review-card', function(e) {
-            // 좋아요 버튼 클릭 시에는 상세 페이지로 이동하지 않음
-            if ($(e.target).closest('.review-likes').length > 0) {
-                return;
-            }
-
-            const reviewCode = $(this).data('review-code');
-            if (reviewCode) {
-                window.location.href = `/review/detail/${reviewCode}`;
-            }
-        });
-    });
+    // 리뷰 있으면 주석 해제
+    // $(document).ready(function() {
+    //     // ⭐ 베스트 리뷰 좋아요 버튼 클릭 이벤트
+    //     $(document).on('click', '.best-reviews-section .review-likes', function(e) {
+    //         e.stopPropagation();
+    //
+    //         const $this = $(this);
+    //         const reviewCode = $this.data('review-code');
+    //
+    //         // 이미 처리 중이면 무시
+    //         if ($this.hasClass('processing')) return;
+    //
+    //         $this.addClass('processing');
+    //
+    //         $.ajax({
+    //             url: '/review/api/like',
+    //             method: 'POST',
+    //             data: {
+    //                 reviewCode: reviewCode
+    //             },
+    //             success: function(response) {
+    //                 $this.removeClass('processing');
+    //
+    //                 if (response.success) {
+    //                     const $likeCount = $this.find('span');
+    //                     const currentCount = parseInt($likeCount.text());
+    //
+    //                     if (response.isLiked) {
+    //                         // 좋아요 추가
+    //                         $this.addClass('liked');
+    //                         $likeCount.text(currentCount + 1);
+    //                     } else {
+    //                         // 좋아요 취소
+    //                         $this.removeClass('liked');
+    //                         $likeCount.text(Math.max(0, currentCount - 1));
+    //                     }
+    //                 } else {
+    //                     if (response.message) {
+    //                         alert(response.message);
+    //                     } else {
+    //                         alert('좋아요 처리 중 오류가 발생했습니다.');
+    //                     }
+    //                 }
+    //             },
+    //             error: function(xhr, status, error) {
+    //                 $this.removeClass('processing');
+    //
+    //                 if (xhr.status === 401) {
+    //                     alert('로그인이 필요합니다.');
+    //                 } else {
+    //                     alert('좋아요 처리 중 오류가 발생했습니다.');
+    //                 }
+    //             }
+    //         });
+    //     });
+    //
+    //     // 베스트 리뷰 카드 클릭 시 리뷰 상세 페이지로 이동 (좋아요 버튼 제외)
+    //     $(document).on('click', '.best-reviews-section .review-card', function(e) {
+    //         // 좋아요 버튼 클릭 시에는 상세 페이지로 이동하지 않음
+    //         if ($(e.target).closest('.review-likes').length > 0) {
+    //             return;
+    //         }
+    //
+    //         const reviewCode = $(this).data('review-code');
+    //         if (reviewCode) {
+    //             window.location.href = `/review/detail/${reviewCode}`;
+    //         }
+    //     });
+    // });
 
     // 당일배송 문구 관리 JavaScript
     $(document).ready(function() {

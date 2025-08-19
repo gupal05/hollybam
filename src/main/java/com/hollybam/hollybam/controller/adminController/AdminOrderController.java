@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +27,28 @@ public class AdminOrderController {
             Model model) {
 
         Map<String, Object> orderCount = adminOrderService.getOrderCounts();
-        int totalCount = Integer.parseInt(orderCount.get("total").toString());
+        int totalCount = 0;
 
-        List<Map<String, Object>> orderList = adminOrderService.selectOrderSummaryWithStatus();
+        List<Map<String, Object>> orderList = new ArrayList<Map<String, Object>>();
+        if(status.equals("ALL")){
+            orderList = adminOrderService.selectOrderSummaryWithStatus();
+            totalCount = adminOrderService.getTotalOrderCount();
+        } else if(status.equals("payPending")){
+            orderList = adminOrderService.getOrderListPending();
+            totalCount = adminOrderService.getPendingOrderCount();
+        } else if(status.equals("paid")){
+            orderList = adminOrderService.getOrderListPaid();
+            totalCount = adminOrderService.getPaidOrderCount();
+        } else if(status.equals("orderPending")){
+            orderList = adminOrderService.getOrderListOrderPending();
+            totalCount = adminOrderService.getOrderPendingOrderCount();
+        } else if(status.equals("shipping")){
+            orderList = adminOrderService.getOrderListShipping();
+            totalCount = adminOrderService.getShippingOrderCount();
+        } else if(status.equals("delivered")){
+            orderList = adminOrderService.getOrderListDelivered();
+            totalCount = adminOrderService.getDeliveryOrderCount();
+        }
         for(int i=0; i<orderList.size();i++){
             String addr = (String)orderList.get(i).get("receiverAddr");
             String detail =  (String)orderList.get(i).get("receiverAddrDetail");
@@ -41,7 +61,7 @@ public class AdminOrderController {
                 orderList.get(i).put("productName", productName+" 외 "+(productTypeCount-1)+"개");
             }
         }
-
+        System.out.println(status);
         System.out.println(orderList);
 
         // 페이지네이션 계산
@@ -68,7 +88,89 @@ public class AdminOrderController {
         int orderCode = (int)orderDetailData.get("orderCode");
         List<Map<String, Object>> orderDetailProductInfo = adminOrderService.selectOrderItemsByOrderCode(orderCode);
         model.addAttribute("orderDetailData",  orderDetailData);
+        model.addAttribute("discountInfo", adminOrderService.getDiscountType(orderCode));
+        System.out.println(adminOrderService.getDiscountType(orderCode));
         model.addAttribute("orderDetailProductInfo", orderDetailProductInfo);
         return ResponseEntity.ok().body(model);
+    }
+
+    @PostMapping("/status/{orderId}")
+    @ResponseBody
+    public ResponseEntity<?> updateOrderStatus(@PathVariable String orderId, @RequestParam String status) {
+        System.out.println(orderId);
+        int orderCode = adminOrderService.getOrderCodeByOrderId(orderId);
+        System.out.println(status);
+        List<Integer> orderCodes = new ArrayList<>();
+        orderCodes.add(orderCode);
+        if(status.equals("PAYPENDING")) {
+            adminOrderService.updatePayPendingStatus(orderCodes);
+            if(adminOrderService.getDeliveryStatusCount(orderCode) > 0){
+                adminOrderService.updateDeliveryStatusNull(orderCodes);
+            }
+            System.out.println("결제대기");
+        } else if(status.equals("PAID")) {
+            adminOrderService.updatePaidStatus(orderCodes);
+            if(adminOrderService.getDeliveryStatusCount(orderCode) > 0){
+                adminOrderService.updateDeliveryStatusNull(orderCodes);
+            }
+            System.out.println("결제완료");
+        } else if(status.equals("ORDERPENDING")){
+            adminOrderService.updateOrderPendingStatus(orderCodes);
+            if(adminOrderService.getDeliveryStatusCount(orderCode) > 0){
+                adminOrderService.updateDeliveryStatusNull(orderCodes);
+            }
+            System.out.println("주문접수");
+        } else if(status.equals("SHIPPING")){
+            adminOrderService.updateShippingStatus(orderCodes);
+            System.out.println("배송중");
+        } else if(status.equals("DELIVERED")){
+            adminOrderService.updateDeliveredStatus(orderCodes);
+            System.out.println("배송완료");
+        }
+        return ResponseEntity.ok(true);
+    }
+
+    @PostMapping("/status/batch")
+    @ResponseBody
+    public ResponseEntity<?> updateStatusBatch(@RequestParam String status, @RequestParam List<Integer> orderCodes) {
+        System.out.println(orderCodes);
+        if(status.equals("PAYPENDING")) {
+            adminOrderService.updatePayPendingStatus(orderCodes);
+            for (int orderCode : orderCodes) {
+                List<Integer> code = new ArrayList<>();
+                code.add(orderCode);
+                if (adminOrderService.getDeliveryStatusCount(orderCode) > 0) {
+                    adminOrderService.updateDeliveryStatusNull(code);
+                }
+            }
+            System.out.println("결제대기");
+        } else if(status.equals("PAID")) {
+            adminOrderService.updatePaidStatus(orderCodes);
+            for (int orderCode : orderCodes) {
+                List<Integer> code = new ArrayList<>();
+                code.add(orderCode);
+                if (adminOrderService.getDeliveryStatusCount(orderCode) > 0) {
+                    adminOrderService.updateDeliveryStatusNull(code);
+                }
+            }
+            System.out.println("결제완료");
+        } else if(status.equals("ORDERPENDING")){
+            adminOrderService.updateOrderPendingStatus(orderCodes);
+            for (int orderCode : orderCodes) {
+                List<Integer> code = new ArrayList<>();
+                code.add(orderCode);
+                if (adminOrderService.getDeliveryStatusCount(orderCode) > 0) {
+                    adminOrderService.updateDeliveryStatusNull(code);
+                }
+            }
+            System.out.println("주문접수");
+        } else if(status.equals("SHIPPING")){
+            adminOrderService.updateShippingStatus(orderCodes);
+            System.out.println("배송중");
+        } else if(status.equals("DELIVERED")){
+            adminOrderService.updateDeliveredStatus(orderCodes);
+            System.out.println("배송완료");
+        }
+        return ResponseEntity.ok(true);
     }
 }

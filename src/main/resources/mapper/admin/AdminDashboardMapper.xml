@@ -495,7 +495,7 @@
     <select id="getPaymentStatusCount" resultType="int" parameterType="String">
         select count(*)
         from hollybam.orders
-        where payment_status = #{status}
+        where payment_status = #{status} and order_status IS NULL
     </select>
     <select id="getOrderStatusCount" resultType="int" parameterType="String">
         select count(*)

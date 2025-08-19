@@ -104,6 +104,9 @@ function loadCurrentPoints() {
     $.ajax({
         url: '/order/api/points',
         type: 'GET',
+        header: {
+            [getCSRFHeader()]: getCSRFToken()
+        },
         success: function(response) {
             if (response.success) {
                 currentPoints = response.currentPoints;
@@ -201,6 +204,9 @@ function applyPoints() {
         url: '/order/api/points/validate',
         type: 'POST',
         contentType: 'application/json',
+        header: {
+            [getCSRFHeader()]: getCSRFToken()
+        },
         data: JSON.stringify({ usePoints: inputPoints }),
         success: function(response) {
             if (response.success && response.available) {
@@ -387,6 +393,9 @@ function applyDiscountCode(code) {
             discountId: code.trim(),
             orderAmount: originalAmount
         }),
+        header: {
+            [getCSRFHeader()]: getCSRFToken()
+        },
         success: function(response) {
             setDiscountButtonLoading(false);
 

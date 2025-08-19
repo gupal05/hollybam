@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>주문 결제 - 홀리밤</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
@@ -1365,6 +1367,7 @@
     <div class="checkout-layout">
         <!-- 왼쪽: 주문자 정보 -->
         <form id="paymentForm" class="order-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <!-- 주문자 정보 -->
             <div class="form-section">
                 <h2 class="section-title">주문자 정보</h2>
@@ -1793,6 +1796,27 @@
 <!-- 다음 우편번호 서비스 -->
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script th:inline="javascript">
+    $(document).ready(function() {
+        // 🔥 CSRF 토큰 가져오기
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 🔥 모든 jQuery AJAX에 자동 적용
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    });
+
+    function getCSRFToken() {
+        return document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    }
+
+    function getCSRFHeader() {
+        return document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    }
+
     // 서버에서 전달받은 데이터
     var isDirect = /*[[${isDirect}]]*/ false;
     const paymentInfo = /*[[${paymentInfo}]]*/ {};
@@ -3048,7 +3072,8 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                [getCSRFHeader()]: getCSRFToken()
             },
             body: JSON.stringify(orderData)
         })
@@ -3098,7 +3123,8 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                [getCSRFHeader()]: getCSRFToken()
             },
             body: JSON.stringify(orderData)
         })
@@ -3294,7 +3320,8 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                [getCSRFHeader()]: getCSRFToken()
             },
             body: JSON.stringify(orderData)
         })
@@ -3498,7 +3525,8 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                [getCSRFHeader()]: getCSRFToken()
             },
             body: JSON.stringify({
                 orderId: orderToDelete.orderId,

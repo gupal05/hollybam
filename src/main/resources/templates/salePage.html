@@ -4,6 +4,8 @@
     <link rel="icon" href="data:,">
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Hollybam - 세일 상품</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
@@ -39,6 +41,12 @@
             background-repeat: no-repeat;
         }
 
+        /* 모바일에서 헤더 높이만큼 배너를 아래로 밀어내기 */
+        @media (max-width: 900px) {
+            .sale-banner {
+            }
+        }
+
         .sale-banner-content {
             position: relative;
             z-index: 2;
@@ -72,6 +80,7 @@
         .filter-left {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 20px;
             flex-wrap: wrap;
         }
@@ -96,6 +105,14 @@
             font-size: 14px;
             background: white;
             min-width: 120px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+            padding-right: 32px;
         }
 
         .results-info {
@@ -246,6 +263,20 @@
             min-height: 24px;
         }
 
+        .price-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 웹 환경에서는 regular_price를 price-main과 같은 줄에 표시 */
+        @media (min-width: 901px) {
+            .card-product-price {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
         .sale-perc {
             background: #EE386D;
             color: white;
@@ -383,7 +414,7 @@
             z-index: 2;
         }
 
-        .wishlist-button {
+        .wishlist-button, .wishlist-btn {
             background: none;
             border: none;
             cursor: pointer;
@@ -393,10 +424,10 @@
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
-        .wishlist-button:hover {
+        .wishlist-button:hover, .wishlist-btn:hover {
             background: #EE386D;
         }
-        .wishlist-button:hover .heart-empty {
+        .wishlist-button:hover .heart-empty, .wishlist-btn:hover .heart-empty {
             fill: white;
         }
 
@@ -551,7 +582,7 @@
             }
 
             .sale-banner {
-                height: 250px;
+                height: 350px;
             }
 
             .card-product-info {
@@ -582,17 +613,20 @@
             .filter-container {
                 padding: 0 20px;
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center;
+                justify-content: center;
                 gap: 15px;
             }
 
             .filter-left {
                 width: 100%;
-                justify-content: space-between;
+                justify-content: center;
             }
 
             .sale-banner {
-                height: 220px;
+                height: 300px;
+                background-size: cover;
+                background-position: center center;
             }
 
             .card-product-info {
@@ -611,13 +645,20 @@
 
         /* 모바일 가로 (900px 이하) */
         @media (max-width: 900px) {
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Roboto, sans-serif;
+                -webkit-tap-highlight-color: transparent;
+            }
+
             .content {
-                padding: 40px 18px 0;
+                padding: 24px 16px 0;
             }
 
             .section-title {
                 font-size: 20px;
                 margin-bottom: 20px;
+                font-weight: 700;
+                letter-spacing: -0.5px;
             }
 
             .product-row {
@@ -625,135 +666,510 @@
                 gap: 16px;
             }
 
+            .v4-product {
+                background: #ffffff;
+                border-radius: 16px;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .v4-product:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            }
+
+            .card-product-widget {
+                padding: 12px;
+            }
+
+            .card-product-img {
+                border-radius: 12px;
+                margin-bottom: 12px;
+            }
+
+            .card-product-title {
+                font-size: 14px;
+                font-weight: 600;
+                line-height: 1.3;
+                margin-bottom: 8px;
+                letter-spacing: -0.2px;
+            }
+
+            /* 가격과 재고 정보를 세로로 배치 */
+            .price-urgency-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+
+            .card-product-price {
+                width: 100%;
+            }
+
+            .urgency-container {
+                width: 100%;
+                min-width: auto;
+                justify-content: flex-start;
+            }
+
+            .sale_price {
+                font-size: 16px;
+                font-weight: 700;
+            }
+
+            .card-product-description {
+                font-size: 12px;
+                font-weight: 400;
+                line-height: 1.4;
+            }
+
+            .product_review_container {
+                font-size: 11px;
+                gap: 6px;
+                font-weight: 500;
+            }
+
+            .filter-container {
+                padding: 0 16px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .filter-left {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0;
+                width: 100%;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+                min-width: auto;
+                padding: 12px 16px;
+                padding-right: 40px;
+                border-radius: 12px;
+                font-weight: 500;
+                font-size: 15px;
+                transition: all 0.2s ease;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 12px center;
+                background-size: 18px;
+                border: 2px solid #e0e0e0;
+            }
+
+            .filter-select:focus {
+                outline: none;
+                border-color: #EE386D;
+                box-shadow: 0 0 0 3px rgba(238, 56, 109, 0.1);
+            }
+
+            .sale-banner {
+                background-position: center center;
+                background-size: cover;
+                height: 250px;
+            }
+
+            .sale-banner-content {
+                padding-top: 0;
+            }
+
+            .card-product-info {
+                min-height: 150px;
+                gap: 8px;
+            }
+
+            .stock-info, .time-info {
+                font-size: 11px;
+                padding: 6px 10px;
+                border-radius: 8px;
+                font-weight: 600;
+            }
+
+            .delivery-message {
+                border-radius: 10px;
+                padding: 8px 12px;
+                font-size: 11px;
+                font-weight: 500;
+            }
+        }
+
+        /* 모바일 세로 (768px 이하) */
+        @media (max-width: 768px) {
+            * {
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .content {
+                padding: 20px 14px 0;
+            }
+
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 18px;
+                text-align: center;
+                font-weight: 700;
+                letter-spacing: -0.3px;
+            }
+
+            .section-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+                width: 32px;
+                height: 3px;
+                background: linear-gradient(90deg, #EE386D, #FF6B9D);
+            }
+
+            .filter-section {
+                padding: 16px 0;
+                background: #ffffff;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            }
+
+            .filter-container {
+                padding: 0 14px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .filter-select {
+                width: 100%;
+                min-width: auto;
+                padding: 14px 16px;
+                padding-right: 44px;
+                border-radius: 12px;
+                font-size: 15px;
+                font-weight: 500;
+                border: 2px solid #e0e0e0;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 14px center;
+                background-size: 20px;
+            }
+
+            .filter-select:focus {
+                outline: none;
+                border-color: #EE386D;
+                box-shadow: 0 0 0 4px rgba(238, 56, 109, 0.1);
+            }
+
+            .sale-banner {
+                background-position: center center;
+                background-size: cover;
+                height: 220px;
+            }
+
+            .sale-banner-content {
+                padding-top: 0;
+            }
+
+            .v4-product {
+                background: #ffffff;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                overflow: hidden;
+            }
+
+            .v4-product:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            }
+
+            .card-product-widget {
+                padding: 12px;
+            }
+
+            .card-product-img {
+                border-radius: 12px;
+                margin-bottom: 12px;
+            }
+
+            .card-product-title {
+                font-size: 14px;
+                font-weight: 600;
+                line-height: 1.3;
+                margin-bottom: 8px;
+                color: #1a1a1a;
+            }
+
+            .card-product-info {
+                min-height: 140px;
+                gap: 8px;
+            }
+
+            /* 가격과 재고 정보를 세로 배치로 변경 */
+            .price-urgency-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                margin-bottom: 8px;
+            }
+
+            .card-product-price {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .price-main {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .urgency-container {
+                width: 100%;
+                min-width: auto;
+                justify-content: flex-start;
+            }
+
+            .sale_price {
+                font-size: 16px;
+                font-weight: 700;
+                color: #1a1a1a;
+            }
+
+            .sale-perc {
+                background: linear-gradient(135deg, #EE386D, #FF6B9D);
+                font-size: 11px;
+                padding: 4px 8px;
+                border-radius: 10px;
+                font-weight: 700;
+                box-shadow: 0 2px 8px rgba(238, 56, 109, 0.2);
+            }
+
+            .regular_price {
+                font-size: 12px;
+                color: #999;
+                font-weight: 500;
+            }
+
+            .card-product-description {
+                font-size: 12px;
+                margin-bottom: 8px;
+                -webkit-line-clamp: 2;
+                color: #666;
+                font-weight: 400;
+            }
+
+            .card-product-top-text {
+                background: linear-gradient(135deg, #EE386D, #FF6B9D);
+                font-size: 11px;
+                padding: 6px 10px;
+                border-radius: 16px;
+                top: 12px;
+                left: 12px;
+                box-shadow: 0 2px 8px rgba(238, 56, 109, 0.3);
+            }
+
+            .wishlist-wrap {
+                top: 12px;
+                right: 12px;
+            }
+
+            .wishlist-button {
+                padding: 8px;
+                background: rgba(255,255,255,0.95);
+                backdrop-filter: blur(20px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .wishlist-button:hover {
+                transform: scale(1.1);
+            }
+
+            .heart-empty {
+                width: 18px;
+                height: 18px;
+                fill: #666;
+            }
+
+            .stock-info, .time-info {
+                font-size: 11px;
+                padding: 6px 10px;
+                border-radius: 8px;
+                font-weight: 600;
+            }
+
+            .product_review_container {
+                font-size: 11px;
+                gap: 8px;
+                font-weight: 500;
+                color: #666;
+            }
+
+            .heart-icon, .star-icon {
+                width: 11px;
+                height: 11px;
+            }
+
+            .delivery-message {
+                padding: 8px 12px;
+                margin: 8px 0;
+                border-radius: 12px;
+                font-size: 11px;
+                background: linear-gradient(135deg, #f8fff9, #e8f5e9);
+                border-left: 3px solid #28a745;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .delivery-message:hover {
+                background: linear-gradient(135deg, #e8f5e9, #d4edda);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 16px rgba(40, 167, 69, 0.15);
+            }
+
+            .delivery-icon {
+                font-size: 11px;
+            }
+
+            .delivery-text {
+                font-size: 11px;
+                font-weight: 600;
+            }
+
+            .pagination a,
+            .pagination span {
+                width: 44px;
+                height: 44px;
+                font-size: 14px;
+                border-radius: 12px;
+                font-weight: 600;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .pagination a:hover {
+                transform: translateY(-2px);
+            }
+        }
+
+        /* 모바일 세로 소형 (600px 이하) - iPhone 14 Pro Max, iPhone 14 Pro 등 */
+        @media (max-width: 600px) {
+            .content {
+                padding: 18px 12px 0;
+            }
+
+            .section-title {
+                font-size: 17px;
+                margin-bottom: 16px;
+            }
+
+            .section-title::after {
+                width: 28px;
+            }
+
+            .product-row {
+                gap: 12px;
+            }
+
+            .filter-container {
+                padding: 0 12px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .filter-select {
+                padding: 15px 18px;
+                padding-right: 46px;
+                font-size: 16px;
+                border-radius: 14px;
+                background-position: right 16px center;
+                background-size: 22px;
+            }
+
+            .sale-banner {
+                background-position: center center;
+                background-size: cover;
+                height: 200px;
+            }
+
+            .sale-banner-content {
+                padding-top: 0;
+            }
+
+            .v4-product {
+                border-radius: 14px;
+            }
+
+            .card-product-widget {
+                padding: 10px;
+            }
+
+            .card-product-img {
+                border-radius: 10px;
+                margin-bottom: 10px;
+            }
+
             .card-product-title {
                 font-size: 13px;
+                line-height: 1.2;
+            }
+
+            .card-product-info {
+                min-height: 130px;
+                gap: 6px;
+            }
+
+            /* 가격과 재고 정보 간격 조정 */
+            .price-urgency-container {
+                gap: 8px;
             }
 
             .sale_price {
                 font-size: 15px;
             }
 
-            .card-product-description {
-                font-size: 11px;
-            }
-
-            .product_review_container {
-                font-size: 10px;
-                gap: 6px;
-            }
-
-            .filter-container {
-                padding: 0 18px;
-            }
-
-            .filter-left {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            .sale-banner {
-                height: 200px;
-            }
-
-            .card-product-info {
-                min-height: 140px;
-            }
-
-            .stock-info, .time-info {
-                font-size: 10px;
-                padding: 3px 6px;
-            }
-
-            .urgency-container {
-                min-width: 60px;
-            }
-
-            .price-urgency-container {
-                gap: 8px;
-            }
-        }
-
-        /* 모바일 세로 (768px 이하) */
-        @media (max-width: 768px) {
-            .content {
-                padding: 35px 16px 0;
-            }
-
-            .section-title {
-                font-size: 19px;
-                margin-bottom: 18px;
-                text-align: center;
-            }
-
-            .section-title::after {
-                left: 50%;
-                transform: translateX(-50%);
-                width: 35px;
-            }
-
-            .filter-section {
-                padding: 15px 0;
-            }
-
-            .filter-container {
-                padding: 0 16px;
-            }
-
-            .filter-group {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-
-            .filter-select {
-                width: 100%;
-                min-width: auto;
-            }
-
-            .sale-banner {
-                height: 180px;
-            }
-
-            .card-product-title {
-                font-size: 12px;
-            }
-
-            .sale_price {
-                font-size: 14px;
-            }
-
-            .card-product-price {
-                gap: 6px;
-            }
-
-            .sale-perc {
-                font-size: 11px;
-                padding: 2px 5px;
-            }
-
             .regular_price {
                 font-size: 11px;
             }
 
-            .card-product-description {
+            .sale-perc {
                 font-size: 10px;
-                -webkit-line-clamp: 2;
+                padding: 3px 6px;
+                border-radius: 8px;
             }
 
-            .card-product-img {
-                border-radius: 16px;
+            .card-product-description {
+                font-size: 11px;
+                -webkit-line-clamp: 1;
+                margin-bottom: 6px;
             }
 
             .card-product-top-text {
-                font-size: 11px;
+                font-size: 10px;
                 padding: 4px 8px;
                 border-radius: 12px;
+                top: 10px;
+                left: 10px;
             }
 
             .wishlist-wrap {
-                top: 8px;
-                right: 8px;
+                top: 10px;
+                right: 10px;
             }
 
             .wishlist-button {
@@ -761,215 +1177,143 @@
             }
 
             .heart-empty {
-                width: 18px;
-                height: 18px;
-            }
-
-            .pagination a,
-            .pagination span {
-                width: 36px;
-                height: 36px;
-                font-size: 13px;
-            }
-
-            .card-product-info {
-                min-height: 130px;
+                width: 16px;
+                height: 16px;
             }
 
             .stock-info, .time-info {
-                font-size: 9px;
-                padding: 3px 5px;
-                gap: 4px;
-            }
-
-            .urgency-container {
-                min-width: 55px;
+                font-size: 10px;
+                padding: 5px 8px;
+                min-width: fit-content;
             }
 
             .product_review_container {
-                font-size: 9px;
-                gap: 5px;
-            }
-
-            .price-urgency-container {
+                font-size: 10px;
                 gap: 6px;
             }
-        }
 
-        /* 모바일 세로 소형 (600px 이하) */
-        @media (max-width: 600px) {
-            .content {
-                padding: 30px 14px 0;
+            .heart-icon, .star-icon {
+                width: 10px;
+                height: 10px;
             }
 
-            .section-title {
-                font-size: 18px;
-                margin-bottom: 16px;
+            .delivery-message {
+                padding: 6px 10px;
+                margin: 6px 0;
+                font-size: 10px;
+                border-radius: 10px;
             }
 
-            .section-title::after {
-                width: 30px;
-            }
-
-            .product-row {
-                gap: 14px;
-            }
-
-            .card-product-title {
-                font-size: 11px;
-            }
-
-            .sale_price {
+            .pagination a,
+            .pagination span {
+                width: 40px;
+                height: 40px;
                 font-size: 13px;
-            }
-
-            .regular_price {
-                font-size: 10px;
-            }
-
-            .card-product-price {
-                gap: 4px;
-                margin-bottom: 3px;
-            }
-
-            .sale-perc {
-                font-size: 10px;
-                padding: 1px 4px;
-            }
-
-            .card-product-description {
-                font-size: 9px;
-                -webkit-line-clamp: 1;
-            }
-
-            .product_review_container {
-                font-size: 9px;
-                min-height: 14px;
-            }
-
-            .heart-icon, .star-icon {
-                width: 10px;
-                height: 10px;
-            }
-
-            .sale-banner {
-                height: 160px;
-            }
-
-            .filter-section {
-                padding: 12px 0;
-            }
-
-            .filter-container {
-                padding: 0 14px;
-            }
-
-            .pagination a,
-            .pagination span {
-                width: 32px;
-                height: 32px;
-                font-size: 12px;
-            }
-
-            .card-product-info {
-                min-height: 120px;
-            }
-
-            .stock-info, .time-info {
-                font-size: 8px;
-            }
-
-            .product_review_container {
-                font-size: 9px;
-                min-height: 14px;
-                gap: 4px;
-            }
-
-            .heart-icon, .star-icon {
-                width: 10px;
-                height: 10px;
-            }
-
-            .sale-banner {
-                height: 160px;
-            }
-
-            .filter-section {
-                padding: 12px 0;
-            }
-
-            .filter-container {
-                padding: 0 14px;
-            }
-
-            .pagination a,
-            .pagination span {
-                width: 32px;
-                height: 32px;
-                font-size: 12px;
-            }
-
-            .card-product-info {
-                min-height: 120px;
-            }
-
-            .stock-info, .time-info {
-                font-size: 8px;
-            }
-
-            .urgency-container {
-                min-width: 50px;
-            }
-
-            .price-urgency-container {
-                gap: 4px;
+                border-radius: 10px;
             }
         }
 
-        /* 모바일 세로 극소형 (480px 이하) */
+        /* 모바일 세로 극소형 (480px 이하) - iPhone SE, 작은 안드로이드 등 */
         @media (max-width: 480px) {
             .content {
-                padding: 25px 12px 0;
+                padding: 16px 10px 0;
             }
 
             .section-title {
-                font-size: 17px;
+                font-size: 16px;
                 margin-bottom: 14px;
             }
 
-            .section-title::after {
-                width: 25px;
-                height: 2px;
+            .product-row {
+                gap: 10px;
             }
 
-            .product-row {
-                gap: 12px;
+            .filter-container {
+                padding: 0 10px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .filter-select {
+                padding: 16px 20px;
+                padding-right: 48px;
+                font-size: 16px;
+                border-radius: 16px;
+                background-position: right 18px center;
+                background-size: 24px;
+            }
+
+            .sale-banner {
+                background-position: center center;
+                background-size: cover;
+                height: 180px;
+            }
+
+            .sale-banner-content {
+                padding-top: 0;
+            }
+
+            .v4-product {
+                border-radius: 12px;
+            }
+
+            .card-product-widget {
+                padding: 8px;
+            }
+
+            .card-product-img {
+                border-radius: 8px;
+                margin-bottom: 8px;
             }
 
             .card-product-title {
-                font-size: 10px;
-            }
-
-            .card-product-info {
-                min-height: 110px;
-                gap: 2px;
-            }
-
-            .sale_price {
                 font-size: 12px;
             }
 
+            .card-product-info {
+                min-height: 120px;
+                gap: 5px;
+            }
+
+            .sale_price {
+                font-size: 14px;
+            }
+
             .regular_price {
-                font-size: 9px;
+                font-size: 10px;
             }
 
             .card-product-description {
-                font-size: 8px;
+                font-size: 10px;
+            }
+
+            .card-product-top-text {
+                font-size: 9px;
+                padding: 3px 6px;
+                border-radius: 10px;
+                top: 8px;
+                left: 8px;
+            }
+
+            .wishlist-wrap {
+                top: 8px;
+                right: 8px;
+            }
+
+            .heart-empty {
+                width: 14px;
+                height: 14px;
+            }
+
+            .stock-info, .time-info {
+                font-size: 9px;
+                padding: 4px 6px;
             }
 
             .product_review_container {
-                font-size: 8px;
-                min-height: 12px;
+                font-size: 9px;
+                gap: 4px;
             }
 
             .heart-icon, .star-icon {
@@ -977,101 +1321,90 @@
                 height: 9px;
             }
 
-            .sale-banner {
-                height: 140px;
-            }
-
-            .card-product-img {
-                border-radius: 14px;
-                margin-bottom: 8px;
-            }
-
-            .card-product-top-text {
+            .delivery-message {
+                padding: 5px 8px;
+                margin: 5px 0;
                 font-size: 9px;
-                padding: 3px 6px;
-                border-radius: 10px;
-                top: 6px;
-                left: 6px;
-            }
-
-            .wishlist-wrap {
-                top: 6px;
-                right: 6px;
-            }
-
-            .wishlist-button {
-                padding: 4px;
-            }
-
-            .heart-empty {
-                width: 16px;
-                height: 16px;
+                border-radius: 8px;
             }
 
             .pagination a,
             .pagination span {
-                width: 28px;
-                height: 28px;
-                font-size: 11px;
+                width: 36px;
+                height: 36px;
+                font-size: 12px;
+                border-radius: 8px;
+            }
+        }
+
+        /* 360px 이하에서도 배너 margin-top 추가 */
+        @media (max-width: 360px) {
+            .content {
+                padding: 14px 8px 0;
+            }
+
+            .section-title {
+                font-size: 15px;
+                margin-bottom: 12px;
+            }
+
+            .product-row {
+                gap: 8px;
+            }
+
+            .filter-container {
+                padding: 0 8px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .filter-select {
+                padding: 18px 22px;
+                padding-right: 50px;
+                font-size: 16px;
+                border-radius: 18px;
+                background-position: right 20px center;
+                background-size: 26px;
+            }
+
+            .sale-banner {
+                background-size: cover;
+                background-position: center center;
+                height: 160px;
+            }
+
+            .sale-banner-content {
+                padding-top: 0;
+            }
+
+            .card-product-info {
+                min-height: 110px;
+            }
+
+            .delivery-message {
+                padding: 4px 6px;
+                margin: 4px 0;
+                font-size: 8px;
+                border-radius: 6px;
             }
 
             .stock-info, .time-info {
-                font-size: 7px;
-            }
-
-            .urgency-container {
-                min-width: 45px;
+                font-size: 8px;
+                padding: 3px 5px;
             }
 
             .product_review_container {
                 font-size: 8px;
-                min-height: 12px;
                 gap: 3px;
             }
 
-            .price-urgency-container {
-                gap: 3px;
-            }
-        }
-
-        /* 모바일 세로 초소형 (360px 이하) */
-        @media (max-width: 360px) {
-            .delivery-message {
-                font-size: 7px;
-                padding: 2px 4px;
-                margin: 2px 0;
-                min-height: 20px;
-                gap: 2px;
-                border-left-width: 2px;
-            }
-
-            .delivery-icon {
-                font-size: 7px;
-            }
-
-            .delivery-text {
-                font-size: 7px;
-            }
-
-            .stock-info, .time-info {
-                font-size: 6px;
-            }
-
-            .stock-icon, .time-icon {
-                font-size: 6px;
-            }
-
-            .urgency-container {
-                min-width: 40px;
-            }
-
-            .product_review_container {
-                font-size: 7px;
-                gap: 2px;
-            }
-
-            .price-urgency-container {
-                gap: 2px;
+            .pagination a,
+            .pagination span {
+                width: 32px;
+                height: 32px;
+                font-size: 11px;
+                border-radius: 6px;
             }
         }
     </style>
@@ -1090,28 +1423,7 @@
 <!-- 필터 섹션 -->
 <div class="filter-section">
     <div class="filter-container">
-        <div class="filter-left">
-            <div class="filter-group">
-                <label class="filter-label">정렬</label>
-                <select class="filter-select" id="sortSelect">
-                    <option value="sale_rate">할인율 높은 순</option>
-                    <option value="price_low">가격 낮은 순</option>
-                    <option value="price_high">가격 높은 순</option>
-                    <option value="newest">신상품 순</option>
-                    <option value="popular">인기 순</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label class="filter-label">할인율</label>
-                <select class="filter-select" id="discountSelect">
-                    <option value="">전체</option>
-                    <option value="10">10% 이상</option>
-                    <option value="20">20% 이상</option>
-                    <option value="30">30% 이상</option>
-                    <option value="50">50% 이상</option>
-                </select>
-            </div>
-        </div>
+
         <div class="results-info">
             총 <span class="sale-highlight" th:text="${totalCount ?: '0'}">0</span>개의 특가 상품
         </div>
@@ -1140,10 +1452,12 @@
                         <div class="price-urgency-container">
                             <!-- 가격 정보 -->
                             <div class="card-product-price">
-                                <!-- 할인율 -->
-                                <div class="sale-perc" th:text="${product.specialSalePer} + '%'">68%</div>
-                                <!-- 특가 가격 -->
-                                <div class="sale_price" th:text="${#numbers.formatInteger(product.specialSalePrice, 3, 'COMMA')} + '원'">10,000원</div>
+                                <div class="price-main">
+                                    <!-- 할인율 -->
+                                    <div class="sale-perc" th:text="${product.specialSalePer} + '%'">68%</div>
+                                    <!-- 특가 가격 -->
+                                    <div class="sale_price" th:text="${#numbers.formatInteger(product.specialSalePrice, 3, 'COMMA')} + '원'">10,000원</div>
+                                </div>
                                 <!-- 원래 가격 -->
                                 <div class="regular_price" th:text="${#numbers.formatInteger(product.priceOriginal, 3, 'COMMA')} + '원'">30,900원</div>
                             </div>
@@ -1184,10 +1498,10 @@
 
                 <!-- 위시리스트 버튼 -->
                 <div class="wishlist-wrap">
-                    <button class="wishlist-btn"
+                    <button class="wishlist-btn wishlist-button"
                             th:data-product-code="${product.productCode}"
                             title="위시리스트에 추가">
-                        <i class="far fa-heart heart-icon"></i>
+                        <i class="far fa-heart heart-empty"></i>
                     </button>
                 </div>
             </article>
@@ -1240,11 +1554,10 @@
         generateStockNumbers();
 
         // 필터 변경 이벤트 (현재는 클라이언트 사이드만 구현)
-        $('#sortSelect, #discountSelect').on('change', function() {
-            const sort = $('#sortSelect').val();
+        $('#discountSelect').on('change', function() {
             const discount = $('#discountSelect').val();
 
-            console.log('정렬:', sort, '할인율:', discount);
+            console.log('할인율:', discount);
             // 서버로 요청 보내는 로직 추가 필요
         });
     });

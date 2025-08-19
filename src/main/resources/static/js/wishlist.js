@@ -48,6 +48,9 @@ const WishlistManager = {
             url: '/wishlist/toggle',
             type: 'POST',
             data: { productCode: productCode },
+            header: {
+                [getCSRFHeader()]: getCSRFToken()
+            },
             success: (response) => {
                 console.log('위시리스트 토글 성공:', response);
 

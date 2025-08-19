@@ -24,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -54,6 +55,9 @@ public class HomeController {
 
     @GetMapping("/")
     public String introPage(HttpServletRequest request, Model model) {
+        String userAgent = request.getHeader("User-Agent");
+        String deviceType = detectDevice(userAgent);
+        System.out.println(deviceType);
         if(session.getAttribute("member") != null){
             session.removeAttribute("member");
         } else if(session.getAttribute("guest") != null){
@@ -83,26 +87,31 @@ public class HomeController {
     // 본인인증 return url
     @PostMapping("/nice/result")
     public String niceCallback(HttpServletRequest request, HttpSession session, Model model) {
-        GuestDto guest = new GuestDto();
         try {
             String encData = request.getParameter("enc_data");
 
+            // 파라미터 검증 강화
             if (encData == null || encData.trim().isEmpty()) {
+                log.warn("성인인증 실패: enc_data 없음 - IP: {}", getClientIP(request));
                 model.addAttribute("isAdult", false);
                 return "authPopupCallback";
             }
 
+            // 세션 토큰 검증
             String tokenVal = (String) session.getAttribute("token_val");
             String reqDtim = (String) session.getAttribute("req_dtim");
             String reqNo = (String) session.getAttribute("req_no");
 
             if (tokenVal == null || reqDtim == null || reqNo == null) {
+                log.warn("성인인증 실패: 세션 토큰 없음 - IP: {}", getClientIP(request));
                 model.addAttribute("isAdult", false);
                 return "authPopupCallback";
             }
 
+            // NICE 데이터 복호화
             Map<String, String> resultMap = NiceCryptoUtil.decryptEncodeData(encData, reqDtim, reqNo, tokenVal);
 
+            // 세션 정리
             session.removeAttribute("token_val");
             session.removeAttribute("req_dtim");
             session.removeAttribute("req_no");
@@ -111,6 +120,13 @@ public class HomeController {
             boolean isAdult = isAdult(birthdate);
             String name = resultMap.get("utf8_name");
             String di = resultMap.get("di");
+
+            // DI 검증 추가
+            if (di == null || di.trim().isEmpty()) {
+                log.error("성인인증 실패: DI 정보 없음");
+                model.addAttribute("isAdult", false);
+                return "authPopupCallback";
+            }
 
             try {
                 name = java.net.URLDecoder.decode(name, "UTF-8");
@@ -121,25 +137,42 @@ public class HomeController {
             log.info("비회원 NICE 인증 완료: 성인여부={}, DI={}", isAdult, di);
 
             if (isAdult) {
-                // ✅ 1. 먼저 member 테이블에 해당 DI로 가입한 이력이 있는지 확인
+                // 1. 기존 회원 확인 (보안 강화)
                 if (signupService.isRecodeSignup(di) > 0) {
                     log.info("기존 회원 가입 이력 발견 - DI: {}", di);
                     model.addAttribute("isAdult", true);
-                    model.addAttribute("isDuplicateMember", true); // 중복 회원 플래그
+                    model.addAttribute("isDuplicateMember", true);
                     return "authPopupCallback";
                 }
 
-                // ✅ 2. member 테이블에 없으면 기존 guest 로직 수행
-                if(guestService.isGuest(di) > 0) {
-                    session.setAttribute("guest", guestService.getGuestByDi(di));
+                // 2. 기존 비회원 확인 및 로드
+                if (guestService.isGuest(di) > 0) {
+                    GuestDto existingGuest = guestService.getGuestByDi(di);
+
+                    // 🔥 보안 강화: 기존 비회원 데이터 유효성 검증
+                    if (existingGuest != null && Boolean.TRUE.equals(existingGuest.isAdultVerified())) {
+                        session.setAttribute("guest", existingGuest);
+                        log.info("기존 비회원 데이터 로드 완료: DI={}, GuestCode={}", di, existingGuest.getGuestCode());
+                    } else {
+                        log.error("기존 비회원 데이터 오류: DI={}", di);
+                        model.addAttribute("isAdult", false);
+                        return "authPopupCallback";
+                    }
                 } else {
-                    guest.setGuestDi(di);
-                    guest.setGuestName(name);
-                    guest.setGuestBirth(LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("yyyyMMdd")));
-                    guest.setGuestGender(resultMap.get("gender").equals("1") ? "남자" : "여자");
-                    guest.setGuestPhone(resultMap.get("mobileno"));
-                    guestService.insertGuest(guest);
+                    // 3. 신규 비회원 생성
+                    GuestDto newGuest = new GuestDto();
+                    newGuest.setGuestDi(di);
+                    newGuest.setGuestName(name);
+                    newGuest.setGuestBirth(LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("yyyyMMdd")));
+                    newGuest.setGuestGender(resultMap.get("gender").equals("1") ? "남자" : "여자");
+                    newGuest.setGuestPhone(resultMap.get("mobileno"));
+                    newGuest.setAdultVerified(true);
+                    newGuest.setAdultVerifiedAt(LocalDateTime.now());
+
+                    guestService.insertGuest(newGuest);
                     session.setAttribute("guest", guestService.getGuestByDi(di));
+
+                    log.info("신규 비회원 생성 완료: DI={}", di);
                 }
             }
 
@@ -147,10 +180,18 @@ public class HomeController {
             return "authPopupCallback";
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("성인인증 처리 중 오류 발생", e);
             model.addAttribute("isAdult", false);
             return "authPopupCallback";
         }
+    }
+
+    private String getClientIP(HttpServletRequest request) {
+        String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null) {
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0];
     }
 
     // GET으로도 콜백을 받을 수 있도록 추가

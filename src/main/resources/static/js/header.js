@@ -27,6 +27,12 @@ $(document).ready(updateHeaderState);
 
 function goLogin() {
     const form = document.createElement('form');
+    // 🔥 CSRF 토큰을 hidden input으로 추가
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_csrf';  // 또는 getCSRFParameterName()
+    csrfInput.value = getCSRFToken();
+    form.appendChild(csrfInput);
     form.method = 'get';
     form.action = '/auth/login';
     document.body.appendChild(form);

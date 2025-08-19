@@ -41,9 +41,9 @@
             pr.price_original       AS priceOriginal,
             pr.price_selling        AS priceSelling,
             IF(pr.price_original > 0,
-               ROUND((pr.price_original - pr.price_selling)/pr.price_original*100,2),
+               FLOOR((pr.price_original - pr.price_selling) / pr.price_original * 100),
                0
-            )                        AS discount_rate,
+            ) AS discount_rate,
             COALESCE(AVG(rv.rating),0)    AS avg_rating,
             COUNT(rv.review_code)         AS review_count,
             COALESCE(wl.wish_count,0)     AS wishlist_count
@@ -62,19 +62,22 @@
             GROUP BY product_code
         ) wl ON p.product_code = wl.product_code
         WHERE
+            p.product_active = 1
+          AND (
             p.product_name    LIKE CONCAT('%',#{keyword},'%')
-           OR EXISTS (
-            SELECT 1
-            FROM category_detail cd
-            WHERE cd.cate_code=p.cate_code
-              AND cd.cd_code=p.cd_code
-              AND cd.cd_name LIKE CONCAT('%',#{keyword},'%')
-        )
-           OR p.cate_code IN (
-            SELECT cate_code
-            FROM category
-            WHERE cate_name LIKE CONCAT('%',#{keyword},'%')
-        )
+                OR EXISTS (
+                SELECT 1
+                FROM category_detail cd
+                WHERE cd.cate_code=p.cate_code
+                  AND cd.cd_code=p.cd_code
+                  AND cd.cd_name LIKE CONCAT('%',#{keyword},'%')
+            )
+                OR p.cate_code IN (
+                SELECT cate_code
+                FROM category
+                WHERE cate_name LIKE CONCAT('%',#{keyword},'%')
+            )
+            )
         GROUP BY
             p.product_code, p.product_name, p.product_description,
             p.product_quantity, img.image_url, pr.price_original, pr.price_selling

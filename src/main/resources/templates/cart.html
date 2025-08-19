@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>장바구니 - 홀리밤</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://kit.fontawesome.com/69077b3f9d.js" crossorigin="anonymous"></script>
@@ -716,6 +718,18 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script th:inline="javascript">
+    $(document).ready(function() {
+        // 🔥 CSRF 토큰 가져오기
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 🔥 모든 jQuery AJAX에 자동 적용
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+        });
+    });
     /*<![CDATA[*/
     const cartItems = /*[[${cartItems}]]*/ [];
     /*]]>*/
@@ -922,6 +936,14 @@
         }
     }
 
+    function getCSRFToken() {
+        return document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+    }
+
+    function getCSRFParameterName() {
+        return document.querySelector('meta[name="_csrf_parameter"]')?.getAttribute('content') || '_csrf';
+    }
+
     // 주문하기
     function goToCheckout() {
         const checkedItems = document.querySelectorAll('.item-checkbox:checked');
@@ -941,6 +963,13 @@
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '/order/checkout';
+
+        // 🔥 CSRF 토큰을 hidden input으로 추가
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf';  // 또는 getCSRFParameterName()
+        csrfInput.value = getCSRFToken();
+        form.appendChild(csrfInput);
 
         selectedCartCodes.forEach(cartCode => {
             const input = document.createElement('input');

@@ -1,5 +1,6 @@
 package com.hollybam.hollybam.controller.productController;
 
+import com.hollybam.hollybam.services.IF_CategoryService;
 import com.hollybam.hollybam.services.IF_SearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import java.util.Map;
 public class SearchController {
     @Autowired
     private IF_SearchService searchService;
+    @Autowired
+    private IF_CategoryService categoryService;
 
     @GetMapping
     public String search(
@@ -42,8 +45,20 @@ public class SearchController {
         params.put("keyword", keyword);
         params.put("offset", offset);
         params.put("size", size);
-        List<Map<String,Object>> products =
-                searchService.searchProductsByPage(params);
+        List<Map<String,Object>> products = searchService.searchProductsByPage(params);
+        System.out.println(products);
+        for(int i=0;i<products.size();i++) {
+            int productCode = (int) products.get(i).get("productCode");
+            if(categoryService.isSpecialSale(productCode) > 0){
+                products.get(i).remove("priceSelling");
+                products.get(i).put("priceSelling", categoryService.getSpecialSalePrice(productCode));
+                int selling = (int) products.get(i).get("priceSelling");
+                int original = (int) products.get(i).get("priceOriginal");
+                products.get(i).remove("discount_rate");
+                double rate = ((double) (original - selling) /original)*100;
+                products.get(i).put("discount_rate", Math.round(rate));
+            }
+        }
 
         // 5) 뷰로 넘길 속성들
         model.addAttribute("products", products);

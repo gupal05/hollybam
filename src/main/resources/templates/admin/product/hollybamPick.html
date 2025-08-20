@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" content="your-csrf-token"/>
+  <meta name="_csrf_header" content="X-CSRF-TOKEN"/>
+  <title>홀리밤 픽 관리 - 관리자</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <!-- 관리자 사이드바 CSS/JS -->
+  <link rel="stylesheet" href="/css/adminSidebar.css">
+  <script src="/js/adminSidebar.js"></script>
+
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #f8f9fa;
+      color: #212529;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 헤더 */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e9ecef;
+      padding: 0 40px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .admin-info {
+      color: #6c757d;
+      font-size: 13px;
+      font-weight: 300;
+    }
+
+    .logout-btn {
+      background: #fff;
+      color: #212529;
+      border: 1px solid #212529;
+      padding: 8px 16px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #212529;
+      color: #fff;
+    }
+
+    /* 컨테이너 */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* 페이지 타이틀 */
+    .page-title {
+      margin-bottom: 40px;
+    }
+
+    .page-title h2 {
+      color: #212529;
+      font-size: 28px;
+      font-weight: 300;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .page-title p {
+      color: #6c757d;
+      font-size: 14px;
+      font-weight: 300;
+    }
+
+
+
+    /* 섹션 */
+    .section {
+      background: #fff;
+      border: 1px solid #e9ecef;
+      margin-bottom: 40px;
+    }
+
+    .section-header {
+      padding: 30px 40px;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .section-title {
+      color: #212529;
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    .section-body {
+      padding: 40px;
+    }
+
+    /* 액션 버튼 영역 */
+    .action-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .result-info {
+      color: #6c757d;
+      font-size: 14px;
+      font-weight: 300;
+    }
+
+    .add-btn {
+      background: #fff;
+      color: #212529;
+      border: 1px solid #212529;
+      padding: 12px 24px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+      background: #212529;
+      color: #fff;
+    }
+
+    /* 버튼 */
+    .btn {
+      background: #fff;
+      color: #212529;
+      border: 1px solid #dee2e6;
+      padding: 12px 20px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 120px;
+      justify-content: center;
+    }
+
+    .btn:hover {
+      border-color: #212529;
+    }
+
+    .btn:active,
+    .btn:focus {
+      outline: none;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: #212529;
+      color: #fff;
+      border-color: #212529;
+    }
+
+    .btn-primary:hover {
+      background: #000;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: #fff;
+      border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .search-btn {
+      background: #212529;
+      color: #fff;
+      border: 1px solid #212529;
+      padding: 15px 24px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+      background: #000;
+    }
+
+    /* 테이블 스타일 */
+    .pick-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0;
+    }
+
+    .pick-table th,
+    .pick-table td {
+      padding: 20px 15px;
+      text-align: center;
+      border-bottom: 1px solid #e9ecef;
+      font-size: 14px;
+      font-weight: 300;
+    }
+
+    .pick-table th {
+      background: #f8f9fa;
+      color: #6c757d;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 400;
+    }
+
+    .pick-table td {
+      color: #212529;
+    }
+
+    .pick-table tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    /* 상품 정보 열만 왼쪽 정렬 */
+    .pick-table td:first-child,
+    .pick-table th:first-child {
+      text-align: left;
+    }
+
+    /* 상품 정보 스타일 */
+    .product-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .product-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border: 1px solid #e9ecef;
+    }
+
+    .product-details {
+      flex: 1;
+    }
+
+    .product-name {
+      color: #212529;
+      font-weight: 400;
+      margin-bottom: 5px;
+    }
+
+    .product-code {
+      color: #6c757d;
+      font-size: 12px;
+    }
+
+    /* 홀리밤 픽 뱃지 */
+    .pick-badge {
+      background: #212529;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 400;
+      text-align: center;
+      display: inline-block;
+    }
+
+    /* 액션 버튼들 */
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-delete {
+      background: #fff;
+      color: #dc3545;
+      border: 1px solid #dc3545;
+      padding: 8px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-delete:hover {
+      background: #dc3545;
+      color: #fff;
+    }
+
+    /* 모달 스타일 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 0;
+      border: 1px solid #e9ecef;
+      width: 80%;
+      max-width: 1000px;
+      max-height: 80vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 30px 40px 20px;
+      border-bottom: 1px solid #e9ecef;
+      background: #f8f9fa;
+    }
+
+    .modal-title {
+      color: #212529;
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+    }
+
+    .modal-search {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .category-search-container {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 1px solid #e9ecef;
+      background: #fff;
+      color: #212529;
+      font-size: 14px;
+      font-weight: 300;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #212529;
+    }
+
+    .date-select {
+      padding: 15px 20px;
+      border: 1px solid #e9ecef;
+      background: #fff;
+      color: #212529;
+      font-size: 14px;
+      font-weight: 300;
+      transition: all 0.3s ease;
+      min-width: 120px;
+      box-sizing: border-box;
+    }
+
+    .date-select:focus {
+      outline: none;
+      border-color: #212529;
+    }
+
+    .date-select:disabled {
+      background: #f8f9fa;
+      color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    .modal-search-btn {
+      background: #212529;
+      color: #fff;
+      border: 1px solid #212529;
+      padding: 15px 20px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-search-btn:hover {
+      background: #000;
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 40px;
+    }
+
+    .modal-footer {
+      padding: 20px 40px;
+      border-top: 1px solid #e9ecef;
+      background: #f8f9fa;
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+    }
+
+    /* 상품 선택 테이블 */
+    .product-select-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .product-select-table th,
+    .product-select-table td {
+      padding: 15px 10px;
+      text-align: center;
+      border-bottom: 1px solid #e9ecef;
+      font-size: 14px;
+      font-weight: 300;
+    }
+
+    .product-select-table th {
+      background: #f8f9fa;
+      color: #6c757d;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 400;
+    }
+
+    .product-select-table tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    /* 상품 정보 열만 왼쪽 정렬 */
+    .product-select-table td:nth-child(2),
+    .product-select-table th:nth-child(2) {
+      text-align: left;
+    }
+
+    .product-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    /* 가격 정보 스타일 */
+    .price-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .price-label {
+      font-size: 11px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      min-width: 35px;
+      text-align: right;
+    }
+
+    .price-value {
+      font-size: 13px;
+      font-weight: 300;
+      min-width: 80px;
+      text-align: left;
+    }
+
+    .original-price .price-label {
+      color: #6c757d;
+    }
+
+    .original-price .price-value {
+      color: #6c757d;
+      text-decoration: line-through;
+    }
+
+    .selling-price .price-label {
+      color: #212529;
+    }
+
+    .selling-price .price-value {
+      color: #212529;
+      font-weight: 400;
+    }
+
+    /* 빈 상태 */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6c757d;
+    }
+
+    .empty-state .empty-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .empty-state .empty-text {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .empty-state .empty-subtext {
+      font-size: 14px;
+      color: #adb5bd;
+    }
+
+    /* 로딩 상태 */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #212529;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .header {
+        padding: 0 20px;
+      }
+
+      .container {
+        padding: 20px 15px;
+      }
+
+      .section-header,
+      .section-body {
+        padding: 20px;
+      }
+
+      .action-header {
+        flex-direction: column;
+        gap: 20px;
+        align-items: stretch;
+      }
+
+      .pick-table,
+      .product-select-table {
+        font-size: 12px;
+      }
+
+      .pick-table th,
+      .pick-table td,
+      .product-select-table th,
+      .product-select-table td {
+        padding: 10px 8px;
+      }
+
+      .modal-content {
+        width: 95%;
+        margin: 2% auto;
+        max-height: 90vh;
+      }
+
+      .modal-header,
+      .modal-body,
+      .modal-footer {
+        padding: 20px;
+      }
+
+      .modal-search {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .category-search-container {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        gap: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 사이드바는 별도로 구현하거나 포함하세요 -->
+<div th:replace="~{layout/adminSidebar :: sidebar}"></div>
+<!-- 메인 컨텐츠 -->
+<div class="main-content">
+  <!-- 헤더 -->
+  <header class="header">
+    <div class="header-actions">
+      <div class="admin-info">
+        관리자님 환영합니다
+      </div>
+      <button class="logout-btn" onclick="logout()">
+        Sign Out
+      </button>
+    </div>
+  </header>
+
+  <!-- 컨테이너 -->
+  <div class="container">
+    <!-- 페이지 타이틀 -->
+    <div class="page-title">
+      <h2>홀리밤 픽 관리</h2>
+      <p>운영자가 추천하는 상품을 관리합니다</p>
+    </div>
+
+    <!-- 홀리밤 픽 상품 리스트 섹션 -->
+    <div class="section">
+      <div class="section-header">
+        <h3 class="section-title">홀리밤 픽 상품 목록</h3>
+      </div>
+      <div class="section-body">
+        <div class="action-header">
+          <div class="result-info" id="resultInfo" th:inline="text">
+            현재 등록된 홀리밤 픽 상품 총 [[${count}]]개
+          </div>
+          <button class="add-btn" onclick="openAddModal()">픽 상품 추가</button>
+        </div>
+
+        <!-- 홀리밤 픽 테이블 -->
+        <table class="pick-table" id="pickTable" th:if="${pickList} != null">
+          <thead>
+          <tr>
+            <th width="46%">상품 정보</th>
+            <th width="15%">정가</th>
+            <th width="15%">판매가</th>
+            <th width="13%">등록일</th>
+            <th width="21%">관리</th>
+          </tr>
+          </thead>
+          <tbody id="pickTableBody">
+          <!-- 샘플 데이터 -->
+          <tr th:each="list: ${pickList}">
+            <td>
+              <div class="product-info">
+                <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + list['imageUrl']}" th:alt="${list['productName']}" class="product-image">
+                <div class="product-details">
+                  <input id="pickCode" type="hidden" th:value="${list['hollybamPickCode']}">
+                  <input id="productCode" type="hidden" th:value="${list['productCode']}">
+                  <div class="product-name" th:text="${list['productName']}">홀리밤 베스트 상품 1</div>
+                  <div class="product-code" th:text="${list['prodctId']}">P001</div>
+                </div>
+              </div>
+            </td>
+            <td th:text="${#numbers.formatInteger(list['priceOriginal'], 3, 'COMMA')}+'원'">89,000원</td>
+            <td th:text="${#numbers.formatInteger(list['priceSelling'], 3, 'COMMA')}+'원'">79,000원</td>
+            <td th:text="${#temporals.format(list['pickCreatedAt'], 'yyyy-MM-dd')}">2025-08-19</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-delete" onclick="deleteHollybamPick()">삭제</button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <!-- 빈 상태 (필요시 표시) -->
+        <div class="empty-state" id="emptyState" th:if="${pickList} == null">
+          <div class="empty-text">등록된 홀리밤 픽이 없습니다</div>
+          <div class="empty-subtext">추천할 상품을 추가해보세요</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 상품 추가 모달 -->
+<div id="addProductModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">홀리밤 픽 상품 추가</h3>
+      <div class="modal-search">
+        <div class="category-search-container">
+          <select class="date-select" id="parentCategorySelect" style="min-width: 130px;">
+            <option value="">상위 카테고리</option>
+            <option th:each="category : ${categories}"
+                    th:value="${category.categoryCode}"
+                    th:text="${category.categoryName}">
+            </option>
+          </select>
+          <select class="date-select" id="childCategorySelect" style="min-width: 130px;" disabled>
+            <option value="">하위 카테고리</option>
+          </select>
+        </div>
+        <input type="text" class="search-input" id="productSearchInput" placeholder="상품명 또는 상품코드로 검색">
+        <button class="modal-search-btn" onclick="searchProducts()">검색</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <table class="product-select-table">
+        <thead>
+        <tr>
+          <th width="8%">선택</th>
+          <th width="60%">상품 정보</th>
+          <th width="32%">가격</th>
+        </tr>
+        </thead>
+        <tbody id="productSelectTableBody">
+        <!-- 상품 데이터가 여기에 동적으로 추가됩니다 -->
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-delete" onclick="closeAddModal()">취소</button>
+      <button class="search-btn" onclick="addSelectedProducts()">추가</button>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const categories = /*[[${categories}]]*/ [];
+  const productList = /*[[${productList}]]*/ [];
+  /*]]>*/
+
+  console.log('전체 상품 데이터:', productList);
+  console.log('카테고리 데이터:', categories);
+</script>
+
+<script>
+  $(document).ready(function() {
+    // 🔥 CSRF 토큰 가져오기
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+
+    // 🔥 모든 jQuery AJAX에 자동 적용
+    $.ajaxSetup({
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader(header, token);
+      }
+    });
+  });
+
+  // 🔥 CSRF 토큰 가져오는 함수
+  function getCSRFToken() {
+    return document.querySelector('meta[name="_csrf"]').getAttribute('content');
+  }
+
+  function getCSRFHeader() {
+    return document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // 사이드바 메뉴 active 설정 (사이드바가 있는 경우)
+    const hollybamPickLink = document.querySelector('a[href="/admin/hollybam/pick"]');
+    if (hollybamPickLink) {
+      hollybamPickLink.classList.add('active');
+
+      // 서브메뉴 자동으로 열기
+      const submenu = hollybamPickLink.closest('.submenu');
+      if (submenu) {
+        submenu.style.display = 'block';
+
+        // 메인 링크에도 active 표시
+        const parentNavLink = submenu.previousElementSibling;
+        if (parentNavLink && parentNavLink.classList.contains('has-submenu')) {
+          parentNavLink.classList.add('active');
+        }
+      }
+    }
+
+    // 검색창 엔터키 이벤트
+    document.getElementById('productSearchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        searchProducts();
+      }
+    });
+
+    // 상위 카테고리 변경 이벤트 (상품 등록 페이지와 동일한 방식)
+    document.getElementById('parentCategorySelect').addEventListener('change', function() {
+      const selectedCategoryCode = this.value;
+      const childCategorySelect = document.getElementById('childCategorySelect');
+
+      // 초기화
+      childCategorySelect.innerHTML = '<option value="">하위 카테고리</option>';
+
+      if (selectedCategoryCode) {
+        const selectedCategory = categories.find(cat => cat.categoryCode === selectedCategoryCode);
+
+        if (selectedCategory?.categoryDetailDto) {
+          selectedCategory.categoryDetailDto.forEach(detail => {
+            const option = document.createElement('option');
+            option.value = detail.cateDetailCode;
+            option.textContent = detail.cateDetailName;
+            childCategorySelect.appendChild(option);
+          });
+        }
+
+        childCategorySelect.disabled = false;
+        console.log(`${selectedCategoryCode}의 하위 카테고리 ${selectedCategory?.categoryDetailDto?.length || 0}개 로드됨`);
+      } else {
+        childCategorySelect.disabled = true;
+      }
+    });
+
+    // 하위 카테고리 변경 이벤트
+    document.getElementById('childCategorySelect').addEventListener('change', function() {
+      // 자동 검색 제거 - 사용자가 직접 검색 버튼을 클릭하도록 변경
+    });
+  });
+
+  // 로그아웃 처리
+  function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+      // 실제 구현시 AJAX로 로그아웃 처리
+      console.log('로그아웃 요청');
+      window.location.href = '/admin/login';
+    }
+  }
+
+  // 모달 열기
+  function openAddModal() {
+    document.getElementById('addProductModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    // 검색 필드 초기화
+    document.getElementById('productSearchInput').value = '';
+    document.getElementById('parentCategorySelect').value = '';
+    document.getElementById('childCategorySelect').value = '';
+    document.getElementById('childCategorySelect').disabled = true;
+
+    // 전체 상품 목록 바로 표시
+    displayProducts(productList);
+  }
+
+  // 모달 닫기
+  function closeAddModal() {
+    document.getElementById('addProductModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    // 체크박스 초기화
+    document.querySelectorAll('.product-checkbox').forEach(checkbox => {
+      checkbox.checked = false;
+    });
+
+    // 검색 필드 초기화
+    document.getElementById('productSearchInput').value = '';
+    document.getElementById('parentCategorySelect').value = '';
+    document.getElementById('childCategorySelect').value = '';
+    document.getElementById('childCategorySelect').disabled = true;
+
+    // 전체 상품 목록으로 초기화
+    displayProducts(productList);
+  }
+
+  // 상품 검색
+  function searchProducts() {
+    const searchTerm = document.getElementById('productSearchInput').value.trim();
+    const parentCategory = document.getElementById('parentCategorySelect').value;
+    const childCategory = document.getElementById('childCategorySelect').value;
+
+    console.log('상품 검색:', {
+      keyword: searchTerm,
+      parentCategory: parentCategory,
+      childCategory: childCategory
+    });
+
+    // 로딩 상태 표시
+    const tableBody = document.getElementById('productSelectTableBody');
+    tableBody.innerHTML = '<tr><td colspan="3" class="loading"><div class="loading-spinner"></div> 검색 중...</td></tr>';
+
+    // AJAX로 서버에 검색 요청
+    $.ajax({
+      url: '/admin/product/pick/search', // 서버 API 엔드포인트
+      method: 'POST',
+      data: {
+        keyword: searchTerm,
+        categoryCode: parentCategory,
+        cateDetailCode: childCategory
+      },
+      success: function(response) {
+        console.log('검색 결과:', response);
+
+        // 빈 객체 필터링 후 유효한 데이터만 추출
+        const validProducts = response.filter(product => {
+          return product && Object.keys(product).length > 0 &&
+                  (product.productCode || product.productId || product.productName);
+        });
+
+        // 유효한 데이터가 있는지 확인
+        if (validProducts && validProducts.length > 0) {
+          displayProducts(validProducts);
+        } else {
+          tableBody.innerHTML = '<tr><td colspan="3" class="empty-state">검색 결과가 없습니다.</td></tr>';
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('검색 실패:', error);
+        console.error('응답 상태:', xhr.status);
+        console.error('응답 텍스트:', xhr.responseText);
+
+        // 에러 발생 시 전체 상품 목록 표시
+        displayProducts(productList);
+      }
+    });
+  }
+
+  // 상품 필드 값 안전하게 가져오기 (다양한 키 형태 지원)
+  function getProductField(product, fieldName) {
+    // 카멜케이스와 스네이크케이스 모두 지원
+    const variations = [
+      fieldName,
+      fieldName.replace(/([A-Z])/g, '_$1').toLowerCase(),
+      fieldName.toLowerCase()
+    ];
+
+    for (let variation of variations) {
+      if (product[variation] !== undefined && product[variation] !== null) {
+        return product[variation];
+      }
+    }
+    return '';
+  }
+
+  // 상품 목록 표시
+  function displayProducts(products) {
+    const tableBody = document.getElementById('productSelectTableBody');
+
+    if (!products || products.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="3" class="empty-state">검색 결과가 없습니다.</td></tr>';
+      return;
+    }
+
+    let results = '';
+    products.forEach(product => {
+      results += createProductRow(product);
+    });
+
+    tableBody.innerHTML = results;
+    console.log(`${products.length}개 상품 표시됨`);
+  }
+
+  // 검색 결과 로드 (샘플 데이터)
+  function loadSearchResults(keyword, parentCategory, childCategory) {
+    const tableBody = document.getElementById('productSelectTableBody');
+    $.ajax({
+      url: '/admin/product/pick/search',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        cartCode: parseInt(cartCode),
+        quantity: newValue
+      }),
+      success: function(response) {
+        alert(response.message);
+        if (response.status) {
+          // 샘플 상품 데이터
+          const sampleProducts = [
+            {
+              productCode: 'P101',
+              productId: 'P101',
+              productName: '여성용 프리미엄 상품 A',
+              productImage: 'sample1.jpg',
+              productOriginal: 150000,
+              productSelling: 120000
+            },
+            {
+              productCode: 'P102',
+              productId: 'P102',
+              productName: '남성용 베스트 상품 B',
+              productImage: 'sample2.jpg',
+              productOriginal: 85000,
+              productSelling: 75000
+            },
+            {
+              productCode: 'P103',
+              productId: 'P103',
+              productName: '커플용 인기 상품 C',
+              productImage: 'sample3.jpg',
+              productOriginal: 200000,
+              productSelling: 180000
+            },
+            {
+              productCode: 'P104',
+              productId: 'P104',
+              productName: '란제리 신상품 D',
+              productImage: 'sample4.jpg',
+              productOriginal: 95000,
+              productSelling: 85000
+            }
+          ];
+
+          // 키워드 필터링 (간단한 샘플)
+          let filteredProducts = sampleProducts;
+          if (keyword) {
+            filteredProducts = sampleProducts.filter(product =>
+                    product.productName.toLowerCase().includes(keyword.toLowerCase()) ||
+                    product.productId.toLowerCase().includes(keyword.toLowerCase())
+            );
+          }
+
+          let results = '';
+          filteredProducts.forEach(product => {
+            results += createProductRow(product);
+          });
+
+          if (!results) {
+            tableBody.innerHTML = '<tr><td colspan="3" class="empty-state">검색 결과가 없습니다.</td></tr>';
+          } else {
+            tableBody.innerHTML = results;
+          }
+        } else {
+          console.log("검색 실패");
+        }
+      },
+      error: function(err) {
+        console.error('업로드 실패', err);
+      }
+    });
+  }
+
+  // 상품 행 생성 함수 (실제 서버 데이터 사용)
+  function createProductRow(product) {
+    // 다양한 필드명 형태를 지원하여 안전하게 데이터 추출
+    const productCode = getProductField(product, 'productCode') || getProductField(product, 'productId');
+    const productName = getProductField(product, 'productName') || '상품명 없음';
+    const productId = getProductField(product, 'productId') || getProductField(product, 'productCode');
+    const priceOriginal = parseInt(getProductField(product, 'priceOriginal')) || 0;
+    const priceSelling = parseInt(getProductField(product, 'priceSelling')) || 0;
+    const imageUrl = getProductField(product, 'imageUrl') || getProductField(product, 'titleImage');
+
+    // 가격 포맷팅
+    const formattedOriginalPrice = priceOriginal > 0 ? `${priceOriginal.toLocaleString()}원` : '0원';
+    const formattedSellingPrice = priceSelling > 0 ? `${priceSelling.toLocaleString()}원` : '0원';
+
+    // 이미지 URL 처리
+    let imageSource = 'https://via.placeholder.com/60x60?text=No+Image';
+    if (imageUrl) {
+      // S3 URL이 아닌 경우 S3 베이스 URL 추가
+      if (imageUrl.startsWith('http')) {
+        imageSource = imageUrl;
+      } else {
+        imageSource = `https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/${imageUrl}`;
+      }
+    }
+
+    return `
+    <tr>
+        <td>
+            <input type="checkbox" class="product-checkbox" value="${productCode}">
+        </td>
+        <td>
+            <div class="product-info">
+                <img src="${imageSource}"
+                     alt="${productName}"
+                     class="product-image"
+                     onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                <div class="product-details">
+                    <div class="product-name">${productName}</div>
+                    <div class="product-code">${productId}</div>
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="price-info">
+                <div class="price-row original-price">
+                    <span class="price-label">정가</span>
+                    <span class="price-value">${formattedOriginalPrice}</span>
+                </div>
+                <div class="price-row selling-price">
+                    <span class="price-label">판매가</span>
+                    <span class="price-value">${formattedSellingPrice}</span>
+                </div>
+            </div>
+        </td>
+    </tr>`;
+  }
+
+  // 선택된 상품들을 홀리밤 픽으로 추가
+  function addSelectedProducts() {
+    const selectedProducts = [];
+    const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+
+    checkboxes.forEach(checkbox => {
+      const productCode = checkbox.value;
+      selectedProducts.push({
+        productCode: productCode
+      });
+    });
+
+    if (selectedProducts.length === 0) {
+      alert('추가할 상품을 선택해주세요.');
+      return;
+    }
+
+    // AJAX로 서버에 전송
+    $.ajax({
+      url: '/admin/product/pick/add',
+      method: 'POST',
+      contentType: 'application/json', // JSON 형태로 전송
+      data: JSON.stringify(selectedProducts), // 배열을 JSON 문자열로 변환
+      success: function(response) {
+        console.log('추가 성공:', response);
+        alert(`${selectedProducts.length}개 상품이 홀리밤 픽으로 추가되었습니다.`);
+        closeAddModal();
+        location.reload(); // 페이지 새로고침으로 업데이트된 목록 표시
+      },
+      error: function(xhr, status, error) {
+        console.error('추가 실패:', error);
+        console.error('응답 상태:', xhr.status);
+        console.error('응답 텍스트:', xhr.responseText);
+        alert('홀리밤 픽 추가에 실패했습니다.');
+      }
+    });
+  }
+
+  // 홀리밤 픽 삭제
+  function deleteHollybamPick() {
+    let pickCode = document.getElementById("pickCode").value;
+    if (confirm('이 홀리밤 픽을 삭제하시겠습니까?')) {
+      console.log('홀리밤 픽 삭제:', pickCode);
+      // 실제 구현시 AJAX로 서버에 전송
+      $.ajax({
+        url: '/admin/product/pick/delete',
+        method: 'POST',
+        contentType: 'application/json', // JSON 형태로 전송
+        data: JSON.stringify(pickCode), // 배열을 JSON 문자열로 변환
+        success: function(response) {
+          alert('홀리밤 픽이 삭제되었습니다.');
+          location.reload(); // 페이지 새로고침으로 업데이트된 목록 표시
+        },
+        error: function(xhr, status, error) {
+          console.error('추가 실패:', error);
+          console.error('응답 상태:', xhr.status);
+          console.error('응답 텍스트:', xhr.responseText);
+          alert('홀리밤 픽 추가에 실패했습니다.');
+        }
+      });
+
+      // 실제 구현시에는 location.reload() 대신 동적으로 테이블 업데이트
+      // location.reload();
+    }
+  }
+
+  // 모달 외부 클릭 시 닫기
+  window.onclick = function(event) {
+    const modal = document.getElementById('addProductModal');
+    if (event.target === modal) {
+      closeAddModal();
+    }
+  }
+</script>
+</body>
+</html>

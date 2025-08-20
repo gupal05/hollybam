@@ -74,4 +74,16 @@ public interface IF_AdminProductService {
     String getOptionName(@Param("productCode") int productCode);
 
     List<Map<String, Object>> getProductOption(@Param("productCode") int productCode);
+
+    int getPickCount();
+
+    List<Map<String, Object>> getPickList();
+
+    List<Map<String, Object>> getProductList();
+
+    List<Map<String, Object>> searchForPickProducts(String keyword, String categoryCode, String cateDetailCode);
+
+    void insHollybamPick(int productCode);
+
+    int deleteHollybamPick(int pickCode);
 }

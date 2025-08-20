@@ -63,4 +63,18 @@ public interface IF_AdminProductDao {
     String getOptionName(@Param("productCode") int productCode);
 
     List<Map<String, Object>> getProductOption(@Param("productCode") int productCode);
+
+    List<Map<String, Object>> getPickList();
+
+    int getPickCount();
+
+    List<Map<String, Object>> getProductList();
+
+    List<Map<String, Object>> searchForPickProducts(@Param("keyword") String keyword, @Param("categoryCode") String categoryCode, @Param("cateDetailCode") String cateDetailCode);
+
+    void insHollybamPick(@Param("productCode") int productCode);
+
+    int deleteHollybamPick(@Param("pickCode") int pickCode);
+
+
 }

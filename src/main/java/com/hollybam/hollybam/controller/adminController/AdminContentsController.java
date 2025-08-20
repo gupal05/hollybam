@@ -68,4 +68,9 @@ public class AdminContentsController {
         }
         return res;
     }
+
+    @GetMapping("/inquiry")
+    public String inquiry(Model model){
+        return "admin/contents/inquiryManagement";
+    }
 }

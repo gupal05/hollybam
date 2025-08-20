@@ -8,12 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.stat.descriptive.summary.Product;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -335,5 +337,45 @@ public class AdminProductController {
         model.addAttribute("options",  adminProductService.getProductOption(productCode));
         System.out.println(adminProductService.getProductOption(productCode));
         return "admin/product/editProduct";
+    }
+
+    @GetMapping("/pick")
+    public String adminHollybamPick(Model model){
+        List<Map<String, Object>> pickList = adminProductService.getPickList();
+        model.addAttribute("count", adminProductService.getPickCount());
+        model.addAttribute("pickList", pickList);
+        model.addAttribute("productList", adminProductService.getProductList());
+        return "admin/product/hollybamPick";
+    }
+
+    @PostMapping("/pick/search")
+    @ResponseBody
+    public List<Map<String, Object>> adminHollybamPickSearch(@RequestParam String keyword, @RequestParam String categoryCode, @RequestParam String cateDetailCode) {
+        return adminProductService.searchForPickProducts(keyword, categoryCode, cateDetailCode);
+    }
+
+    @PostMapping("/pick/add")
+    @ResponseBody
+    public Map<String, Object> addHollybamPick(@RequestBody List<Map<String, Object>> productCodes) {
+
+        for(Map<String, Object> map : productCodes) {
+            int productCode = Integer.parseInt(map.get("productCode").toString());
+            adminProductService.insHollybamPick(productCode);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "홀리밤 픽이 추가되었습니다.");
+        return response;
+    }
+
+    @PostMapping("/pick/delete")
+    @ResponseBody
+    public ResponseEntity<?> deleteHollybamPick(@RequestBody int pickCode) {
+        if(adminProductService.deleteHollybamPick(pickCode) > 0){
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.ok(false);
+        }
     }
 }

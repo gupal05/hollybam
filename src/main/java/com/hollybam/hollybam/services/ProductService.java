@@ -68,6 +68,12 @@ public class ProductService implements IF_ProductService{
 
     @Override
     @Transactional
+    public List<ProductDto> selectNewProductsAll() {
+        return productDao.selectNewProductsAll();
+    }
+
+    @Override
+    @Transactional
     public ProductDto getProductDetailInfo_first(String productId) {
         return productDao.getProductDetailInfo_first(productId);
     }

@@ -28,6 +28,6 @@ public interface IF_AdminOrderService {
     void updatePayPendingStatus(@Param("orderCodes") List<Integer> orderCodes);
     void updatePaidStatus(@Param("orderCodes") List<Integer> orderCodes);
     void updateOrderPendingStatus(@Param("orderCodes") List<Integer> orderCodes);
-    void updateShippingStatus(@Param("orderCodes") List<Integer> orderCodes);
+    void updateShippingStatus(List<Map<String, Object>> orders);
     void updateDeliveredStatus(@Param("orderCodes") List<Integer> orderCodes);
 }

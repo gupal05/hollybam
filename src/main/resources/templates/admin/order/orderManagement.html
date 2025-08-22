@@ -1135,6 +1135,100 @@
                 font-size: 8px;
             }
         }
+
+        .tracking-form .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .tracking-form .info-label {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tracking-form .info-value {
+            color: #212529;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* 일괄 송장번호 입력 폼 */
+        .bulk-order-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .bulk-order-item:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+        }
+
+        .bulk-order-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .bulk-order-id {
+            font-weight: 500;
+            color: #007bff;
+            font-size: 13px;
+        }
+
+        .bulk-customer-name {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .bulk-tracking-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: border-color 0.3s ease;
+        }
+
+        .bulk-tracking-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+        }
+
+        .bulk-tracking-input.error {
+            border-color: #dc3545;
+            background-color: #fff5f5;
+        }
+
+        /* 반응형 일괄 폼 */
+        @media (max-width: 768px) {
+            .bulk-order-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .bulk-order-info {
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1273,10 +1367,11 @@
                             <input type="checkbox" class="checkbox order-checkbox" th:value="${order.orderCode}">
                         </td>
                         <td class="order-info">
+                            <input type="hidden" id="orderCode" th:value="${order.orderCode}">
                             <div class="order-id" th:text="${order.orderId}" onclick="showOrderDetail(this.textContent)">
                                 ORD-2025-001
                             </div>
-                            <div class="order-date" th:text="${order.createAt}">
+                            <div class="order-date" th:text="${#temporals.format(order.createAt, 'yyyy-MM-dd')}">
                                 2025-01-15 14:30
                             </div>
                         </td>
@@ -1394,7 +1489,69 @@
     </div>
 </div>
 
+<!-- 송장번호 입력 모달 (단일 주문용) -->
+<div id="trackingNumberModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h4 class="modal-title">송장번호 입력</h4>
+            <button class="close" onclick="closeTrackingModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 30px;">
+            <div class="tracking-form">
+                <div class="info-item" style="margin-bottom: 20px;">
+                    <span class="info-label">주문번호</span>
+                    <span class="info-value" id="singleOrderId">-</span>
+                </div>
+                <div class="info-item" style="margin-bottom: 20px;">
+                    <span class="info-label">택배회사</span>
+                    <span class="info-value">CJ 대한통운</span>
+                </div>
+                <div class="info-item" style="margin-bottom: 20px;">
+                    <label class="info-label" for="singleTrackingNumber">송장번호 *</label>
+                    <input type="text"
+                           id="singleTrackingNumber"
+                           class="filter-input"
+                           placeholder="송장번호를 입력하세요"
+                           style="width: 100%; margin-top: 8px;">
+                </div>
+                <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                    <button class="btn" onclick="closeTrackingModal()">취소</button>
+                    <button class="btn btn-primary" onclick="confirmSingleStatusChange()">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 일괄 송장번호 입력 모달 -->
+<div id="bulkTrackingModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+            <h4 class="modal-title">일괄 송장번호 입력</h4>
+            <button class="close" onclick="closeBulkTrackingModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 30px; max-height: 600px; overflow-y: auto;">
+            <div class="bulk-tracking-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <p style="margin: 0; color: #6c757d; font-size: 13px;">
+                    <strong>선택된 주문 <span id="selectedOrderCount">0</span>건</strong>의 송장번호를 입력해주세요.
+                    <br>택배회사: <strong>CJ 대한통운</strong>
+                </p>
+            </div>
+            <div id="bulkTrackingForm">
+                <!-- 선택된 주문들의 송장번호 입력 폼이 동적으로 생성됩니다 -->
+            </div>
+            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+                <button class="btn" onclick="closeBulkTrackingModal()">취소</button>
+                <button class="btn btn-primary" onclick="confirmBulkStatusChange()">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    let currentSingleOrderId = null;
+    let currentBulkOrderData = [];
+
     $(document).ready(function() {
         // 🔥 CSRF 토큰 가져오기
         var token = $("meta[name='_csrf']").attr("content");
@@ -1660,7 +1817,16 @@
 
         if (!newStatus) return;
 
+        // 배송중으로 변경하는 경우 송장번호 입력 모달 표시
+        if (newStatus === 'SHIPPING') {
+            showTrackingNumberModal(orderId);
+            selectElement.value = ''; // 선택 초기화
+            return; // 👈 여기서 return으로 DB 업데이트 안함
+        }
+
+        // 다른 상태 변경은 기존 로직 사용
         if (confirm(`주문 ${orderId}의 상태를 변경하시겠습니까?`)) {
+            console.log('단일 상태 변경:', orderId, newStatus);
             $.ajax({
                 url: `/admin/order/status/${orderId}`,
                 type: 'POST',
@@ -1675,8 +1841,57 @@
                     document.getElementById('orderDetailContent').innerHTML = '<p>주문 정보를 불러올 수 없습니다.</p>';
                 }
             });
-        } else {
-            selectElement.value = '';
+        }
+    }
+
+    function showTrackingNumberModal(orderId) {
+        currentSingleOrderId = orderId;
+        document.getElementById('singleOrderId').textContent = orderId;
+        document.getElementById('singleTrackingNumber').value = '';
+        document.getElementById('trackingNumberModal').style.display = 'block';
+
+        // 송장번호 입력란에 포커스
+        setTimeout(() => {
+            document.getElementById('singleTrackingNumber').focus();
+        }, 100);
+    }
+
+    function closeTrackingModal() {
+        document.getElementById('trackingNumberModal').style.display = 'none';
+        currentSingleOrderId = null;
+    }
+
+    function confirmSingleStatusChange() {
+        const trackingNumber = document.getElementById('singleTrackingNumber').value.trim();
+
+        if (!trackingNumber) {
+            alert('송장번호를 입력해주세요.');
+            document.getElementById('singleTrackingNumber').focus();
+            return;
+        }
+
+        if (confirm(`주문 ${currentSingleOrderId}을(를) 배송중으로 변경하시겠습니까?\n송장번호: ${trackingNumber}`)) {
+            console.log('단일 상태 변경 - 주문ID:', currentSingleOrderId, '송장번호:', trackingNumber, '상태: SHIPPING');
+            $.ajax({
+                url: '/admin/order/status/batch-tracking',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8', // ★ JSON 바디라고 명시
+                dataType: 'json',                               // (옵션) 응답이 JSON이면 추천
+                data: JSON.stringify([{
+                    orderCode: Number(document.getElementById('orderCode').value),
+                    trackingNumber: String(trackingNumber).trim()
+                }]),
+                success: function (response) {
+                    alert('선택된 주문들이 배송중으로 변경되었습니다.');
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('상태 변경에 실패했습니다. 다시 시도해주세요.');
+                    console.error('Error:', error);
+                }
+            });
+
+            closeTrackingModal();
         }
     }
 
@@ -1692,7 +1907,7 @@
 
     // 일괄 상태 변경
     function bulkStatusChange() {
-        const selectedOrders = getSelectedOrders();
+        const selectedOrders = getSelectedOrdersWithInfo();
         const newStatus = document.getElementById('bulkStatusChange').value;
 
         if (selectedOrders.length === 0) {
@@ -1705,14 +1920,26 @@
             return;
         }
 
+        // 배송중으로 변경하는 경우 일괄 송장번호 입력 모달 표시
+        if (newStatus === 'SHIPPING') {
+            showBulkTrackingModal(selectedOrders);
+            document.getElementById('bulkStatusChange').value = ''; // 선택 초기화
+            return;
+        }
+
+        // 다른 상태 변경은 기존 로직 사용
         if (confirm(`선택된 ${selectedOrders.length}개 주문의 상태를 변경하시겠습니까?`)) {
-            console.log('일괄 상태 변경:', selectedOrders, newStatus);
+            console.log('일괄 상태 변경:', selectedOrders.map(o => o.orderCode), newStatus);
+            const orderCodes = selectedOrders
+                .map(it => (typeof it === 'object' && it !== null) ? it.orderCode : it) // 값만 뽑기
+                .map(v => parseInt(v, 10))                                             // 숫자로 변환
+                .filter(Number.isFinite);
             $.ajax({
                 url: '/admin/order/status/batch',
                 type: 'POST',
                 traditional: true,              // ★ 중요: 배열 전송 시 꼭!
                 data: {
-                    orderCodes: selectedOrders,   // ['245','244','243'] → orderCodes=245&orderCodes=244&orderCodes=243
+                    orderCodes,   // ['245','244','243'] → orderCodes=245&orderCodes=244&orderCodes=243
                     status: newStatus
                 },
                 success: function(data) {
@@ -1723,6 +1950,127 @@
                     document.getElementById('orderDetailContent').innerHTML = '<p>주문 정보를 불러올 수 없습니다.</p>';
                 }
             });
+        }
+    }
+
+    function getSelectedOrdersWithInfo() {
+        const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+        const orders = [];
+
+        checkboxes.forEach(checkbox => {
+            const row = checkbox.closest('tr');
+            const orderIdElement = row.querySelector('.order-id');
+            const customerNameElement = row.querySelector('.customer-name');
+
+            orders.push({
+                orderCode: checkbox.value,
+                orderId: orderIdElement ? orderIdElement.textContent.trim() : '',
+                customerName: customerNameElement ? customerNameElement.textContent.trim() : ''
+            });
+        });
+
+        return orders;
+    }
+
+    function showBulkTrackingModal(orders) {
+        currentBulkOrderData = orders;
+        document.getElementById('selectedOrderCount').textContent = orders.length;
+
+        // 일괄 입력 폼 생성
+        const formHtml = orders.map(order => `
+        <div class="bulk-order-item">
+            <div class="bulk-order-info">
+                <div class="bulk-order-id">${order.orderId}</div>
+                <div class="bulk-customer-name">${order.customerName}</div>
+            </div>
+            <div style="font-size: 12px; color: #6c757d;">CJ 대한통운</div>
+            <div>
+                <input type="text"
+                       class="bulk-tracking-input"
+                       data-order-code="${order.orderCode}"
+                       data-order-id="${order.orderId}"
+                       placeholder="송장번호 입력">
+            </div>
+        </div>
+    `).join('');
+
+        document.getElementById('bulkTrackingForm').innerHTML = formHtml;
+        document.getElementById('bulkTrackingModal').style.display = 'block';
+
+        // 첫 번째 입력란에 포커스
+        setTimeout(() => {
+            const firstInput = document.querySelector('.bulk-tracking-input');
+            if (firstInput) firstInput.focus();
+        }, 100);
+    }
+
+    function closeBulkTrackingModal() {
+        document.getElementById('bulkTrackingModal').style.display = 'none';
+        currentBulkOrderData = [];
+    }
+
+    // 일괄 배송중 상태 변경 확인
+    function confirmBulkStatusChange() {
+        const trackingInputs = document.querySelectorAll('.bulk-tracking-input');
+        const trackingData = [];
+        let hasError = false;
+
+        // 입력 데이터 검증 및 수집
+        trackingInputs.forEach(input => {
+            const trackingNumber = input.value.trim();
+            const orderCode = input.dataset.orderCode;
+            const orderId = input.dataset.orderId;
+
+            // 빈 송장번호 체크
+            if (!trackingNumber) {
+                input.classList.add('error');
+                hasError = true;
+                return;
+            } else {
+                input.classList.remove('error');
+            }
+
+            trackingData.push({
+                orderCode: orderCode,
+                orderId: orderId,
+                trackingNumber: trackingNumber
+            });
+        });
+
+        if (hasError) {
+            alert('모든 주문의 송장번호를 입력해주세요.');
+            return;
+        }
+
+        // 확인 메시지
+        const confirmMessage = `선택된 ${trackingData.length}개 주문을 배송중으로 변경하시겠습니까?\n\n` +
+            trackingData.map(data => `${data.orderId}: ${data.trackingNumber}`).join('\n');
+
+        if (confirm(confirmMessage)) {
+            console.log('일괄 상태 변경 - 배송중:', trackingData);
+            // 여기에 데이터베이스 업데이트 코드 작성
+            $.ajax({
+                url: '/admin/order/status/batch-tracking',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8', // ★ JSON 바디라고 명시
+                dataType: 'json',                               // (옵션) 응답이 JSON이면 추천
+                data: JSON.stringify(
+                    trackingData.map(item => ({
+                        orderCode: Number(item.orderCode),          // 타입 맞추기 (Integer면 숫자)
+                        trackingNumber: String(item.trackingNumber).trim()
+                    }))
+                ),
+                success: function (response) {
+                    alert('선택된 주문들이 배송중으로 변경되었습니다.');
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('일괄 상태 변경에 실패했습니다. 다시 시도해주세요.');
+                    console.error('Error:', error);
+                }
+            });
+
+            closeBulkTrackingModal();
         }
     }
 
@@ -1761,6 +2109,49 @@
         const modal = document.getElementById('orderDetailModal');
         if (event.target === modal) {
             modal.style.display = 'none';
+        }
+    }
+
+    // Enter 키로 송장번호 입력 완료
+    document.addEventListener('DOMContentLoaded', function() {
+        // 단일 송장번호 입력 Enter 키 이벤트
+        document.addEventListener('keypress', function(e) {
+            if (e.target.id === 'singleTrackingNumber' && e.key === 'Enter') {
+                confirmSingleStatusChange();
+            }
+        });
+
+        // 일괄 송장번호 입력 Enter 키 이벤트
+        document.addEventListener('keypress', function(e) {
+            if (e.target.classList.contains('bulk-tracking-input') && e.key === 'Enter') {
+                // 다음 입력란으로 포커스 이동
+                const inputs = Array.from(document.querySelectorAll('.bulk-tracking-input'));
+                const currentIndex = inputs.indexOf(e.target);
+
+                if (currentIndex < inputs.length - 1) {
+                    inputs[currentIndex + 1].focus();
+                } else {
+                    // 마지막 입력란에서 Enter 시 확인
+                    confirmBulkStatusChange();
+                }
+            }
+        });
+    });
+
+    // 모달 외부 클릭시 닫기 (기존 함수에 추가)
+    window.onclick = function(event) {
+        const orderModal = document.getElementById('orderDetailModal');
+        const trackingModal = document.getElementById('trackingNumberModal');
+        const bulkTrackingModal = document.getElementById('bulkTrackingModal');
+
+        if (event.target === orderModal) {
+            orderModal.style.display = 'none';
+        }
+        if (event.target === trackingModal) {
+            closeTrackingModal();
+        }
+        if (event.target === bulkTrackingModal) {
+            closeBulkTrackingModal();
         }
     }
 </script>

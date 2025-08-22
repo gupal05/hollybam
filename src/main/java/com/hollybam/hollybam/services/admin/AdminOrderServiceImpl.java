@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -150,7 +151,15 @@ public class AdminOrderServiceImpl implements IF_AdminOrderService {
 
     @Override
     @Transactional
-    public void updateShippingStatus(List<Integer> orderCodes){
+    public void updateShippingStatus(List<Map<String, Object>> orders){
+        for(int i=0; i<orders.size();i++){
+            orders.get(i).put("deliveryMemo", adminOrderDao.getDeliveryMemo(Integer.parseInt(orders.get(i).get("orderCode").toString())));
+        }
+        adminOrderDao.insertDeliveryStatus(orders);
+        List<Integer> orderCodes = new ArrayList<Integer>();
+        for(int i=0; i<orders.size();i++){
+            orderCodes.add(Integer.parseInt(orders.get(i).get("orderCode").toString()));
+        }
         adminOrderDao.updateShippingStatus(orderCodes);
     }
 

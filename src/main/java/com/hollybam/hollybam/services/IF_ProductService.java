@@ -16,6 +16,7 @@ public interface IF_ProductService {
     public List<ProductDto> selectBestProducts();
     public List<ProductDto> selectBestProductsForMobile();
     public List<ProductDto> selectNewProducts();
+    public List<ProductDto> selectNewProductsAll();
     public ProductDto getProductDetailInfo_first(String productId);
     public List<ImageDto> getProductInfoThumbnail(int productCode);
     public List<ImageDto> getProductInfoContent(int productCode);

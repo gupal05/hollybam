@@ -263,6 +263,33 @@
             border-radius: 1px;
         }
 
+        /* 더보기 버튼 스타일 - 독립적으로 사용 */
+        .view-more-btn {
+            background: #EE386D;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(238, 56, 109, 0.3);
+            white-space: nowrap;
+            align-self: center;
+            margin: 40px 0 60px 0;
+        }
+
+        .view-more-btn:hover {
+            background: #d32f5a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(238, 56, 109, 0.4);
+        }
+
+        .view-more-btn:active {
+            transform: translateY(0);
+        }
+
         /* 베스트 리뷰 섹션 */
         .best-reviews-section {
             margin: 60px 0 !important;
@@ -497,6 +524,33 @@
             width: 100%;
         }
 
+        /* 베스트 상품 표시 제한 */
+        .best-products-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .best-products-row.collapsed .v4-product:nth-child(n+9) {
+            display: none;
+        }
+
+        /* 신상품 표시 제한 */
+        .new-products-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .new-products-row .v4-product:nth-child(n+5) {
+            display: none;
+        }
+
         .v4-product {
             position: relative;
             background: transparent;
@@ -715,9 +769,19 @@
                 margin-bottom: 28px;
             }
 
-            .product-row {
+            .product-row,
+            .best-products-row,
+            .new-products-row {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 18px;
+            }
+
+            .best-products-row.collapsed .v4-product:nth-child(n+7) {
+                display: none;
+            }
+
+            .new-products-row .v4-product:nth-child(n+4) {
+                display: none;
             }
 
             .review-card {
@@ -912,9 +976,20 @@
                 margin-bottom: 20px;
             }
 
-            .product-row {
+            .product-row,
+            .best-products-row,
+            .new-products-row {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
+            }
+
+            .best-products-row.collapsed .v4-product:nth-child(n+5) {
+                display: none;
+            }
+
+            /* 🎯 모바일에서 신상품 4개(2x2) 표시로 변경 */
+            .new-products-row .v4-product:nth-child(n+5) {
+                display: none;
             }
 
             .card-product-title {
@@ -1298,7 +1373,9 @@
                 width: 30px;
             }
 
-            .product-row {
+            .product-row,
+            .best-products-row,
+            .new-products-row {
                 gap: 14px;
             }
 
@@ -1599,7 +1676,9 @@
                 object-position: center center;
             }
 
-            .product-row {
+            .product-row,
+            .best-products-row,
+            .new-products-row {
                 gap: 12px;
             }
 
@@ -1765,7 +1844,9 @@
                 width: 22px;
             }
 
-            .product-row {
+            .product-row,
+            .best-products-row,
+            .new-products-row {
                 gap: 10px;
             }
 
@@ -2556,10 +2637,10 @@
                 <div class="category-label">이달의 특가</div>
             </div>
             <div class="category-item">
-                <div class="category-icon">
-                    <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/category-icon/pick-icon.png" alt="픽 아이콘" style="width: 50px; height: 50px;" />
+                <div class="category-icon" onclick="window.location.href='/new'">
+                    <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/category-icon/new-icon.png" alt="뉴 아이콘" style="width: 50px; height: 50px;" />
                 </div>
-                <div class="category-label">홀리밤 픽</div>
+                <div class="category-label">신상품</div>
             </div>
             <div class="category-item">
                 <div class="category-icon">
@@ -2604,8 +2685,11 @@
 <!-- 메인 콘텐츠 -->
 <div class="content">
     <div class="inner-box">
+        <!-- 베스트 상품 섹션 제목만 -->
         <div class="section-title">베스트 상품</div>
-        <div class="product-row">
+
+        <!-- 베스트 상품 그리드 (처음에는 8개만 표시) -->
+        <div class="best-products-row collapsed" id="bestProductsRow">
             <article class="v4-product"
                      th:each="product : ${proList}"
                      th:classappend="${product.productQuantity == null or product.productQuantity == 0} ? 'sold-out' : ''">
@@ -2687,6 +2771,11 @@
             </article>
         </div>
 
+
+        <button class="view-more-btn" id="bestViewMoreBtn">
+            더보기 <i class="fas fa-chevron-down" style="margin-left: 5px; transition: transform 0.3s ease;"></i>
+        </button>
+
         <!-- 베스트 리뷰 섹션 -->
         <div class="best-reviews-section">
             <div class="section-title">베스트 리뷰</div>
@@ -2705,9 +2794,9 @@
                         <div class="review-content">
                             <!-- 별점 -->
                             <div class="rating-stars">
-                                    <svg class="star" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                    </svg>
+                                <svg class="star" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
                                 <svg class="star" viewBox="0 0 24 24">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                 </svg>
@@ -3176,76 +3265,77 @@
                             </div>
                         </div>
                     </div>
-<!--                    리뷰 있으면 주석 해제 -->
-<!--                    <div class="review-card" th:each="review : ${bestReviews}" th:data-review-code="${review.reviewCode}">-->
-<!--                        <div class="review-header">-->
-<!--                            &lt;!&ndash; 상품 이미지 &ndash;&gt;-->
-<!--                            <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${review.imageDto.imageUrl}}"-->
-<!--                                 alt="상품 이미지" class="product-thumb">-->
-<!--                            &lt;!&ndash; 상품명 &ndash;&gt;-->
-<!--                            <div class="product-name" th:text="${review.productDto.productName}">상품명</div>-->
-<!--                        </div>-->
+                    <!--                    리뷰 있으면 주석 해제 -->
+                    <!--                    <div class="review-card" th:each="review : ${bestReviews}" th:data-review-code="${review.reviewCode}">-->
+                    <!--                        <div class="review-header">-->
+                    <!--                            &lt;!&ndash; 상품 이미지 &ndash;&gt;-->
+                    <!--                            <img th:src="@{'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${review.imageDto.imageUrl}}"-->
+                    <!--                                 alt="상품 이미지" class="product-thumb">-->
+                    <!--                            &lt;!&ndash; 상품명 &ndash;&gt;-->
+                    <!--                            <div class="product-name" th:text="${review.productDto.productName}">상품명</div>-->
+                    <!--                        </div>-->
 
-<!--                        <div class="review-content">-->
-<!--                            &lt;!&ndash; 별점 &ndash;&gt;-->
-<!--                            <div class="rating-stars">-->
-<!--                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">-->
-<!--                                    <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : 'empty'" viewBox="0 0 24 24">-->
-<!--                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>-->
-<!--                                    </svg>-->
-<!--                                </th:block>-->
-<!--                                <span class="rating-number" th:text="${review.rating + '.0'}">5.0</span>-->
-<!--                            </div>-->
+                    <!--                        <div class="review-content">-->
+                    <!--                            &lt;!&ndash; 별점 &ndash;&gt;-->
+                    <!--                            <div class="rating-stars">-->
+                    <!--                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">-->
+                    <!--                                    <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : 'empty'" viewBox="0 0 24 24">-->
+                    <!--                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>-->
+                    <!--                                    </svg>-->
+                    <!--                                </th:block>-->
+                    <!--                                <span class="rating-number" th:text="${review.rating + '.0'}">5.0</span>-->
+                    <!--                            </div>-->
 
-<!--                            &lt;!&ndash; 리뷰 내용 &ndash;&gt;-->
-<!--                            <div class="review-text" th:text="${review.content}">-->
-<!--                                리뷰 내용이 여기에 표시됩니다.-->
-<!--                            </div>-->
-<!--                        </div>-->
+                    <!--                            &lt;!&ndash; 리뷰 내용 &ndash;&gt;-->
+                    <!--                            <div class="review-text" th:text="${review.content}">-->
+                    <!--                                리뷰 내용이 여기에 표시됩니다.-->
+                    <!--                            </div>-->
+                    <!--                        </div>-->
 
-<!--                        <div class="review-footer">-->
-<!--                            <div>-->
-<!--                                <div class="review-author-info">-->
-<!--                                    &lt;!&ndash; 작성자명 (이미 마스킹 처리됨) &ndash;&gt;-->
-<!--                                    <span class="review-author" th:text="${review.writerName}">작성자명</span>-->
-<!--                                    &lt;!&ndash; 나이대와 성별 &ndash;&gt;-->
-<!--                                    <span class="review-age">-->
-<!--                                <span th:text="${review.writerAge}">20대</span>-->
-<!--                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '남자'}">남성</span>-->
-<!--                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '여자'}">여성</span>-->
-<!--                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '남자'}">남성</span>-->
-<!--                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '여자'}">여성</span>-->
-<!--                            </span>-->
-<!--                                </div>-->
-<!--                                &lt;!&ndash; 작성일 &ndash;&gt;-->
-<!--                                <div class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy년 MM월 dd일')}">2025년 05월 1일</div>-->
-<!--                            </div>-->
+                    <!--                        <div class="review-footer">-->
+                    <!--                            <div>-->
+                    <!--                                <div class="review-author-info">-->
+                    <!--                                    &lt;!&ndash; 작성자명 (이미 마스킹 처리됨) &ndash;&gt;-->
+                    <!--                                    <span class="review-author" th:text="${review.writerName}">작성자명</span>-->
+                    <!--                                    &lt;!&ndash; 나이대와 성별 &ndash;&gt;-->
+                    <!--                                    <span class="review-age">-->
+                    <!--                                <span th:text="${review.writerAge}">20대</span>-->
+                    <!--                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '남자'}">남성</span>-->
+                    <!--                                <span th:if="${review.memberDto != null and review.memberDto.memberGender == '여자'}">여성</span>-->
+                    <!--                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '남자'}">남성</span>-->
+                    <!--                                <span th:if="${review.guestDto != null and review.guestDto.guestGender == '여자'}">여성</span>-->
+                    <!--                            </span>-->
+                    <!--                                </div>-->
+                    <!--                                &lt;!&ndash; 작성일 &ndash;&gt;-->
+                    <!--                                <div class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy년 MM월 dd일')}">2025년 05월 1일</div>-->
+                    <!--                            </div>-->
 
-<!--                            &lt;!&ndash; ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 &ndash;&gt;-->
-<!--                            <div class="review-likes"-->
-<!--                                 th:data-review-code="${review.reviewCode}"-->
-<!--                                 th:classappend="${review.isLiked} ? 'liked' : ''">-->
-<!--                                <svg class="like-icon" viewBox="0 0 24 24">-->
-<!--                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>-->
-<!--                                </svg>-->
-<!--                                <span th:text="${review.likeCount}">0</span>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
+                    <!--                            &lt;!&ndash; ⭐ 좋아요 버튼 (토글 기능 추가) - 기존 코드는 그대로 유지 &ndash;&gt;-->
+                    <!--                            <div class="review-likes"-->
+                    <!--                                 th:data-review-code="${review.reviewCode}"-->
+                    <!--                                 th:classappend="${review.isLiked} ? 'liked' : ''">-->
+                    <!--                                <svg class="like-icon" viewBox="0 0 24 24">-->
+                    <!--                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>-->
+                    <!--                                </svg>-->
+                    <!--                                <span th:text="${review.likeCount}">0</span>-->
+                    <!--                            </div>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
 
-<!--                    &lt;!&ndash; 리뷰가 없는 경우 &ndash;&gt;-->
-<!--                    <div th:if="${bestReviews == null or bestReviews.isEmpty()}" class="review-card">-->
-<!--                        <div class="no-reviews-message">-->
-<!--                            <p>아직 베스트 리뷰가 없습니다.</p>-->
-<!--                            <p>첫 리뷰를 작성해보세요!</p>-->
-<!--                        </div>-->
-<!--                    </div>-->
+                    <!--                    &lt;!&ndash; 리뷰가 없는 경우 &ndash;&gt;-->
+                    <!--                    <div th:if="${bestReviews == null or bestReviews.isEmpty()}" class="review-card">-->
+                    <!--                        <div class="no-reviews-message">-->
+                    <!--                            <p>아직 베스트 리뷰가 없습니다.</p>-->
+                    <!--                            <p>첫 리뷰를 작성해보세요!</p>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
                 </div>
             </div>
         </div>
 
+        <!-- 신상품 섹션 -->
         <div class="section-title">신상품</div>
-        <div class="product-row">
+        <div class="new-products-row">
             <article class="v4-product"
                      th:each="product : ${newProList}"
                      th:classappend="${product.productQuantity == null or product.productQuantity == 0} ? 'sold-out' : ''">
@@ -3257,16 +3347,21 @@
                             Sold Out
                         </div>
 
-                        <!-- 🔥 모바일용 할인율 뱃지 추가 - 신상품은 일반 상품만 -->
+                        <!-- 🔥 모바일용 할인율 뱃지 추가 - 일반 상품 -->
                         <div class="mobile-sale-perc"
+                             th:if="${!product.isSale}"
                              th:text="${product.priceDtoList[0].percentage}+'%'">0%</div>
+
+                        <!-- 🔥 모바일용 할인율 뱃지 추가 - 특가 상품 -->
+                        <div class="mobile-sale-perc"
+                             th:if="${product.isSale}"
+                             th:text="${product.specialDiscountRate}+'%'">0%</div>
 
                         <img class="product-img"
                              th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
                              th:if="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
                              th:attr="data-hover=${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageWebp}"
                              alt="상품 이미지" />
-
                         <img class="product-img"
                              th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + product.imageDtoList[0].imageUrl}"
                              th:unless="${product.imageDtoList[0].imageWebp != null and product.imageDtoList[0].imageWebp != 'blob'}"
@@ -3277,10 +3372,28 @@
                         <div class="card-product-description" th:text="${product.productDescription}">
                             상품 설명
                         </div>
-                        <div class="card-product-price">
+                        <div class="card-product-price" th:if="${!product.isSale}">
                             <div class="sale-perc" th:text="${product.priceDtoList[0].percentage}+'%'">0%</div>
                             <div class="sale_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '원'">150,000원</div>
                             <div class="regular_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">200,000원</div>
+                        </div>
+                        <div th:if="${product.isSale}">
+                            <div class="price-sale-container">
+                                <!-- 가격 정보 -->
+                                <div class="card-product-price">
+                                    <div class="sale-perc" th:text="${product.specialDiscountRate}+'%'">0%</div>
+                                    <div class="sale_price" th:text="${#numbers.formatInteger(product.salePrice, 3, 'COMMA')} + '원'">150,000원</div>
+                                    <div class="regular_price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">200,000원</div>
+                                </div>
+
+                                <!-- 이달의 특가 뱃지 -->
+                                <div class="sale-badge-container">
+                                    <div class="monthly-sale-badge">
+                                        <i class="sale-badge-icon fas fa-fire"></i>
+                                        <span>이달의 특가</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="delivery-message" th:unless="${product.productQuantity == null or product.productQuantity == 0}">
                             <i class="fas fa-shipping-fast delivery-icon"></i>
@@ -3415,7 +3528,69 @@
                 xhr.setRequestHeader(header, token);
             }
         });
+
+        // 베스트 상품 더보기 버튼 기능
+        $('#bestViewMoreBtn').on('click', function() {
+            const $btn = $(this);
+            const $icon = $btn.find('i');
+            const $bestProductsRow = $('#bestProductsRow');
+
+            if ($bestProductsRow.hasClass('collapsed')) {
+                // 펼치기
+                $bestProductsRow.removeClass('collapsed');
+                $btn.html('접기 <i class="fas fa-chevron-up" style="margin-left: 5px; transition: transform 0.3s ease;"></i>');
+
+                // 숨겨진 상품들에 애니메이션 효과
+                const hiddenProducts = $bestProductsRow.find('.v4-product:nth-child(n+9)');
+                hiddenProducts.each(function(index) {
+                    const $product = $(this);
+                    setTimeout(() => {
+                        $product.addClass('product-fade-in');
+                    }, index * 100);
+                });
+            } else {
+                // 접기
+                $bestProductsRow.addClass('collapsed');
+                $btn.html('더보기 <i class="fas fa-chevron-down" style="margin-left: 5px; transition: transform 0.3s ease;"></i>');
+
+                // 스크롤을 베스트 상품 섹션 상단으로 부드럽게 이동
+                $('html, body').animate({
+                    scrollTop: $('.section-title').first().offset().top - 100
+                }, 500);
+            }
+        });
+        // 창 크기 변경시 더보기 버튼 조정
+        $(window).on('resize', adjustViewMoreButton);
+        adjustViewMoreButton(); // 초기 실행
     });
+
+
+    // 반응형에서 더보기 버튼 개수 조정
+    function adjustViewMoreButton() {
+        const $bestProductsRow = $('#bestProductsRow');
+        const $btn = $('#bestViewMoreBtn');
+        const screenWidth = $(window).width();
+
+        // CSS에서 정의한 숨김 규칙과 동일하게 적용
+        if (screenWidth <= 900) {
+            // 모바일에서는 4개까지만 표시 (2x2)
+            if ($bestProductsRow.hasClass('collapsed')) {
+                $btn.html('더보기 <i class="fas fa-chevron-down" style="margin-left: 5px; transition: transform 0.3s ease;"></i>');
+            }
+        } else if (screenWidth <= 1200) {
+            // 태블릿에서는 6개까지만 표시 (3x2)
+            if ($bestProductsRow.hasClass('collapsed')) {
+                $btn.html('더보기 <i class="fas fa-chevron-down" style="margin-left: 5px; transition: transform 0.3s ease;"></i>');
+            }
+        } else {
+            // 데스크톱에서는 8개까지만 표시 (4x2)
+            if ($bestProductsRow.hasClass('collapsed')) {
+                $btn.html('더보기 <i class="fas fa-chevron-down" style="margin-left: 5px; transition: transform 0.3s ease;"></i>');
+            }
+        }
+    }
+
+
 
     // 슬라이드 기능 (터치 스와이프 기능 추가)
     let current = 0;
@@ -4120,6 +4295,13 @@
             showPopups();
         }, 0);
     });
+
+    // checkSpecialEvents 함수 정의 (필요에 따라 구현)
+    function checkSpecialEvents() {
+        // 특별 이벤트가 있을 경우 여기에 로직 추가
+        // 예: 특별 할인, 이벤트 배송 등
+        console.log('특별 이벤트 체크 완료');
+    }
 </script>
 
 </body>

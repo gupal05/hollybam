@@ -257,16 +257,20 @@ public class ReviewController {
 
     @PostMapping("/check-eligibility")
     @ResponseBody
-    public Map<String, Object> checkReviewEligibility(@RequestBody Map<String, Object> paramMap) {
+    public Map<String, Object> checkReviewEligibility(@RequestBody Map<String, Object> paramMap, HttpSession session) {
+        MemberDto member = new MemberDto();
+        GuestDto guest = new GuestDto();
         Integer orderItemCode = paramMap.get("orderItemCode") != null ?
                 Integer.parseInt(paramMap.get("orderItemCode").toString()) : null;
-        Integer memCode = paramMap.get("memCode") != null ?
-                Integer.parseInt(paramMap.get("memCode").toString()) : null;
-        Integer guestCode = paramMap.get("guestCode") != null ?
-                Integer.parseInt(paramMap.get("guestCode").toString()) : null;
+        if(session.getAttribute("member") != null){
+            member = (MemberDto) session.getAttribute("member");
+        } else if(session.getAttribute("guest") != null){
+            guest = (GuestDto) session.getAttribute("guest");
+        }
 
         Map<String, Object> result = new HashMap<>();
-        boolean eligible = reviewService.checkReviewEligibility(orderItemCode, memCode, guestCode);
+        System.out.println(orderItemCode+" : "+ member.getMemberCode()+" : "+guest.getGuestCode());
+        boolean eligible = reviewService.checkReviewEligibility(orderItemCode, member.getMemberCode(), guest.getGuestCode());
         result.put("eligible", eligible);
 
         return result;

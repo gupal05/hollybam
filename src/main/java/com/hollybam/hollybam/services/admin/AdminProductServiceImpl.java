@@ -325,40 +325,4 @@ public class AdminProductServiceImpl implements IF_AdminProductService {
     public String getOptionName(@Param("productCode") int productCode){
         return adminProductDao.getOptionName(productCode);
     }
-
-    @Override
-    @Transactional
-    public int getPickCount() {
-        return adminProductDao.getPickCount();
-    }
-
-    @Override
-    @Transactional
-    public List<Map<String, Object>> getPickList() {
-        return adminProductDao.getPickList();
-    }
-
-    @Override
-    @Transactional
-    public List<Map<String, Object>> getProductList(){
-        return adminProductDao.getProductList();
-    }
-
-    @Override
-    @Transactional
-    public List<Map<String, Object>> searchForPickProducts(String keyword, String categoryCode, String cateDetailCode) {
-        return adminProductDao.searchForPickProducts(keyword, categoryCode, cateDetailCode);
-    }
-
-    @Override
-    @Transactional
-    public void insHollybamPick(int productCode) {
-        adminProductDao.insHollybamPick(productCode);
-    }
-
-    @Override
-    @Transactional
-    public int deleteHollybamPick(int pickCode) {
-        return adminProductDao.deleteHollybamPick(pickCode);
-    }
 }

@@ -202,7 +202,7 @@ public class MypageController {
         switch (englishStatus) {
             case "PENDING": return "결제대기";
             case "PAID": return "결제완료";
-            case "SHIPPED": return "배송중";
+            case "SHIPPING": return "배송중";
             case "DELIVERED": return "배송완료";
             case "CANCELLED": return "취소/반품";
             default: return "기타";

@@ -2,6 +2,19 @@
  * 위시리스트 관리 JavaScript
  */
 
+$(document).ready(function() {
+    // 🔥 CSRF 토큰 가져오기
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+
+    // 🔥 모든 jQuery AJAX에 자동 적용
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader(header, token);
+        }
+    });
+});
+
 // 위시리스트 상태를 관리하는 객체
 const WishlistManager = {
 
@@ -48,9 +61,6 @@ const WishlistManager = {
             url: '/wishlist/toggle',
             type: 'POST',
             data: { productCode: productCode },
-            header: {
-                [getCSRFHeader()]: getCSRFToken()
-            },
             success: (response) => {
                 console.log('위시리스트 토글 성공:', response);
 

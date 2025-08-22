@@ -30,6 +30,8 @@ public interface IF_AdminOrderDao {
     void updatePayPendingStatus(@Param("orderCodes") List<Integer> orderCodes);
     void updatePaidStatus(@Param("orderCodes") List<Integer> orderCodes);
     void updateOrderPendingStatus(@Param("orderCodes") List<Integer> orderCodes);
+    String getDeliveryMemo(@Param("orderCode") int orderCode);
+    void insertDeliveryStatus(@Param("orders") List<Map<String, Object>> orders);
     void updateShippingStatus(@Param("orderCodes") List<Integer> orderCodes);
     void updateDeliveredStatus(@Param("orderCodes") List<Integer> orderCodes);
 }

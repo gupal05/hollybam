@@ -836,12 +836,28 @@
                                         Sold Out
                                     </div>
 
-                                    <!-- 타이틀 이미지 표시 -->
+                                    <!-- 메인 페이지와 동일한 이미지 구조로 변경 -->
                                     <th:block th:if="${product.imageDtoList != null and !product.imageDtoList.isEmpty()}">
-                                        <th:block th:each="image : ${product.imageDtoList}">
-                                            <img th:if="${image.imageType == 'title'}"
-                                                 th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + image.imageUrl}"
-                                                 th:alt="${product.productName}" />
+                                        <!-- title 이미지 먼저 찾기 -->
+                                        <th:block th:each="titleImg : ${product.imageDtoList}" th:if="${titleImg.imageType == 'title'}">
+                                            <!-- webp 이미지 찾아서 data-hover 속성 설정 -->
+                                            <th:block th:with="webpImg=${null}">
+                                                <th:block th:each="img : ${product.imageDtoList}" th:if="${img.imageType == 'webp' and img.imageWebp != null and img.imageWebp != 'blob' and !#strings.isEmpty(img.imageWebp)}">
+                                                    <th:block th:with="webpImg=${img}">
+                                                        <!-- webp 이미지가 있는 경우 -->
+                                                        <img class="product-img"
+                                                             th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + titleImg.imageUrl}"
+                                                             th:attr="data-hover=${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + webpImg.imageWebp}"
+                                                             th:alt="${product.productName}" />
+                                                    </th:block>
+                                                </th:block>
+
+                                                <!-- webp 이미지가 없는 경우 -->
+                                                <img th:if="${webpImg == null}"
+                                                     class="product-img"
+                                                     th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + titleImg.imageUrl}"
+                                                     th:alt="${product.productName}" />
+                                            </th:block>
                                         </th:block>
                                     </th:block>
 
@@ -961,24 +977,29 @@
 <script>
     // 이미지 호버 효과 (webp 이미지가 있는 경우)
     document.addEventListener("DOMContentLoaded", function () {
-        const imgs = document.querySelectorAll(".card-product-img img");
+        const productCards = document.querySelectorAll(".v4-product");
 
-        imgs.forEach(img => {
-            const originalSrc = img.getAttribute("src");
-            const product = img.closest('.v4-product');
+        productCards.forEach(card => {
+            const mainImage = card.querySelector(".product-img");
 
-            // webp 이미지 찾기
-            const webpImage = product.querySelector('[data-webp]');
-            if (webpImage) {
-                const hoverSrc = webpImage.getAttribute('data-webp');
+            if (mainImage && mainImage.hasAttribute('data-hover')) {
+                const originalSrc = mainImage.src;
+                const hoverSrc = mainImage.getAttribute('data-hover');
 
-                img.addEventListener("mouseenter", () => {
-                    img.setAttribute("src", hoverSrc);
-                });
+                // webp 이미지가 있을 때만 호버 효과 적용
+                if (hoverSrc && originalSrc !== hoverSrc) {
+                    card.addEventListener("mouseenter", () => {
+                        if (!card.classList.contains('sold-out')) {
+                            mainImage.src = hoverSrc;
+                        }
+                    });
 
-                img.addEventListener("mouseleave", () => {
-                    img.setAttribute("src", originalSrc);
-                });
+                    card.addEventListener("mouseleave", () => {
+                        if (!card.classList.contains('sold-out')) {
+                            mainImage.src = originalSrc;
+                        }
+                    });
+                }
             }
         });
     });

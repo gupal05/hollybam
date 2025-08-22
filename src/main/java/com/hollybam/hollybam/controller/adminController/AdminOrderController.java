@@ -3,12 +3,16 @@ package com.hollybam.hollybam.controller.adminController;
 import com.hollybam.hollybam.services.admin.IF_AdminOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -62,11 +66,20 @@ public class AdminOrderController {
             }
         }
         System.out.println(status);
-        System.out.println(orderList);
+
 
         // 페이지네이션 계산
         int startIndex = (page - 1) * size + 1;
         int endIndex = Math.min(page * size, totalCount);
+
+        DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        orderList.sort(Comparator.comparing((Map<String,Object> m) -> {
+            Object v = m.get("createAt");
+            return (v instanceof LocalDateTime ldt) ? ldt : LocalDateTime.parse(String.valueOf(v), ISO);
+        }).reversed()); // 최신순
+
+        System.out.println(orderList);
 
         // 모델에 추가
         model.addAttribute("currentPage", page);
@@ -120,9 +133,6 @@ public class AdminOrderController {
                 adminOrderService.updateDeliveryStatusNull(orderCodes);
             }
             System.out.println("주문접수");
-        } else if(status.equals("SHIPPING")){
-            adminOrderService.updateShippingStatus(orderCodes);
-            System.out.println("배송중");
         } else if(status.equals("DELIVERED")){
             adminOrderService.updateDeliveredStatus(orderCodes);
             System.out.println("배송완료");
@@ -164,13 +174,19 @@ public class AdminOrderController {
                 }
             }
             System.out.println("주문접수");
-        } else if(status.equals("SHIPPING")){
-            adminOrderService.updateShippingStatus(orderCodes);
-            System.out.println("배송중");
         } else if(status.equals("DELIVERED")){
             adminOrderService.updateDeliveredStatus(orderCodes);
             System.out.println("배송완료");
         }
+        return ResponseEntity.ok(true);
+    }
+
+    @PostMapping(value = "/status/batch-tracking", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> updateStatusBatchTracking(@RequestBody List<Map<String, Object>> orders) {
+        System.out.println(orders);
+        adminOrderService.updateShippingStatus(orders);
+        System.out.println("배송중");
         return ResponseEntity.ok(true);
     }
 }

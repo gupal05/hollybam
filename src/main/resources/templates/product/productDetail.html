@@ -11,369 +11,445 @@
     <link th:href="@{/css/header.css}" rel="stylesheet"/>
     <link th:href="@{/css/footer.css}" rel="stylesheet"/>
     <script type="text/javascript" th:src="@{/js/header.js}"></script>
-
-    <!-- Font Awesome (하트 아이콘용) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- 위시리스트 기능 -->
     <script th:src="@{/js/wishlist.js}"></script>
-    <style>
-        * { box-sizing: border-box; }
 
-        body {
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable.css" />
+
+    <style>
+        * {
             margin: 0;
             padding: 0;
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #ffffff;
-            line-height: 1.6;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ee386d;
+            --primary-light: #f055799c;
+            --black: #000000;
+            --gray-950: #0a0a0a;
+            --gray-900: #171717;
+            --gray-800: #262626;
+            --gray-700: #404040;
+            --gray-600: #525252;
+            --gray-500: #737373;
+            --gray-400: #a3a3a3;
+            --gray-300: #d4d4d4;
+            --gray-200: #e5e5e5;
+            --gray-100: #f5f5f5;
+            --gray-50: #fafafa;
+            --white: #ffffff;
+            --border: rgba(0, 0, 0, 0.06);
+            --border-strong: rgba(0, 0, 0, 0.12);
+            --surface-raised: rgba(255, 255, 255, 0.8);
+            --backdrop: rgba(255, 255, 255, 0.85);
+            --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-xs: 4px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-10: 40px;
+            --space-12: 48px;
+            --space-16: 64px;
+            --space-20: 80px;
+        }
+
+        body {
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+            color: var(--gray-900);
+            background: var(--white);
+            line-height: 1.5;
             padding-top: 80px;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
         }
 
+        /* Layout */
         .container {
-            max-width: 1280px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0 var(--space-4);
         }
 
-        /* 브레드크럼 */
+        /* Typography */
+        .text-xs { font-size: 12px; line-height: 1.33; }
+        .text-sm { font-size: 14px; line-height: 1.43; }
+        .text-base { font-size: 16px; line-height: 1.5; }
+        .text-lg { font-size: 18px; line-height: 1.56; }
+        .text-xl { font-size: 20px; line-height: 1.4; }
+        .text-2xl { font-size: 24px; line-height: 1.33; }
+        .text-3xl { font-size: 30px; line-height: 1.2; }
+        .text-4xl { font-size: 36px; line-height: 1.11; }
+
+        .font-light { font-weight: 300; }
+        .font-normal { font-weight: 400; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+
+        /* Breadcrumb */
         .breadcrumb {
+            padding: var(--space-4) 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb-nav {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 30px;
+            gap: var(--space-2);
             font-size: 14px;
-            color: #888;
+            color: var(--gray-500);
         }
 
-        .breadcrumb a {
-            color: #888;
+        .breadcrumb-nav a {
+            color: var(--gray-500);
             text-decoration: none;
+            transition: color 0.15s ease;
         }
 
-        .breadcrumb a:hover {
-            color: #EE386D;
+        .breadcrumb-nav a:hover {
+            color: var(--gray-900);
         }
 
-        .breadcrumb .current {
-            color: #333;
-            font-weight: 600;
+        .breadcrumb-nav .current {
+            color: var(--gray-900);
+            font-weight: 500;
         }
 
-        /* 상품 정보 섹션 */
-        .product-info {
+        /* Product Section */
+        .product-section {
+            padding: var(--space-8) 0 var(--space-20);
+        }
+
+        .product-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            margin-bottom: 80px;
+            grid-template-columns: 1.2fr 480px;
+            gap: var(--space-20);
+            align-items: start;
         }
 
-        .product-image {
-            position: relative;
-        }
-
-        /* 이미지 갤러리 */
+        /* Image Gallery */
         .image-gallery {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            position: sticky;
+            top: 100px;
         }
 
-        .main-image-container {
+        .main-image-wrapper {
             position: relative;
+            margin-bottom: var(--space-4);
+            aspect-ratio: 1;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
         }
 
         .main-image {
             width: 100%;
-            aspect-ratio: 1;
+            height: 100%;
             object-fit: cover;
-            border-radius: 20px;
-            background: #f5f5f5;
-            transition: opacity 0.3s ease;
+            transition: transform 0.4s ease;
         }
 
-        .wishlist-btn {
+        .main-image:hover {
+            transform: scale(1.01);
+        }
+
+        .wishlist-button {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.9);
-            border: none;
-            padding: 12px;
+            top: var(--space-4);
+            right: var(--space-4);
+            width: 40px;
+            height: 40px;
+            background: var(--backdrop);
+            border: 1px solid var(--border);
             border-radius: 50%;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .wishlist-btn:hover {
-            background: #EE386D;
-        }
-
-        .wishlist-btn:hover .heart-icon {
-            fill: white;
-        }
-
-        .heart-icon {
-            width: 24px;
-            height: 24px;
-            fill: #888;
-            transition: fill 0.3s ease;
-        }
-
-        /* 썸네일 갤러리 */
-        .thumbnail-gallery {
             display: flex;
-            gap: 12px;
-            justify-content: flex-start;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .wishlist-button:hover {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .wishlist-button i {
+            font-size: 18px;
+        }
+
+        .thumbnail-grid {
+            display: flex;
+            gap: var(--space-3);
             flex-wrap: wrap;
         }
 
         .thumbnail-item {
             width: 80px;
             height: 80px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             overflow: hidden;
             cursor: pointer;
-            border: 3px solid transparent;
-            transition: all 0.3s ease;
-            position: relative;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+            background: var(--gray-50);
+            flex-shrink: 0;
         }
 
-        .thumbnail-item:hover {
-            border-color: #EE386D;
-            transform: scale(1.05);
-        }
-
+        .thumbnail-item:hover,
         .thumbnail-item.active {
-            border-color: #EE386D;
-            box-shadow: 0 4px 12px rgba(238, 56, 109, 0.3);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
         }
 
         .thumbnail-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s ease;
         }
 
-        .thumbnail-item:hover .thumbnail-image {
-            transform: scale(1.1);
-        }
-
-        /* 상품 세부 정보 */
-        .product-details {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .product-title-section {
-            display: flex;
-            align-items: baseline;
-            gap: 12px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        /* 기존 상품명 스타일 (margin-bottom 제거) */
-        .product-title {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1a1a1a;
-            line-height: 1.3;
-            margin-bottom: 0;
-        }
-
-        .special-label {
-            font-size: 18px;
-            color: #FF4757;
-            font-weight: 700;
-            letter-spacing: -0.2px;
-            margin-left: 4px;
-            text-shadow: 0 1px 2px rgba(255, 71, 87, 0.3);
-        }
-
-        .special-badge {
-            display: inline-flex;
-            align-items: center;
-            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
-            padding: 8px 16px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
-            position: relative;
-            animation: pulse-badge 2s infinite;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        /* 뱃지에 반짝이는 효과 */
-        .special-badge::before {
-            content: '';
+        .sold-out-overlay {
             position: absolute;
             top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shine-badge 3s infinite;
-            border-radius: 20px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
         }
 
-        @keyframes pulse-badge {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-            }
+        .sold-out-badge {
+            background: var(--gray-900);
+            color: var(--white);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.025em;
         }
 
-        /* 반짝이는 효과 애니메이션 */
-        @keyframes shine-badge {
-            0% { left: -100%; }
-            100% { left: 100%; }
+        /* Product Info */
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-8);
         }
 
-        /* 대체 디자인 (더 심플한 버전) */
-        .special-badge.simple {
-            background: #EE386D;
-            animation: none;
-            box-shadow: 0 2px 8px rgba(238, 56, 109, 0.2);
+        .product-header {
+            padding-bottom: var(--space-8);
+            border-bottom: 1px solid var(--border);
         }
 
-        .special-badge.simple::before {
-            display: none;
+        .product-title {
+            font-size: clamp(24px, 4vw, 32px);
+            font-weight: 600;
+            color: var(--gray-900);
+            line-height: 1.2;
+            margin-bottom: var(--space-3);
+            letter-spacing: -0.025em;
         }
 
-        .product-subtitle {
+        .product-description {
             font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: var(--space-5);
         }
 
         .product-rating {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 30px;
+            gap: var(--space-3);
         }
 
-        .star-rating {
+        .stars {
             display: flex;
-            gap: 2px;
+            gap: 1px;
         }
 
         .star {
-            width: 20px;
-            height: 20px;
-            fill: #ddd; /* 기본색을 회색으로 변경 */
-            transition: fill 0.3s ease;
+            width: 16px;
+            height: 16px;
+            fill: var(--gray-200);
+            transition: fill 0.2s;
         }
 
-        .rating-text {
+        .star.filled {
+            fill: #fbbf24;
+        }
+
+        .rating-info {
             font-size: 14px;
-            color: #888;
-            margin-left: 8px;
+            color: var(--gray-500);
         }
 
-        .product-price {
-            margin-bottom: 40px;
+        /* Pricing */
+        .pricing-section {
+            padding-bottom: var(--space-8);
+            border-bottom: 1px solid var(--border);
         }
 
         .price-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: var(--space-4);
             flex-wrap: wrap;
         }
 
-        .price-current {
-            font-size: 42px;
+        .current-price {
+            font-size: clamp(28px, 5vw, 36px);
             font-weight: 700;
-            color: #1a1a1a;
+            color: var(--gray-900);
+            letter-spacing: -0.02em;
         }
 
-        .price-original {
-            font-size: 16px;
-            color: #888;
+        .original-price {
+            font-size: 18px;
+            color: var(--gray-400);
             text-decoration: line-through;
+            text-decoration-thickness: 1px;
         }
 
-        .price-selling-crossed {
-            font-size: 20px;
-            color: #888;
-            text-decoration: line-through;
-        }
-
-        .price-sale {
-            font-size: 36px;
-            font-weight: 700;
-            color: #EE386D; /* 할인가는 브랜드 컬러로 강조 */
-        }
-
-        .discount-rate {
-            display: inline-flex;
-            align-items: center;
-            background: #EE386D;
-            color: white;
-            font-size: 14px;
+        .discount-badge {
+            background: var(--primary);
+            color: var(--white);
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
             font-weight: 600;
-            padding: 6px 10px;
-            border-radius: 6px;
-            height: fit-content;
+            letter-spacing: 0.025em;
         }
 
+        /* Delivery Info */
+        .delivery-section {
+            padding-bottom: var(--space-8);
+            border-bottom: 1px solid var(--border);
+        }
 
-        /* 옵션 선택 */
-        .product-options {
-            margin-bottom: 40px;
+        .delivery-card {
+            background: var(--gray-50);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            position: relative;
+        }
+
+        .delivery-content {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .delivery-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .delivery-text {
+            flex: 1;
+        }
+
+        .delivery-main {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-1);
+        }
+
+        .delivery-sub {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Options */
+        .options-section {
+            padding-bottom: var(--space-8);
+            border-bottom: 1px solid var(--border);
         }
 
         .option-group {
-            margin-bottom: 20px;
+            margin-bottom: var(--space-6);
         }
 
         .option-label {
+            display: block;
             font-size: 16px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
         }
 
         .option-select {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e5e5e5;
-            border-radius: 8px;
+            padding: var(--space-4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             font-size: 16px;
-            background: white;
+            background: var(--white);
             cursor: pointer;
-            transition: border-color 0.3s ease;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right var(--space-4) center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: var(--space-12);
         }
 
         .option-select:focus {
             outline: none;
-            border-color: #EE386D;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
 
         .option-select:disabled {
-            background: #f5f5f5;
-            color: #999;
+            background: var(--gray-50);
+            color: var(--gray-400);
             cursor: not-allowed;
         }
 
         .selected-options {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
+            background: var(--gray-50);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            margin-top: var(--space-5);
             display: none;
         }
 
@@ -381,626 +457,804 @@
             display: block;
         }
 
-        .selected-option-item {
+        .selected-option {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #e5e5e5;
+            padding: var(--space-4) 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .selected-option-item:last-child {
+        .selected-option:last-child {
             border-bottom: none;
         }
 
-        .option-info {
+        .option-details {
             flex: 1;
         }
 
         .option-name {
+            font-size: 16px;
             font-weight: 600;
-            color: #333;
+            color: var(--gray-900);
+            margin-bottom: var(--space-1);
         }
 
         .option-price {
             font-size: 14px;
-            color: #666;
-            margin-top: 4px;
+            color: var(--gray-600);
         }
 
         .option-price.additional {
-            color: #EE386D;
+            color: var(--primary);
+            font-weight: 600;
         }
 
-        .quantity-control {
+        .quantity-controls {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-3);
         }
 
         .quantity-btn {
             width: 32px;
             height: 32px;
-            border: 1px solid #e5e5e5;
-            background: white;
-            cursor: pointer;
-            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
             font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .quantity-btn:hover {
-            border-color: #EE386D;
-            color: #EE386D;
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .quantity-input {
             width: 50px;
             height: 32px;
             text-align: center;
-            border: 1px solid #e5e5e5;
-            border-radius: 6px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
         }
 
-        .remove-option {
+        .remove-btn {
             background: none;
             border: none;
-            color: #999;
+            color: var(--gray-400);
             cursor: pointer;
-            padding: 4px;
-            margin-left: 8px;
+            padding: var(--space-2);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            margin-left: var(--space-2);
         }
 
-        .remove-option:hover {
-            color: #EE386D;
+        .remove-btn:hover {
+            color: var(--gray-600);
+            background: var(--gray-100);
         }
 
-        .total-price {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid #e5e5e5;
-            text-align: right;
+        .total-section {
+            margin-top: var(--space-6);
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--border-strong);
         }
 
-        .total-price-label {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 5px;
+        .total-label {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: var(--space-2);
         }
 
-        .total-price-amount {
-            font-size: 28px;
+        .total-amount {
+            font-size: 24px;
             font-weight: 700;
-            color: #EE386D;
+            color: var(--gray-900);
         }
 
-        /* 구매 버튼 */
-        .purchase-buttons {
+        .simple-quantity {
             display: flex;
-            gap: 12px;
-            margin-bottom: 40px;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .simple-quantity .option-label {
+            margin-bottom: 0;
+        }
+
+        /* Purchase Actions */
+        .purchase-section {
+            padding-bottom: var(--space-8);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--space-3);
         }
 
         .btn {
             flex: 1;
-            padding: 16px 24px;
+            padding: var(--space-4) var(--space-6);
             border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 700;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            text-decoration: none;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: var(--space-2);
+            min-height: 52px;
+            text-decoration: none;
         }
 
         .btn-primary {
-            background: #EE386D;
-            color: white;
+            background: var(--gray-900);
+            color: var(--white);
         }
 
-        .btn-primary:hover {
-            background: #d32f5f;
-            transform: translateY(-2px);
+        .btn-primary:hover:not(:disabled) {
+            background: var(--black);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .btn-secondary {
-            background: #333;
-            color: white;
+            background: var(--white);
+            color: var(--gray-900);
+            border: 1px solid var(--border-strong);
         }
 
-        .btn-secondary:hover {
-            background: #1a1a1a;
-            transform: translateY(-2px);
+        .btn-secondary:hover:not(:disabled) {
+            border-color: var(--gray-900);
+            background: var(--gray-50);
         }
 
         .btn:disabled {
-            background: #ccc;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
+            transform: none !important;
         }
 
-        /* 네비게이션 탭 */
-        .product-navigation {
-            background: white;
-            border-bottom: 1px solid #f0f0f0;
-            margin: 60px 0 20px 0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        /* Content Navigation */
+        .content-navigation {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            margin: var(--space-20) 0 0;
         }
 
-        .nav-buttons {
+        .nav-tabs {
             display: flex;
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 20px;
             justify-content: center;
-            gap: 80px;
+            gap: var(--space-16);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-4);
         }
 
-        .nav-btn {
-            padding: 28px 0;
+        .nav-tab {
+            padding: var(--space-8) 0;
             background: none;
             border: none;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 600;
-            color: #777;
+            color: var(--gray-500);
             cursor: pointer;
             position: relative;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            letter-spacing: -0.2px;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
         }
 
-        .nav-btn:hover {
-            color: #EE386D;
-            transform: translateY(-1px);
+        .nav-tab:hover,
+        .nav-tab.active {
+            color: var(--gray-900);
+            border-bottom-color: var(--primary);
         }
 
-        .nav-btn.active {
-            color: #EE386D;
-            border-bottom-color: #EE386D;
-            transform: translateY(-1px);
-        }
-
-        /* 섹션 스타일 */
         .content-section {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 50px 20px 60px;
-            scroll-margin-top: 100px; /* 일반 헤더 높이만 고려 */
-        }
-
-        .content-section:first-of-type {
-            padding-top: 20px;
+            padding: var(--space-20) 0;
         }
 
         .section-title {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 40px;
-            padding-bottom: 16px;
-            border-bottom: 3px solid #EE386D;
-            display: inline-block;
+            color: var(--gray-900);
+            margin-bottom: var(--space-12);
+            text-align: center;
+            letter-spacing: -0.025em;
         }
 
-        /* 상세정보 섹션 */
+        /* Detail Images */
+        .detail-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
         .detail-images {
             display: flex;
             flex-direction: column;
-            gap: 0px;
-            align-items: center;
-            max-width: 760px; /* 컨테이너 최대 너비 설정 */
-            margin: 0 auto; /* 중앙 정렬 */
+            gap: var(--space-6);
         }
 
         .detail-images img {
-            width: 760px !important; /* 고정 너비 760px */
-            height: auto !important; /* 비율 유지 */
-            max-width: 760px !important; /* 최대 너비 제한 */
-            min-width: 760px !important; /* 최소 너비 보장 */
-            border-radius: 0px;
-            box-shadow: none;
-            display: block !important;
-            margin: 0;
-            object-fit: cover; /* contain에서 cover로 변경 */
-            object-position: center; /* 이미지 중앙 정렬 */
+            width: 100%;
+            height: auto;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
         }
 
-        /* 모든 이미지 파일 형식에 대해 동일 적용 */
-        .detail-images img[src*=".jpg"],
-        .detail-images img[src*=".jpeg"],
-        .detail-images img[src*=".png"],
-        .detail-images img[src*=".webp"],
-        .detail-images img[src*=".gif"] {
-            width: 760px !important;
-            height: auto !important;
-            max-width: 760px !important;
-            min-width: 760px !important;
-            display: block !important;
-            object-fit: cover !important; /* WebP도 강제 적용 */
-            object-position: center !important;
-        }
-
-        /* WebP 전용 추가 스타일 (더 강한 우선순위) */
-        .detail-images img[src*=".webp"] {
-            width: 760px !important;
-            height: auto !important;
-            max-width: 760px !important;
-            min-width: 760px !important;
-            object-fit: cover !important;
-            aspect-ratio: auto !important; /* 고정 비율 해제 */
-        }
-
-        /* 리뷰 섹션 */
+        /* Review Section */
         .review-summary {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 40px;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            border: 1px solid #e5e5e5;
+            background: var(--gray-50);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-10);
+            margin-bottom: var(--space-12);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .review-stats {
-            display: flex;
+        .review-overview {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: var(--space-10);
             align-items: center;
-            gap: 40px;
         }
 
-        .rating-score {
-            font-size: 64px;
+        .rating-display {
+            text-align: center;
+        }
+
+        .average-score {
+            font-size: 48px;
             font-weight: 700;
-            color: #EE386D;
-            text-shadow: 0 2px 4px rgba(238, 56, 109, 0.1);
+            color: var(--gray-900);
+            line-height: 1;
+            margin-bottom: var(--space-2);
         }
 
-        .rating-details {
-            flex: 1;
+        .average-stars {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-1);
+            margin-bottom: var(--space-2);
         }
 
-        .rating-details h3 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-            margin: 0 0 16px 0;
+        .total-reviews {
+            font-size: 14px;
+            color: var(--gray-500);
         }
 
         .rating-breakdown {
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
         }
 
-        .rating-row {
+        .rating-bar-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
+            gap: var(--space-3);
         }
 
-        .rating-label {
+        .bar-label {
             font-size: 14px;
-            font-weight: 500;
-            color: #666;
-            width: 30px;
+            color: var(--gray-600);
+            width: 24px;
         }
 
         .rating-bar {
             flex: 1;
-            height: 8px;
-            background: #e5e5e5;
-            border-radius: 4px;
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: var(--radius-xs);
             overflow: hidden;
         }
 
         .rating-fill {
             height: 100%;
-            background: linear-gradient(90deg, #EE386D 0%, #ff6b9d 100%);
+            background: var(--primary);
             transition: width 0.3s ease;
         }
 
-        .rating-count {
+        .bar-count {
             font-size: 14px;
-            color: #666;
-            width: auto;
-            text-align: left;
+            color: var(--gray-500);
+            width: 32px;
+            text-align: right;
         }
 
-        /* 개별 리뷰 */
-        .review-list {
+        /* Review Controls */
+        .review-controls {
             display: flex;
-            flex-direction: column;
-            gap: 24px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-10);
+            padding-bottom: var(--space-6);
+            border-bottom: 1px solid var(--border);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .review-type-tabs {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .type-tab {
+            padding: var(--space-2) var(--space-4);
+            border: 1px solid var(--border);
+            background: var(--white);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .type-tab.active {
+            background: var(--gray-900);
+            color: var(--white);
+            border-color: var(--gray-900);
+        }
+
+        .review-filters {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .sort-select {
+            padding: var(--space-2) var(--space-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            background: var(--white);
+            cursor: pointer;
+        }
+
+        .rating-filter-tabs {
+            display: flex;
+            gap: var(--space-1);
+        }
+
+        .rating-filter {
+            padding: var(--space-1) var(--space-2);
+            border: 1px solid var(--border);
+            background: var(--white);
+            border-radius: var(--radius-xs);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rating-filter.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* Review Items */
+        .review-list {
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .review-item {
-            background: white;
-            padding: 32px;
-            border-radius: 16px;
-            border: 1px solid #e5e5e5;
-            transition: all 0.3s ease;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            margin-bottom: var(--space-6);
+            transition: all 0.2s ease;
         }
 
         .review-item:hover {
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+            border-color: var(--border-strong);
         }
 
         .review-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
+            align-items: flex-start;
+            margin-bottom: var(--space-4);
         }
 
-        .reviewer-info {
+        .reviewer-profile {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: var(--space-4);
         }
 
         .reviewer-avatar {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #EE386D, #ff6b9d);
+            background: var(--primary);
+            color: var(--white);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: 600;
             font-size: 16px;
+            font-weight: 700;
         }
 
-        .reviewer-details h4 {
+        .reviewer-info h4 {
             font-size: 16px;
             font-weight: 600;
-            color: #333;
-            margin: 0;
+            color: var(--gray-900);
+            margin-bottom: var(--space-1);
         }
 
-        .reviewer-details p {
-            font-size: 12px;
-            color: #888;
-            margin: 0;
+        .reviewer-info p {
+            font-size: 14px;
+            color: var(--gray-500);
         }
 
-        .review-rating {
-            display: flex;
-            gap: 4px;
-        }
-
-        .review-rating .star {
-            width: 16px;
-            height: 16px;
-        }
-
-        .review-content {
-            font-size: 15px;
+        .review-text {
+            font-size: 16px;
             line-height: 1.6;
-            color: #444;
-            margin-bottom: 16px;
+            color: var(--gray-700);
+            margin-bottom: var(--space-5);
         }
 
         .review-images {
             display: flex;
-            gap: 8px;
+            gap: var(--space-3);
             flex-wrap: wrap;
+            margin-bottom: var(--space-5);
         }
 
         .review-image {
             width: 80px;
             height: 80px;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             object-fit: cover;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
+            border: 1px solid var(--border);
         }
 
         .review-image:hover {
             transform: scale(1.05);
         }
 
-        /* 배송정보 섹션 */
-        .shipping-info {
-            background: #f8f9fa;
-            border-radius: 16px;
-            overflow: hidden;
+        .review-actions {
+            display: flex;
+            justify-content: flex-end;
         }
 
-        .shipping-section {
-            padding: 32px;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .shipping-section:last-child {
-            border-bottom: none;
-        }
-
-        .shipping-section h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin: 0 0 20px 0;
+        .like-button {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            border: 1px solid var(--border);
+            background: var(--white);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
         }
 
-        .shipping-section h3 i {
-            color: #EE386D;
+        .like-button:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .like-button.liked {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .heart-icon {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        /* Load More */
+        .load-more-section {
+            text-align: center;
+            margin: var(--space-12) 0;
+        }
+
+        .load-more-button {
+            padding: var(--space-4) var(--space-8);
+            background: var(--white);
+            border: 1px solid var(--border-strong);
+            color: var(--gray-900);
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .load-more-button:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-900);
+        }
+
+        /* Empty State */
+        .empty-reviews {
+            text-align: center;
+            padding: var(--space-20) var(--space-5);
+            color: var(--gray-500);
+        }
+
+        .empty-reviews i {
+            font-size: 48px;
+            color: var(--gray-300);
+            margin-bottom: var(--space-6);
+        }
+
+        .empty-reviews h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
+        }
+
+        /* Shipping Info with Accordion */
+        .shipping-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .shipping-grid {
+            display: grid;
+            gap: var(--space-4);
+        }
+
+        .shipping-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .shipping-card:hover {
+            border-color: var(--border-strong);
+        }
+
+        .shipping-header {
+            padding: var(--space-6);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s ease;
+        }
+
+        .shipping-header:hover {
+            background: var(--gray-50);
+        }
+
+        .shipping-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .shipping-header h3 i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .accordion-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s ease;
+            color: var(--gray-400);
+        }
+
+        .shipping-card.expanded .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .shipping-content-wrapper {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .shipping-card.expanded .shipping-content-wrapper {
+            max-height: 300px;
         }
 
         .shipping-details {
-            display: grid;
-            gap: 12px;
+            padding: 0 var(--space-6) var(--space-6);
         }
 
         .shipping-row {
             display: flex;
-            padding: 12px 0;
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .shipping-row:last-child {
+            border-bottom: none;
         }
 
         .shipping-label {
-            font-weight: 600;
-            color: #666;
+            font-weight: 500;
+            color: var(--gray-600);
             width: 120px;
             flex-shrink: 0;
         }
 
         .shipping-value {
-            color: #333;
+            color: var(--gray-900);
             flex: 1;
         }
 
-        .highlight {
-            color: #EE386D;
+        .shipping-highlight {
+            color: var(--primary);
             font-weight: 600;
         }
 
-        /* 재고 없음 표시 */
-        .out-of-stock {
-            color: #999 !important;
+        /* Touch-friendly mobile improvements */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 0 var(--space-4);
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-10);
+            }
+
+            .image-gallery {
+                position: static;
+            }
+
+            .nav-tabs {
+                gap: var(--space-8);
+            }
+
+            .shipping-card {
+                border-radius: var(--radius-md);
+            }
         }
 
-        .out-of-stock:after {
-            content: " (품절)";
-        }
-
-        /* 품절 상품 스타일 */
-        .main-image-container.sold-out .main-image {
-            filter: grayscale(50%);
-            opacity: 0.8;
-        }
-
-        .sold-out-badge {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #e74c3c;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            z-index: 3;
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-        }
-
-        .sold-out .product-title,
-        .sold-out .price-current {
-            color: #999;
-        }
-
-        .sold-out .btn:disabled {
-            background: #ccc !important;
-            cursor: not-allowed !important;
-            transform: none !important;
-        }
-
-        /* 반응형 */
         @media (max-width: 768px) {
-            .product-title-section {
-                gap: 8px;
+            body {
+                padding-top: 70px;
             }
 
             .container {
-                padding: 20px 16px;
+                padding: 0 var(--space-3);
             }
 
-            .product-info {
-                grid-template-columns: 1fr;
-                gap: 30px;
+            .product-section {
+                padding: var(--space-6) 0 var(--space-16);
+            }
+
+            .product-grid {
+                gap: var(--space-8);
             }
 
             .product-title {
                 font-size: 24px;
             }
 
-            .special-label {
-                font-size: 15px;
-                margin-left: 2px;
+            .current-price {
+                font-size: 28px;
             }
 
-            .special-badge {
-                font-size: 12px;
-                padding: 6px 12px;
-                border-radius: 16px;
-            }
-
-
-            .purchase-buttons {
+            .button-group {
                 flex-direction: column;
             }
 
-            .nav-buttons {
-                padding: 0 16px;
-                gap: 50px;
+            .btn {
+                min-height: 48px;
+                padding: var(--space-4);
             }
 
-            .nav-btn {
-                padding: 24px 0;
-                font-size: 15px;
-            }
-
-            .content-section {
-                padding: 40px 16px 50px;
-            }
-
-            .content-section:first-of-type {
-                padding-top: 15px;
-            }
-
-            .section-title {
-                font-size: 24px;
-            }
-
-            .review-stats {
+            .review-controls {
                 flex-direction: column;
+                gap: var(--space-4);
+                align-items: stretch;
+            }
+
+            .review-filters {
+                flex-direction: column;
+                gap: var(--space-3);
+            }
+
+            .rating-filter-tabs {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .review-overview {
+                grid-template-columns: 1fr;
+                gap: var(--space-8);
                 text-align: center;
-                gap: 20px;
             }
 
-            .rating-score {
-                font-size: 48px;
+            .nav-tabs {
+                gap: var(--space-6);
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
-            .review-summary {
-                padding: 24px;
-            }
-
-            .review-item {
-                padding: 20px;
-            }
-
-            .shipping-section {
-                padding: 24px;
+            .nav-tab {
+                padding: var(--space-6) 0;
+                font-size: 15px;
             }
 
             .shipping-row {
                 flex-direction: column;
-                gap: 4px;
+                gap: var(--space-1);
             }
 
             .shipping-label {
                 width: auto;
             }
 
-            .thumbnail-gallery {
-                flex-wrap: wrap;
-                justify-content: flex-start;
+            .selected-option {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-4);
+            }
+
+            .quantity-controls {
+                align-self: flex-end;
+            }
+
+            .wishlist-button {
+                width: 44px;
+                height: 44px;
+            }
+
+            .wishlist-button i {
+                font-size: 20px;
+            }
+
+            .delivery-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+
+            .type-tab,
+            .rating-filter {
+                padding: var(--space-3) var(--space-4);
+                font-size: 14px;
+            }
+
+            .review-item {
+                padding: var(--space-6);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content-section {
+                padding: var(--space-16) 0;
+            }
+
+            .product-section {
+                padding: var(--space-5) 0 var(--space-12);
             }
 
             .thumbnail-item {
@@ -1008,1013 +1262,523 @@
                 height: 70px;
             }
 
-            .selected-option-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
+            .average-score {
+                font-size: 40px;
             }
 
-            .quantity-control {
-                align-self: flex-end;
+            .review-item {
+                padding: var(--space-5);
             }
 
-            .price-original {
-                font-size: 14px;
+            .shipping-header {
+                padding: var(--space-5);
             }
 
-            .price-selling-crossed {
-                font-size: 18px;
+            .shipping-details {
+                padding: 0 var(--space-5) var(--space-5);
             }
 
-            .price-current,
-            .price-sale {
-                font-size: 32px;
-            }
-
-            .price-sale {
-                font-weight: 700;
-                color: #EE386D; /* 할인가는 브랜드 컬러로 강조 */
-            }
-
-            .discount-rate {
-                font-size: 12px;
-                padding: 4px 8px;
-            }
-
-            .price-container {
-                gap: 10px;
+            .nav-tabs {
+                padding: 0 var(--space-3);
             }
         }
 
-        .wishlist-wrap {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 2;
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
         }
 
-        /* 리뷰 컨트롤 */
-        .review-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e9ecef;
+        /* Focus States */
+        button:focus,
+        select:focus,
+        input:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
         }
 
-        .review-tabs {
-            display: flex;
-            gap: 20px;
+        .btn:focus,
+        .option-select:focus {
+            outline: none;
         }
 
-        .tab-btn {
-            padding: 12px 24px;
-            border: 2px solid #e9ecef;
-            background: white;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .tab-btn.active {
-            background: #EE386D;
-            color: white;
-            border-color: #EE386D;
-        }
-
-        .tab-btn:hover:not(.active) {
-            border-color: #EE386D;
-            color: #EE386D;
-        }
-
-        .review-filters {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .sort-select {
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .rating-filters {
-            display: flex;
-            gap: 8px;
-        }
-
-        .filter-btn {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .filter-btn.active {
-            background: #EE386D;
-            color: white;
-            border-color: #EE386D;
-        }
-
-        .filter-btn:hover:not(.active) {
-            border-color: #EE386D;
-        }
-
-        /* 리뷰 아이템 */
         .review-item {
-            background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            transition: box-shadow 0.2s ease;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .review-item:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-
-        .reviewer-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .reviewer-avatar {
-            width: 40px;
-            height: 40px;
-            background: #EE386D;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .reviewer-details h4 {
-            margin: 0;
-            font-size: 16px;
-            color: #333;
-        }
-
-        .reviewer-details p {
-            margin: 4px 0 0 0;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .review-rating {
-            display: flex;
-            gap: 2px;
-        }
-
-        .review-rating .star {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* 리뷰 내용 */
-        .review-content {
-            margin-bottom: 16px;
-        }
-
-        .review-content p {
-            line-height: 1.6;
-            color: #333;
-            margin: 0;
-        }
-
-        .review-images {
-            margin-top: 16px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .review-images img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .review-images img:hover {
-            transform: scale(1.05);
-        }
-
-        /* 리뷰 푸터 */
-        .review-footer {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .like-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-        }
-
-        .like-btn:hover {
-            border-color: #EE386D;
-            color: #EE386D;
-        }
-
-        .like-btn.liked {
-            background: #EE386D;
-            color: white;
-            border-color: #EE386D;
-        }
-
-        .heart-icon {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-            transition: transform 0.2s ease;
-        }
-
-        /* 더보기 버튼 */
-        .review-load-more {
-            text-align: center;
-            margin: 40px 0;
-        }
-
-        .load-more-btn {
-            padding: 12px 40px;
-            background: white;
-            border: 2px solid #EE386D;
-            color: #EE386D;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .load-more-btn:hover {
-            background: #EE386D;
-            color: white;
-        }
-
-        /* 빈 상태 */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            color: #ddd;
-            margin-bottom: 20px;
-        }
-
-        .empty-state h3 {
-            margin: 0 0 10px 0;
-            color: #333;
-        }
-
-        .empty-state p {
-            margin: 0;
-            color: #666;
-        }
-
-        /* 별점 공통 스타일 */
-        .star {
-            width: 20px;
-            height: 20px;
-            fill: #ddd;
-        }
-
-        .star.filled {
-            fill: #ffc107; /* 노란색으로 채움 */
-        }
-
-        .star.empty {
-            fill: #ddd; /* 회색 */
-        }
-
-        /* 반응형 */
-        @media (max-width: 768px) {
-            .product-title-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-
-            .special-badge {
-                align-self: flex-start;
-            }
-
-            .review-controls {
-                flex-direction: column;
-                gap: 20px;
-                align-items: stretch;
-            }
-
-            .review-filters {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .rating-filters {
-                justify-content: center;
-            }
-
-            .review-header {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .reviewer-info {
-                align-self: flex-start;
-            }
-
-            .review-rating {
-                align-self: flex-start;
-            }
-        }
-
-        /* 배송 안내 컨테이너 */
-        .delivery-notice {
-            margin: 24px 0;
-            padding: 0;
-        }
-
-        .delivery-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
-            border: 2px solid #EE386D;
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .delivery-info::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 40%, rgba(238, 56, 109, 0.05) 50%, transparent 60%);
-            animation: shine 4s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .delivery-icon {
-            font-size: 24px;
-            color: #EE386D;
-            animation: bounce 2s infinite;
-            flex-shrink: 0;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-3px); }
-            60% { transform: translateY(-2px); }
-        }
-
-        .delivery-content {
-            flex: 1;
-        }
-
-        .delivery-main-text {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            line-height: 1.4;
-            margin-bottom: 4px;
-        }
-
-        .highlight-time {
-            color: #EE386D;
-            font-weight: 700;
-            background: linear-gradient(45deg, #EE386D, #ff6b9d);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .delivery-sub-text {
-            font-size: 13px;
-            color: #666;
-            font-weight: 500;
-        }
-
-        /* 시간대별 스타일 변경 */
-        .delivery-info.today {
-            border-color: #28a745;
-            background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-        }
-
-        .delivery-info.today .delivery-icon {
-            color: #28a745;
-        }
-
-        .delivery-info.today .highlight-time {
-            color: #28a745;
-            background: linear-gradient(45deg, #28a745, #4caf50);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .delivery-info.tomorrow {
-            border-color: #ffc107;
-            background: linear-gradient(135deg, #fffef8 0%, #fefbe8 100%);
-        }
-
-        .delivery-info.tomorrow .delivery-icon {
-            color: #ffc107;
-        }
-
-        .delivery-info.weekend {
-            border-color: #6c757d;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        }
-
-        .delivery-info.weekend .delivery-icon {
-            color: #6c757d;
-        }
-
-        /* 모바일 반응형 */
-        @media (max-width: 768px) {
-            .delivery-notice {
-                margin: 20px 0;
-            }
-
-            .delivery-info {
-                padding: 14px 16px;
-                gap: 10px;
-            }
-
-            .delivery-icon {
-                font-size: 20px;
-            }
-
-            .delivery-main-text {
-                font-size: 14px;
-            }
-
-            .delivery-sub-text {
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .delivery-info {
-                padding: 12px 14px;
-                gap: 8px;
-            }
-
-            .delivery-main-text {
-                font-size: 13px;
-            }
-
-            .delivery-sub-text {
-                font-size: 11px;
-            }
-        }
-
-        /* 반응형 - 모바일에서는 화면 너비에 맞춤 */
-        @media (max-width: 768px) {
-            .detail-images {
-                max-width: 100%;
-                padding: 0 16px;
-            }
-
-            .detail-images img,
-            .detail-images img[src*=".jpg"],
-            .detail-images img[src*=".jpeg"],
-            .detail-images img[src*=".png"],
-            .detail-images img[src*=".webp"],
-            .detail-images img[src*=".gif"] {
-                width: 100% !important;
-                max-width: 100% !important;
-                min-width: auto !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .detail-images {
-                padding: 0 12px;
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
 </head>
 <body>
 
-<!-- 고정 헤더 -->
+<!-- Header -->
 <div th:replace="~{layout/header :: header}"></div>
 
-<div class="container">
-    <!-- 브레드크럼 -->
-    <nav class="breadcrumb">
-        <a th:href="@{/static}">홈</a>
-        <span>></span>
-        <a th:href="@{/category/adult}">성인용품</a>
-        <span>></span>
-        <span class="current" th:text="${product.productName}">제품 이름</span>
-    </nav>
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <div class="container">
+        <nav class="breadcrumb-nav">
+            <a th:href="@{/static}">홈</a>
+            <span>/</span>
+            <a th:href="@{/category/adult}">성인용품</a>
+            <span>/</span>
+            <span class="current" th:text="${product.productName}">제품 이름</span>
+        </nav>
+    </div>
+</div>
 
-    <!-- 상품 정보 -->
-    <div class="product-info">
-        <div class="product-image">
+<!-- Product Section -->
+<section class="product-section">
+    <div class="container">
+        <div class="product-grid">
+            <!-- Image Gallery -->
             <div class="image-gallery">
-                <!-- 메인 이미지 -->
-                <div class="main-image-container" th:classappend="${product.productQuantity == 0} ? 'sold-out' : ''">
-                    <!-- Sold Out 뱃지 -->
-                    <div class="sold-out-badge" th:if="${product.productQuantity == 0}">
-                        Sold Out
+                <div class="main-image-wrapper" th:classappend="${product.productQuantity == 0} ? 'sold-out' : ''">
+                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + thumbnails[0].imageUrl}"
+                         class="main-image" id="mainImage" alt="상품 이미지"/>
+
+                    <div class="sold-out-overlay" th:if="${product.productQuantity == 0}">
+                        <div class="sold-out-badge">품절</div>
                     </div>
-                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + thumbnails[0].imageUrl}" class="main-image" id="mainImage"/>
-                    <div class="wishlist-wrap">
-                        <button class="wishlist-btn"
-                                th:data-product-code="${product.productCode}"
-                                title="위시리스트에 추가">
-                            <i class="far fa-heart heart-icon"></i>
-                        </button>
-                    </div>
+
+                    <button class="wishlist-button" th:data-product-code="${product.productCode}" title="위시리스트">
+                        <i class="far fa-heart"></i>
+                    </button>
                 </div>
 
-                <!-- 썸네일 갤러리 -->
-                <div class="thumbnail-gallery">
+                <div class="thumbnail-grid">
                     <div th:each="img, stat : ${thumbnails}"
                          class="thumbnail-item"
                          th:classappend="${stat.index == 0} ? ' active'"
                          th:attr="data-img='https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${img.imageUrl}"
                          onclick="changeMainImage(this.getAttribute('data-img'), this)">
                         <img th:src="'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + ${img.imageUrl}"
-                             th:alt="'대표이미지 ' + ${stat.index + 1}"
+                             th:alt="'상품 이미지 ' + ${stat.index + 1}"
                              class="thumbnail-image"/>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="product-details">
-            <div class="product-title-section">
-                <h1 class="product-title" th:text="${product.productName}">상품 제목</h1>
-            </div>
-            <p class="product-subtitle"
-               th:text="${product.productDescription != null} ? ${product.productDescription} : ''">
-                상품 설명
-            </p>
+            <!-- Product Info -->
+            <div class="product-info">
+                <div class="product-header">
+                    <h1 class="product-title" th:text="${product.productName}">상품명</h1>
+                    <p class="product-description" th:text="${product.productDescription}">상품 설명</p>
 
-            <div class="product-price">
-                <div class="price-container" id="priceContainer">
-                    <!-- 할인 상품이 아닌 경우 기존 방식 -->
-                    <th:block th:if="${!product.isSale}">
-                        <span class="price-original" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">115,500원</span>
-                        <span class="price-current current-price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '원'">29,000원</span>
-                    </th:block>
-
-                    <!-- 할인 상품인 경우 -->
-                    <th:block th:if="${product.isSale}">
-                        <span class="price-original" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'">115,500원</span>
-                        <span class="price-current current-price" th:text="${#numbers.formatInteger(product.salePrice, 3, 'COMMA')} + '원'">29,000원</span>
-                    </th:block>
-                </div>
-            </div>
-
-            <div class="product-rating">
-                <div class="star-rating">
-                    <!-- 평점에 따라 동적으로 별 채우기 -->
-                    <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                        <svg class="star"
-                             th:classappend="${product.reviewAvg != null && i <= product.reviewAvg} ? 'filled' : 'empty'"
-                             viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                    </th:block>
-                </div>
-                <span class="rating-text" th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + '개 리뷰)'">4.8 (15개 리뷰)</span>
-            </div>
-
-            <!-- 🌟 당일 발송 안내 - 여기에 추가! -->
-            <div class="delivery-notice">
-                <div class="delivery-info">
-                    <i class="fas fa-shipping-fast delivery-icon"></i>
-                    <div class="delivery-content">
-                        <div class="delivery-main-text" id="deliveryMainText">
-                            <span class="highlight-time">오후 1시 이전</span> 주문 시 당일 발송
+                    <div class="product-rating">
+                        <div class="stars">
+                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                <svg class="star" th:classappend="${product.reviewAvg != null && i <= product.reviewAvg} ? 'filled' : ''" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </th:block>
                         </div>
-                        <div class="delivery-sub-text">빠르고 안전한 무료배송 (5만원 이상)</div>
+                        <span class="rating-info" th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + '개 리뷰)'">평점</span>
+                    </div>
+                </div>
+
+                <div class="pricing-section">
+                    <div class="price-container" id="priceContainer">
+                        <th:block th:if="${!product.isSale}">
+                            <span class="original-price" th:if="${product.priceDtoList[0].priceOriginal != product.priceDtoList[0].priceSelling}"
+                                  th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'"></span>
+                            <span class="current-price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceSelling, 3, 'COMMA')} + '원'">가격</span>
+                        </th:block>
+                        <th:block th:if="${product.isSale}">
+                            <span class="original-price" th:text="${#numbers.formatInteger(product.priceDtoList[0].priceOriginal, 3, 'COMMA')} + '원'"></span>
+                            <span class="current-price" th:text="${#numbers.formatInteger(product.salePrice, 3, 'COMMA')} + '원'">할인가격</span>
+                            <span class="discount-badge">할인</span>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div class="delivery-section">
+                    <div class="delivery-card">
+                        <div class="delivery-content">
+                            <div class="delivery-icon">
+                                <i class="fas fa-shipping-fast"></i>
+                            </div>
+                            <div class="delivery-text">
+                                <div class="delivery-main">
+                                    <span class="highlight">오후 1시 이전</span> 주문 시 당일 발송
+                                </div>
+                                <div class="delivery-sub">무료배송 (3만원 이상 구매시)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Options -->
+                <div class="options-section" th:if="${not #lists.isEmpty(options)}">
+                    <div th:each="optionName : ${optionNames}" class="option-group">
+                        <label class="option-label" th:text="${optionName}">옵션명</label>
+                        <select class="option-select" th:data-option-name="${optionName}" onchange="selectOption(this)">
+                            <option value="">선택해주세요</option>
+                            <option th:each="option : ${options}"
+                                    th:if="${option.optionName == optionName}"
+                                    th:value="${option.optionCode}"
+                                    th:text="${option.optionValue + (option.optionPrice > 0 ? ' (+' + #numbers.formatInteger(option.optionPrice, 3, 'COMMA') + '원)' : '')}"
+                                    th:disabled="${option.optionQuantity == 0}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="selected-options" id="selectedOptions"></div>
+                    <div class="total-section" id="totalPrice" style="display: none;">
+                        <div class="total-label">총 상품금액</div>
+                        <div class="total-amount" id="totalAmount">0원</div>
+                    </div>
+                </div>
+
+                <!-- Simple Quantity (no options) -->
+                <div class="options-section" th:if="${#lists.isEmpty(options)}">
+                    <div class="simple-quantity">
+                        <span class="option-label">수량</span>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="decreaseQuantity()">−</button>
+                            <input type="number" class="quantity-input" value="1" min="1" id="quantity"/>
+                            <button class="quantity-btn" onclick="increaseQuantity()">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="purchase-section">
+                    <div class="button-group">
+                        <button class="btn btn-secondary" id="cartBtn" disabled>
+                            <i class="fas fa-shopping-bag"></i>
+                            장바구니
+                        </button>
+                        <button class="btn btn-primary" id="buyBtn" disabled>
+                            바로구매
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- 옵션 선택 -->
-            <div class="product-options" th:if="${not #lists.isEmpty(options)}">
-                <div th:each="optionName : ${optionNames}" class="option-group">
-                    <label class="option-label" th:text="${optionName}">옵션명</label>
-                    <select class="option-select" th:data-option-name="${optionName}" onchange="selectOption(this)">
-                        <option value="">선택해주세요</option>
-                        <option value="">=============================</option>
-                        <option th:each="option : ${options}"
-                                th:if="${option.optionName == optionName}"
-                                th:value="${option.optionCode}"
-                                th:text="${option.optionValue + (option.optionPrice > 0 ? ' (+' + #numbers.formatInteger(option.optionPrice, 3, 'COMMA') + '원)' : '')}"
-                                th:classappend="${option.optionQuantity == 0} ? 'out-of-stock'"
-                                th:disabled="${option.optionQuantity == 0}">
-                        </option>
-                    </select>
-                </div>
-
-                <!-- 선택된 옵션 표시 -->
-                <div class="selected-options" id="selectedOptions">
-                    <!-- 동적으로 추가될 선택된 옵션들 -->
-                </div>
-
-                <!-- 총 가격 -->
-                <div class="total-price" id="totalPrice" style="display: none;">
-                    <div class="total-price-label">총 상품금액</div>
-                    <div class="total-price-amount" id="totalAmount">0원</div>
-                </div>
-            </div>
-
-            <!-- 옵션이 없는 경우 기본 수량 선택 -->
-            <div class="product-options" th:if="${#lists.isEmpty(options)}">
-                <div class="quantity-control">
-                    <span class="option-label">수량</span>
-                    <button class="quantity-btn" onclick="decreaseQuantity()">-</button>
-                    <input type="number" class="quantity-input" value="1" min="1" id="quantity"/>
-                    <button class="quantity-btn" onclick="increaseQuantity()">+</button>
-                </div>
-            </div>
-
-            <div class="purchase-buttons">
-                <button class="btn btn-secondary" id="cartBtn" disabled>
-                    <i class="fas fa-shopping-cart"></i>
-                    장바구니
-                </button>
-                <button class="btn btn-primary" id="buyBtn" disabled>
-                    <i class="fas fa-credit-card"></i>
-                    바로구매
-                </button>
-            </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- 스티키 네비게이션 -->
-<div class="product-navigation">
-    <div class="nav-buttons">
-        <button class="nav-btn active" onclick="scrollToSection('detail')">상세정보</button>
-        <button class="nav-btn" onclick="scrollToSection('review')">리뷰 <span th:text="'(' + ${product.reviewCount} + ')'"></span></button>
-        <button class="nav-btn" onclick="scrollToSection('shipping')">배송정보</button>
+<!-- Content Navigation -->
+<div class="content-navigation">
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="scrollToSection('detail')">상세정보</button>
+        <button class="nav-tab" onclick="scrollToSection('review')">리뷰 <span th:text="'(' + ${product.reviewCount} + ')'"></span></button>
+        <button class="nav-tab" onclick="scrollToSection('shipping')">배송정보</button>
     </div>
 </div>
 
-<!-- 상세정보 섹션 -->
+<!-- Detail Section -->
 <section class="content-section" id="detail">
-    <h2 class="section-title">상세정보</h2>
-    <div class="detail-images">
-        <img src='https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/배송안내.jpg' alt="배송안내" />
-        <div th:each="img : ${contents}">
-            <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + img.imageUrl}"
-                 th:alt="'상세 이미지 ' + ${img.imageOrder + 1}" />
+    <div class="container">
+        <h2 class="section-title">상세정보</h2>
+        <div class="detail-content">
+            <div class="detail-images">
+                <img src='https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/배송안내.jpg' alt="배송안내" />
+                <div th:each="img : ${contents}">
+                    <img th:src="${'https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/' + img.imageUrl}"
+                         th:alt="'상세 이미지 ' + ${img.imageOrder + 1}" />
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- 리뷰 섹션 -->
+<!-- Review Section -->
 <section class="content-section" id="review">
-    <h2 class="section-title">리뷰</h2>
+    <div class="container">
+        <h2 class="section-title">리뷰</h2>
 
-    <!-- 리뷰 요약 통계 -->
-    <div class="review-summary">
-        <div class="review-stats">
-            <div class="rating-score" th:text="${product.reviewAvg != null ?
-                #numbers.formatDecimal(product.reviewAvg, 1, 1) : '0.0'}">4.5</div>
-            <div class="rating-stars">
-                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                    <svg class="star"
-                         th:classappend="${product.reviewAvg != null && i <= product.reviewAvg} ? 'filled' : 'empty'"
-                         viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                </th:block>
-            </div>
-            <div class="total-reviews" th:text="'총 ' + ${product.reviewCount} + '개의 리뷰'">총 15개의 리뷰</div>
-        </div>
-
-        <div class="rating-breakdown">
-            <div class="rating-details">
-                <div class="rating-row">
-                    <span class="rating-label">5점</span>
-                    <div class="rating-bar">
-                        <div class="rating-fill" th:style="'width: ' + ${rating5Percent} + '%'"></div>
-                    </div>
-                    <span class="rating-count" th:text="${reviewRatingCount?.cnt5 ?: 0} + '명'">0명</span>
-                </div>
-                <div class="rating-row">
-                    <span class="rating-label">4점</span>
-                    <div class="rating-bar">
-                        <div class="rating-fill" th:style="'width: ' + ${rating4Percent} + '%'"></div>
-                    </div>
-                    <span class="rating-count" th:text="${reviewRatingCount?.cnt4 ?: 0} + '명'">0명</span>
-                </div>
-                <div class="rating-row">
-                    <span class="rating-label">3점</span>
-                    <div class="rating-bar">
-                        <div class="rating-fill" th:style="'width: ' + ${rating3Percent} + '%'"></div>
-                    </div>
-                    <span class="rating-count" th:text="${reviewRatingCount?.cnt3 ?: 0} + '명'">0명</span>
-                </div>
-                <div class="rating-row">
-                    <span class="rating-label">2점</span>
-                    <div class="rating-bar">
-                        <div class="rating-fill" th:style="'width: ' + ${rating2Percent} + '%'"></div>
-                    </div>
-                    <span class="rating-count" th:text="${reviewRatingCount?.cnt2 ?: 0} + '명'">0명</span>
-                </div>
-                <div class="rating-row">
-                    <span class="rating-label">1점</span>
-                    <div class="rating-bar">
-                        <div class="rating-fill" th:style="'width: ' + ${rating1Percent} + '%'"></div>
-                    </div>
-                    <span class="rating-count" th:text="${reviewRatingCount?.cnt1 ?: 0} + '명'">0명</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 리뷰 탭 및 필터 -->
-    <div class="review-controls">
-        <div class="review-tabs">
-            <button class="tab-btn active" data-type="photo" onclick="switchReviewTab('photo')">
-                포토리뷰 <span id="photoReviewCount" th:text="'(' + ${reviewCount.photoReviews} + ')'"></span>
-            </button>
-            <button class="tab-btn" data-type="text" onclick="switchReviewTab('text')">
-                텍스트리뷰 <span id="textReviewCount" th:text="'(' + ${reviewCount.textReviews} + ')'"></span>
-            </button>
-        </div>
-
-        <div class="review-filters">
-            <select class="sort-select" onchange="sortReviews(this.value)">
-                <option value="latest">최신순</option>
-                <option value="rating">평점높은순</option>
-                <option value="likes">좋아요순</option>
-            </select>
-
-            <div class="rating-filters">
-                <button class="filter-btn active" data-rating="" onclick="filterByRating('')">전체</button>
-                <button class="filter-btn" data-rating="5" onclick="filterByRating(5)">5점</button>
-                <button class="filter-btn" data-rating="4" onclick="filterByRating(4)">4점</button>
-                <button class="filter-btn" data-rating="3" onclick="filterByRating(3)">3점</button>
-                <button class="filter-btn" data-rating="2" onclick="filterByRating(2)">2점</button>
-                <button class="filter-btn" data-rating="1" onclick="filterByRating(1)">1점</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 리뷰 목록 -->
-    <div class="review-list" id="reviewList">
-        <!-- 포토리뷰 섹션 -->
-        <div id="photoReviewSection" style="display: block;">
-            <!-- 초기 포토리뷰 목록 (서버에서 전달받은 데이터) -->
-            <div th:each="review : ${initialPhotoReviews}" class="review-item" th:data-review-code="${review.review_code}">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar" th:text="${#strings.substring(review.writerName, 0, 1)}">김</div>
-                        <div class="reviewer-details">
-                            <h4 th:text="${review.writerName}">김○○</h4>
-                            <p>
-                                <span th:text="${review.writerAge}">20대</span>
-                                <span th:text="${review.writerGender == '남자' ? '남성' : '여성'}">여성</span>
-                                ·
-                                <span th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2024.07.15</span> 구매
-                            </p>
-                        </div>
-                    </div>
-                    <div class="review-rating">
+        <div class="review-summary">
+            <div class="review-overview">
+                <div class="rating-display">
+                    <div class="average-score" th:text="${product.reviewAvg != null ? #numbers.formatDecimal(product.reviewAvg, 1, 1) : '0.0'}">0.0</div>
+                    <div class="average-stars">
                         <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                            <svg class="star"
-                                 th:classappend="${i <= review.rating} ? 'filled' : 'empty'"
-                                 viewBox="0 0 24 24">
+                            <svg class="star" th:classappend="${product.reviewAvg != null && i <= product.reviewAvg} ? 'filled' : ''" viewBox="0 0 24 24">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                             </svg>
                         </th:block>
                     </div>
+                    <div class="total-reviews" th:text="'총 ' + ${product.reviewCount} + '개 리뷰'">총 0개 리뷰</div>
                 </div>
 
-                <div class="review-content">
-                    <p th:text="${review.content}">리뷰 내용</p>
+                <div class="rating-breakdown">
+                    <div class="rating-bar-item">
+                        <span class="bar-label">5점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" th:style="'width: ' + ${rating5Percent} + '%'"></div>
+                        </div>
+                        <span class="bar-count" th:text="${reviewRatingCount?.cnt5 ?: 0}">0</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">4점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" th:style="'width: ' + ${rating4Percent} + '%'"></div>
+                        </div>
+                        <span class="bar-count" th:text="${reviewRatingCount?.cnt4 ?: 0}">0</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">3점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" th:style="'width: ' + ${rating3Percent} + '%'"></div>
+                        </div>
+                        <span class="bar-count" th:text="${reviewRatingCount?.cnt3 ?: 0}">0</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">2점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" th:style="'width: ' + ${rating2Percent} + '%'"></div>
+                        </div>
+                        <span class="bar-count" th:text="${reviewRatingCount?.cnt2 ?: 0}">0</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">1점</span>
+                        <div class="rating-bar">
+                            <div class="rating-fill" th:style="'width: ' + ${rating1Percent} + '%'"></div>
+                        </div>
+                        <span class="bar-count" th:text="${reviewRatingCount?.cnt1 ?: 0}">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- 리뷰 이미지 -->
+        <div class="review-controls">
+            <div class="review-type-tabs">
+                <button class="type-tab active" data-type="photo" onclick="switchReviewTab('photo')">
+                    포토리뷰 <span id="photoReviewCount" th:text="'(' + ${reviewCount.photoReviews} + ')'"></span>
+                </button>
+                <button class="type-tab" data-type="text" onclick="switchReviewTab('text')">
+                    텍스트리뷰 <span id="textReviewCount" th:text="'(' + ${reviewCount.textReviews} + ')'"></span>
+                </button>
+            </div>
+
+            <div class="review-filters">
+                <select class="sort-select" onchange="sortReviews(this.value)">
+                    <option value="latest">최신순</option>
+                    <option value="rating">평점높은순</option>
+                    <option value="likes">좋아요순</option>
+                </select>
+
+                <div class="rating-filter-tabs">
+                    <button class="rating-filter active" data-rating="" onclick="filterByRating('')">전체</button>
+                    <button class="rating-filter" data-rating="5" onclick="filterByRating(5)">5점</button>
+                    <button class="rating-filter" data-rating="4" onclick="filterByRating(4)">4점</button>
+                    <button class="rating-filter" data-rating="3" onclick="filterByRating(3)">3점</button>
+                    <button class="rating-filter" data-rating="2" onclick="filterByRating(2)">2점</button>
+                    <button class="rating-filter" data-rating="1" onclick="filterByRating(1)">1점</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-list" id="reviewList">
+            <div id="photoReviewSection" style="display: block;">
+                <div th:each="review : ${initialPhotoReviews}" class="review-item" th:data-review-code="${review.review_code}">
+                    <div class="review-header">
+                        <div class="reviewer-profile">
+                            <div class="reviewer-avatar" th:text="${#strings.substring(review.writerName, 0, 1)}">김</div>
+                            <div class="reviewer-info">
+                                <h4 th:text="${review.writerName}">김○○</h4>
+                                <p>
+                                    <span th:text="${review.writerAge}">20대</span>
+                                    <span th:text="${review.writerGender == '남자' ? '남성' : '여성'}">여성</span>
+                                    ·
+                                    <span th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2024.07.15</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="stars">
+                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : ''" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </th:block>
+                        </div>
+                    </div>
+
+                    <div class="review-text" th:text="${review.content}">리뷰 내용</div>
+
                     <div class="review-images" th:if="${review.reviewImage}">
-                        <img th:src="${review.reviewImage}"
-                             alt="리뷰 이미지" onclick="showImageModal(this.src)">
+                        <img th:src="${review.reviewImage}" alt="리뷰 이미지" onclick="showImageModal(this.src)" class="review-image">
+                    </div>
+
+                    <div class="review-actions">
+                        <button class="like-button" th:classappend="${review.isLiked == 1} ? 'liked' : ''"
+                                th:onclick="'toggleReviewLike(' + ${review.review_code} + ', this)'">
+                            <svg class="heart-icon" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span class="like-count" th:text="${review.likeCount}">0</span>
+                        </button>
                     </div>
                 </div>
-
-                <div class="review-footer">
-                    <button class="like-btn"
-                            th:classappend="${review.isLiked == 1} ? 'liked' : ''"
-                            th:onclick="'toggleReviewLike(' + ${review.review_code} + ', this)'">
-                        <svg class="heart-icon" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                        <span class="like-count" th:text="${review.likeCount}">0</span>
-                    </button>
-                </div>
             </div>
-        </div>
 
-        <!-- 텍스트리뷰 섹션 -->
-        <div id="textReviewSection" style="display: none;">
-            <!-- 초기 텍스트리뷰 목록 (서버에서 전달받은 데이터) -->
-            <div th:each="review : ${initialTextReviews}" class="review-item" th:data-review-code="${review.review_code}">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar" th:text="${#strings.substring(review.writerName, 0, 1)}">김</div>
-                        <div class="reviewer-details">
-                            <h4 th:text="${review.writerName}">김○○</h4>
-                            <p>
-                                <span th:text="${review.writerAge}">20대</span>
-                                <span th:text="${review.writerGender == '남자' ? '남성' : '여성'}">여성</span>
-                                ·
-                                <span th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2024.07.15</span> 구매
-                            </p>
+            <div id="textReviewSection" style="display: none;">
+                <div th:each="review : ${initialTextReviews}" class="review-item" th:data-review-code="${review.review_code}">
+                    <div class="review-header">
+                        <div class="reviewer-profile">
+                            <div class="reviewer-avatar" th:text="${#strings.substring(review.writerName, 0, 1)}">김</div>
+                            <div class="reviewer-info">
+                                <h4 th:text="${review.writerName}">김○○</h4>
+                                <p>
+                                    <span th:text="${review.writerAge}">20대</span>
+                                    <span th:text="${review.writerGender == '남자' ? '남성' : '여성'}">여성</span>
+                                    ·
+                                    <span th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2024.07.15</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="stars">
+                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : ''" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </th:block>
                         </div>
                     </div>
-                    <div class="review-rating">
-                        <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                            <svg class="star"
-                                 th:classappend="${i <= review.rating} ? 'filled' : 'empty'"
-                                 viewBox="0 0 24 24">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+
+                    <div class="review-text" th:text="${review.content}">리뷰 내용</div>
+
+                    <div class="review-actions">
+                        <button class="like-button" th:classappend="${review.isLiked == 1} ? 'liked' : ''"
+                                th:onclick="'toggleReviewLike(' + ${review.review_code} + ', this)'">
+                            <svg class="heart-icon" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                             </svg>
-                        </th:block>
+                            <span class="like-count" th:text="${review.likeCount}">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="load-more-section">
+            <button id="loadMoreReviews" class="load-more-button" onclick="loadMoreReviews()" style="display: none;">
+                더보기
+            </button>
+        </div>
+
+        <div class="empty-reviews" id="emptyReviewState" style="display: none;">
+            <i class="fas fa-comment-slash"></i>
+            <h3>등록된 리뷰가 없습니다</h3>
+            <p>이 상품에 대한 첫 리뷰를 작성해보세요!</p>
+        </div>
+    </div>
+</section>
+
+<!-- Shipping Section with Accordion -->
+<section class="content-section" id="shipping">
+    <div class="container">
+        <h2 class="section-title">배송정보</h2>
+        <div class="shipping-content">
+            <div class="shipping-grid">
+                <div class="shipping-card" onclick="toggleShippingCard(this)">
+                    <div class="shipping-header">
+                        <h3><i class="fas fa-truck"></i> 배송 안내</h3>
+                        <svg class="accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="shipping-content-wrapper">
+                        <div class="shipping-details">
+                            <div class="shipping-row">
+                                <span class="shipping-label">배송업체</span>
+                                <span class="shipping-value">CJ대한통운</span>
+                            </div>
+                            <div class="shipping-row">
+                                <span class="shipping-label">배송비</span>
+                                <span class="shipping-value"><span class="shipping-highlight">무료배송</span> (3만원 이상)</span>
+                            </div>
+                            <div class="shipping-row">
+                                <span class="shipping-label">배송기간</span>
+                                <span class="shipping-value">주문 후 <span class="shipping-highlight">1-2일</span> 내 발송</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="review-content">
-                    <p th:text="${review.content}">리뷰 내용</p>
-                </div>
-
-                <div class="review-footer">
-                    <button class="like-btn"
-                            th:classappend="${review.isLiked == 1} ? 'liked' : ''"
-                            th:onclick="'toggleReviewLike(' + ${review.review_code} + ', this)'">
-                        <svg class="heart-icon" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                <div class="shipping-card" onclick="toggleShippingCard(this)">
+                    <div class="shipping-header">
+                        <h3><i class="fas fa-box"></i> 포장 안내</h3>
+                        <svg class="accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
-                        <span class="like-count" th:text="${review.likeCount}">0</span>
-                    </button>
+                    </div>
+                    <div class="shipping-content-wrapper">
+                        <div class="shipping-details">
+                            <div class="shipping-row">
+                                <span class="shipping-label">포장방식</span>
+                                <span class="shipping-value"><span class="shipping-highlight">무표시 박스</span>로 안전하게 포장</span>
+                            </div>
+                            <div class="shipping-row">
+                                <span class="shipping-label">개인정보보호</span>
+                                <span class="shipping-value">제품명 표시 없이 발송</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- 더보기 버튼 -->
-    <div class="review-load-more" style="text-align: center; margin-top: 20px;">
-        <button id="loadMoreReviews" class="load-more-btn" onclick="loadMoreReviews()"
-                style="display: none; padding: 12px 24px; background: #EE386D; color: white; border: none; border-radius: 5px; cursor: pointer;">
-            더보기
-        </button>
-    </div>
-
-    <!-- 빈 상태 -->
-    <div class="empty-state" id="emptyReviewState" style="display: none; text-align: center; padding: 40px;">
-        <i class="fas fa-comment-slash" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
-        <h3 style="margin-bottom: 8px; color: #666;">등록된 리뷰가 없습니다</h3>
-        <p style="color: #999;">이 상품에 대한 첫 리뷰를 작성해보세요!</p>
-    </div>
-</section>
-
-<!-- 배송정보 섹션 -->
-<section class="content-section" id="shipping">
-    <h2 class="section-title">배송정보</h2>
-
-    <div class="shipping-info">
-        <div class="shipping-section">
-            <h3><i class="fas fa-truck"></i> 배송 안내</h3>
-            <div class="shipping-details">
-                <div class="shipping-row">
-                    <span class="shipping-label">배송업체</span>
-                    <span class="shipping-value">CJ대한통운</span>
-                </div>
-                <div class="shipping-row">
-                    <span class="shipping-label">배송비</span>
-                    <span class="shipping-value"><span class="highlight">무료배송</span> (3만원 이상 구매시)</span>
-                </div>
-                <div class="shipping-row">
-                    <span class="shipping-label">배송기간</span>
-                    <span class="shipping-value">주문 후 <span class="highlight">1-2일</span> 내 발송</span>
-                </div>
-<!--                <div class="shipping-row">-->
-<!--                    <span class="shipping-label">배송지역</span>-->
-<!--                    <span class="shipping-value">전국 (제주/도서산간 지역 배송비 별도)</span>-->
-<!--                </div>-->
-            </div>
-        </div>
-
-        <div class="shipping-section">
-            <h3><i class="fas fa-box"></i> 포장 안내</h3>
-            <div class="shipping-details">
-                <div class="shipping-row">
-                    <span class="shipping-label">포장방식</span>
-                    <span class="shipping-value"><span class="highlight">무표시 박스</span>로 안전하게 포장</span>
-                </div>
-                <div class="shipping-row">
-                    <span class="shipping-label">개인정보보호</span>
-                    <span class="shipping-value">제품명 표시 없이 발송</span>
-                </div>
-                <div class="shipping-row">
-                    <span class="shipping-label">택배함 이용</span>
-                    <span class="shipping-value">무인택배함 배송 가능</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="shipping-section">
-            <h3><i class="fas fa-undo"></i> 교환/반품 안내</h3>
-            <div class="shipping-details">
-                <div class="shipping-row">
-                    <span class="shipping-label">교환/반품 기간</span>
-                    <span class="shipping-value">수령일로부터 <span class="highlight">7일 이내</span></span>
-                </div>
-                <div class="shipping-row">
-                    <span class="shipping-label">교환/반품 비용</span>
-                    <span class="shipping-value">고객변심시 왕복배송비 고객부담</span>
-                </div>
-                <div class="shipping-row">
-                    <span class="shipping-label">교환/반품 불가</span>
-                    <span class="shipping-value">포장 개봉 후 사용한 제품</span>
-                </div>
-                <div class="shipping-row">
-                    <span class="shipping-label">A/S 문의</span>
-                    <span class="shipping-value">고객센터 1533-4965 (평일 9시-18시)</span>
+                <div class="shipping-card" onclick="toggleShippingCard(this)">
+                    <div class="shipping-header">
+                        <h3><i class="fas fa-undo"></i> 교환/반품 안내</h3>
+                        <svg class="accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="shipping-content-wrapper">
+                        <div class="shipping-details">
+                            <div class="shipping-row">
+                                <span class="shipping-label">교환/반품 기간</span>
+                                <span class="shipping-value">수령일로부터 <span class="shipping-highlight">7일 이내</span></span>
+                            </div>
+                            <div class="shipping-row">
+                                <span class="shipping-label">교환/반품 비용</span>
+                                <span class="shipping-value">고객변심시 왕복배송비 고객부담</span>
+                            </div>
+                            <div class="shipping-row">
+                                <span class="shipping-label">A/S 문의</span>
+                                <span class="shipping-value">고객센터 1533-4965 (평일 9시-18시)</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
+<!-- Footer -->
 <div th:replace="~{layout/footer :: footer}"></div>
 
+<!-- JavaScript -->
 <script th:inline="javascript">
-    /*<![CDATA[*/
     const options = /*[[${options}]]*/ [];
     const isSale = /*[[${product.isSale}]]*/ false;
     const basePrice = /*[[${product.isSale ? product.salePrice : product.priceDtoList[0].priceSelling}]]*/ 0;
     const productCode = /*[[${product.productCode}]]*/ 0;
     const productId = /*[[${product.productId}]]*/ '';
     const productQuantity = /*[[${product.productQuantity}]]*/ 0;
-
-    // 디버깅용 - 값 확인
-    console.log('=== Thymeleaf 변수 확인 ===');
-    console.log('productId from Thymeleaf:', productId);
-    console.log('productCode from Thymeleaf:', productCode);
-
-    // 값이 비어있는 경우 경고
-    if (!productId || productId === '') {
-        console.error('❌ productId가 비어있습니다!');
-        alert('상품 정보를 불러올 수 없습니다. 페이지를 새로고침해주세요.');
-    }
-    /*]]>*/
 </script>
 
 <script>
     $(document).ready(function() {
-        // 🔥 CSRF 토큰 가져오기
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
-
-        // 🔥 모든 jQuery AJAX에 자동 적용
         $.ajaxSetup({
             beforeSend: function(xhr) {
                 xhr.setRequestHeader(header, token);
@@ -2029,19 +1793,30 @@
     function getCSRFHeader() {
         return document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
     }
-    let selectedOptions = new Map(); // 선택된 옵션들을 저장
 
-    // 스크롤 네비게이션 함수
-    function scrollToSection(sectionId) {
-        // 모든 네비게이션 버튼에서 active 클래스 제거
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.remove('active');
+    let selectedOptions = new Map();
+
+    // Shipping accordion functionality
+    function toggleShippingCard(cardElement) {
+        const isExpanded = cardElement.classList.contains('expanded');
+
+        // Close all cards first
+        document.querySelectorAll('.shipping-card').forEach(card => {
+            card.classList.remove('expanded');
         });
 
-        // 클릭된 버튼에 active 클래스 추가
+        // Open clicked card if it wasn't expanded
+        if (!isExpanded) {
+            cardElement.classList.add('expanded');
+        }
+    }
+
+    function scrollToSection(sectionId) {
+        document.querySelectorAll('.nav-tab').forEach(btn => {
+            btn.classList.remove('active');
+        });
         event.target.classList.add('active');
 
-        // 해당 섹션으로 스무스 스크롤
         const section = document.getElementById(sectionId);
         if (section) {
             section.scrollIntoView({
@@ -2051,7 +1826,6 @@
         }
     }
 
-    // 옵션이 없는 경우 수량 조절
     function increaseQuantity() {
         const quantityInput = document.getElementById('quantity');
         if (quantityInput) {
@@ -2074,17 +1848,14 @@
 
         const thumbnails = document.querySelectorAll(".thumbnail-item");
         thumbnails.forEach(item => item.classList.remove("active"));
-
         thumbnailElement.classList.add("active");
     }
 
-    // 옵션 선택 처리
     function selectOption(selectElement) {
         const optionCode = selectElement.value;
         const optionName = selectElement.dataset.optionName;
 
         if (!optionCode) {
-            // 옵션 선택 해제
             if (selectedOptions.has(optionName)) {
                 selectedOptions.delete(optionName);
                 updateSelectedOptionsDisplay();
@@ -2092,7 +1863,6 @@
             return;
         }
 
-        // 선택된 옵션 정보 찾기
         const selectedOption = options.find(opt => opt.optionCode == optionCode);
         if (selectedOption) {
             selectedOptions.set(optionName, {
@@ -2107,7 +1877,6 @@
         }
     }
 
-    // 선택된 옵션들 화면에 표시
     function updateSelectedOptionsDisplay() {
         const container = document.getElementById('selectedOptions');
         const totalPriceDiv = document.getElementById('totalPrice');
@@ -2127,17 +1896,17 @@
         selectedOptions.forEach((option, optionName) => {
             const itemPrice = (basePrice + option.optionPrice) * option.quantity;
             html += `
-            <div class="selected-option-item" data-option-name="${optionName}">
-                <div class="option-info">
+            <div class="selected-option" data-option-name="${optionName}">
+                <div class="option-details">
                     <div class="option-name">${option.optionValue}</div>
                     <div class="option-price ${option.optionPrice > 0 ? 'additional' : ''}">${option.optionPrice > 0 ? '+' + option.optionPrice.toLocaleString() + '원' : ''}</div>
                 </div>
-                <div class="quantity-control">
-                    <button class="quantity-btn" onclick="changeOptionQuantity('${optionName}', -1)">-</button>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="changeOptionQuantity('${optionName}', -1)">−</button>
                     <input type="number" class="quantity-input" value="${option.quantity}" min="1" max="${option.optionQuantity}"
                            onchange="setOptionQuantity('${optionName}', this.value)" readonly>
                     <button class="quantity-btn" onclick="changeOptionQuantity('${optionName}', 1)">+</button>
-                    <button class="remove-option" onclick="removeOption('${optionName}')">✕</button>
+                    <button class="remove-btn" onclick="removeOption('${optionName}')">✕</button>
                 </div>
             </div>
         `;
@@ -2148,7 +1917,6 @@
         updatePurchaseButtons();
     }
 
-    // 옵션 수량 변경
     function changeOptionQuantity(optionName, change) {
         const option = selectedOptions.get(optionName);
         if (!option) return;
@@ -2160,7 +1928,6 @@
         }
     }
 
-    // 옵션 수량 직접 설정
     function setOptionQuantity(optionName, quantity) {
         const option = selectedOptions.get(optionName);
         if (!option) return;
@@ -2172,20 +1939,15 @@
         }
     }
 
-    // 옵션 제거
     function removeOption(optionName) {
         selectedOptions.delete(optionName);
-
-        // 해당 옵션의 select 요소 초기화
         const selectElement = document.querySelector(`[data-option-name="${optionName}"]`);
         if (selectElement) {
             selectElement.value = '';
         }
-
         updateSelectedOptionsDisplay();
     }
 
-    // 총 가격 계산 및 표시
     function updateTotalPrice() {
         const totalPriceDiv = document.getElementById('totalPrice');
         const totalAmountDiv = document.getElementById('totalAmount');
@@ -2197,7 +1959,6 @@
 
         let totalAmount = 0;
         selectedOptions.forEach(option => {
-            // basePrice는 이미 할인가가 적용된 가격
             totalAmount += (basePrice + option.optionPrice) * option.quantity;
         });
 
@@ -2205,7 +1966,6 @@
         totalAmountDiv.textContent = totalAmount.toLocaleString() + '원';
     }
 
-    // 구매 버튼 활성화/비활성화
     function updatePurchaseButtons() {
         const cartBtn = document.getElementById('cartBtn');
         const buyBtn = document.getElementById('buyBtn');
@@ -2214,44 +1974,31 @@
         let canPurchase = false;
 
         if (options && options.length > 0) {
-            // 옵션이 있는 상품: 모든 옵션 그룹에서 선택이 되어야 함
             const optionGroups = new Set(options.map(opt => opt.optionName));
             canPurchase = selectedOptions.size === optionGroups.size && selectedOptions.size > 0;
         } else {
-            // 옵션이 없는 상품: 수량만 확인
             canPurchase = quantityInput && parseInt(quantityInput.value) > 0;
         }
 
-        // 장바구니는 항상 활성화 (품절 상품도 담기 가능)
         cartBtn.disabled = !canPurchase;
-
-        // 바로구매는 품절 상품일 때 비활성화
         const isOutOfStock = productQuantity === 0;
         buyBtn.disabled = !canPurchase || isOutOfStock;
-
-        // 버튼 텍스트는 항상 동일하게 유지 (품절 상태와 옵션 미선택 상태 구분 없이)
-        buyBtn.innerHTML = '<i class="fas fa-credit-card"></i> 바로구매';
     }
 
-    // 페이지 로드 시 초기 설정
     document.addEventListener('DOMContentLoaded', function() {
         updatePurchaseButtons();
-
-        // 옵션이 없는 경우 수량 변경 시 버튼 상태 업데이트
         const quantityInput = document.getElementById('quantity');
         if (quantityInput) {
             quantityInput.addEventListener('change', updatePurchaseButtons);
         }
     });
 
-    // 장바구니 담기
     document.getElementById('cartBtn').addEventListener('click', function() {
         if (this.disabled) return;
 
         let cartItems = [];
 
         if (options && options.length > 0) {
-            // 옵션이 있는 상품: 선택된 옵션들을 장바구니에 추가
             selectedOptions.forEach((option, optionName) => {
                 cartItems.push({
                     productCode: productCode,
@@ -2260,7 +2007,6 @@
                 });
             });
         } else {
-            // 옵션이 없는 상품: 기본 수량으로 추가
             const quantity = parseInt(document.getElementById('quantity').value);
             cartItems.push({
                 productCode: productCode,
@@ -2269,18 +2015,13 @@
             });
         }
 
-        // 서버로 장바구니 데이터 전송
         $.ajax({
             url: '/cart/add',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ cartItems: cartItems }),
             success: function(response) {
-                if (response.status) {
-                    alert(response.message);
-                } else {
-                    alert(response.message);
-                }
+                alert(response.message);
             },
             error: function() {
                 alert('장바구니 담기에 실패했습니다.');
@@ -2288,77 +2029,54 @@
         });
     });
 
-    // 바로 구매
     document.getElementById('buyBtn').addEventListener('click', function() {
         if (this.disabled) return;
 
-        // 품절 상품 체크
         if (productQuantity === 0) {
             alert('품절된 상품은 바로구매할 수 없습니다.');
             return;
         }
 
-        // 옵션이 있는 상품인지 확인
         if (options && options.length > 0) {
-            // 옵션이 있는 상품: 선택된 옵션이 있는지 확인
             if (selectedOptions.size === 0) {
                 alert('옵션을 선택해주세요.');
                 return;
             }
 
-            // 여러 옵션이 선택된 경우 첫 번째 옵션으로 바로 구매
-            // (여러 옵션 동시 구매는 장바구니 이용 권장)
             if (selectedOptions.size > 1) {
                 alert('바로 구매는 하나의 옵션만 선택 가능합니다.\n여러 옵션을 구매하시려면 장바구니를 이용해주세요.');
                 return;
             }
 
-            // 선택된 옵션 정보 가져오기
             const firstOption = selectedOptions.values().next().value;
             directPurchase(productCode, firstOption.optionCode, firstOption.quantity);
-
         } else {
-            // 옵션이 없는 상품: 기본 수량으로 바로 구매
             const quantity = parseInt(document.getElementById('quantity').value);
-
             if (quantity <= 0) {
                 alert('올바른 수량을 입력해주세요.');
                 return;
             }
-
             directPurchase(productCode, null, quantity);
         }
     });
 
-    /**
-     * 바로 구매 처리 함수
-     * @param {number} productCode - 상품 코드
-     * @param {number|null} optionCode - 옵션 코드 (없으면 null)
-     * @param {number} quantity - 수량
-     */
     function directPurchase(productCode, optionCode, quantity) {
-        // 로그인 상태 확인 (세션 체크는 서버에서 처리)
-
-        // POST 방식으로 바로 구매 페이지로 이동
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '/order/direct-purchase';
 
-        // 🔥 CSRF 토큰을 hidden input으로 추가
         const csrfInput = document.createElement('input');
         csrfInput.type = 'hidden';
-        csrfInput.name = '_csrf';  // 또는 getCSRFParameterName()
+        csrfInput.name = '_csrf';
         csrfInput.value = getCSRFToken();
         form.appendChild(csrfInput);
 
-        // 상품 코드
         const productInput = document.createElement('input');
         productInput.type = 'hidden';
         productInput.name = 'productCode';
         productInput.value = productCode;
         form.appendChild(productInput);
 
-        // 옵션 코드 (있는 경우만)
         if (optionCode !== null) {
             const optionInput = document.createElement('input');
             optionInput.type = 'hidden';
@@ -2367,28 +2085,24 @@
             form.appendChild(optionInput);
         }
 
-        // 수량
         const quantityInput = document.createElement('input');
         quantityInput.type = 'hidden';
         quantityInput.name = 'quantity';
         quantityInput.value = quantity;
         form.appendChild(quantityInput);
 
-        // 폼 제출
         document.body.appendChild(form);
         form.submit();
     }
 
-
-    // 현재 상태 변수들
+    // Review functionality
     let currentTab = 'photo';
     let currentSort = 'latest';
     let currentRating = null;
-    let currentPage = 2; // 초기 데이터는 이미 로드됨 (1페이지), 다음은 2페이지부터
+    let currentPage = 2;
     let isLoading = false;
     let hasMore = true;
 
-    // 탭 전환 함수
     function switchReviewTab(type) {
         if (isLoading || type === currentTab) return;
 
@@ -2396,61 +2110,52 @@
         currentPage = 1;
         hasMore = true;
 
-        // 탭 버튼 활성화 상태 변경
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        document.querySelectorAll('.type-tab').forEach(btn => {
             btn.classList.remove('active');
         });
         document.querySelector(`[data-type="${type}"]`).classList.add('active');
 
-        // 해당 섹션 표시/숨김
         document.getElementById('photoReviewSection').style.display = type === 'photo' ? 'block' : 'none';
         document.getElementById('textReviewSection').style.display = type === 'text' ? 'block' : 'none';
 
-        // 초기 데이터 이후로 페이지 설정
+        // 탭 전환 시 더보기 버튼 표시 여부 업데이트
+        updateLoadMoreButton();
+
         currentPage = 2;
     }
 
-    // 정렬 변경 함수
     function sortReviews(sort) {
         if (isLoading) return;
-
         currentSort = sort;
         currentPage = 1;
         hasMore = true;
-
-        // 현재 탭의 리뷰 목록을 새로 로드
         refreshCurrentTab();
     }
 
-    // 평점 필터 함수
     function filterByRating(rating) {
         if (isLoading) return;
-
         currentRating = rating === '' ? null : rating;
         currentPage = 1;
         hasMore = true;
 
-        // 필터 버튼 활성화 상태 변경
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        document.querySelectorAll('.rating-filter').forEach(btn => {
             btn.classList.remove('active');
         });
         document.querySelector(`[data-rating="${rating}"]`).classList.add('active');
-
-        // 현재 탭의 리뷰 목록을 새로 로드
         refreshCurrentTab();
     }
 
-    // 현재 탭 새로고침
     function refreshCurrentTab() {
-        // 기존 리뷰 목록 클리어
         const section = currentTab === 'photo' ? 'photoReviewSection' : 'textReviewSection';
         document.getElementById(section).innerHTML = '';
 
-        // 새로 로드
+        // 리뷰 목록을 초기화했으므로 더보기 버튼 숨김
+        const loadMoreBtn = document.getElementById('loadMoreReviews');
+        if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+
         loadMoreReviews();
     }
 
-    // 더보기 함수
     function loadMoreReviews() {
         if (isLoading || !hasMore) return;
 
@@ -2472,42 +2177,27 @@
             params.append('rating', currentRating);
         }
 
-
-
         fetch(`/product/${productId}/reviews?${params}`, {
-            // 🔥 헤더에 CSRF 토큰 추가
             headers: {
                 [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
                     document.querySelector('meta[name="_csrf"]').getAttribute('content')
             }
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('네트워크 응답이 좋지 않습니다');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     appendReviews(data.reviewList);
                     hasMore = data.hasMore;
                     currentPage++;
 
-                    // 카운트 업데이트
                     const photoCountEl = document.getElementById('photoReviewCount');
                     const textCountEl = document.getElementById('textReviewCount');
 
                     if (photoCountEl) photoCountEl.textContent = `(${data.photoReviews})`;
                     if (textCountEl) textCountEl.textContent = `(${data.textReviews})`;
 
-                    // 더보기 버튼 상태 업데이트
-                    if (loadMoreBtn) {
-                        if (!hasMore) {
-                            loadMoreBtn.style.display = 'none';
-                        } else {
-                            loadMoreBtn.style.display = 'block';
-                        }
-                    }
+                    // 더보기 버튼 표시 로직 수정
+                    updateLoadMoreButton();
                 } else {
                     console.error('리뷰 로드 실패:', data.message);
                     alert('리뷰를 불러오는데 실패했습니다.');
@@ -2526,7 +2216,22 @@
             });
     }
 
-    // 리뷰 목록에 추가
+    function updateLoadMoreButton() {
+        const loadMoreBtn = document.getElementById('loadMoreReviews');
+        if (!loadMoreBtn) return;
+
+        const currentSection = currentTab === 'photo' ? 'photoReviewSection' : 'textReviewSection';
+        const reviewContainer = document.getElementById(currentSection);
+        const currentReviewCount = reviewContainer ? reviewContainer.children.length : 0;
+
+        // 리뷰가 3개 이상이고 더 불러올 리뷰가 있을 때만 더보기 버튼 표시
+        if (currentReviewCount >= 3 && hasMore) {
+            loadMoreBtn.style.display = 'block';
+        } else {
+            loadMoreBtn.style.display = 'none';
+        }
+    }
+
     function appendReviews(reviews) {
         const section = currentTab === 'photo' ? 'photoReviewSection' : 'textReviewSection';
         const container = document.getElementById(section);
@@ -2541,7 +2246,6 @@
             container.appendChild(reviewElement);
         });
 
-        // 빈 상태 처리
         const emptyState = document.getElementById('emptyReviewState');
         if (container.children.length === 0) {
             if (emptyState) emptyState.style.display = 'block';
@@ -2549,70 +2253,63 @@
             if (loadMoreBtn) loadMoreBtn.style.display = 'none';
         } else {
             if (emptyState) emptyState.style.display = 'none';
+            // 더보기 버튼 표시 여부 업데이트
+            updateLoadMoreButton();
         }
     }
 
-    // 리뷰 요소 생성 (동적으로 HTML 생성)
     function createReviewElement(review) {
         const reviewDiv = document.createElement('div');
         reviewDiv.className = 'review-item';
         reviewDiv.setAttribute('data-review-code', review.review_code || review.reviewCode);
 
-        // 별점 생성
         let starsHtml = '';
         for (let i = 1; i <= 5; i++) {
-            const starClass = i <= review.rating ? 'star filled' : 'star empty';
+            const starClass = i <= review.rating ? 'star filled' : 'star';
             starsHtml += `<svg class="${starClass}" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
         }
 
-        // 리뷰 이미지 (포토리뷰인 경우)
         let imageHtml = '';
         if (review.reviewImage) {
             imageHtml = `
             <div class="review-images">
-                <img src="${review.reviewImage}"
-                     alt="리뷰 이미지" onclick="showImageModal('${review.reviewImage}')">
+                <img src="${review.reviewImage}" alt="리뷰 이미지" onclick="showImageModal('${review.reviewImage}')" class="review-image">
             </div>
         `;
         }
 
-        // 날짜 포맷팅
         const reviewDate = new Date(review.reviewDate).toLocaleDateString('ko-KR', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit'
         }).replace(/\. /g, '.').replace(/\.$/, '');
 
-        // 좋아요 상태 클래스
         const likedClass = (review.isLiked == 1) ? 'liked' : '';
 
-        // 리뷰 HTML 구성
         reviewDiv.innerHTML = `
         <div class="review-header">
-            <div class="reviewer-info">
+            <div class="reviewer-profile">
                 <div class="reviewer-avatar">${review.writerName ? review.writerName.charAt(0) : '익'}</div>
-                <div class="reviewer-details">
+                <div class="reviewer-info">
                     <h4>${review.writerName || '익명'}</h4>
                     <p>
                         <span>${review.writerAge || '20대'}</span>
                         <span>${review.writerGender === '남자' ? '남성' : '여성'}</span>
                         ·
-                        <span>${reviewDate}</span> 구매
+                        <span>${reviewDate}</span>
                     </p>
                 </div>
             </div>
-            <div class="review-rating">
+            <div class="stars">
                 ${starsHtml}
             </div>
         </div>
 
-        <div class="review-content">
-            <p>${review.content || ''}</p>
-            ${imageHtml}
-        </div>
+        <div class="review-text">${review.content || ''}</div>
+        ${imageHtml}
 
-        <div class="review-footer">
-            <button class="like-btn ${likedClass}"
+        <div class="review-actions">
+            <button class="like-button ${likedClass}"
                     onclick="toggleReviewLike(${review.review_code || review.reviewCode}, this)">
                 <svg class="heart-icon" viewBox="0 0 24 24">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -2625,7 +2322,6 @@
         return reviewDiv;
     }
 
-    // 리뷰 좋아요 토글 (기존 ReviewController API 활용)
     function toggleReviewLike(reviewCode, buttonElement) {
         if (!reviewCode || buttonElement.disabled) return;
 
@@ -2666,9 +2362,7 @@
             });
     }
 
-    // 이미지 모달 함수 (기존 코드가 있다면 그대로 사용)
     function showImageModal(imageSrc) {
-        // 간단한 이미지 모달 구현
         const modal = document.createElement('div');
         modal.style.cssText = `
         position: fixed;
@@ -2690,103 +2384,18 @@
         max-width: 90%;
         max-height: 90%;
         object-fit: contain;
+        border-radius: 8px;
     `;
 
         modal.appendChild(img);
         modal.onclick = () => document.body.removeChild(modal);
-
         document.body.appendChild(modal);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('리뷰 JavaScript 초기화 완료');
-
-        // 더보기 버튼이 있는지 확인하고 표시
-        const loadMoreBtn = document.getElementById('loadMoreReviews');
-        if (loadMoreBtn && hasMore) {
-            loadMoreBtn.style.display = 'block';
-        }
+        updateLoadMoreButton();
     });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        updateDeliveryNotice();
-    });
-
-    function updateDeliveryNotice() {
-        const now = new Date();
-        const currentHour = now.getHours();
-        const isWeekend = now.getDay() === 0 || now.getDay() === 6; // 0: 일요일, 6: 토요일
-
-        const deliveryInfo = document.querySelector('.delivery-info');
-        const deliveryMainText = document.getElementById('deliveryMainText');
-
-        if (!deliveryInfo || !deliveryMainText) return;
-
-        // 기존 클래스 제거
-        deliveryInfo.classList.remove('today', 'tomorrow', 'weekend');
-
-        if (isWeekend) {
-            // 주말인 경우
-            deliveryInfo.classList.add('weekend');
-            deliveryMainText.innerHTML = `
-            <span class="highlight-time">주말/공휴일</span>로 인해 월요일 발송
-        `;
-        } else if (currentHour >= 13) {
-            // 오후 1시 이후인 경우
-            deliveryInfo.classList.add('tomorrow');
-            deliveryMainText.innerHTML = `
-            <span class="highlight-time">내일 발송</span> 예정 (오후 1시 이후 주문)
-        `;
-        } else {
-            // 오후 1시 이전인 경우
-            deliveryInfo.classList.add('today');
-            deliveryMainText.innerHTML = `
-            <span class="highlight-time">오늘 발송!</span> 빠른 배송 가능
-        `;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // 평점 정보 가져오기 (Thymeleaf에서 전달받은 값)
-        const reviewAvg = /*[[${product.reviewAvg}]]*/ 0;
-
-        if (reviewAvg > 0) {
-            updateStarRating(reviewAvg);
-        }
-    });
-
-    function updateStarRating(rating) {
-        const stars = document.querySelectorAll('.product-rating .star');
-
-        stars.forEach((star, index) => {
-            const starNumber = index + 1;
-
-            // 기존 클래스 제거
-            star.classList.remove('filled', 'empty', 'half');
-
-            if (rating >= starNumber) {
-                // 완전히 채워진 별
-                star.classList.add('filled');
-            } else if (rating >= starNumber - 0.5) {
-                // 반별 (예: 4.5점일 때 5번째 별)
-                star.classList.add('half');
-            } else {
-                // 빈 별
-                star.classList.add('empty');
-            }
-        });
-    }
-
-    function getCurrentPrice() {
-        const currentPriceElement = document.querySelector('.current-price');
-        if (currentPriceElement) {
-            // 텍스트에서 숫자만 추출 (예: "29,000원" -> 29000)
-            const priceText = currentPriceElement.textContent.replace(/[^0-9]/g, '');
-            return parseInt(priceText) || 0;
-        }
-        return basePrice; // fallback to Thymeleaf variable
-    }
-
 </script>
+
 </body>
 </html>

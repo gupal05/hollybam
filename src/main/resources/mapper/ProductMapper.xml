@@ -112,8 +112,8 @@
             p.product_order_count,
             pr.price_original,
             pr.price_selling,
-            title_img.image_url AS title_image_url,
-            webp_img.image_url  AS webp_image_url,
+            title_img.image_url  AS title_image_url,
+            webp_img.image_url   AS webp_image_url,
             IFNULL(r.review_count, 0) AS review_count,
             IFNULL(r.avg_rating, 0)   AS avg_rating
         FROM product p
@@ -138,12 +138,12 @@
         ) r
                            ON r.product_code = p.product_code
         WHERE p.product_active = 1
+          AND p.product_name LIKE '%홀리밤%'
         ORDER BY
             CASE WHEN p.best_sort BETWEEN 1 AND 8 THEN 0 ELSE 1 END,  -- best_sort 우선
             p.best_sort ASC,                                          -- 1~8 순서
             p.product_order_count DESC,                               -- 없으면 주문건수순
             p.product_code DESC                                       -- 동점 시 최신
-        LIMIT 8
     </select>
 
 
@@ -182,11 +182,11 @@
             GROUP BY oi.product_code
         ) r ON r.product_code = p.product_code
         WHERE p.product_active = 1
+          AND p.product_name LIKE '%홀리밤%'
         ORDER BY
             CASE WHEN p.best_sort BETWEEN 1 AND 8 THEN 0 ELSE 1 END,  -- best_sort 우선
             p.best_sort ASC,
             p.product_order_count DESC
-        LIMIT 4
     </select>
 
 
@@ -228,9 +228,51 @@
 
         WHERE
             p.product_active = 1
+          AND p.product_name LIKE '%홀리밤%'
         ORDER BY
             p.create_at DESC
-        LIMIT 4
+    </select>
+
+    <select id="selectNewProductsAll" resultMap="ProductResultMap">
+        SELECT
+            p.product_code,
+            p.product_id,
+            p.product_name,
+            p.product_quantity,
+            p.product_description,
+            p.product_order_count,
+            pr.price_original,
+            pr.price_selling,
+            title_img.image_url AS title_image_url,
+            webp_img.image_url AS webp_image_url,
+            IFNULL(r.review_count, 0) AS review_count,
+            IFNULL(r.avg_rating, 0) AS avg_rating
+        FROM
+            product p
+                JOIN price pr ON p.product_code = pr.product_code
+                LEFT JOIN image title_img ON p.product_code = title_img.product_code AND title_img.image_type = 'title'
+                LEFT JOIN image webp_img ON p.product_code = webp_img.product_code AND webp_img.image_type = 'webp'
+
+                -- 리뷰 개수 및 평균 평점 서브쿼리 조인
+                LEFT JOIN (
+                SELECT
+                    oi.product_code,
+                    COUNT(rv.review_code) AS review_count,
+                    ROUND(AVG(rv.rating), 1) AS avg_rating
+                FROM
+                    review rv
+                        JOIN order_items oi ON rv.order_item_code = oi.order_item_code
+                WHERE
+                    rv.is_active = 1
+                GROUP BY
+                    oi.product_code
+            ) r ON p.product_code = r.product_code
+
+        WHERE
+            p.product_active = 1
+          AND p.product_name LIKE '%홀리밤%'
+        ORDER BY
+            p.create_at DESC
     </select>
 
 

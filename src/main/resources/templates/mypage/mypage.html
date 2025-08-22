@@ -2272,6 +2272,20 @@
     </div>
   `;
 
+    const memo = (first?.deliveryMemo ?? '').trim();
+
+// XSS 방지 + 줄바꿈 보존(선택)
+    const escapeHtml = (s) =>
+            s.replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch]));
+    const memoHtmlSafe = memo ? escapeHtml(memo).replace(/\n/g, '<br>') : '';
+
+    const deliveryMemoHtml = memo ? `
+  <div class="mypage-info-item mypage-full-width">
+    <span class="mypage-info-label">배송 요청사항</span>
+    <span class="mypage-info-value">${memoHtmlSafe}</span>
+  </div>
+` : '';
+
     modalBody.innerHTML = `
     <div class="mypage-section">
       <h4 class="mypage-section-title">주문 정보</h4>
@@ -2295,7 +2309,7 @@
           </div>
           <div class="mypage-info-item">
             <span class="mypage-info-label">결제방법</span>
-            <span class="mypage-info-value">${first.paymentMethod === 'card' ? '카드결제' : first.paymentMethod}</span>
+            <span class="mypage-info-value">${first.paymentMethod === 'card' ? '카드결제' : '무통장입금'}</span>
           </div>
         </div>
       </div>
@@ -2338,10 +2352,7 @@
           <span class="mypage-info-label">배송주소</span>
           <span class="mypage-info-value mypage-address-text">${first.receiverAddr} ${first.receiverAddrDetail || ''}</span>
         </div>
-        <div class="mypage-info-item mypage-full-width">
-          <span class="mypage-info-label">배송 요청사항</span>
-          <span class="mypage-info-value">${first.deliveryMemo}</span>
-        </div>
+        ${deliveryMemoHtml}
         ${trackingNumberHtml}
       </div>
     </div>

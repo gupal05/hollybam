@@ -11,7 +11,7 @@
     transition: height 0.3s ease;
     z-index: 1000;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     font-weight: bold;
     padding: 0 20px;
@@ -23,11 +23,26 @@
     text-align: center;
 }
 
+/* 로고 영역 */
+.header-nav:first-child {
+    flex: 1;
+}
+
+/* 네비게이션 영역 - 더 크게 */
+.header-nav:nth-child(2) {
+    flex: 2.5;
+}
+
+/* 아이콘 영역 */
+.header-nav:nth-child(3) {
+    flex: 1;
+}
+
 .nav-group {
     display: flex;
     justify-content: center;
     gap: 40px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .nav-group-icon {

@@ -74,7 +74,5 @@ public interface IF_AdminProductDao {
 
     void insHollybamPick(@Param("productCode") int productCode);
 
-    int deleteHollybamPick(@Param("pickCode") int pickCode);
-
 
 }

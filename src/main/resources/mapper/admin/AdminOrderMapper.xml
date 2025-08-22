@@ -651,8 +651,7 @@
     </select>
 
     <update id="updateDeliveryStatusNull" parameterType="int">
-        UPDATE delivery
-        SET delivery_status = NULL
+        delete from delivery
         WHERE order_code IN
         <foreach collection="orderCodes" item="oc" open="(" separator="," close=")">
             #{oc}
@@ -688,14 +687,28 @@
         </foreach>
     </update>
 
+    <select id="getDeliveryMemo" parameterType="int" resultType="String">
+        select delivery_request
+        from orders
+        where order_code = #{orderCode}
+    </select>
+
+    <insert id="insertDeliveryStatus" parameterType="java.util.List">
+        INSERT INTO delivery (
+        order_code, courier, tracking_number, shipped_at, delivery_status, delivery_memo
+        )
+        VALUES
+        <foreach collection="orders" item="row" separator=",">
+            (#{row.orderCode}, 'CJ대한통운', #{row.trackingNumber}, NOW(), 'SHIPPING', #{row.deliveryMemo})
+        </foreach>
+    </insert>
+
     <update id="updateShippingStatus" parameterType="int">
         UPDATE orders o
-            JOIN delivery d ON d.order_code = o.order_code
         SET
             o.payment_status = 'PAID',
             o.order_status  = 'SHIPPED',
-            o.simple_status = 'SHIPPING',
-            d.delivery_status = 'SHIPPING'
+            o.simple_status = 'SHIPPING'
         where order_code IN
         <foreach collection="orderCodes" item="oc" open="(" separator="," close=")">
             #{oc}
@@ -710,7 +723,7 @@
             o.order_status = 'SHIPPED',
             d.delivery_status = 'DELIVERED',
             o.simple_status = 'DELIVERED'
-        where order_code IN
+        where d.order_code IN
         <foreach collection="orderCodes" item="oc" open="(" separator="," close=")">
             #{oc}
         </foreach>

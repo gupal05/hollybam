@@ -8,7 +8,7 @@
 
     <!-- 주문 상태 조회 -->
     <select id="getOrderStatusByOrderItemCode" resultType="String">
-        SELECT o.order_status
+        SELECT o.simple_status
         FROM orders o
                  JOIN order_items oi ON o.order_code = oi.order_code
         WHERE oi.order_item_code = #{orderItemCode}

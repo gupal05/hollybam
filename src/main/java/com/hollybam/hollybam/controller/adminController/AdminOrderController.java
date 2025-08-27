@@ -57,7 +57,7 @@ public class AdminOrderController {
             String addr = (String)orderList.get(i).get("receiverAddr");
             String detail =  (String)orderList.get(i).get("receiverAddrDetail");
             orderList.get(i).remove("receiverAddr");
-            orderList.get(i).put("receiverAddr", addr+detail);
+            orderList.get(i).put("receiverAddr", addr+" "+detail);
             long productTypeCount = (long)orderList.get(i).get("productTypeCount");
             if(productTypeCount > 1){
                 String productName = (String)orderList.get(i).get("productName");

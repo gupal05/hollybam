@@ -175,4 +175,83 @@
         INSERT INTO coupon_member (mem_code, coupon_code, used, issued_at)
         VALUES (#{memberCode}, #{couponCode}, 0, now())
     </insert>
+
+    <!-- 쿠폰 리스트 조회 (페이지네이션 포함) -->
+    <select id="selectCouponList" resultType="java.util.Map">
+        SELECT
+        coupon_code,
+        coupon_id,
+        coupon_name,
+        coupon_discription,
+        discount_type,
+        discount_value,
+        min_order_price,
+        max_discount,
+        issued_at,
+        expired_at,
+        is_auto_issue,
+        created_at,
+        CASE
+        WHEN expired_at &lt; CURDATE() THEN 'expired'
+        WHEN issued_at &gt; CURDATE() THEN 'pending'
+        ELSE 'active'
+        END AS status
+        FROM coupon
+        <where>
+            <if test="search != null and search != ''">
+                AND (coupon_name LIKE CONCAT('%', #{search}, '%')
+                OR coupon_id LIKE CONCAT('%', #{search}, '%'))
+            </if>
+            <if test="status != null and status != ''">
+                <choose>
+                    <when test="status == 'active'">
+                        AND expired_at >= CURDATE() AND issued_at &lt;= CURDATE()
+                    </when>
+                    <when test="status == 'expired'">
+                        AND expired_at &lt; CURDATE()
+                    </when>
+                    <when test="status == 'pending'">
+                        AND issued_at &gt; CURDATE()
+                    </when>
+                </choose>
+            </if>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 쿠폰 총 개수 조회 -->
+    <select id="adminSelectCouponCount" resultType="int">
+        SELECT COUNT(*)
+        FROM coupon
+        <where>
+            <if test="search != null and search != ''">
+                AND (coupon_name LIKE CONCAT('%', #{search}, '%')
+                OR coupon_id LIKE CONCAT('%', #{search}, '%'))
+            </if>
+            <if test="status != null and status != ''">
+                <choose>
+                    <when test="status == 'active'">
+                        AND expired_at >= CURDATE() AND issued_at &lt;= CURDATE()
+                    </when>
+                    <when test="status == 'expired'">
+                        AND expired_at &lt; CURDATE()
+                    </when>
+                    <when test="status == 'pending'">
+                        AND issued_at &gt; CURDATE()
+                    </when>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+    <!-- 쿠폰 통계 조회 -->
+    <select id="selectCouponStats" resultType="java.util.Map">
+        SELECT
+            COUNT(*) as total_coupons,
+            SUM(CASE WHEN expired_at >= CURDATE() AND issued_at &lt;= CURDATE() THEN 1 ELSE 0 END) as active_coupons,
+            SUM(CASE WHEN expired_at &lt; CURDATE() THEN 1 ELSE 0 END) as expired_coupons,
+            SUM(CASE WHEN issued_at &gt; CURDATE() THEN 1 ELSE 0 END) as pending_coupons
+        FROM coupon
+    </select>
 </mapper>

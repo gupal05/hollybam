@@ -62,16 +62,20 @@
       color: #fff;
     }
 
-    /* 컨테이너 */
+    /* 컨테이너 - 2컬럼 레이아웃 */
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 40px 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
     }
 
     /* 페이지 타이틀 */
     .page-title {
-      margin-bottom: 40px;
+      grid-column: 1 / -1;
+      margin-bottom: 20px;
     }
 
     .page-title h2 {
@@ -88,17 +92,32 @@
       font-weight: 300;
     }
 
-    /* 섹션 */
+    /* 왼쪽 컬럼 - 쿠폰 생성 폼 */
+    .create-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 오른쪽 컬럼 - 쿠폰 리스트 */
+    .list-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 섹션 공통 스타일 */
     .section {
       background: #fff;
       border: 1px solid #e9ecef;
-      margin-bottom: 40px;
-      max-width: 600px;
     }
 
     .section-header {
       padding: 30px 40px;
       border-bottom: 1px solid #e9ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .section-title {
@@ -106,38 +125,38 @@
       font-size: 18px;
       font-weight: 300;
       letter-spacing: 0.5px;
+      margin: 0;
     }
 
     .section-body {
-      padding: 40px;
+      padding: 30px 40px;
     }
 
-    /* 폼 요소들 */
+    /* 폼 스타일 */
     .form-group {
       margin-bottom: 25px;
     }
 
     .form-group label {
       display: block;
-      color: #6c757d;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      color: #212529;
+      font-size: 13px;
       font-weight: 400;
       margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
       width: 100%;
-      padding: 15px 20px;
+      padding: 12px 15px;
       border: 1px solid #e9ecef;
       font-size: 14px;
       font-weight: 300;
       transition: all 0.3s ease;
       background: #fff;
-      color: #212529;
       box-sizing: border-box;
     }
 
@@ -149,24 +168,17 @@
     }
 
     .form-group textarea {
-      min-height: 100px;
+      height: 100px;
       resize: vertical;
-      font-family: inherit;
-    }
-
-    .form-group input[type="checkbox"] {
-      width: auto;
-      margin-right: 8px;
     }
 
     .checkbox-group {
       display: flex;
       align-items: center;
-      padding: 15px 20px;
-      background: #f8f9fa;
+      padding: 15px;
       border: 1px solid #e9ecef;
-      transition: all 0.3s ease;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
 
     .checkbox-group:hover {
@@ -174,46 +186,25 @@
     }
 
     .checkbox-group.checked {
-      background: #fff;
+      background: #f8f9fa;
       border-color: #212529;
     }
 
-    .checkbox-group label {
-      margin-bottom: 0;
-      margin-left: 8px;
-      text-transform: none;
-      font-size: 14px;
-      font-weight: 300;
-      cursor: pointer;
+    .checkbox-group input[type="checkbox"] {
+      margin-right: 10px;
+      width: auto;
     }
 
-    /* 버튼 */
+    /* 버튼 스타일 */
     .btn {
-      background: #fff;
-      color: #212529;
-      border: 1px solid #dee2e6;
-      padding: 12px 20px;
+      padding: 12px 24px;
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 1px;
       cursor: pointer;
       transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 120px;
-      justify-content: center;
-    }
-
-    .btn:hover {
-      border-color: #212529;
-    }
-
-    .btn:active,
-    .btn:focus {
-      outline: none;
-      transform: none;
-      box-shadow: none;
+      border: 1px solid;
+      font-weight: 400;
     }
 
     .btn-primary {
@@ -236,6 +227,32 @@
       background: #5a6268;
     }
 
+    .btn-outline {
+      background: transparent;
+      color: #212529;
+      border-color: #212529;
+    }
+
+    .btn-outline:hover {
+      background: #212529;
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: #fff;
+      border-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 10px;
+    }
+
     /* 폼 액션 */
     .form-actions {
       background: #f8f9fa;
@@ -253,7 +270,219 @@
       margin-top: 8px;
     }
 
+    /* 검색 및 필터 영역 */
+    .list-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 40px 10px 15px;
+      border: 1px solid #e9ecef;
+      font-size: 13px;
+    }
+
+    .search-box .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+
+    .filter-dropdown {
+      min-width: 150px;
+    }
+
+    .filter-dropdown select {
+      padding: 10px 15px;
+      border: 1px solid #e9ecef;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    /* 쿠폰 리스트 */
+    .coupon-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .coupon-item {
+      border: 1px solid #e9ecef;
+      padding: 20px;
+      transition: all 0.3s ease;
+      background: #fff;
+    }
+
+    .coupon-item:hover {
+      border-color: #212529;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .coupon-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .coupon-title {
+      font-size: 16px;
+      font-weight: 400;
+      color: #212529;
+      margin-bottom: 5px;
+    }
+
+    .coupon-id {
+      font-size: 12px;
+      color: #6c757d;
+      font-family: 'Courier New', monospace;
+    }
+
+    .coupon-status {
+      padding: 4px 8px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 400;
+    }
+
+    .status-active {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-expired {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status-disabled {
+      background: #d6d8db;
+      color: #495057;
+    }
+
+    .coupon-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .detail-label {
+      color: #6c757d;
+      font-weight: 300;
+    }
+
+    .detail-value {
+      color: #212529;
+      font-weight: 400;
+    }
+
+    .coupon-description {
+      font-size: 13px;
+      color: #6c757d;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .coupon-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    /* 페이지네이션 */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .pagination button {
+      padding: 8px 12px;
+      border: 1px solid #e9ecef;
+      background: #fff;
+      color: #6c757d;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .pagination button:hover {
+      border-color: #212529;
+      color: #212529;
+    }
+
+    .pagination button.active {
+      background: #212529;
+      color: #fff;
+      border-color: #212529;
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* 통계 카드 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid #e9ecef;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: 300;
+      color: #212529;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
     /* 반응형 */
+    @media (max-width: 1200px) {
+      .container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
     @media (max-width: 768px) {
       .header {
         padding: 0 20px;
@@ -269,16 +498,30 @@
         padding: 20px;
       }
 
-      .section {
-        max-width: none;
-      }
-
       .form-actions {
         flex-direction: column-reverse;
       }
 
       .btn {
         width: 100%;
+      }
+
+      .list-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .coupon-details {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .coupon-actions {
+        justify-content: center;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -305,96 +548,166 @@
   <div class="container">
     <!-- 페이지 타이틀 -->
     <div class="page-title">
-      <h2>쿠폰 생성</h2>
-      <p>고객에게 발급할 쿠폰을 생성합니다</p>
+      <h2>쿠폰 관리</h2>
+      <p>쿠폰을 생성하고 관리합니다</p>
     </div>
 
-    <!-- 쿠폰 생성 폼 -->
-    <form th:action="@{/admin/coupon/create}" th:object="${coupon}" method="post">
+    <!-- 왼쪽: 쿠폰 생성 폼 -->
+    <div class="create-section">
+      <form th:action="@{/admin/coupon/create}" th:object="${coupon}" method="post">
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">쿠폰 생성</h3>
+          </div>
+          <div class="section-body">
+            <div class="form-group">
+              <label for="couponId">쿠폰 아이디 (xxxx-xxxx-xxxx)</label>
+              <input type="text" id="couponId" name="couponId"
+                     pattern="[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}"
+                     title="4자-4자-4자의 영문 또는 숫자 조합" required>
+              <div class="help-text">4자-4자-4자의 영문 또는 숫자 조합으로 입력하세요</div>
+            </div>
+
+            <div class="form-group">
+              <label>쿠폰 이름</label>
+              <input type="text" th:field="*{couponName}" placeholder="쿠폰 이름을 입력하세요" required/>
+            </div>
+
+            <div class="form-group">
+              <label>쿠폰 설명</label>
+              <textarea th:field="*{couponDiscription}" placeholder="쿠폰에 대한 상세 설명을 입력하세요" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>할인 유형</label>
+              <select th:field="*{discountType}" required>
+                <option value="">할인 유형을 선택하세요</option>
+                <option value="per">퍼센트 (%) 할인</option>
+                <option value="amount">정액 할인</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>할인 값</label>
+              <input type="number" th:field="*{discountValue}" min="0" placeholder="할인 값을 입력하세요" required/>
+              <div class="help-text">퍼센트 할인의 경우 1-100, 정액 할인의 경우 원 단위로 입력</div>
+            </div>
+
+            <div class="form-group">
+              <label>최소 주문 금액</label>
+              <input type="number" th:field="*{minOrderPrice}" min="0" value="0" placeholder="최소 주문 금액 (원)"/>
+              <div class="help-text">쿠폰 사용을 위한 최소 주문 금액을 설정하세요 (0원인 경우 제한 없음)</div>
+            </div>
+
+            <div class="form-group">
+              <label>최대 할인 금액</label>
+              <input type="number" th:field="*{maxDiscount}" min="0" placeholder="최대 할인 금액 (원)"/>
+              <div class="help-text">퍼센트 할인의 경우 최대 할인 금액을 제한할 수 있습니다</div>
+            </div>
+
+            <div class="form-group">
+              <label>발급 시작일</label>
+              <input type="date" th:field="*{issuedAt}"/>
+              <div class="help-text">쿠폰 발급을 시작할 날짜를 선택하세요</div>
+            </div>
+
+            <div class="form-group">
+              <label>만료일</label>
+              <input type="date" th:field="*{expiredAt}"/>
+              <div class="help-text">쿠폰의 사용 만료일을 선택하세요</div>
+            </div>
+
+            <div class="form-group">
+              <label>자동 발급 설정</label>
+              <div class="checkbox-group" onclick="toggleCheckbox('isAutoIssue')">
+                <input type="checkbox" th:field="*{isAutoIssue}" id="isAutoIssue"/>
+                <label for="isAutoIssue">자동 발급 여부</label>
+              </div>
+              <div class="help-text">체크하면 조건에 맞는 고객에게 자동으로 쿠폰이 발급됩니다</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="history.back()">
+              취소
+            </button>
+            <button type="submit" class="btn btn-primary">
+              쿠폰 생성
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- 오른쪽: 쿠폰 리스트 -->
+    <div class="list-section">
+      <!-- 쿠폰 리스트 섹션 -->
       <div class="section">
         <div class="section-header">
-          <h3 class="section-title">쿠폰 정보 입력</h3>
+          <h3 class="section-title">쿠폰 목록</h3>
+          <button class="btn btn-outline btn-sm" onclick="refreshCouponList()">
+            새로고침
+          </button>
         </div>
         <div class="section-body">
-          <div class="form-group">
-            <label for="couponId">쿠폰 아이디 (xxxx-xxxx-xxxx)</label>
-            <input type="text" id="couponId" name="couponId"
-                   pattern="[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}"
-                   title="4자-4자-4자의 영문 또는 숫자 조합" required>
-            <div class="help-text">4자-4자-4자의 영문 또는 숫자 조합으로 입력하세요</div>
-          </div>
-
-          <div class="form-group">
-            <label>쿠폰 이름</label>
-            <input type="text" th:field="*{couponName}" placeholder="쿠폰 이름을 입력하세요" required/>
-          </div>
-
-          <div class="form-group">
-            <label>쿠폰 설명</label>
-            <textarea th:field="*{couponDiscription}" placeholder="쿠폰에 대한 상세 설명을 입력하세요" required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>할인 유형</label>
-            <select th:field="*{discountType}" required>
-              <option value="">할인 유형을 선택하세요</option>
-              <option value="per">퍼센트 (%) 할인</option>
-              <option value="amount">정액 할인</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>할인 값</label>
-            <input type="number" th:field="*{discountValue}" min="0" placeholder="할인 값을 입력하세요" required/>
-            <div class="help-text">퍼센트 할인의 경우 1-100, 정액 할인의 경우 원 단위로 입력</div>
-          </div>
-
-          <div class="form-group">
-            <label>최소 주문 금액</label>
-            <input type="number" th:field="*{minOrderPrice}" min="0" value="0" placeholder="최소 주문 금액 (원)"/>
-            <div class="help-text">쿠폰 사용을 위한 최소 주문 금액을 설정하세요 (0원인 경우 제한 없음)</div>
-          </div>
-
-          <div class="form-group">
-            <label>최대 할인 금액</label>
-            <input type="number" th:field="*{maxDiscount}" min="0" placeholder="최대 할인 금액 (원)"/>
-            <div class="help-text">퍼센트 할인의 경우 최대 할인 금액을 제한할 수 있습니다</div>
-          </div>
-
-          <div class="form-group">
-            <label>발급 시작일</label>
-            <input type="date" th:field="*{issuedAt}"/>
-            <div class="help-text">쿠폰 발급을 시작할 날짜를 선택하세요</div>
-          </div>
-
-          <div class="form-group">
-            <label>만료일</label>
-            <input type="date" th:field="*{expiredAt}"/>
-            <div class="help-text">쿠폰의 사용 만료일을 선택하세요</div>
-          </div>
-
-          <div class="form-group">
-            <label>자동 발급 설정</label>
-            <div class="checkbox-group" onclick="toggleCheckbox('isAutoIssue')">
-              <input type="checkbox" th:field="*{isAutoIssue}" id="isAutoIssue"/>
-              <label for="isAutoIssue">자동 발급 여부</label>
+          <!-- 검색 및 필터 -->
+          <div class="list-controls">
+            <div class="search-box">
+              <input type="text" id="searchInput" th:value="${currentSearch}" placeholder="쿠폰명 또는 ID로 검색..." onkeyup="searchCoupons()">
+              <span class="search-icon">🔍</span>
             </div>
-            <div class="help-text">체크하면 조건에 맞는 고객에게 자동으로 쿠폰이 발급됩니다</div>
+          </div>
+
+          <!-- 쿠폰 리스트 -->
+          <div class="coupon-list" id="couponList">
+            <div class="coupon-item" th:each="c : ${coupons}">
+              <div class="coupon-header">
+                <div>
+                  <div class="coupon-title" th:text="${c.coupon_name}"></div>
+                  <div class="coupon-id" th:text="${c.coupon_id}"></div>
+                </div>
+              </div>
+              <div class="coupon-description" th:text="${c.coupon_discription}"></div>
+              <div class="coupon-details">
+                <div class="detail-item">
+                  <span class="detail-label">할인:</span>
+                  <span class="detail-value" th:text="${c.discount_type == 'per' ? c.discount_value + '%' : c.discount_value + '원'}"></span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">최소주문:</span>
+                  <span class="detail-value" th:text="${#numbers.formatInteger(c.min_order_price, 3, 'COMMA')} + '원'"></span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">최대할인:</span>
+                  <span class="detail-value" th:text="${c['max_discount'] != null ? #numbers.formatInteger(c['max_discount'], 0, 'COMMA') + '원' : '제한없음'}"></span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">만료일:</span>
+                  <span class="detail-value" th:text="${c['expired_at'] != null ? #dates.format(c['expired_at'], 'yyyy-MM-dd') : '무제한'}"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 페이지네이션 -->
+          <div class="pagination">
+            <button th:onclick="'changePage(0)'" th:disabled="${!hasPrevious}">‹‹</button>
+            <button th:onclick="'changePage(' + ${currentPage - 1} + ')'" th:disabled="${!hasPrevious}">‹</button>
+
+            <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+              <button th:onclick="'changePage(' + ${i} + ')'"
+                      th:classappend="${i == currentPage ? 'active' : ''}"
+                      th:text="${i + 1}"></button>
+            </th:block>
+
+            <button th:onclick="'changePage(' + ${currentPage + 1} + ')'" th:disabled="${!hasNext}">›</button>
+            <button th:onclick="'changePage(' + ${totalPages - 1} + ')'" th:disabled="${!hasNext}">››</button>
           </div>
         </div>
       </div>
-
-      <div class="section">
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="history.back()">
-            취소
-          </button>
-          <button type="submit" class="btn btn-primary">
-            쿠폰 생성
-          </button>
-        </div>
-      </div>
-    </form>
+    </div>
   </div>
 </div>
 
@@ -424,6 +737,9 @@
     if (autoIssueCheckbox.checked) {
       checkboxGroup.classList.add('checked');
     }
+
+    // 초기 통계 업데이트
+    updateCouponStats();
   });
 
   // 체크박스 토글
@@ -469,6 +785,88 @@
     }
   });
 
+  // 쿠폰 통계 업데이트
+  function updateCouponStats() {
+    // TODO: 백엔드 API 호출하여 실제 통계 데이터 가져오기
+    document.getElementById('totalCoupons').textContent = '15';
+    document.getElementById('activeCoupons').textContent = '12';
+    document.getElementById('expiredCoupons').textContent = '3';
+  }
+
+  // 쿠폰 리스트 새로고침
+  function refreshCouponList() {
+    // TODO: 백엔드 API 호출하여 쿠폰 목록 다시 로드
+    console.log('쿠폰 리스트 새로고침');
+    updateCouponStats();
+  }
+
+  // 쿠폰 검색
+  function searchCoupons() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const couponItems = document.querySelectorAll('.coupon-item');
+
+    couponItems.forEach(item => {
+      const title = item.querySelector('.coupon-title').textContent.toLowerCase();
+      const id = item.querySelector('.coupon-id').textContent.toLowerCase();
+
+      if (title.includes(searchTerm) || id.includes(searchTerm)) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  // 쿠폰 상태별 필터
+  function filterCoupons() {
+    const filterValue = document.getElementById('statusFilter').value;
+    const couponItems = document.querySelectorAll('.coupon-item');
+
+    couponItems.forEach(item => {
+      const status = item.querySelector('.coupon-status');
+
+      if (!filterValue) {
+        item.style.display = 'block';
+      } else if (status.classList.contains(`status-${filterValue}`)) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  // 쿠폰 편집
+  function editCoupon(couponId) {
+    // TODO: 쿠폰 편집 모달 또는 페이지로 이동
+    console.log('쿠폰 편집:', couponId);
+    alert(`쿠폰 편집 기능 - ID: ${couponId}`);
+  }
+
+  // 쿠폰 상태 토글
+  function toggleCouponStatus(couponId) {
+    // TODO: 백엔드 API 호출하여 쿠폰 상태 변경
+    console.log('쿠폰 상태 변경:', couponId);
+    if (confirm('쿠폰 상태를 변경하시겠습니까?')) {
+      alert(`쿠폰 상태 변경됨 - ID: ${couponId}`);
+    }
+  }
+
+  // 쿠폰 삭제
+  function deleteCoupon(couponId) {
+    // TODO: 백엔드 API 호출하여 쿠폰 삭제
+    if (confirm('정말로 이 쿠폰을 삭제하시겠습니까?')) {
+      console.log('쿠폰 삭제:', couponId);
+      alert(`쿠폰 삭제됨 - ID: ${couponId}`);
+    }
+  }
+
+  // 페이지 변경
+  function changePage(page) {
+    const search = document.getElementById('searchInput').value;
+    const status = document.getElementById('statusFilter').value;
+    window.location.href = `/admin/coupon/create?page=${page}&search=${search}&status=${status}`;
+  }
+
   // 로그아웃 처리
   function logout() {
     if (confirm('로그아웃 하시겠습니까?')) {
@@ -483,7 +881,6 @@
               })
               .catch(error => {
                 console.error('로그아웃 오류:', error);
-                // 오류가 발생해도 로그인 페이지로 이동
                 window.location.href = '/admin/login';
               });
     }

@@ -384,8 +384,42 @@ public class AdminController {
     }
 
     @GetMapping("/coupon/create")
-    public String moveCreateCoupon(Model model) {
+    public String moveCreateCoupon(
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "") String status
+    ) {
         model.addAttribute("coupon", new CouponDto());
+
+        // offset 계산
+        int offset = page * size;
+
+        // 쿠폰 리스트 조회
+        List<Map<String, Object>> couponList = couponService.selectCouponList(search, status, size, offset);
+
+        // 총 개수 조회
+        int totalCount = couponService.adminSelectCouponCount(search, status);
+
+        // 통계 조회
+        Map<String, Object> stats = couponService.selectCouponStats();
+
+        // 페이지네이션 계산
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+        boolean hasNext = page < totalPages - 1;
+        boolean hasPrevious = page > 0;
+
+        // 모델에 데이터 추가
+        model.addAttribute("coupons", couponList);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalElements", totalCount);
+        model.addAttribute("hasNext", hasNext);
+        model.addAttribute("hasPrevious", hasPrevious);
+        model.addAttribute("currentSearch", search);
+        model.addAttribute("currentStatus", status);
+
         return "admin/discount/createCoupon";
     }
 

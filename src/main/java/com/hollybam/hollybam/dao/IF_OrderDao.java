@@ -106,4 +106,51 @@ public interface IF_OrderDao {
     int restoreProductQuantityFast(@Param("productCode") int productCode, @Param("quantity") int quantity);
 
     int getOrderCodeNumber(@Param("date") String date);
+
+    List<Map<String, Object>> getOrderItemsList(@Param("orderCode") int orderCode);
+
+    // 주문 금액/회원여부
+    Map<String, Object> getOrderAmounts(@Param("orderCode") int orderCode);
+
+    // 환불 배치 / 환불 아이템
+    void insertRefundBatch(Map<String, Object> batch);
+    void updateRefundBatchTotals(Map<String, Object> params);
+    void insertRefundItem(Map<String, Object> item);
+
+    // 제품/주문아이템
+    int getProductCodeByProductId(@Param("productId") String productId);
+    int getOrderItemsCodeByProductCode(@Param("orderCode") int orderCode,
+                                       @Param("productCode") int productCode);
+    Map<String, Object> getOrderItemPrice(@Param("orderItemCode") int orderItemCode);
+    int countOrderItems(@Param("orderCode") int orderCode);
+
+    // 쿠폰
+    int isCouponUsedOrder(@Param("orderCode") int orderCode);
+    int getCouponMemberCode(@Param("orderCode") int orderCode);
+    void updateCouponMemberByRefund(Map<String, Object> params); // {couponMemberCode}
+    CouponDto getUseCouponInfoByRefund(@Param("orderCode") int orderCode);
+    void updateCouponMemberDiscountAmount(Map<String, Object> params); // {orderCode, discountAmount}
+
+    // 할인코드
+    int isDiscountCodeUsedOrder(@Param("orderCode") int orderCode);
+    DiscountDto getUseDiscountInfoByRefund(@Param("orderCode") int orderCode);
+    void delDiscountCodeUsageByRefund(@Param("orderCode") int orderCode);
+    void updateDiscountCodeUsageAmount(Map<String, Object> params); // {orderCode, discountAmount}
+
+    // 포인트
+    int isOrderPoint(@Param("orderCode") int orderCode);
+    List<Map<String, Object>> getPointInfo(@Param("orderCode") int orderCode);
+    void deletePointsByCodes(List<Map<String, Object>> list);
+    void insertPoint(PointDto pointDto);
+
+    Map<String, Object> selectOrderAmounts(int orderCode);
+
+    Map<String, Object> getOrderItemByProductId(Map<String, Object> param);
+
+    int getRefundedQtyForOrderItem(int orderItemCode);
+
+    List<Map<String,Object>> getOrderItemsForRefund(int orderCode);
+    Map<String,Object> getOrderItemByCode(int orderItemCode);
+    Integer sumRefundedQty(int orderItemCode);
+    Map<String,Object> getOrderHeaderForRefund(int orderCode);
 }

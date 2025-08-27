@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dto.CouponDto;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -37,4 +38,10 @@ public interface IF_CouponService {
      * @return 등록 결과 맵 (success, message 포함)
      */
     Map<String, Object> registerCoupon(String couponId, int memberCode);
+
+    List<Map<String, Object>> selectCouponList(String search, String status, int size, int offset);
+
+    int adminSelectCouponCount(String search, String status);
+
+    Map<String, Object> selectCouponStats();
 }

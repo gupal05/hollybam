@@ -24,22 +24,26 @@ public class SignupController {
     @GetMapping("/signup")
     public String signup(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         GuestDto guestDto = (GuestDto) session.getAttribute("guest");
-        if(signupService.isRecodeSignup(guestDto.getGuestDi()) > 0) {
-            redirectAttributes.addFlashAttribute("recodeMessage", "가입하신 이력이 존재합니다.");
-            return "redirect:/auth/login";
+        if(guestDto != null){
+            if(signupService.isRecodeSignup(guestDto.getGuestDi()) > 0) {
+                redirectAttributes.addFlashAttribute("recodeMessage", "가입하신 이력이 존재합니다.");
+                return "redirect:/auth/login";
+            } else {
+                MemberDto guestInfo = new MemberDto();
+                guestInfo.setMemberName(guestDto.getGuestName());
+                guestInfo.setMemberPhone(guestDto.getGuestPhone());
+                guestInfo.setMemberBirth(guestDto.getGuestBirth());
+                guestInfo.setMemberGender(guestDto.getGuestGender());
+                guestInfo.setDi(guestDto.getGuestDi());
+                guestInfo.setAdultVerifiedAt(guestDto.getAdultVerifiedAt());
+                guestInfo.setAdultVerified(guestDto.isAdultVerified());
+                guestInfo.setMemberLoginType("web");
+                model.addAttribute("guestInfo", guestInfo);
+                model.addAttribute("memberDto", new MemberDto());
+                return "auth/signup";
+            }
         } else {
-            MemberDto guestInfo = new MemberDto();
-            guestInfo.setMemberName(guestDto.getGuestName());
-            guestInfo.setMemberPhone(guestDto.getGuestPhone());
-            guestInfo.setMemberBirth(guestDto.getGuestBirth());
-            guestInfo.setMemberGender(guestDto.getGuestGender());
-            guestInfo.setDi(guestDto.getGuestDi());
-            guestInfo.setAdultVerifiedAt(guestDto.getAdultVerifiedAt());
-            guestInfo.setAdultVerified(guestDto.isAdultVerified());
-            guestInfo.setMemberLoginType("web");
-            model.addAttribute("guestInfo", guestInfo);
-            model.addAttribute("memberDto", new MemberDto());
-            return "auth/signup";
+            return "redirect:/";
         }
     }
 

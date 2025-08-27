@@ -373,7 +373,6 @@ public class OrderController {
     public ResponseEntity<Map<String, Object>> createOrder(
             @RequestBody Map<String, Object> orderData,
             HttpSession session, HttpServletRequest request) {
-
         Map<String, Object> result = new HashMap<>();
 
         try {

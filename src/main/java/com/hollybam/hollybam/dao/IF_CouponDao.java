@@ -41,4 +41,14 @@ public interface IF_CouponDao {
      * 회원에게 쿠폰 발급
      */
     int giveCouponToMember(@Param("memberCode") int memberCode, @Param("couponCode") int couponCode);
+
+    List<Map<String, Object>> selectCouponList(@Param("search") String search,
+                                               @Param("status") String status,
+                                               @Param("size") int size,
+                                               @Param("offset") int offset);
+
+    int adminSelectCouponCount(@Param("search") String search,
+                          @Param("status") String status);
+
+    Map<String, Object> selectCouponStats();
 }

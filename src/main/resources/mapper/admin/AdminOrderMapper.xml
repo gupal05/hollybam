@@ -498,6 +498,7 @@
                     oi.order_code,
                     oi.product_code,
                     p.product_name,
+                    p.product_id,
                     ROW_NUMBER() OVER (
                         PARTITION BY oi.order_code
                         ORDER BY oi.order_item_code ASC
@@ -592,6 +593,7 @@
                 oi.product_code                            AS productCode,
                 oi.option_code                             AS optionCode,
                 p.product_name                             AS productName,
+                p.product_id                               AS productId,
                 po.option_name                             AS optionName,
                 po.option_value                            AS optionValue,
                 oi.quantity                                AS quantity,

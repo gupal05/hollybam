@@ -138,4 +138,16 @@ public class CouponService implements IF_CouponService {
 
         return result;
     }
+
+    public List<Map<String, Object>> selectCouponList(String search, String status, int size, int offset){
+        return couponDao.selectCouponList(search, status, size, offset);
+    }
+
+    public int adminSelectCouponCount(String search, String status){
+        return couponDao.adminSelectCouponCount(search, status);
+    }
+
+    public Map<String, Object> selectCouponStats(){
+        return couponDao.selectCouponStats();
+    }
 }

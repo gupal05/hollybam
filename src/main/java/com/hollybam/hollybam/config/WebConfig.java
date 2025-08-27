@@ -36,7 +36,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "/naver/**",            // 네이버 로그인
                         "/google/**",           // 구글 로그인
                         "/error",                // 에러 페이지
-                        "/kiki"
+                        "/terms",
+                        "/guide",
+                        "/companyInfo"
                 );
         // 🚨 중요: /main, /product, /cart, /order, /admin 등은 제외하지 않음!
     }

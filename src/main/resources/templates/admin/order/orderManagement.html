@@ -1690,7 +1690,7 @@
                      alt="상품 이미지" class="product-image"
                      onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNGOEY5RkEiLz48cGF0aCBkPSJNMjAgMjBIMzBWMzBIMjBW MjBaIiBmaWxsPSIjNkM3NTdEIi8+PC9zdmc+'">
             </td>
-            <td><div class="product-name-cell">${escapeHtml(p.productName)}</div></td>
+            <td><div class="product-name-cell">${escapeHtml(p.productName)} (${escapeHtml(p.productId)})</div></td>
             <td>${p.optionName ? `<div class="product-option">${escapeHtml(p.optionName)} : ${escapeHtml(p.optionValue)}</div>` : ''}</td>
             <td class="quantity-cell">${p.quantity}</td>
             <td class="price-cell">${formatKRW(p.unitWithOption)}</td>

@@ -2,6 +2,7 @@ package com.hollybam.hollybam.controller.mypageController;
 
 import com.hollybam.hollybam.dto.*;
 import com.hollybam.hollybam.services.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,16 +22,12 @@ import java.util.stream.Collectors;
 public class MypageController {
     @Autowired
     MypageService mypageService;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
     @Autowired
     private IF_WishlistService wishlistService;
-
     @Autowired
     private CouponService couponService;
-
     @Autowired
     private IF_OrderService orderService;
     @Autowired
@@ -195,6 +192,137 @@ public class MypageController {
             model.addAttribute("orderList", orders);
         }
         return "mypage/orderList";
+    }
+
+    @GetMapping("/order/{orderCode}/products")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getOrderProducts(@PathVariable String orderCode) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 주문 상품 목록 조회 로직
+            List<Map<String, Object>> products = orderService.getOrderItemsList(Integer.parseInt(orderCode));
+
+            response.put("success", true);
+            response.put("message", "조회 성공");
+            response.put("products", products);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "주문 상품 조회 실패: " + e.getMessage());
+            response.put("products", new ArrayList<>());
+
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PostMapping("/order/cancel-order-complete")
+    @ResponseBody
+    public Map<String, Object> cancelOrderComplete(HttpServletRequest request, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 1) 주문/환불 메타 파라미터
+            Map<String, Object> refundOrder = new HashMap<>();
+            refundOrder.put("orderCode", request.getParameter("orderCode"));
+            refundOrder.put("actionType", request.getParameter("actionType"));   // "cancel" | "return"
+            refundOrder.put("cancelReason", request.getParameter("cancelReason")); // 예: "상품불량", "단순변심"
+            // 반품(RETURN)일 때만 의미(변심시 편도/왕복 차감금액). "상품불량"이면 서비스에서 0으로 처리됨.
+            refundOrder.put("refundDeliveryFee", request.getParameter("refundDeliveryFee"));
+
+            // 2) 환불 상품 파라미터 파싱
+            Map<String, String[]> pm = request.getParameterMap();
+            List<Map<String, Object>> products = new ArrayList<>();
+            int idx = 0;
+            while (true) {
+                String pidKey = "products[" + idx + "].productId";
+                if (!pm.containsKey(pidKey)) break;
+
+                Map<String, Object> p = new HashMap<>();
+                p.put("productId", request.getParameter(pidKey));
+                p.put("productName", request.getParameter("products[" + idx + "].productName"));
+                p.put("optionName", request.getParameter("products[" + idx + "].optionName"));
+                p.put("optionValue", request.getParameter("products[" + idx + "].optionValue"));
+                p.put("originalQuantity", Integer.parseInt(request.getParameter("products[" + idx + "].originalQuantity")));
+                p.put("selectedQuantity", Integer.parseInt(request.getParameter("products[" + idx + "].selectedQuantity")));
+                // unitPrice/refundAmount는 신뢰하지 않고 서버에서 DB 기준으로 다시 계산하지만, 로그용으로 넣어둠
+                p.put("unitPrice", Integer.parseInt(request.getParameter("products[" + idx + "].unitPrice")));
+                String df = request.getParameter("products[" + idx + "].deliveryFeeDeduction");
+                if (df != null && !df.isBlank()) {
+                    p.put("deliveryFeeDeduction", Integer.parseInt(df));
+                }
+                products.add(p);
+                idx++;
+            }
+
+            MemberDto member = (MemberDto) session.getAttribute("member"); // null이면 비회원
+
+            Map<String, Object> out = orderService.applyRefundRequest(refundOrder, products, member);
+
+            try {
+                System.out.println("========== [REFUND RESULT] ==========");
+                System.out.println("orderCode          : " + refundOrder.get("orderCode"));
+                System.out.println("type               : " + refundOrder.get("actionType"));
+                System.out.println("reason             : " + refundOrder.get("cancelReason"));
+                System.out.println("defectReason       : " + out.get("defectReason"));     // true면 '상품불량'
+                System.out.println("fullRefund         : " + out.get("fullRefund"));        // true면 전체환불
+                System.out.println("remainingAmount(남은 결제 금액) : " + out.get("remainingAmount"));
+                System.out.println("refundAmount(환불 예정 금액)  : " + out.get("refundAmount"));
+                System.out.println("=====================================");
+            } catch (Exception ignore) { /* 안전하게 무시 */ }
+
+            result.putAll(out);
+            result.put("success", true);
+            result.put("message", "취소/반품 신청이 완료되었습니다.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "처리 중 오류: " + e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/order/refund-quote")
+    @ResponseBody
+    public ResponseEntity<Map<String,Object>> refundQuote(@RequestBody RefundQuoteReq req) {
+        try {
+            Map<String,Object> quote = orderService.computeRefundQuote(req);
+            quote.put("success", true);
+            return ResponseEntity.ok(quote);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "code", "INVALID_QTY",
+                    "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "success", false,
+                    "code", "SERVER_ERROR",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping("/order/{orderCode}/refund-products")
+    @ResponseBody
+    public Map<String,Object> getOrderProductsForRefund(@PathVariable int orderCode) {
+        Map<String, Object> res = new HashMap<>();
+        try {
+            List<Map<String,Object>> items = orderService.getOrderItemsForRefund(orderCode);
+            Map<String,Object> header = orderService.getOrderHeaderForRefund(orderCode);
+            res.put("success", true);
+            res.put("products", items);
+            res.put("orderStatus", header != null ? header.get("orderStatus") : null);
+            for(int i=0; i<items.size(); i++) {
+                System.out.println(items.get(i).get("imageUrl"));
+            }
+        } catch (Exception e) {
+            res.put("success", false);
+            res.put("message", e.getMessage());
+        }
+        return res;
     }
 
     // 영문 상태를 한글로 매핑하는 메서드 추가

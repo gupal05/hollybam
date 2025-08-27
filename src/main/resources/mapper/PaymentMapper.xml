@@ -9,25 +9,37 @@
         SELECT
         c.cart_code, c.mem_code, c.guest_code, c.product_code, c.option_code, c.quantity, c.selected,
         p.product_name, p.product_description, p.product_quantity,
-        pr.price_selling, pr.price_original,
+
+        /* ⬇️ 여기만 수정: 조건부 판매가를 price_selling 별칭으로 */
+        CASE
+        WHEN ss.product_code IS NOT NULL AND ss.special_sale_price IS NOT NULL
+        THEN ss.special_sale_price
+        ELSE pr.price_selling
+        END AS price_selling,
+
+        pr.price_original,
         po.option_name, po.option_value, po.option_price,
         i.image_url,
-        -- 🆕 특가 정보 추가
-        CASE WHEN ss.active = 1 THEN 1 ELSE 0 END as is_special_sale,
-        COALESCE(ss.special_sale_price, 0) as special_sale_price,
-        COALESCE(ss.special_sale_per, 0) as special_sale_per
+
+        /* 스페셜 세일 정보 표시용 */
+        CASE WHEN ss.active = 1 THEN 1 ELSE 0 END AS is_special_sale,
+        COALESCE(ss.special_sale_price, 0) AS special_sale_price,
+        COALESCE(ss.special_sale_per, 0)   AS special_sale_per
+
         FROM cart c
         INNER JOIN product p ON c.product_code = p.product_code
-        INNER JOIN price pr ON p.product_code = pr.product_code
+        INNER JOIN price   pr ON p.product_code = pr.product_code
         LEFT JOIN product_option po ON c.option_code = po.option_code
         LEFT JOIN (
         SELECT product_code, image_url,
-        ROW_NUMBER() OVER(PARTITION BY product_code ORDER BY create_at) as rn
+        ROW_NUMBER() OVER(PARTITION BY product_code ORDER BY create_at) AS rn
         FROM image
         WHERE image_type = 'title'
         ) i ON p.product_code = i.product_code AND i.rn = 1
-        -- 🆕 특가 테이블 LEFT JOIN 추가
-        LEFT JOIN special_sale ss ON p.product_code = ss.product_code AND ss.active = 1
+        LEFT JOIN special_sale ss
+        ON p.product_code = ss.product_code
+        AND ss.active = 1
+
         WHERE c.cart_code IN
         <foreach collection="cartCodes" item="cartCode" open="(" separator="," close=")">
             #{cartCode}

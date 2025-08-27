@@ -17,4 +17,5 @@ public class CouponMemberDto {
     private Boolean used;               // used (0: 미사용, 1: 사용)
     private LocalDateTime usedAt;       // used_at (사용 시각)
     private Integer orderCode;          // order_code (FK, 사용된 주문 코드)
+    private Integer discountAmount;
 }

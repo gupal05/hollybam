@@ -3,6 +3,7 @@ package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dto.*;
 import jakarta.servlet.http.HttpSession;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -56,4 +57,13 @@ public interface IF_OrderService {
      */
     boolean instantDeleteOrder(String orderId, String reason) throws Exception;
 
+    List<Map<String, Object>> getOrderItemsList(int orderCode);
+
+    Map<String, Object> applyRefundRequest(Map<String, Object> refundOrder,
+                                           List<Map<String, Object>> products,
+                                           MemberDto member);
+
+    List<Map<String,Object>> getOrderItemsForRefund(int orderCode);
+    Map<String,Object> getOrderHeaderForRefund(int orderCode);
+    Map<String,Object> computeRefundQuote(RefundQuoteReq req);
 }

@@ -577,4 +577,285 @@
         FROM orders
         WHERE order_id LIKE CONCAT(#{date}, '\_%')
     </select>
+
+    <select id="getOrderItemsList" resultType="map">
+        SELECT
+            p.product_id                                 AS productId,     -- 상품 ID (varchar)
+            p.product_code                               AS productCode,   -- 상품 코드 (int)
+            p.product_name                               AS productName,
+            po.option_name                               AS optionName,
+            po.option_value                              AS optionValue,
+            oi.quantity                                  AS quantity,
+            (oi.unit_price + IFNULL(oi.option_price,0))  AS price,         -- 옵션가 포함 단가
+            oi.total_price                               AS totalPrice,
+            img.image_url                                AS imageUrl
+        FROM order_items oi
+                 JOIN product p
+                      ON p.product_code = oi.product_code
+                 LEFT JOIN product_option po
+                           ON po.option_code = oi.option_code
+                 LEFT JOIN (
+            /* 상품별 대표 이미지 1장: main 우선, 없으면 image_order 낮은 것 */
+            SELECT product_code, image_url
+            FROM (
+                     SELECT
+                         i.product_code,
+                         i.image_url,
+                         ROW_NUMBER() OVER (
+                             PARTITION BY i.product_code
+                             ORDER BY (i.image_type = 'title') DESC, i.image_order ASC, i.image_code ASC
+                             ) AS rn
+                     FROM image i
+                 ) x
+            WHERE x.rn = 1
+        ) img
+                           ON img.product_code = oi.product_code
+        WHERE oi.order_code = #{orderCode}
+        ORDER BY oi.order_item_code
+    </select>
+
+    <!-- 주문 금액/회원여부 -->
+    <select id="getOrderAmounts" parameterType="int" resultType="map">
+        SELECT total_amount AS itemsSubtotal,
+               delivery_fee AS deliveryFee,
+               final_amount  AS finalAmount,
+               mem_code      AS memCode,
+               guest_code    AS guestCode
+        FROM hollybam.orders
+        WHERE order_code = #{orderCode}
+    </select>
+
+    <!-- 환불 배치 -->
+    <insert id="insertRefundBatch" parameterType="map"
+            useGeneratedKeys="true" keyProperty="refundBatchId" keyColumn="refund_batch_id">
+        INSERT INTO refund_batches
+        (order_code, refund_amount, refund_delivery_fee, refund_reason, refund_type)
+        VALUES
+            (#{orderCode}, #{refundAmount}, #{refundDeliveryFee}, #{cancelReason}, #{actionType})
+    </insert>
+
+    <update id="updateRefundBatchTotals" parameterType="map">
+        UPDATE refund_batches
+        SET refund_amount = #{refundAmount},
+            refund_delivery_fee = #{refundDeliveryFee}
+        WHERE refund_batch_id = #{refundBatchId}
+    </update>
+
+    <!-- 환불 아이템 -->
+    <insert id="insertRefundItem" parameterType="map">
+        INSERT INTO refund_items(refund_batch_id, order_item_code, refund_quantity, refund_amount)
+        VALUES(#{refundBatchId}, #{orderItemsCode}, #{refundQuantity}, #{refundAmount})
+    </insert>
+
+    <!-- 제품/주문아이템 -->
+    <select id="getProductCodeByProductId" parameterType="string" resultType="int">
+        SELECT product_code FROM hollybam.product WHERE product_id = #{productId}
+    </select>
+
+    <select id="getOrderItemsCodeByProductCode" parameterType="map" resultType="int">
+        SELECT order_item_code
+        FROM hollybam.order_items
+        WHERE order_code = #{orderCode} AND product_code = #{productCode}
+    </select>
+
+    <select id="getOrderItemPrice" parameterType="int" resultType="map">
+        SELECT unit_price AS unitPrice,
+               COALESCE(option_price,0) AS optionPrice,
+               quantity
+        FROM hollybam.order_items
+        WHERE order_item_code = #{orderItemCode}
+        LIMIT 1
+    </select>
+
+    <select id="countOrderItems" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM hollybam.order_items WHERE order_code = #{orderCode}
+    </select>
+
+    <!-- 쿠폰 -->
+    <select id="isCouponUsedOrder" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM hollybam.coupon_member WHERE order_code = #{orderCode}
+    </select>
+
+    <select id="getCouponMemberCode" parameterType="int" resultType="int">
+        SELECT coupon_member_code
+        FROM hollybam.coupon_member
+        WHERE order_code = #{orderCode}
+    </select>
+
+    <update id="updateCouponMemberByRefund" parameterType="map">
+        UPDATE hollybam.coupon_member
+        SET used = 0,
+            used_at = NULL,
+            order_code = NULL,
+            discount_amount = NULL
+        WHERE coupon_member_code = #{couponMemberCode}
+    </update>
+
+    <select id="getUseCouponInfoByRefund" parameterType="int"
+            resultType="com.hollybam.hollybam.dto.CouponDto">
+        SELECT c.discount_type   AS discountType,
+               c.discount_value  AS discountValue,
+               c.max_discount    AS maxDiscount,
+               c.min_order_price AS minOrderPrice
+        FROM hollybam.coupon_member cm
+                 JOIN hollybam.coupon c ON c.coupon_code = cm.coupon_code
+        WHERE cm.order_code = #{orderCode}
+        LIMIT 1
+    </select>
+
+    <update id="updateCouponMemberDiscountAmount" parameterType="map">
+        UPDATE hollybam.coupon_member
+        SET discount_amount = #{discountAmount}
+        WHERE order_code = #{orderCode}
+    </update>
+
+    <!-- 할인코드 -->
+    <select id="isDiscountCodeUsedOrder" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM hollybam.discount_code_usage WHERE order_code = #{orderCode}
+    </select>
+
+    <select id="getUseDiscountInfoByRefund" parameterType="int"
+            resultType="com.hollybam.hollybam.dto.DiscountDto">
+        SELECT d.discount_type   AS discountType,
+               d.discount_value  AS discountValue,
+               COALESCE(d.min_order_price, 0) AS minOrderPrice
+        FROM hollybam.discount_code_usage u
+                 JOIN hollybam.discount d ON d.discount_code = u.discount_code
+        WHERE u.order_code = #{orderCode}
+        LIMIT 1
+    </select>
+
+    <delete id="delDiscountCodeUsageByRefund" parameterType="int">
+        DELETE FROM hollybam.discount_code_usage WHERE order_code = #{orderCode}
+    </delete>
+
+    <update id="updateDiscountCodeUsageAmount" parameterType="map">
+        UPDATE hollybam.discount_code_usage
+        SET discount_amount = #{discountAmount}
+        WHERE order_code = #{orderCode}
+    </update>
+
+    <!-- 포인트 -->
+    <select id="isOrderPoint" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM hollybam.point WHERE related_order_code = #{orderCode}
+    </select>
+
+    <select id="getPointInfo" parameterType="int" resultType="map">
+        SELECT point_change AS pointChange,
+               point_type   AS pointType,
+               point_code   AS pointCode
+        FROM hollybam.point
+        WHERE related_order_code = #{orderCode}
+    </select>
+
+    <delete id="deletePointsByCodes" parameterType="list">
+        DELETE FROM hollybam.point
+        <where>
+            <if test="list != null and list.size() > 0">
+                point_code IN
+                <foreach collection="list" item="p" open="(" separator="," close=")">
+                    #{p.pointCode}
+                </foreach>
+            </if>
+            <if test="list == null or list.size() == 0">
+                AND 1=0
+            </if>
+        </where>
+    </delete>
+
+    <insert id="insertPoint" parameterType="com.hollybam.hollybam.dto.PointDto">
+        INSERT INTO hollybam.point
+            (mem_code, point_change, point_type, description, related_order_code)
+        VALUES
+            (#{memberCode}, #{pointChange}, #{pointType}, #{description}, #{relatedOrderCode})
+    </insert>
+
+    <select id="selectOrderAmounts" parameterType="int" resultType="map">
+        SELECT
+            total_amount  AS P0,
+            delivery_fee  AS S0,
+            final_amount  AS F0
+        FROM hollybam.orders
+        WHERE order_code = #{orderCode}
+    </select>
+
+    <!-- 주문 내 특정 product_id 라인 조회 -->
+    <select id="getOrderItemByProductId" parameterType="map" resultType="map">
+        SELECT
+            oi.order_item_code AS orderItemCode,
+            oi.quantity        AS quantity,
+            oi.unit_price      AS unitPrice,
+            oi.option_price    AS optionPrice
+        FROM hollybam.order_items oi
+                 JOIN hollybam.product     p  ON p.product_code = oi.product_code
+        WHERE oi.order_code = #{orderCode}
+          AND p.product_id  = #{productId}
+        LIMIT 1
+    </select>
+
+    <!-- 누적 환불 수량(과다 환불 방지) -->
+    <select id="getRefundedQtyForOrderItem" parameterType="int" resultType="int">
+        SELECT COALESCE(SUM(refund_quantity), 0)
+        FROM hollybam.refund_items
+        WHERE order_item_code = #{orderItemCode}
+    </select>
+
+    <!-- 주문의 환불용 상품 목록: 라인별 환불가능수량(refundableQuantity) 포함 -->
+    <select id="getOrderItemsForRefund" parameterType="int" resultType="map">
+        SELECT
+            oi.order_item_code                                         AS orderItemCode,
+            p.product_id                                               AS productId,
+            p.product_name                                             AS productName,
+            oi.quantity                                                AS orderedQuantity,
+            COALESCE(oi.unit_price + oi.option_price, oi.unit_price)   AS price,
+            COALESCE(r.refunded_qty, 0)                                AS refundedQuantity,
+            (oi.quantity - COALESCE(r.refunded_qty, 0))                AS refundableQuantity,
+            po.option_name                                             AS optionName,
+            po.option_value                                            AS optionValue,
+            i.image_url                                                AS imageUrl
+        FROM order_items oi
+                 JOIN product p ON p.product_code = oi.product_code
+                 LEFT JOIN product_option po ON po.option_code = oi.option_code
+                 LEFT JOIN (
+            SELECT order_item_code, SUM(refund_quantity) AS refunded_qty
+            FROM refund_items
+            GROUP BY order_item_code
+        ) r ON r.order_item_code = oi.order_item_code
+                 LEFT JOIN image i ON i.product_code = p.product_code AND i.image_type='title'
+        WHERE oi.order_code = #{orderCode}
+    </select>
+
+    <!-- 라인(주문상품) 단건 조회 -->
+    <select id="getOrderItemByCode" parameterType="int" resultType="map">
+        SELECT
+            oi.order_item_code                                         AS orderItemCode,
+            oi.order_code                                              AS orderCode,
+            p.product_id                                               AS productId,
+            p.product_name                                             AS productName,
+            oi.quantity                                                AS orderedQuantity,
+            COALESCE(oi.unit_price + oi.option_price, oi.unit_price)   AS unitPrice
+        FROM order_items oi
+                 JOIN product p ON p.product_code = oi.product_code
+        WHERE oi.order_item_code = #{orderItemCode}
+    </select>
+
+    <!-- 라인별 기환불 수량 합 -->
+    <select id="sumRefundedQty" parameterType="int" resultType="int">
+        SELECT COALESCE(SUM(refund_quantity),0)
+        FROM refund_items
+        WHERE order_item_code = #{orderItemCode}
+    </select>
+
+    <!-- 주문 헤더(합계/상태) -->
+    <select id="getOrderHeaderForRefund" parameterType="int" resultType="map">
+        SELECT
+            order_code            AS orderCode,
+            total_amount          AS totalAmount,     -- 총 상품가(할인 전)
+            discount_amount       AS discountAmount,  -- 총 할인
+            delivery_fee          AS deliveryFee,     -- 배송비
+            final_amount          AS finalAmount,     -- 실제 결제액
+            order_status          AS orderStatus
+        FROM orders
+        WHERE order_code = #{orderCode}
+    </select>
 </mapper>

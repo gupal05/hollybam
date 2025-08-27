@@ -371,8 +371,14 @@ public class HomeController {
     }
 
     @GetMapping("/companyInfo")
-    public String companyInfo() {
-        return "companyInfo";
+    public String companyInfo(HttpSession session) {
+        if(session.getAttribute("member") != null){
+            return "companyInfo";
+        } else if(session.getAttribute("guest") != null){
+            return "companyInfo";
+        } else {
+            return "redirect:/";
+        }
     }
 
     @GetMapping("/terms")

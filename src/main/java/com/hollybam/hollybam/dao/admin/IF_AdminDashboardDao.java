@@ -87,4 +87,6 @@ public interface IF_AdminDashboardDao {
     int getOrderStatusCount(@Param("status") String status);
     int getDeliveryStatusCount(@Param("status") String status);
     List<Map<String, Object>> getDescOrder();
+
+    int adminGetGuestCount();
 }

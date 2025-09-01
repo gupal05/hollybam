@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>할인코드 생성 - HOLLYBAM</title>
 
     <!-- 관리자 사이드바 CSS/JS -->
@@ -62,16 +64,20 @@
             color: #fff;
         }
 
-        /* 컨테이너 */
+        /* 컨테이너 - 2컬럼 레이아웃 */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
         }
 
         /* 페이지 타이틀 */
         .page-title {
-            margin-bottom: 40px;
+            grid-column: 1 / -1;
+            margin-bottom: 20px;
         }
 
         .page-title h2 {
@@ -88,15 +94,15 @@
             font-weight: 300;
         }
 
-        /* 섹션 */
+        /* 섹션 공통 스타일 */
         .section {
             background: #fff;
             border: 1px solid #e9ecef;
-            margin-bottom: 40px;
-            max-width: 600px;
+            overflow: hidden;
         }
 
         .section-header {
+            background: #f8f9fa;
             padding: 30px 40px;
             border-bottom: 1px solid #e9ecef;
         }
@@ -105,6 +111,7 @@
             color: #212529;
             font-size: 18px;
             font-weight: 300;
+            margin-bottom: 8px;
             letter-spacing: 0.5px;
         }
 
@@ -112,33 +119,31 @@
             padding: 40px;
         }
 
-        /* 폼 요소들 */
+        /* 폼 스타일 */
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         .form-group label {
             display: block;
-            color: #6c757d;
-            font-size: 11px;
+            color: #212529;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 400;
-            margin-bottom: 8px;
+            letter-spacing: 0.5px;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 15px 20px;
+            padding: 15px;
             border: 1px solid #e9ecef;
             font-size: 14px;
             font-weight: 300;
-            transition: all 0.3s ease;
             background: #fff;
-            color: #212529;
-            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
         .form-group input:focus,
@@ -146,51 +151,36 @@
         .form-group textarea:focus {
             outline: none;
             border-color: #212529;
+            box-shadow: 0 0 0 2px rgba(33, 37, 41, 0.1);
         }
 
         .form-group textarea {
             min-height: 100px;
             resize: vertical;
-            font-family: inherit;
         }
 
-        /* 버튼 */
+        /* 버튼 스타일 */
         .btn {
-            background: #fff;
-            color: #212529;
-            border: 1px solid #dee2e6;
-            padding: 12px 20px;
+            padding: 12px 30px;
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            font-weight: 500;
+            border: none;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            min-width: 120px;
-            justify-content: center;
-        }
-
-        .btn:hover {
-            border-color: #212529;
-        }
-
-        .btn:active,
-        .btn:focus {
-            outline: none;
-            transform: none;
-            box-shadow: none;
         }
 
         .btn-primary {
             background: #212529;
             color: #fff;
-            border-color: #212529;
         }
 
         .btn-primary:hover {
-            background: #000;
+            background: #1a1e21;
         }
 
         .btn-secondary {
@@ -220,7 +210,80 @@
             margin-top: 8px;
         }
 
+        /* 할인코드 리스트 */
+        .discount-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .discount-item {
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .discount-header {
+            margin-bottom: 15px;
+        }
+
+        .discount-title {
+            font-size: 16px;
+            font-weight: 400;
+            color: #212529;
+            margin-bottom: 5px;
+        }
+
+        .discount-id {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 300;
+            font-family: monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .discount-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 12px;
+            color: #212529;
+            font-weight: 400;
+        }
+
+        /* 빈 상태 */
+        .empty-discount {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
         /* 반응형 */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
         @media (max-width: 768px) {
             .header {
                 padding: 0 20px;
@@ -236,16 +299,17 @@
                 padding: 20px;
             }
 
-            .section {
-                max-width: none;
-            }
-
             .form-actions {
                 flex-direction: column-reverse;
             }
 
             .btn {
                 width: 100%;
+            }
+
+            .discount-details {
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
         }
     </style>
@@ -272,100 +336,146 @@
     <div class="container">
         <!-- 페이지 타이틀 -->
         <div class="page-title">
-            <h2>할인코드 생성</h2>
-            <p>고객이 입력할 수 있는 할인코드를 생성합니다</p>
+            <h2>할인코드 관리</h2>
+            <p>할인코드를 생성하고 관리합니다</p>
         </div>
 
-        <!-- 할인코드 생성 폼 -->
-        <form th:action="@{/admin/discount/create}" th:object="${discount}" method="post">
+        <!-- 왼쪽: 할인코드 생성 폼 (기존 유지) -->
+        <div class="create-section">
+            <form th:action="@{/admin/discount/create}" th:object="${discount}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <div class="section">
+                    <div class="section-header">
+                        <h3 class="section-title">할인코드 생성</h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-group">
+                            <label for="discountId">할인 코드 (ex: WELCOME10)</label>
+                            <input type="text" id="discountId" th:field="*{discountId}" maxlength="20"
+                                   placeholder="영문 대문자와 숫자로 구성된 할인코드를 입력하세요" required/>
+                            <div class="help-text">고객이 주문 시 입력할 할인코드입니다. 영문 대문자와 숫자만 사용 가능합니다</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="discountDescription">할인코드 설명</label>
+                            <textarea id="discountDescription" th:field="*{discountDescription}"
+                                      placeholder="할인코드에 대한 설명을 입력하세요"></textarea>
+                            <div class="help-text">관리자가 할인코드를 구분하기 위한 설명입니다</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="discountType">할인 유형</label>
+                            <select id="discountType" th:field="*{discountType}" required>
+                                <option value="">할인 유형을 선택하세요</option>
+                                <option value="per">퍼센트 할인 (%)</option>
+                                <option value="amount">정액 할인 (원)</option>
+                            </select>
+                            <div class="help-text">퍼센트 할인 또는 정액 할인을 선택하세요</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="discountValue">할인 값</label>
+                            <input type="number" id="discountValue" th:field="*{discountValue}"
+                                   placeholder="할인 값을 입력하세요" min="1" required/>
+                            <div class="help-text" id="discountValueHelp">퍼센트 할인의 경우 1-100, 정액 할인의 경우 원 단위로 입력</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="minOrderPrice">최소 주문 금액 (원)</label>
+                            <input type="number" id="minOrderPrice" th:field="*{minOrderPrice}"
+                                   placeholder="0" min="0" value="0"/>
+                            <div class="help-text">할인코드 사용을 위한 최소 주문 금액을 설정하세요 (0원인 경우 제한 없음)</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expiredAt">만료일</label>
+                            <input type="date" id="expiredAt" th:field="*{expiredAt}"/>
+                            <div class="help-text">할인코드의 사용 만료일을 선택하세요 (선택하지 않으면 무제한)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="history.back()">
+                            취소
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            할인코드 생성
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 오른쪽: 할인코드 리스트 -->
+        <div class="list-section">
             <div class="section">
                 <div class="section-header">
-                    <h3 class="section-title">할인코드 정보 입력</h3>
+                    <h3 class="section-title">할인코드 목록</h3>
                 </div>
                 <div class="section-body">
-                    <div class="form-group">
-                        <label for="discountId">할인 코드 (ex: WELCOME10)</label>
-                        <input type="text" id="discountId" th:field="*{discountId}" maxlength="20"
-                               placeholder="영문 대문자와 숫자로 구성된 할인코드를 입력하세요" required/>
-                        <div class="help-text">고객이 주문 시 입력할 할인코드입니다. 영문 대문자와 숫자만 사용 가능합니다.</div>
-                    </div>
+                    <div class="discount-list">
+                        <div class="discount-item" th:each="d : ${discounts}">
+                            <div class="discount-header">
+                                <div class="discount-title" th:text="${d['discount_description']}"></div>
+                                <div class="discount-id" th:text="${d['discount_id']}"></div>
+                            </div>
+                            <div class="discount-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">할인:</span>
+                                    <span class="detail-value" th:text="${d['discount_type'] == 'per' ? d['discount_value'] + '%' : d['discount_value'] + '원'}"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">최소주문:</span>
+                                    <span class="detail-value" th:text="${d['min_order_price'] == null ? '제한없음' : #numbers.formatInteger(d['min_order_price'], 0, 'COMMA') + '원'}"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">만료일:</span>
+                                    <span th:text="${d['expired_at'] != null ? #dates.format(d['expired_at'], 'yyyy-MM-dd') : '무제한'}"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">등록일:</span>
+                                    <span class="detail-value" th:text="${#temporals.format(d['created_at'], 'yyyy-MM-dd')}"></span>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="discountDescription">할인 설명</label>
-                        <textarea id="discountDescription" th:field="*{discountDescription}"
-                                  placeholder="할인코드에 대한 상세 설명을 입력하세요" required></textarea>
-                        <div class="help-text">고객에게 표시될 할인코드 설명입니다.</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="discountType">할인 유형</label>
-                        <select id="discountType" th:field="*{discountType}" required>
-                            <option value="">할인 유형을 선택하세요</option>
-                            <option value="per">퍼센트 (%) 할인</option>
-                            <option value="amount">정액 할인</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="discountValue">할인 값</label>
-                        <input type="number" id="discountValue" th:field="*{discountValue}" min="0"
-                               placeholder="할인 값을 입력하세요" required/>
-                        <div class="help-text" id="discountValueHelp">퍼센트 할인의 경우 1-100, 정액 할인의 경우 원 단위로 입력</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="minOrderPrice">최소 주문 금액</label>
-                        <input type="number" id="minOrderPrice" th:field="*{minOrderPrice}" min="0" value="0"
-                               placeholder="최소 주문 금액 (원)"/>
-                        <div class="help-text">할인코드 사용을 위한 최소 주문 금액을 설정하세요 (0원인 경우 제한 없음)</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="expiredAt">만료일</label>
-                        <input type="date" id="expiredAt" th:field="*{expiredAt}"/>
-                        <div class="help-text">할인코드의 사용 만료일을 선택하세요 (선택하지 않으면 무제한)</div>
+                        <!-- 할인코드가 없는 경우 -->
+                        <div th:if="${#lists.isEmpty(discounts)}" class="empty-discount">
+                            <p>등록된 할인코드가 없습니다.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="section">
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="history.back()">
-                        취소
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        할인코드 생성
-                    </button>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 사이드바 "할인코드 생성" 메뉴 active 설정 및 서브메뉴 열기
+        // 사이드바 "할인코드 생성" 메뉴 active 설정
         const discountCreateLink = document.querySelector('a[href="/admin/discount/create"]');
         if (discountCreateLink) {
             discountCreateLink.classList.add('active');
 
-            // 할인 관리 서브메뉴 자동으로 열기
             const submenu = discountCreateLink.closest('.submenu');
             if (submenu) {
                 submenu.style.display = 'block';
-
-                // 할인 관리 메인 링크에도 active 표시
                 const parentNavLink = submenu.previousElementSibling;
                 if (parentNavLink && parentNavLink.classList.contains('has-submenu')) {
                     parentNavLink.classList.add('active');
                 }
             }
         }
+
+        // 오늘 날짜 이후만 선택 가능하도록 설정
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('expiredAt')?.setAttribute('min', today);
     });
 
     // 할인코드 자동 대문자 변환
     document.getElementById('discountId')?.addEventListener('input', function (e) {
-        // 영문자는 대문자로, 숫자는 그대로, 나머지는 제거
         let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
         e.target.value = value;
     });
@@ -402,7 +512,7 @@
         }
     });
 
-    // 만료일 유효성 검사 (오늘 이후만 선택 가능)
+    // 만료일 유효성 검사
     document.getElementById('expiredAt')?.addEventListener('change', function() {
         const selectedDate = new Date(this.value);
         const today = new Date();
@@ -414,9 +524,6 @@
         }
     });
 
-    // 오늘 날짜 이후만 선택 가능하도록 min 속성 설정
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('expiredAt')?.setAttribute('min', today);
 </script>
 </body>
 </html>

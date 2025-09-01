@@ -93,9 +93,15 @@
         where coupon_id = 'welcome'
     </select>
 
+    <select id="getMemberCodeByMemberId" parameterType="String" resultType="int">
+        select mem_code
+        from hollybam.member
+        where mem_id = #{memberId}
+    </select>
+
     <insert id="insertSignupCoupon" parameterType="int">
         insert into coupon_member(coupon_code, mem_code, issued_at, used)
-        values(#{signupCouponCode}, #{memberCode}, NOW(), 0)
+        values(1, #{memberCode}, NOW(), 0)
     </insert>
 
     <select id="isRecodeSignup" parameterType="String" resultType="int">

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface IF_DiscountDao {
@@ -47,4 +48,6 @@ public interface IF_DiscountDao {
      * @return 사용 내역 목록
      */
     List<DiscountCodeUsageDto> selectDiscountUsageByMember(Integer memCode);
+
+    List<Map<String, Object>> selectAllDiscountList();
 }

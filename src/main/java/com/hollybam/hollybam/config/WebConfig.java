@@ -34,6 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/auth/**",             // 인증 관련
                         "/nice/**",             // NICE 본인인증
                         "/naver/**",            // 네이버 로그인
+                        "/login/**",
                         "/google/**",           // 구글 로그인
                         "/error",                // 에러 페이지
                         "/terms",

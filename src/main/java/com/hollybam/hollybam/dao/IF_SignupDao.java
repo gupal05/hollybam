@@ -3,6 +3,7 @@ package com.hollybam.hollybam.dao;
 import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.MemberDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Mapper
@@ -23,4 +24,5 @@ public interface IF_SignupDao {
     public int getSignupCouponCode();
     public int isRecodeSignup(String di);
     public String getMemberType(String di);
+    int getMemberCodeByMemberId(@Param("memberId") String memberId);
 }

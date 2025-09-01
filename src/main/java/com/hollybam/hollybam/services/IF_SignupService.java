@@ -2,6 +2,7 @@ package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dto.GuestDto;
 import com.hollybam.hollybam.dto.MemberDto;
+import org.apache.ibatis.annotations.Param;
 
 public interface IF_SignupService {
     public int dupCheckId(String memberId);
@@ -20,4 +21,5 @@ public interface IF_SignupService {
     public int getSignupCouponCode();
     public int isRecodeSignup(String di);
     public String getMemberType(String di);
+    int getMemberCodeByMemberId(String memberId);
 }

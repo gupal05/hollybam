@@ -177,4 +177,10 @@ public class DiscountService implements IF_DiscountService {
 
         return discountAmount;
     }
+
+    @Override
+    @Transactional
+    public List<Map<String, Object>> selectAllDiscountList(){
+        return discountDao.selectAllDiscountList();
+    }
 }

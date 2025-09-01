@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
   <title>쿠폰 생성 - HOLLYBAM</title>
 
   <!-- 관리자 사이드바 CSS/JS -->
@@ -555,6 +557,7 @@
     <!-- 왼쪽: 쿠폰 생성 폼 -->
     <div class="create-section">
       <form th:action="@{/admin/coupon/create}" th:object="${coupon}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="section">
           <div class="section-header">
             <h3 class="section-title">쿠폰 생성</h3>
@@ -865,25 +868,6 @@
     const search = document.getElementById('searchInput').value;
     const status = document.getElementById('statusFilter').value;
     window.location.href = `/admin/coupon/create?page=${page}&search=${search}&status=${status}`;
-  }
-
-  // 로그아웃 처리
-  function logout() {
-    if (confirm('로그아웃 하시겠습니까?')) {
-      fetch('/admin/auth/logout', {
-        method: 'POST'
-      })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  window.location.href = '/admin/login';
-                }
-              })
-              .catch(error => {
-                console.error('로그아웃 오류:', error);
-                window.location.href = '/admin/login';
-              });
-    }
   }
 </script>
 </body>

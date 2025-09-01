@@ -101,7 +101,7 @@
         /* 통계 카드 그리드 */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 30px;
             margin-bottom: 60px;
         }
@@ -981,6 +981,13 @@
 
             <div class="stat-card">
                 <div class="stat-header">
+                    <div class="stat-title">비회원 수</div>
+                </div>
+                <div class="stat-value" th:text="${guestCount}">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
                     <div class="stat-title">상품 수</div>
                 </div>
                 <div class="stat-value" th:text="${productCount}">0</div>
@@ -990,23 +997,23 @@
         <!-- 주문 상태 모니터링 -->
         <div class="order-status-section">
             <div class="order-status-grid">
-                <div class="order-status-item" data-status="payPending">
+                <div class="order-status-item" data-status="payPending" onclick="movePage('payPending')">
                     <div class="order-status-label">결제 대기</div>
                     <div class="order-status-count" id="payPendingCount" th:text="${payPendingCount}">0</div>
                 </div>
-                <div class="order-status-item" data-status="payment">
+                <div class="order-status-item" data-status="payment" onclick="movePage('paid')">
                     <div class="order-status-label">결제 완료</div>
                     <div class="order-status-count" id="paymentCompleteCount" th:text="${paidCount}">0</div>
                 </div>
-                <div class="order-status-item" data-status="order">
+                <div class="order-status-item" data-status="order" onclick="movePage('orderPending')">
                     <div class="order-status-label">주문 접수</div>
                     <div class="order-status-count" id="orderReceivedCount" th:text="${pendingCount}">0</div>
                 </div>
-                <div class="order-status-item" data-status="delivery">
+                <div class="order-status-item" data-status="delivery" onclick="movePage('shipping')">
                     <div class="order-status-label">배송중</div>
                     <div class="order-status-count" id="deliveringCount" th:text="${shippingCount}">0</div>
                 </div>
-                <div class="order-status-item" data-status="delivered">
+                <div class="order-status-item" data-status="delivered" onclick="movePage('delivered')">
                     <div class="order-status-label">배송 완료</div>
                     <div class="order-status-count" id="deliveredCount" th:text="${deliveredCount}">0</div>
                 </div>
@@ -1647,6 +1654,57 @@
             }
         }
     });
+
+    function movePage(arg) {
+        // 1) 상태 추출: 문자열 인자('paid' 등) 또는 .order-status-item의 data-status
+        let status = typeof arg === 'string'
+            ? arg
+            : (arg?.currentTarget?.dataset?.status
+                ?? arg?.target?.closest('.order-status-item')?.dataset?.status);
+
+        // 2) data-status와 컨트롤러 파라미터 간 매핑 보정
+        //    (예: data-status="payment" → 컨트롤러는 "paid" 기대)
+        const normalize = {
+            payment: 'paid',
+            order: 'orderPending',
+            delivery: 'shipping',
+        };
+        status = normalize[status] ?? status;
+
+        // 허용값 검증 (그 외는 ALL 처리)
+        const allowed = new Set(['payPending', 'paid', 'orderPending', 'shipping', 'delivered']);
+        if (!allowed.has(status)) status = 'ALL';
+
+        // 3) page/size 결정: 상태 변경 시 page=1로, size는 쿼리스트링 유지(없으면 20)
+        const qs = new URLSearchParams(location.search);
+        const page = 1;
+        const size = qs.get('size') || '20';
+
+        // 4) 컨텍스트 루트 고려해 action 구성
+        const ctx = document.querySelector('meta[name="_ctx"]')?.content ?? '';
+        const action = (ctx.replace(/\/$/, '') || '') + '/admin/order';
+
+        // 5) 동적 form 생성 후 GET 제출
+        const form = document.createElement('form');
+        form.method = 'get';
+        form.action = action;
+
+        addHidden(form, 'status', status);
+        addHidden(form, 'page', String(page));
+        addHidden(form, 'size', String(size));
+
+        document.body.appendChild(form);
+        form.submit();
+        form.remove();
+    }
+
+    function addHidden(form, name, value) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;   // @RequestParam 이름과 동일
+        input.value = value;
+        form.appendChild(input);
+    }
 </script>
 </body>
 </html>

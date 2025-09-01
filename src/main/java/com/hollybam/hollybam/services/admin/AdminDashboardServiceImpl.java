@@ -200,4 +200,10 @@ public class AdminDashboardServiceImpl implements IF_AdminDashboardService {
         }
         return orderList;
     }
+
+    @Override
+    @Transactional
+    public int adminGetGuestCount(){
+        return adminDashboardDao.adminGetGuestCount();
+    }
 }

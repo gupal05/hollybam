@@ -207,4 +207,9 @@ public class SignupService implements IF_SignupService{
                 "</body>" +
                 "</html>";
     }
+
+    @Override
+    public int getMemberCodeByMemberId(String memberId){
+        return getMemberCodeByMemberId(memberId);
+    }
 }

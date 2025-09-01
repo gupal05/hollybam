@@ -847,13 +847,14 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            table-layout: fixed; /* 고정 레이아웃으로 컬럼 너비 일정하게 유지 */
         }
 
         .products-table th,
         .products-table td {
             padding: 15px;
-            text-align: left;
             border-bottom: 1px solid #f1f3f4;
+            vertical-align: middle; /* 수직 중앙 정렬 */
         }
 
         .products-table th {
@@ -863,6 +864,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-align: center; /* 헤더는 중앙 정렬 */
         }
 
         .products-table td {
@@ -875,33 +877,82 @@
             background: #f8f9fa;
         }
 
+        /* 컬럼별 정렬 및 너비 설정 */
+        .products-table th:nth-child(1),
+        .products-table td:nth-child(1) {
+            width: 80px;
+            text-align: center; /* 이미지 중앙 정렬 */
+        }
+
+        .products-table th:nth-child(2),
+        .products-table td:nth-child(2) {
+            width: auto;
+            text-align: left; /* 상품명 좌측 정렬 */
+        }
+
+        .products-table th:nth-child(3),
+        .products-table td:nth-child(3) {
+            width: 120px;
+            text-align: left; /* 옵션 좌측 정렬 */
+        }
+
+        .products-table th:nth-child(4),
+        .products-table td:nth-child(4) {
+            width: 80px;
+            text-align: center; /* 수량 중앙 정렬 */
+        }
+
+        .products-table th:nth-child(5),
+        .products-table td:nth-child(5) {
+            width: 100px;
+            text-align: right; /* 단가 우측 정렬 */
+        }
+
+        .products-table th:nth-child(6),
+        .products-table td:nth-child(6) {
+            width: 100px;
+            text-align: right; /* 합계 우측 정렬 */
+        }
+
         .product-image {
             width: 50px;
             height: 50px;
             border-radius: 8px;
             object-fit: cover;
             border: 1px solid #e9ecef;
+            display: block;
+            margin: 0 auto; /* 이미지 중앙 정렬 */
         }
 
         .product-name-cell {
             font-weight: 500;
             color: #212529;
+            line-height: 1.4;
         }
 
         .product-option {
             font-size: 11px;
             color: #6c757d;
             margin-top: 3px;
+            line-height: 1.3;
         }
 
         .price-cell {
-            text-align: right;
             font-weight: 500;
+            white-space: nowrap; /* 가격 줄바꿈 방지 */
+            text-align: center;
         }
 
         .quantity-cell {
-            text-align: center;
             font-weight: 500;
+        }
+
+        /* 빈 상태 스타일 */
+        .products-table .empty {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 40px 15px;
         }
 
         /* 결제 요약 카드 */
@@ -1674,6 +1725,18 @@
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
             }[m]));
         }
+        // ISO 문자열/Date/타임스탬프 모두 → "yyyy-MM-dd HH:mm"
+        function fmtDateTime(v) {
+            if (!v) return '';
+            if (typeof v === 'string') {
+                const s = v.replace('T', ' ');
+                if (s.length >= 16) return s.slice(0, 16);
+            }
+            const d = (v instanceof Date) ? v : new Date(v);
+            if (isNaN(d.getTime())) return String(v);
+            const pad = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
 
         // ===== 진행 상태 계산 =====
         const currentStatus = data.orderDetailData?.status || 'PAYPENDING';
@@ -1684,125 +1747,131 @@
         // ===== 주문 상품 목록 HTML 생성 =====
         const products = data?.orderDetailProductInfo ?? [];
         const rowsHtml = products.map(p => `
-        <tr>
-            <td>
-                <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/${p.imageUrl}"
-                     alt="상품 이미지" class="product-image"
-                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNGOEY5RkEiLz48cGF0aCBkPSJNMjAgMjBIMzBWMzBIMjBW MjBaIiBmaWxsPSIjNkM3NTdEIi8+PC9zdmc+'">
-            </td>
-            <td><div class="product-name-cell">${escapeHtml(p.productName)} (${escapeHtml(p.productId)})</div></td>
-            <td>${p.optionName ? `<div class="product-option">${escapeHtml(p.optionName)} : ${escapeHtml(p.optionValue)}</div>` : ''}</td>
-            <td class="quantity-cell">${p.quantity}</td>
-            <td class="price-cell">${formatKRW(p.unitWithOption)}</td>
-            <td class="price-cell">${formatKRW(p.totalPrice)}</td>
-        </tr>
-    `).join('');
+    <tr>
+      <td>
+        <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/${p.imageUrl}"
+             alt="상품 이미지" class="product-image"
+             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNGOEY5RkEiLz48cGF0aCBkPSJNMjAgMjBIMzBWMzBIMjBW MjBaIiBmaWxsPSIjNkM3NTdEIi8+PC9zdmc+'">
+      </td>
+      <td><div class="product-name-cell">${escapeHtml(p.productName)} (${escapeHtml(p.productId)})</div></td>
+      <td>${p.optionName ? `<div class="product-option">${escapeHtml(p.optionName)} : ${escapeHtml(p.optionValue)}</div>` : ''}</td>
+      <td class="quantity-cell">${p.quantity}</td>
+      <td class="price-cell">${formatKRW(p.unitWithOption)}</td>
+      <td class="price-cell">${formatKRW(p.totalPrice)}</td>
+    </tr>
+  `).join('');
 
         // ===== 전체 HTML 반환 =====
         return `
-        <div class="order-detail-container">
-            <!-- 주문 기본 정보 섹션 -->
-            <div class="detail-section">
-                <div class="section-header-detail">
-                    <h5><span class="section-icon">1</span>주문 기본 정보</h5>
-                </div>
-                <div class="section-content">
-                    <div class="order-info-grid">
-                        <div class="info-item"><span class="info-label">주문번호</span><span class="info-value highlight">${data.orderDetailData.orderId}</span></div>
-                        <div class="info-item"><span class="info-label">주문일시</span><span class="info-value">${data.orderDetailData.orderCreateAt}</span></div>
-                        <div class="info-item"><span class="info-label">주문상태</span><span class="info-value status shipping">${data.orderDetailData.status}</span></div>
-                        <div class="info-item"><span class="info-label">결제방법</span><span class="info-value">${data.orderDetailData.paymentMethod === "card" ? "카드결제" : "무통장입금"}</span></div>
-                    </div>
-                    <!-- 진행 타임라인 -->
-                    <div class="order-timeline">
-                        <div class="timeline-line"><div class="timeline-progress" style="width: ${progressWidth}%"></div></div>
-                        ${statusSteps.map((step, idx) => `
-                            <div class="timeline-step ${idx < currentStepIndex ? 'completed' : idx === currentStepIndex ? 'current' : ''}">
-                                <div class="timeline-icon">${['⏳','💳','✅','🚚','🏠'][idx]}</div>
-                                <div class="timeline-label">${['결제대기','결제완료','주문접수','배송중','배송완료'][idx]}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-
-            <!-- 고객 정보 섹션 -->
-            <div class="detail-section">
-                <div class="section-header-detail">
-                    <h5><span class="section-icon">2</span>고객 정보</h5>
-                </div>
-                <div class="section-content">
-                    <div class="order-info-grid">
-                        <div class="info-item"><span class="info-label">고객명</span><span class="info-value">${data.orderDetailData.ordererName}</span></div>
-                        <div class="info-item"><span class="info-label">연락처</span><span class="info-value">${data.orderDetailData.ordererPhone}</span></div>
-                        <div class="info-item"><span class="info-label">이메일</span><span class="info-value">${data.orderDetailData.ordererEmail}</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 주문 상품 섹션 -->
-            <div class="detail-section">
-                <div class="section-header-detail">
-                    <h5><span class="section-icon">3</span>주문 상품</h5>
-                </div>
-                <div class="section-content">
-                    <table class="products-table">
-                        <thead>
-                            <tr><th>이미지</th><th>상품명</th><th>옵션</th><th>수량</th><th>단가</th><th>합계</th></tr>
-                        </thead>
-                        <tbody>
-                            ${rowsHtml || `<tr><td colspan="6" class="empty">주문 상품이 없습니다.</td></tr>`}
-                        </tbody>
-                    </table>
-                    <!-- 결제 요약 -->
-                    <div class="payment-summary">
-                        <div class="summary-row"><span class="summary-label">상품금액</span><span class="summary-value">${formatKRW(data.orderDetailData.totalAmount)}</span></div>
-                        <div class="summary-row"><span class="summary-label">배송비</span><span class="summary-value">${formatKRW(data.orderDetailData.deliveryFee)}</span></div>
-                        <div class="summary-row"><span class="summary-label">쿠폰 할인 : (${data.discountInfo.couponId})</span><span class="summary-value">-${formatKRW(data.discountInfo.couponDiscountAmount)}</span></div>
-                        <div class="summary-row"><span class="summary-label">할인코드 할인 : (${data.discountInfo.discountId})</span><span class="summary-value">-${formatKRW(data.discountInfo.discountAmount)}</span></div>
-                        <div class="summary-row"><span class="summary-label">적립금</span><span class="summary-value">-${formatKRW(data.discountInfo.usedPointAmount)}</span></div>
-                        <div class="summary-row"><span class="summary-label">최종 결제금액</span><span class="summary-value">${formatKRW(data.orderDetailData.finalAmount)}</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 배송 정보 섹션 -->
-            <div class="detail-section">
-                <div class="section-header-detail">
-                    <h5><span class="section-icon">4</span>배송 정보</h5>
-                </div>
-                <div class="section-content">
-                    <div class="order-info-grid">
-                        <div class="info-item"><span class="info-label">받는 분</span><span class="info-value">${data.orderDetailData.receiverName}</span></div>
-                        <div class="info-item"><span class="info-label">연락처</span><span class="info-value">${data.orderDetailData.receiverPhone}</span></div>
-                        ${data.orderDetailData.trackingNumber ? `<div class="info-item">
-                         <span class="info-label">송장번호</span>
-                         <span class="info-value highlight">${data.orderDetailData.trackingNumber}</span>
-                       </div>`
-                            : ''}
-                    </div>
-                    <div class="delivery-card">
-                        <div class="delivery-address-full"><strong>배송주소:</strong><br>${data.orderDetailData.receiverAddr}<br>상세주소: ${data.orderDetailData.receiverAddrDetail || ''}</div>
-                        <div class="delivery-request-full"><strong>배송 요청사항:</strong> ${data.orderDetailData.deliveryRequest || ''}</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 결제 정보 섹션 -->
-            <div class="detail-section">
-                <div class="section-header-detail">
-                    <h5><span class="section-icon">5</span>결제 정보</h5>
-                </div>
-                <div class="section-content">
-                    <div class="order-info-grid">
-                        <div class="info-item"><span class="info-label">결제방법</span><span class="info-value">${data.orderDetailData.paymentMethod === "card" ? "카드결제" : "무통장입금"}</span></div>
-                        ${data.orderDetailData.paymentMethod === "card" ? `<div class="info-item"><span class="info-label">결제일시</span><span class="info-value">${data.orderDetailData.payCreateAt}</span></div>` : ''}
-                    </div>
-                </div>
-            </div>
+  <div class="order-detail-container">
+    <!-- 주문 기본 정보 섹션 -->
+    <div class="detail-section">
+      <div class="section-header-detail">
+        <h5><span class="section-icon">1</span>주문 기본 정보</h5>
+      </div>
+      <div class="section-content">
+        <div class="order-info-grid">
+          <div class="info-item"><span class="info-label">주문번호</span><span class="info-value highlight">${data.orderDetailData.orderId}</span></div>
+          <div class="info-item"><span class="info-label">주문일시</span><span class="info-value">${fmtDateTime(data.orderDetailData.orderCreateAt)}</span></div>
+          <div class="info-item"><span class="info-label">주문상태</span><span class="info-value status shipping">${escapeHtml(data.orderDetailData.status)}</span></div>
+          <div class="info-item"><span class="info-label">결제방법</span><span class="info-value">${data.orderDetailData.paymentMethod === "card" ? "카드결제" : "무통장입금"}</span></div>
         </div>
-    `;
+
+        <!-- 진행 타임라인 -->
+        <div class="order-timeline">
+          <div class="timeline-line"><div class="timeline-progress" style="width: ${progressWidth}%"></div></div>
+          ${statusSteps.map((step, idx) => `
+            <div class="timeline-step ${idx < currentStepIndex ? 'completed' : idx === currentStepIndex ? 'current' : ''}">
+              <div class="timeline-icon">${['⏳','💳','✅','📦','🚚','🏠'][idx]}</div>
+              <div class="timeline-label">${['결제대기','결제완료','주문접수','출고완료','배송중','배송완료'][idx]}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- 고객 정보 섹션 -->
+    <div class="detail-section">
+      <div class="section-header-detail">
+        <h5><span class="section-icon">2</span>고객 정보</h5>
+      </div>
+      <div class="section-content">
+        <div class="order-info-grid">
+          <div class="info-item"><span class="info-label">고객명</span><span class="info-value">${escapeHtml(data.orderDetailData.ordererName)}</span></div>
+          <div class="info-item"><span class="info-label">연락처</span><span class="info-value">${escapeHtml(data.orderDetailData.ordererPhone)}</span></div>
+          <div class="info-item"><span class="info-label">이메일</span><span class="info-value">${escapeHtml(data.orderDetailData.ordererEmail)}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주문 상품 섹션 -->
+    <div class="detail-section">
+      <div class="section-header-detail">
+        <h5><span class="section-icon">3</span>주문 상품</h5>
+      </div>
+      <div class="section-content">
+        <table class="products-table">
+          <thead>
+            <tr><th>이미지</th><th>상품명</th><th>옵션</th><th>수량</th><th style="text-align: center;">단가</th><th style="text-align: center;">합계</th></tr>
+          </thead>
+          <tbody>
+            ${rowsHtml || `<tr><td colspan="6" class="empty">주문 상품이 없습니다.</td></tr>`}
+          </tbody>
+        </table>
+        <!-- 결제 요약 -->
+        <div class="payment-summary">
+          <div class="summary-row"><span class="summary-label">상품금액</span><span class="summary-value">${formatKRW(data.orderDetailData.totalAmount)}</span></div>
+          <div class="summary-row"><span class="summary-label">배송비</span><span class="summary-value">${formatKRW(data.orderDetailData.deliveryFee)}</span></div>
+          <div class="summary-row"><span class="summary-label">쿠폰 할인 : (${escapeHtml(data.discountInfo.couponId)})</span><span class="summary-value">-${formatKRW(data.discountInfo.couponDiscountAmount)}</span></div>
+          <div class="summary-row"><span class="summary-label">할인코드 할인 : (${escapeHtml(data.discountInfo.discountId)})</span><span class="summary-value">-${formatKRW(data.discountInfo.discountAmount)}</span></div>
+          <div class="summary-row"><span class="summary-label">적립금</span><span class="summary-value">-${formatKRW(data.discountInfo.usedPointAmount)}</span></div>
+          <div class="summary-row"><span class="summary-label">최종 결제금액</span><span class="summary-value">${formatKRW(data.orderDetailData.finalAmount)}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 배송 정보 섹션 -->
+    <div class="detail-section">
+      <div class="section-header-detail">
+        <h5><span class="section-icon">4</span>배송 정보</h5>
+      </div>
+      <div class="section-content">
+        <div class="order-info-grid">
+          <div class="info-item"><span class="info-label">받는 분</span><span class="info-value">${escapeHtml(data.orderDetailData.receiverName)}</span></div>
+          <div class="info-item"><span class="info-label">연락처</span><span class="info-value">${escapeHtml(data.orderDetailData.receiverPhone)}</span></div>
+          ${data.orderDetailData.trackingNumber ? `
+            <div class="info-item">
+              <span class="info-label">송장번호</span>
+              <span class="info-value highlight">${escapeHtml(data.orderDetailData.trackingNumber)}</span>
+            </div>` : ''
+        }
+        </div>
+        <div class="delivery-card">
+          <div class="delivery-address-full"><strong>배송주소:</strong><br>${escapeHtml(data.orderDetailData.receiverAddr)}<br>상세주소: ${escapeHtml(data.orderDetailData.receiverAddrDetail || '')}</div>
+          <div class="delivery-request-full"><strong>배송 요청사항:</strong> ${escapeHtml(data.orderDetailData.deliveryRequest || '')}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결제 정보 섹션 -->
+    <div class="detail-section">
+      <div class="section-header-detail">
+        <h5><span class="section-icon">5</span>결제 정보</h5>
+      </div>
+      <div class="section-content">
+        <div class="order-info-grid">
+          <div class="info-item"><span class="info-label">결제방법</span><span class="info-value">${data.orderDetailData.paymentMethod === "card" ? "카드결제" : "무통장입금"}</span></div>
+          ${data.orderDetailData.paymentMethod === "card"
+            ? `<div class="info-item"><span class="info-label">결제일시</span><span class="info-value">${fmtDateTime(data.orderDetailData.payCreateAt)}</span></div>`
+            : ''
+        }
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
     }
+
 
 
     // 주문 상세 모달 닫기

@@ -69,6 +69,7 @@ public class AdminController {
                 model.addAttribute("orderCount", adminDashboardService.adminSelectOrderCount());
                 // 회원 수(비회원 제외)
                 model.addAttribute("memberCount", adminDashboardService.adminSelectMemberCount());
+                model.addAttribute("guestCount", adminDashboardService.adminGetGuestCount());
                 // 총 상품 수량
                 model.addAttribute("productCount", adminDashboardService.adminSelectProductCount());
                 // 총 결제 금액(취소/환불 고려 X)
@@ -380,7 +381,12 @@ public class AdminController {
     @GetMapping("/discount/create")
     public String showCreateForm(Model model) {
         model.addAttribute("discount", new DiscountDto()); // 할인코드 폼에 바인딩
-        return "admin/discount/discountCreate"; // ← 여기서 쿠폰/할인코드 둘 다 있는 폼
+
+        // 할인코드 리스트 조회
+        List<Map<String, Object>> discountList = discountService.selectAllDiscountList();
+        model.addAttribute("discounts", discountList);
+
+        return "admin/discount/discountCreate";
     }
 
     @GetMapping("/coupon/create")

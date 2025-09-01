@@ -92,4 +92,19 @@
         ORDER BY dcu.used_at DESC
     </select>
 
+    <!-- 전체 할인코드 리스트 조회 (관리자 확인용) -->
+    <select id="selectAllDiscountList" resultType="map">
+        SELECT
+            discount_code,
+            discount_id,
+            discount_description,
+            discount_type,
+            discount_value,
+            min_order_price,
+            expired_at,
+            created_at
+        FROM discount
+        ORDER BY created_at DESC
+    </select>
+
 </mapper>

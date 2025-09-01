@@ -75,4 +75,6 @@ public interface IF_AdminDashboardService {
     int getOrderStatusCount(String status);
     int getDeliveryStatusCount(String status);
     List<Map<String, Object>> getDescOrder();
+
+    int adminGetGuestCount();
 }

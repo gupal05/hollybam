@@ -227,10 +227,9 @@ public class GoogleAuthController {
 
             // 4. DB에 회원 정보 저장
             log.info("구글 회원가입 정보: {}", tempMember);
-            if(signupService.signup(tempMember) > 0){
-                int couponCode = signupService.getSignupCouponCode();
-                signupService.insertSignupCoupon(couponCode, tempMember.getMemberCode());
-            }
+            signupService.signup(tempMember);//                int couponCode = signupService.getSignupCouponCode();
+//                int memberCode = signupService.getMemberCodeByMemberId(tempMember.getMemberId());
+//                signupService.insertSignupCoupon(couponCode, memberCode);
 
 
             // 5. 세션에 최종 회원 정보 저장 및 임시 데이터 정리

@@ -43,4 +43,6 @@ public interface IF_DiscountService {
      * @return 사용 내역 목록
      */
     List<DiscountCodeUsageDto> getDiscountUsageHistory(Integer memCode) throws Exception;
+
+    List<Map<String, Object>> selectAllDiscountList();
 }

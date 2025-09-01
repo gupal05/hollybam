@@ -535,4 +535,9 @@
             o.create_at DESC
         LIMIT 5;
     </select>
+
+    <select id="adminGetGuestCount" resultType="int">
+        select count(*)
+        from hollybam.guest
+    </select>
 </mapper>

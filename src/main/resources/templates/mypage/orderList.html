@@ -2679,6 +2679,15 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script th:inline="javascript">
+
+    // 세션 정보를 전역 변수로 설정
+    window.sessionMember = /*[[${session.member}]]*/ null;
+    window.sessionGuest = /*[[${session.guest}]]*/ null;
+
+    console.log('세션 정보 로딩:', {
+        member: window.sessionMember,
+        guest: window.sessionGuest
+    });
     /* ============================== */
     /*  공통 설정 (CSRF / 유틸)       */
     /* ============================== */
@@ -3056,29 +3065,30 @@
     /* ============================== */
     /*  취소/반품 모달                */
     /* ============================== */
-    function openCancelReturnModal(actionType, orderCode){
+    function openCancelReturnModal(actionType, orderCode) {
         currentActionType = actionType;
-        // 타이틀/라벨
+
+        // 타이틀/라벨 설정 (기존 로직 유지)
         const title = document.getElementById('cancelReturnModalTitle');
         const reasonLabel = document.getElementById('reasonLabel');
         const noticeTitle = document.getElementById('noticeTitle');
-        const noticeText  = document.getElementById('noticeText');
-        const submitBtn   = document.getElementById('submitBtn');
-        const productTitle= document.querySelector('.cr-product-title');
+        const noticeText = document.getElementById('noticeText');
+        const submitBtn = document.getElementById('submitBtn');
+        const productTitle = document.querySelector('.cr-product-title');
 
         if (actionType === 'return') {
             title.textContent = '반품 신청';
             reasonLabel.textContent = '반품 사유';
             noticeTitle.textContent = '반품 안내사항';
-            noticeText.textContent  = '반품 상품 검수 완료 후 환불 처리가 진행됩니다.';
-            submitBtn.textContent   = '반품 신청하기';
+            noticeText.textContent = '반품 상품 검수 완료 후 환불 처리가 진행됩니다.';
+            submitBtn.textContent = '반품 신청하기';
             if (productTitle) productTitle.textContent = '반품할 상품 선택';
         } else {
             title.textContent = '주문 취소 신청';
             reasonLabel.textContent = '취소 사유';
             noticeTitle.textContent = '취소 안내사항';
-            noticeText.textContent  = '취소 요청 승인 후 영업일 기준 3~5일 내 환불 처리됩니다.';
-            submitBtn.textContent   = '취소 신청하기';
+            noticeText.textContent = '취소 요청 승인 후 영업일 기준 3~5일 내 환불 처리됩니다.';
+            submitBtn.textContent = '취소 신청하기';
             if (productTitle) productTitle.textContent = '취소할 상품 선택';
         }
 
@@ -3094,19 +3104,94 @@
             document.getElementById('cr_orderCode').value = orderCode || '';
             document.getElementById('cr_actionType').value = actionType;
 
-            const memberCode = '[[${session.member?.memberCode}]]';
-            const guestCode  = '[[${session.guest?.guestCode}]]';
+            // 🔧 수정: Map에서 세션 정보 가져오기
+            const memberData = window.sessionMember; // 서버에서 설정된 전역 변수
+            const guestData = window.sessionGuest;
+
             const memEl = document.getElementById('cr_memberCode');
             const gueEl = document.getElementById('cr_guestCode');
-            if (memEl) memEl.value = (memberCode !== '[[${session.member?.memberCode}]]') ? memberCode : '';
-            if (gueEl) gueEl.value = (guestCode  !== '[[${session.guest?.guestCode}]]')  ? guestCode  : '';
 
-            const otherReasonGroup = document.getElementById('otherReasonGroup');
-            if (otherReasonGroup) otherReasonGroup.style.display = 'none';
+            if (memEl && memberData) {
+                memEl.value = memberData.memberCode || '';
+            }
+            if (gueEl && guestData) {
+                gueEl.value = guestData.guestCode || '';
+            }
 
-            loadOrderProducts(orderCode); // 환불대상 상품 로드
+            // 🔧 수정: 상품 목록 로딩 시 변수 초기화
+            currentOrderProducts = [];
+            totalProductsCount = 0;
+            totalOrderAmount = 0;
+
+            // 상품 목록 로딩
+            loadRefundProducts(orderCode);
         }, 50);
     }
+
+    function loadRefundProducts(orderCode) {
+        if (!orderCode) {
+            console.error('orderCode가 없습니다.');
+            return;
+        }
+
+        console.log('상품 목록 로딩 시작:', orderCode);
+
+        $.ajax({
+            url: `/mypage/order/${orderCode}/refund-products`,
+            method: 'GET',
+            success: function(data) {
+                console.log('상품 목록 조회 성공:', data);
+
+                if (data && data.success && data.products) {
+                    // 🔧 수정: 상품 데이터 가공 및 변수 설정
+                    currentOrderProducts = data.products.map(p => {
+                        const _img = buildProductImageUrl(p);
+                        // 🔧 수정: 안전한 수량 파싱
+                        const refundableQty = Math.max(0, parseInt(p.refundableQuantity) || 0);
+                        const orderedQty = Math.max(1, parseInt(p.orderedQuantity || p.quantity) || 1);
+
+                        return {
+                            ...p,
+                            _img,
+                            refundableQuantity: refundableQty,
+                            orderedQuantity: orderedQty
+                        };
+                    });
+
+                    // 🔧 수정: 전역 변수들 정확히 설정
+                    totalProductsCount = currentOrderProducts.length;
+                    totalOrderAmount = currentOrderProducts.reduce((sum, p) => {
+                        const price = parseInt(p.unitPrice || p.price || 0);
+                        const qty = parseInt(p.orderedQuantity || p.quantity || 0);
+                        return sum + (price * qty);
+                    }, 0);
+
+                    console.log('상품 데이터 가공 완료:');
+                    console.log('- totalProductsCount:', totalProductsCount);
+                    console.log('- totalOrderAmount:', totalOrderAmount);
+                    console.log('- currentOrderProducts:', currentOrderProducts);
+
+                    renderProductList();
+                    calculateRefundAmount();
+
+                } else {
+                    console.error('상품 목록 조회 실패:', data);
+                    currentOrderProducts = [];
+                    totalProductsCount = 0;
+                    renderProductList();
+                    alert((data && data.message) || '상품 목록을 불러오지 못했습니다.');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('상품 목록 조회 AJAX 오류:', {xhr, status, error});
+                currentOrderProducts = [];
+                totalProductsCount = 0;
+                renderProductList();
+                alert('상품 목록 조회 중 오류가 발생했습니다.');
+            }
+        });
+    }
+
     function closeCancelReturnModal(){
         document.getElementById('cancelReturnModal').style.display = 'none';
         document.body.style.overflow = 'auto';
@@ -3269,63 +3354,113 @@
     }
 
     /* ===== 수량 입력 검증 ===== */
-    function validateQuantityInput(input){
+    function validateQuantityInput(input) {
         const min = parseInt(input.getAttribute('min')) || 1;
         const max = parseInt(input.getAttribute('max')) || 1;
         let v = parseInt(input.value);
-        if (isNaN(v)) { input.value = min; return; }
-        if (v < min) { input.value = min; showQuantityMessage(input, `최소 수량은 ${min}개입니다.`); return; }
-        if (v > max) { input.value = max; showQuantityMessage(input, `최대 수량은 ${max}개입니다.`); return; }
+
+        // 🔧 NaN 체크 강화
+        if (isNaN(v) || v === null || v === undefined) {
+            input.value = min;
+            console.log(`수량 NaN 보정: ${input.getAttribute('data-order-item-code')} -> ${min}`);
+            return;
+        }
+
+        if (v < min) {
+            input.value = min;
+            showQuantityMessage(input, `최소 수량은 ${min}개입니다.`);
+            return;
+        }
+
+        if (v > max) {
+            input.value = max;
+            showQuantityMessage(input, `최대 수량은 ${max}개입니다.`);
+            return;
+        }
     }
-    function showQuantityMessage(input, message){
-        const ex = input.parentElement.querySelector('.quantity-message'); if (ex) ex.remove();
+    function showQuantityMessage(input, message) {
+        // 기존 메시지 제거
+        const existing = input.parentElement.querySelector('.quantity-message');
+        if (existing) existing.remove();
+
+        // 새 메시지 생성
         const msg = document.createElement('div');
-        msg.className='quantity-message';
+        msg.className = 'quantity-message';
         msg.textContent = message;
         msg.style.cssText = 'position:absolute;top:100%;left:0;background:#fee2e2;color:#991b1b;padding:4px 8px;border-radius:4px;font-size:11px;white-space:nowrap;z-index:1000;border:1px solid #fca5a5;';
-        input.parentElement.style.position='relative';
+
+        input.parentElement.style.position = 'relative';
         input.parentElement.appendChild(msg);
-        setTimeout(()=>{ if (msg.parentNode) msg.parentNode.removeChild(msg); }, 2000);
+
+        // 2초 후 메시지 제거
+        setTimeout(() => {
+            if (msg.parentNode) msg.parentNode.removeChild(msg);
+        }, 2000);
     }
 
     /* ===== 선택된 상품 수집 ===== */
     function getSelectedProducts() {
         const checkboxes = document.querySelectorAll('#productList input[type="checkbox"]:checked');
-        const out = [];
+        const products = [];
 
         checkboxes.forEach(checkbox => {
-            const orderItemCode = checkbox.getAttribute('data-order-item-code');
-            const qtyInput = document.querySelector(`input[data-order-item-code="${orderItemCode}"]`);
-            const qty = qtyInput ? parseInt(qtyInput.value) : 1;
+            const orderItemCode = parseInt(checkbox.getAttribute('data-order-item-code'));
 
+            // 🔧 수정: 여러 방식으로 수량 input 찾기 (NaN 방지)
+            let qtyInput = document.querySelector(`input.cr-qty-input[data-order-item-code="${orderItemCode}"]`);
+            if (!qtyInput) {
+                qtyInput = document.querySelector(`#quantity_${orderItemCode}`);
+            }
+            if (!qtyInput) {
+                qtyInput = checkbox.closest('.cr-product-item')?.querySelector('input[type="number"]');
+            }
+
+            // 🔧 수정: 안전한 수량 파싱 (기본값 1)
+            let selectedQuantity = 1;
+            if (qtyInput && qtyInput.value) {
+                const parsedQty = parseInt(qtyInput.value);
+                selectedQuantity = isNaN(parsedQty) ? 1 : Math.max(1, parsedQty);
+            }
+
+            // 🔧 수정: currentOrderProducts에서 해당 상품 찾기
             const product = currentOrderProducts.find(p =>
-                String(p.orderItemCode) === String(orderItemCode)
+                parseInt(p.orderItemCode) === orderItemCode
             );
 
             if (product) {
-                out.push({
-                    orderItemCode: product.orderItemCode,
+                // 🔧 수정: 안전한 수량 파싱
+                const originalQuantity = parseInt(product.orderedQuantity || product.quantity) || 1;
+                const unitPrice = parseInt(product.unitPrice || product.price) || 0;
+
+                products.push({
+                    orderItemCode: orderItemCode,
                     productId: product.productId,
-                    productName: product.productName,
-                    optionName: product.optionName,
-                    optionValue: product.optionValue,
-                    selectedQuantity: qty,
-                    originalQuantity: Number(product.orderedQuantity || product.quantity || qty),
-                    price: Number(product.unitPrice || product.price || 0)
+                    productName: product.productName || '',
+                    optionName: product.optionName || '',
+                    optionValue: product.optionValue || '',
+                    selectedQuantity: selectedQuantity,
+                    originalQuantity: originalQuantity,
+                    price: unitPrice
                 });
+
+                console.log(`상품 ${orderItemCode}: selectedQuantity=${selectedQuantity}, originalQuantity=${originalQuantity}`);
             }
         });
 
-        return out;
+        console.log('선택된 상품들:', products);
+        return products;
     }
 
     // 🔄 짧은 디바운스로 서버 호출 과다 방지
     let _refundCalcTimer = null;
 
     async function calculateRefundAmount() {
-        // 기본 검증
         const selectedProducts = getSelectedProducts();
         const reason = document.getElementById('cancelReason')?.value || '';
+
+        console.log('=== 환불 금액 계산 시작 ===');
+        console.log('선택된 상품 수:', selectedProducts.length);
+        console.log('선택 사유:', reason);
 
         if (!selectedProducts.length) {
             updateRefundDisplay(0, '상품을 선택해주세요.');
@@ -3366,25 +3501,22 @@
                 fullRefund: isFullRefund,
                 products: selectedProducts.map(p => ({
                     orderItemCode: p.orderItemCode,
-                    selectedQuantity: p.selectedQuantity
+                    selectedQuantity: p.selectedQuantity // 🔧 이미 검증된 값
                 }))
             };
 
-            console.log('환불 견적 요청:', payload);
-
-            // 디버깅: 선택된 상품 상세 정보 출력
-            console.log('=== 프론트엔드 디버깅 정보 ===');
-            console.log('currentOrderProducts:', currentOrderProducts);
-            console.log('selectedProducts:', selectedProducts);
-            selectedProducts.forEach((p, idx) => {
+            console.log('=== API 호출 페이로드 ===');
+            console.log('orderCode:', payload.orderCode);
+            console.log('actionType:', payload.actionType);
+            console.log('products:', payload.products);
+            payload.products.forEach((p, idx) => {
                 console.log(`상품 ${idx + 1}:`, {
                     orderItemCode: p.orderItemCode,
                     selectedQuantity: p.selectedQuantity,
-                    originalQuantity: p.originalQuantity,
-                    productName: p.productName
+                    type: typeof p.selectedQuantity
                 });
             });
-            console.log('==============================');
+            console.log('========================');
 
             const response = await fetch('/mypage/order/refund-quote', {
                 method: 'POST',
@@ -3399,13 +3531,10 @@
             console.log('환불 견적 응답:', result);
 
             if (result.success) {
-                // 서버에서 계산된 환불 금액 표시
                 const refundAmount = Number(result.refundAmount || 0);
                 const messageHtml = result.messageHtml || buildRefundMessage(result);
 
                 updateRefundDisplay(refundAmount, messageHtml);
-
-                // 전역 변수에 저장 (제출 시 사용)
                 window.lastRefundQuote = result;
 
             } else {
@@ -3414,33 +3543,29 @@
             }
 
         } catch (error) {
-            console.error('환불 견적 API 호출 오류:', error);
-            updateRefundDisplay(0, '서버 통신 오류가 발생했습니다.');
+            console.error('API 호출 오류:', error);
+            updateRefundDisplay(0, '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
         }
     }
 
     function buildRefundMessage(result) {
-        const parts = [];
+        if (!result) return '계산 중 오류가 발생했습니다.';
 
-        if (result.selectedTotal) {
-            parts.push(`선택상품 합계: ${Number(result.selectedTotal).toLocaleString()}원`);
+        const refundAmount = Number(result.refundAmount || 0);
+        const deliveryFeeDeduction = Number(result.deliveryFeeDeduction || 0);
+        const discountRollback = Number(result.discountRollback || 0);
+
+        let message = `환불 예정 금액: <strong>${refundAmount.toLocaleString()}원</strong>`;
+
+        if (deliveryFeeDeduction > 0) {
+            message += `<br>배송비 차감: ${deliveryFeeDeduction.toLocaleString()}원`;
         }
 
-        if (result.remainingAmount) {
-            parts.push(`남은상품 합계: ${Number(result.remainingAmount).toLocaleString()}원`);
+        if (discountRollback > 0) {
+            message += `<br>할인 회수: ${discountRollback.toLocaleString()}원`;
         }
 
-        if (result.discountRollback > 0) {
-            parts.push(`쿠폰 회수: ${Number(result.discountRollback).toLocaleString()}원`);
-        }
-
-        if (result.deliveryFeeDeduction > 0) {
-            const actionType = document.getElementById('cr_actionType').value;
-            const deductionText = actionType === 'return' ? '반품비' : '배송비';
-            parts.push(`${deductionText} 차감: ${Number(result.deliveryFeeDeduction).toLocaleString()}원`);
-        }
-
-        return parts.join('<br>');
+        return message;
     }
 
     function _estimateRefundLocally(selectedProducts, reason) {
@@ -3517,17 +3642,88 @@
     }
 
     function updateQuantity(orderItemCode, delta) {
-        const qtyInput = document.querySelector(`input[data-order-item-code="${orderItemCode}"]`);
-        if (!qtyInput) return;
+        // 🔧 수정: 여러 방식으로 input 찾기
+        let qtyInput = document.querySelector(`input.cr-qty-input[data-order-item-code="${orderItemCode}"]`);
+        if (!qtyInput) {
+            qtyInput = document.querySelector(`#quantity_${orderItemCode}`);
+        }
+
+        if (!qtyInput) {
+            console.error(`수량 input을 찾을 수 없습니다: ${orderItemCode}`);
+            return;
+        }
 
         const current = parseInt(qtyInput.value) || 1;
-        const newValue = Math.max(1, current + delta);
+        const minValue = parseInt(qtyInput.getAttribute('min')) || 1;
         const maxValue = parseInt(qtyInput.getAttribute('max')) || 999;
 
-        qtyInput.value = Math.min(newValue, maxValue);
+        // 🔧 수정: 안전한 새 값 계산
+        const newValue = Math.max(minValue, Math.min(maxValue, current + delta));
 
-        // 즉시 환불 금액 재계산
-        calculateRefundAmount();
+        qtyInput.value = newValue;
+        console.log(`updateQuantity: orderItemCode=${orderItemCode}, 변경 전=${current}, 변경 후=${newValue}`);
+
+        // trigger change event to update calculations
+        qtyInput.dispatchEvent(new Event('change'));
+    }
+
+    function renderCancelReturnProducts(products) {
+        const container = document.getElementById('productList');
+        if (!container || !products?.length) return;
+
+        const html = products.map(product => {
+            const maxQty = parseInt(product.orderedQuantity || product.quantity) || 1;
+            const totalPrice = parseInt(product.unitPrice || product.price) || 0;
+            const orderItemCode = product.orderItemCode;
+
+            return `
+        <div class="cr-product-item">
+            <label class="cr-product-checkbox-label">
+                <input type="checkbox"
+                       class="cr-product-checkbox"
+                       data-order-item-code="${orderItemCode}"
+                       checked
+                       onchange="onProductSelectionChange(this)">
+            </label>
+
+            <div class="cr-product-info">
+                <div class="cr-product-name">${product.productName || ''}</div>
+                ${product.optionName ? `
+                <div class="cr-product-option">
+                    ${product.optionName}: ${product.optionValue || ''}
+                </div>` : ''}
+                <div class="cr-product-price">
+                    단가: ${totalPrice.toLocaleString()}원
+                </div>
+            </div>
+
+            <div class="cr-product-quantity">
+                <div class="cr-quantity-label">수량</div>
+                <div class="cr-quantity-controls">
+                    <button type="button" class="cr-qty-btn"
+                            onclick="updateQuantity('${orderItemCode}', -1)">-</button>
+                    <input type="number"
+                           class="cr-qty-input"
+                           data-order-item-code="${orderItemCode}"
+                           value="1"
+                           min="1"
+                           max="${maxQty}"
+                           onchange="onQuantityChange(this)"
+                           oninput="onQuantityChange(this)">
+                    <button type="button" class="cr-qty-btn"
+                            onclick="updateQuantity('${orderItemCode}', 1)">+</button>
+                </div>
+                <div class="cr-qty-max">최대 ${maxQty}개</div>
+            </div>
+        </div>`;
+        }).join('');
+
+        container.innerHTML = html;
+
+        // 초기 계산 (모든 상품이 선택된 상태로 렌더링됨)
+        setTimeout(() => {
+            calculateRefundAmount();
+        }, 100);
     }
 
     function toggleProductSelection(orderItemCode) {
@@ -3760,14 +3956,20 @@
 
     function renderProductList() {
         const container = document.getElementById('productList');
-        if (!container) return;
-
-        if (!currentOrderProducts.length) {
-            container.innerHTML = '<div class="cr-empty-message">환불 가능한 상품이 없습니다.</div>';
+        if (!container) {
+            console.error('productList 컨테이너를 찾을 수 없습니다.');
             return;
         }
 
+        if (!currentOrderProducts || !currentOrderProducts.length) {
+            container.innerHTML = '<div class="cr-empty-message">환불 가능한 상품이 없습니다.</div>';
+            totalProductsCount = 0;
+            return;
+        }
+
+        // 🔧 수정: totalProductsCount 정확한 설정
         totalProductsCount = currentOrderProducts.length;
+        console.log('renderProductList: totalProductsCount =', totalProductsCount);
 
         const html = currentOrderProducts.map(product => {
             const img = product._img || buildProductImageUrl(product);
@@ -3775,18 +3977,20 @@
             const unitPrice = Number(product.unitPrice || product.price || 0);
             const optionPrice = Number(product.optionPrice || 0);
             const totalPrice = unitPrice + optionPrice;
+            const orderItemCode = product.orderItemCode;
 
             return `
-        <div class="cr-product-item" data-order-item-code="${product.orderItemCode}">
+        <div class="cr-product-item" data-order-item-code="${orderItemCode}">
             <div class="cr-product-checkbox">
                 <input type="checkbox"
-                       data-order-item-code="${product.orderItemCode}"
+                       class="cr-product-checkbox"
+                       data-order-item-code="${orderItemCode}"
                        onchange="onProductSelectionChange(this)"
                        checked>
             </div>
 
             <div class="cr-product-image">
-                <img src="${img}" alt="${product.productName}"
+                <img src="${img}" alt="${product.productName || ''}"
                      onerror="this.src='https://via.placeholder.com/60?text=No+Image';">
             </div>
 
@@ -3805,16 +4009,17 @@
                 <div class="cr-quantity-label">수량</div>
                 <div class="cr-quantity-controls">
                     <button type="button" class="cr-qty-btn"
-                            onclick="updateQuantity('${product.orderItemCode}', -1)">-</button>
+                            onclick="updateQuantity('${orderItemCode}', -1)">-</button>
                     <input type="number"
                            class="cr-qty-input"
-                           data-order-item-code="${product.orderItemCode}"
+                           data-order-item-code="${orderItemCode}"
                            value="1"
                            min="1"
                            max="${maxQty}"
-                           onchange="onQuantityChange(this)">
+                           onchange="onQuantityChange(this)"
+                           oninput="onQuantityChange(this)">
                     <button type="button" class="cr-qty-btn"
-                            onclick="updateQuantity('${product.orderItemCode}', 1)">+</button>
+                            onclick="updateQuantity('${orderItemCode}', 1)">+</button>
                 </div>
                 <div class="cr-qty-max">최대 ${maxQty}개</div>
             </div>
@@ -3848,14 +4053,24 @@
         const orderItemCode = input.getAttribute('data-order-item-code');
         const newValue = parseInt(input.value) || 1;
         const maxValue = parseInt(input.getAttribute('max')) || 999;
+        const minValue = parseInt(input.getAttribute('min')) || 1;
 
-        // 범위 검증
-        if (newValue < 1) {
-            input.value = 1;
-        } else if (newValue > maxValue) {
-            input.value = maxValue;
-            alert(`최대 ${maxValue}개까지 선택 가능합니다.`);
+        // 🔧 수정: 값 범위 검증 및 보정
+        let correctedValue = newValue;
+        if (correctedValue < minValue) {
+            correctedValue = minValue;
+            showQuantityMessage(input, `최소 수량은 ${minValue}개입니다.`);
+        } else if (correctedValue > maxValue) {
+            correctedValue = maxValue;
+            showQuantityMessage(input, `최대 수량은 ${maxValue}개입니다.`);
         }
+
+        // 보정된 값으로 업데이트
+        if (input.value !== correctedValue.toString()) {
+            input.value = correctedValue;
+        }
+
+        console.log(`수량 변경: orderItemCode=${orderItemCode}, 새 수량=${correctedValue}`);
 
         // 환불 금액 재계산
         calculateRefundAmount();

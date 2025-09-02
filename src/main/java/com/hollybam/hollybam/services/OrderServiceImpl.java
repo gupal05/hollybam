@@ -1108,90 +1108,154 @@ public class OrderServiceImpl implements IF_OrderService {
     }
 
     @Override
-    public Map<String,Object> computeRefundQuote(RefundQuoteReq req) {
-        if (req.getProducts() == null || req.getProducts().isEmpty()) {
+    public Map<String,Object> computeRefundQuote(Map<String, Object> reqData) {
+        // 🔧 추가: 입력 검증 강화
+        if (reqData == null || reqData.isEmpty()) {
+            throw new IllegalArgumentException("환불 요청 데이터가 null입니다.");
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> products = (List<Map<String, Object>>) reqData.get("products");
+        if (products == null || products.isEmpty()) {
             throw new IllegalArgumentException("환불 대상 상품이 없습니다.");
         }
 
-        int orderCode = req.getOrderCode();
-        String actionType = req.getActionType(); // "cancel" | "return"
-        String cancelReason = req.getCancelReason();
+        // 요청 데이터 파싱
+        int orderCode = toInt(reqData.get("orderCode"));
+        String actionType = (String) reqData.get("actionType"); // "cancel" | "return"
+        String cancelReason = (String) reqData.get("cancelReason");
 
         boolean isCancel = "cancel".equalsIgnoreCase(actionType);
         boolean isReturn = "return".equalsIgnoreCase(actionType);
         boolean isDefect = "상품불량".equals(cancelReason);
 
+        System.out.println("========== [환불 견적 계산 시작] ==========");
+        System.out.println("orderCode: " + orderCode);
+        System.out.println("actionType: " + actionType);
+        System.out.println("cancelReason: " + cancelReason);
+        System.out.println("products count: " + products.size());
+
         // 주문 헤더 정보 조회
         Map<String,Object> header = orderDao.getOrderHeaderForRefund(orderCode);
-        if (header == null) throw new IllegalArgumentException("주문을 찾을 수 없습니다.");
+        if (header == null) {
+            throw new IllegalArgumentException("주문을 찾을 수 없습니다: " + orderCode);
+        }
 
         int totalAmount = toInt(header.get("totalAmount"));     // 총 상품가(할인전)
         int discountAmount = toInt(header.get("discountAmount")); // 할인금액
         int deliveryFee = toInt(header.get("deliveryFee"));     // 배송비
         int finalAmount = toInt(header.get("finalAmount"));     // 최종 결제액
 
-        // 1) 선택상품 금액 계산
+        System.out.println("주문 정보 - totalAmount: " + totalAmount + ", discountAmount: " + discountAmount +
+                ", deliveryFee: " + deliveryFee + ", finalAmount: " + finalAmount);
+
+        // 1) 선택상품 금액 계산 - 🔧 Map에서 selectedQuantity 안전하게 파싱
         int selectedTotal = 0;
+        List<Map<String,Object>> productDetails = new ArrayList<>();
 
-        System.out.println("========== [REFUND QUOTE DEBUG] ==========");
-        System.out.println("orderCode: " + orderCode);
-        System.out.println("actionType: " + actionType);
-        System.out.println("products count: " + req.getProducts().size());
-        System.out.println("tttt: " + req.toString());
+        for (int i = 0; i < products.size(); i++) {
+            Map<String, Object> product = products.get(i);
 
-        for (RefundQuoteReq.Item item : req.getProducts()) {
-            System.out.println("test : "+item.toString());
-            int orderItemCode = item.getOrderItemCode();
-            int selectedQuantity = item.getSelectedQuantity();
+            // 🔧 안전한 데이터 파싱
+            int orderItemCode = toInt(product.get("orderItemCode"));
+            int selectedQuantity = toInt(product.get("selectedQuantity"));
 
-            System.out.println("Processing item - orderItemCode: " + orderItemCode + ", selectedQuantity: " + selectedQuantity);
+            System.out.println("=== 상품 " + (i+1) + " 처리 ===");
+            System.out.println("orderItemCode: " + orderItemCode);
+            System.out.println("selectedQuantity: " + selectedQuantity + " (Map에서 파싱됨)");
 
+            // 🔧 강화: selectedQuantity 검증
+            if (selectedQuantity <= 0) {
+                System.err.println("ERROR: selectedQuantity가 0 이하: " + selectedQuantity);
+                throw new IllegalArgumentException("선택 수량이 0보다 커야 합니다. (상품 " + (i+1) + ")");
+            }
+
+            // DB에서 주문 상품 정보 조회
             Map<String,Object> line = orderDao.getOrderItemByCode(orderItemCode);
             if (line == null) {
-                System.out.println("ERROR: 주문 상품을 찾을 수 없습니다: " + orderItemCode);
+                System.err.println("ERROR: 주문 상품을 찾을 수 없음: " + orderItemCode);
                 throw new IllegalArgumentException("주문 상품을 찾을 수 없습니다: " + orderItemCode);
             }
 
-            System.out.println("DB line data: " + line);
+            System.out.println("DB 조회 결과: " + line);
 
             int orderedQuantity = toInt(line.get("orderedQuantity"));
             int unitPrice = toInt(line.get("unitPrice"));
 
-            System.out.println("orderedQuantity: " + orderedQuantity + ", unitPrice: " + unitPrice);
-
-            if (selectedQuantity <= 0) {
-                System.out.println("ERROR: 선택 수량이 0 이하입니다: " + selectedQuantity);
-                throw new IllegalArgumentException("선택 수량이 0보다 커야 합니다.");
+            // 🔧 추가: DB 데이터 검증
+            if (orderedQuantity <= 0) {
+                System.err.println("ERROR: DB의 주문 수량이 0 이하: " + orderedQuantity);
+                throw new IllegalArgumentException("주문 데이터 오류: 주문 수량이 유효하지 않습니다.");
             }
 
+            if (unitPrice < 0) {
+                System.err.println("WARNING: unitPrice가 음수: " + unitPrice + " -> 0으로 보정");
+                unitPrice = 0;
+            }
+
+            // 🔧 강화: 수량 범위 검증
             if (selectedQuantity > orderedQuantity) {
-                System.out.println("ERROR: 선택 수량이 주문 수량을 초과합니다. selected: " + selectedQuantity + ", ordered: " + orderedQuantity);
-                throw new IllegalArgumentException("선택 수량(" + selectedQuantity + ")이 주문 수량(" + orderedQuantity + ")을 초과할 수 없습니다.");
+                System.err.println("ERROR: 선택 수량 > 주문 수량. selected: " + selectedQuantity +
+                        ", ordered: " + orderedQuantity);
+                throw new IllegalArgumentException(
+                        "선택 수량(" + selectedQuantity + ")이 주문 수량(" + orderedQuantity + ")을 초과할 수 없습니다."
+                );
             }
 
+            // 이미 환불된 수량 확인 (추가 검증)
+            Integer refundedQty = orderDao.sumRefundedQty(orderItemCode);
+            if (refundedQty == null) refundedQty = 0;
+            int availableQty = orderedQuantity - refundedQty;
+
+            if (selectedQuantity > availableQty) {
+                System.err.println("ERROR: 선택 수량 > 환불 가능 수량. selected: " + selectedQuantity +
+                        ", available: " + availableQty + ", refunded: " + refundedQty);
+                throw new IllegalArgumentException(
+                        "선택 수량(" + selectedQuantity + ")이 환불 가능 수량(" + availableQty + ")을 초과합니다."
+                );
+            }
+
+            // 라인별 환불 금액 계산
             int lineTotal = unitPrice * selectedQuantity;
             selectedTotal += lineTotal;
 
-            System.out.println("lineTotal: " + lineTotal + ", selectedTotal: " + selectedTotal);
+            // 🔧 추가: 상품별 상세 정보 수집
+            Map<String,Object> productDetail = new HashMap<>();
+            productDetail.put("orderItemCode", orderItemCode);
+            productDetail.put("selectedQuantity", selectedQuantity);
+            productDetail.put("unitPrice", unitPrice);
+            productDetail.put("lineRefundAmount", lineTotal);
+            productDetails.add(productDetail);
+
+            System.out.println("라인 계산 완료 - unitPrice: " + unitPrice +
+                    ", selectedQuantity: " + selectedQuantity +
+                    ", lineTotal: " + lineTotal +
+                    ", selectedTotal: " + selectedTotal);
         }
 
-        System.out.println("Final selectedTotal: " + selectedTotal);
-        System.out.println("==========================================");
+        System.out.println("전체 선택 상품 금액: " + selectedTotal);
 
         // 2) 전체환불 여부 판단
         int totalOrderItems = orderDao.countOrderItems(orderCode);
-        boolean isFullRefund = (req.getProducts().size() == totalOrderItems);
+        boolean isFullRefund = (products.size() == totalOrderItems);
+
         if (isFullRefund) {
             // 모든 아이템의 수량도 확인
-            for (RefundQuoteReq.Item item : req.getProducts()) {
-                Map<String,Object> line = orderDao.getOrderItemByCode(item.getOrderItemCode());
+            for (Map<String, Object> product : products) {
+                int orderItemCode = toInt(product.get("orderItemCode"));
+                Map<String,Object> line = orderDao.getOrderItemByCode(orderItemCode);
                 int orderedQuantity = toInt(line.get("orderedQuantity"));
-                if (item.getSelectedQuantity() != orderedQuantity) {
+                int selectedQuantity = toInt(product.get("selectedQuantity"));
+
+                if (selectedQuantity != orderedQuantity) {
                     isFullRefund = false;
+                    System.out.println("부분 환불로 판정 - 수량 불일치");
                     break;
                 }
             }
         }
+
+        System.out.println("환불 유형: " + (isFullRefund ? "전체환불" : "부분환불"));
 
         // 3) 환불 금액 계산
         int refundAmount = 0;
@@ -1203,10 +1267,12 @@ public class OrderServiceImpl implements IF_OrderService {
             if (isCancel) {
                 // 취소: 전액 환불
                 refundAmount = finalAmount;
+                System.out.println("전체 취소 - 전액 환불: " + refundAmount);
             } else {
                 // 반품: 배송비 차감 (상품불량은 차감 없음)
                 deliveryFeeDeduction = (isDefect) ? 0 : 3000;
                 refundAmount = finalAmount - deliveryFeeDeduction;
+                System.out.println("전체 반품 - 환불액: " + refundAmount + ", 배송비 차감: " + deliveryFeeDeduction);
             }
 
             // 전체환불 시 할인도 모두 회수
@@ -1215,61 +1281,48 @@ public class OrderServiceImpl implements IF_OrderService {
         } else {
             // 부분 환불
             int remainingAmount = totalAmount - selectedTotal;
+            System.out.println("부분 환불 - selectedTotal: " + selectedTotal + ", remainingAmount: " + remainingAmount);
 
             // 부분환불 시 쿠폰 회수 계산 (남은 금액이 최소주문금액 미달 시)
             if (remainingAmount < 10000) { // 쿠폰 최소주문금액
                 discountRollback = discountAmount;
+                System.out.println("쿠폰 회수 (남은 금액 < 10000원): " + discountRollback);
             }
 
             // 부분환불 시 배송비 재계산
-            int newDeliveryFee = 0;
             if (isCancel) {
                 // 취소: 남은 금액이 5만원 미만이면 배송비 부과
-                newDeliveryFee = (remainingAmount >= 50000) ? 0 : 3000;
+                deliveryFeeDeduction = (remainingAmount >= 50000) ? 0 : 3000;
+                System.out.println("부분 취소 - 배송비 차감: " + deliveryFeeDeduction);
             } else {
-                // 반품: 원래 배송비 유지
-                newDeliveryFee = deliveryFee;
+                // 반품: 변심이면 3000원 차감, 불량이면 차감 없음
+                deliveryFeeDeduction = (isDefect) ? 0 : 3000;
+                System.out.println("부분 반품 - 배송비 차감: " + deliveryFeeDeduction);
             }
 
-            int originalPaidDelivery = deliveryFee;
-            int deliveryFeeReturn = originalPaidDelivery - newDeliveryFee;
+            // 최종 환불 금액 = 선택 상품 금액 - 배송비 차감 - 할인 회수
+            refundAmount = selectedTotal - deliveryFeeDeduction - discountRollback;
+            refundAmount = Math.max(0, refundAmount); // 음수 방지
 
-            if (isReturn && !isDefect) {
-                deliveryFeeDeduction = 3000; // 반품비
-            }
-
-            refundAmount = selectedTotal + deliveryFeeReturn + discountRollback - deliveryFeeDeduction;
+            System.out.println("부분 환불 최종 계산 - refundAmount: " + refundAmount);
         }
-
-        // 최소 0원 보장
-        refundAmount = Math.max(0, refundAmount);
 
         // 4) 응답 생성
-        Map<String,Object> response = new HashMap<>();
-        response.put("selectedTotal", selectedTotal);
-        response.put("remainingAmount", totalAmount - selectedTotal);
-        response.put("refundAmount", refundAmount);
-        response.put("deliveryFeeDeduction", deliveryFeeDeduction);
-        response.put("discountRollback", discountRollback);
-        response.put("isFullRefund", isFullRefund);
-        response.put("actionType", actionType);
-        response.put("isDefect", isDefect);
+        Map<String,Object> result = new HashMap<>();
+        result.put("refundAmount", refundAmount);
+        result.put("deliveryFeeDeduction", deliveryFeeDeduction);
+        result.put("discountRollback", discountRollback);
+        result.put("isFullRefund", isFullRefund);
+        result.put("selectedTotal", selectedTotal);
+        result.put("products", productDetails);
 
-        // 상세 내역 메시지
-        StringBuilder message = new StringBuilder();
-        message.append("선택상품 합계: ").append(String.format("%,d", selectedTotal)).append("원<br>");
-        message.append("남은상품 합계: ").append(String.format("%,d", totalAmount - selectedTotal)).append("원<br>");
+        System.out.println("========== [환불 견적 계산 완료] ==========");
+        System.out.println("최종 환불 금액: " + refundAmount);
+        System.out.println("배송비 차감: " + deliveryFeeDeduction);
+        System.out.println("할인 회수: " + discountRollback);
+        System.out.println("=========================================");
 
-        if (discountRollback > 0) {
-            message.append("쿠폰 회수: ").append(String.format("%,d", discountRollback)).append("원<br>");
-        }
-        if (deliveryFeeDeduction > 0) {
-            message.append("배송비 차감: ").append(String.format("%,d", deliveryFeeDeduction)).append("원<br>");
-        }
-
-        response.put("messageHtml", message.toString());
-
-        return response;
+        return result;
     }
 
     /**

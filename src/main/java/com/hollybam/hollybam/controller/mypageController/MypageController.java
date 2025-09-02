@@ -225,11 +225,11 @@ public class MypageController {
             // 1) 주문/환불 메타 파라미터
             Map<String, Object> refundOrder = new HashMap<>();
             refundOrder.put("orderCode", request.getParameter("orderCode"));
-            refundOrder.put("actionType", request.getParameter("actionType"));   // "cancel" | "return"
-            refundOrder.put("cancelReason", request.getParameter("cancelReason")); // 예: "상품불량", "단순변심"
+            refundOrder.put("actionType", request.getParameter("actionType"));
+            refundOrder.put("cancelReason", request.getParameter("cancelReason"));
             refundOrder.put("refundDeliveryFee", request.getParameter("refundDeliveryFee"));
 
-            // 2) 환불 상품 파라미터 파싱
+            // 2) 환불 상품 파라미터 파싱 - 🔧 NaN 방지 강화
             Map<String, String[]> pm = request.getParameterMap();
             List<Map<String, Object>> products = new ArrayList<>();
             int idx = 0;
@@ -242,55 +242,103 @@ public class MypageController {
                 p.put("productName", request.getParameter("products[" + idx + "].productName"));
                 p.put("optionName", request.getParameter("products[" + idx + "].optionName"));
                 p.put("optionValue", request.getParameter("products[" + idx + "].optionValue"));
-                p.put("originalQuantity", Integer.parseInt(request.getParameter("products[" + idx + "].originalQuantity")));
-                p.put("selectedQuantity", Integer.parseInt(request.getParameter("products[" + idx + "].selectedQuantity")));
-                p.put("unitPrice", Integer.parseInt(request.getParameter("products[" + idx + "].unitPrice")));
-                String df = request.getParameter("products[" + idx + "].deliveryFeeDeduction");
-                if (df != null && !df.isBlank()) {
-                    p.put("deliveryFeeDeduction", Integer.parseInt(df));
+
+                // 🔧 수정: 안전한 수량 파싱 (NaN 방지)
+                try {
+                    String originalQtyStr = request.getParameter("products[" + idx + "].originalQuantity");
+                    String selectedQtyStr = request.getParameter("products[" + idx + "].selectedQuantity");
+                    String unitPriceStr = request.getParameter("products[" + idx + "].unitPrice");
+
+                    int originalQuantity = parseIntSafely(originalQtyStr, 1);
+                    int selectedQuantity = parseIntSafely(selectedQtyStr, 1);
+                    int unitPrice = parseIntSafely(unitPriceStr, 0);
+
+                    // 🔧 추가 검증: 수량 범위 체크
+                    if (selectedQuantity <= 0) {
+                        selectedQuantity = 1;
+                        System.out.println("WARNING: selectedQuantity가 0 이하여서 1로 보정됨. idx=" + idx);
+                    }
+                    if (selectedQuantity > originalQuantity) {
+                        selectedQuantity = originalQuantity;
+                        System.out.println("WARNING: selectedQuantity가 originalQuantity를 초과해서 보정됨. idx=" + idx);
+                    }
+
+                    p.put("originalQuantity", originalQuantity);
+                    p.put("selectedQuantity", selectedQuantity);
+                    p.put("unitPrice", unitPrice);
+
+                    System.out.println("상품 " + idx + " 파싱 결과: originalQty=" + originalQuantity +
+                            ", selectedQty=" + selectedQuantity + ", unitPrice=" + unitPrice);
+
+                } catch (Exception e) {
+                    System.err.println("수량 파싱 오류 idx=" + idx + ": " + e.getMessage());
+                    p.put("originalQuantity", 1);
+                    p.put("selectedQuantity", 1);
+                    p.put("unitPrice", 0);
                 }
+
+                String deliveryFeeStr = request.getParameter("products[" + idx + "].deliveryFeeDeduction");
+                if (deliveryFeeStr != null && !deliveryFeeStr.isBlank()) {
+                    try {
+                        p.put("deliveryFeeDeduction", Integer.parseInt(deliveryFeeStr));
+                    } catch (NumberFormatException e) {
+                        p.put("deliveryFeeDeduction", 0);
+                    }
+                }
+
                 products.add(p);
                 idx++;
             }
 
-            MemberDto member = (MemberDto) session.getAttribute("member"); // null이면 비회원
+            // 🔧 추가: 상품 리스트 검증
+            if (products.isEmpty()) {
+                result.put("success", false);
+                result.put("message", "취소/반품할 상품이 없습니다.");
+                return result;
+            }
 
+            // 회원/게스트 정보 설정 - 🔧 세션에서는 DTO 객체 사용
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+            boolean isMemberOrder = (member != null);
+
+            refundOrder.put("memberCode", isMemberOrder ? member.getMemberCode() : null);
+            refundOrder.put("guestCode", !isMemberOrder ? guest.getGuestCode() : null);
+            refundOrder.put("products", products);
+
+            // 🔧 디버깅 로그 - 일반 for문 사용
+            System.out.println("=== 환불 신청 디버깅 ===");
+            System.out.println("orderCode: " + refundOrder.get("orderCode"));
+            System.out.println("actionType: " + refundOrder.get("actionType"));
+            System.out.println("products count: " + products.size());
+            for (int i = 0; i < products.size(); i++) {
+                Map<String, Object> product = products.get(i);
+                System.out.println("상품 " + i + ": selectedQuantity=" + product.get("selectedQuantity") +
+                        " (type: " + product.get("selectedQuantity").getClass().getSimpleName() + ")");
+            }
+            System.out.println("=========================");
+
+            // 서비스 호출 - 🔧 올바른 메서드명 사용
             Map<String, Object> out = orderService.applyRefundRequest(refundOrder, products, member);
 
-            try {
-                System.out.println("========== [REFUND RESULT] ==========");
-                System.out.println("orderCode          : " + refundOrder.get("orderCode"));
-                System.out.println("type               : " + refundOrder.get("actionType"));
-                System.out.println("reason             : " + refundOrder.get("cancelReason"));
-                System.out.println("defectReason       : " + out.get("defectReason"));
-                System.out.println("fullRefund         : " + out.get("fullRefund"));
-                System.out.println("remainingAmount(남은 결제 금액) : " + out.get("remainingAmount"));
-                System.out.println("refundAmount(환불 예정 금액)  : " + out.get("refundAmount"));
-                System.out.println("newOrderStatus     : " + out.get("newOrderStatus"));
-                System.out.println("=====================================");
-            } catch (Exception ignore) { /* 안전하게 무시 */ }
-
-            result.putAll(out);
             result.put("success", true);
+            result.putAll(out);
 
-            // 🆕 상태별 맞춤 메시지 생성
-            String actionType = refundOrder.get("actionType").toString();
-            String newOrderStatus = out.get("newOrderStatus").toString();
+            // 🔧 상태별 메시지 생성
+            String actionType = (String) refundOrder.get("actionType");
+            String newOrderStatus = (String) out.get("newOrderStatus");
             String statusMessage = generateRefundStatusMessage(actionType, newOrderStatus);
-
-            result.put("message", statusMessage);
             result.put("statusMessage", statusMessage);
+            result.put("message", "환불 신청이 완료되었습니다.");
 
-        } catch (IllegalStateException e) {
-            // 🆕 중복 신청 등의 상태 오류 처리
-            result.put("success", false);
-            result.put("code", "DUPLICATE_REQUEST");
-            result.put("message", e.getMessage());
         } catch (Exception e) {
+            System.err.println("환불 신청 처리 오류: " + e.getMessage());
             e.printStackTrace();
+
             result.put("success", false);
-            result.put("message", "처리 중 오류: " + e.getMessage());
+            result.put("message", "환불 신청 중 오류가 발생했습니다: " + e.getMessage());
         }
+
         return result;
     }
 
@@ -298,11 +346,11 @@ public class MypageController {
      * 🆕 환불 신청 완료 후 상태별 안내 메시지 생성
      */
     private String generateRefundStatusMessage(String actionType, String newOrderStatus) {
-        if ("CANCEL".equalsIgnoreCase(actionType)) {
+        if ("cancel".equalsIgnoreCase(actionType) || "CANCEL".equalsIgnoreCase(actionType)) {
             return "취소 신청이 완료되었습니다.\n" +
                     "관리자 검토 후 환불 처리가 진행됩니다.\n" +
                     "처리 현황은 주문 목록에서 확인하실 수 있습니다.";
-        } else if ("RETURN".equalsIgnoreCase(actionType)) {
+        } else if ("return".equalsIgnoreCase(actionType) || "RETURN".equalsIgnoreCase(actionType)) {
             return "반품 신청이 완료되었습니다.\n" +
                     "관리자 승인 후 반품 절차가 안내됩니다.\n" +
                     "반품 상품 수거 일정은 별도 연락드리겠습니다.";
@@ -313,24 +361,127 @@ public class MypageController {
 
     @PostMapping("/order/refund-quote")
     @ResponseBody
-    public ResponseEntity<Map<String,Object>> refundQuote(@RequestBody RefundQuoteReq req) {
+    public ResponseEntity<Map<String,Object>> refundQuote(@RequestBody Map<String, Object> reqData) {
+        Map<String,Object> response = new HashMap<>();
+
         try {
-            Map<String,Object> quote = orderService.computeRefundQuote(req);
-            quote.put("success", true);
-            return ResponseEntity.ok(quote);
+            // 🔧 추가: 요청 데이터 검증
+            System.out.println("=== 환불 견적 요청 수신 ===");
+            System.out.println("Request: " + reqData.toString());
+
+            if (reqData == null || reqData.isEmpty()) {
+                throw new IllegalArgumentException("요청 데이터가 없습니다.");
+            }
+
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> products = (List<Map<String, Object>>) reqData.get("products");
+            if (products == null || products.isEmpty()) {
+                throw new IllegalArgumentException("환불 대상 상품이 없습니다.");
+            }
+
+            // 🔧 추가: selectedQuantity 검증
+            for (int i = 0; i < products.size(); i++) {
+                Map<String, Object> product = products.get(i);
+                Object selectedQtyObj = product.get("selectedQuantity");
+
+                int selectedQuantity;
+                try {
+                    selectedQuantity = selectedQtyObj instanceof Integer ?
+                            (Integer) selectedQtyObj :
+                            Integer.parseInt(selectedQtyObj.toString());
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("상품 " + (i+1) + "의 수량이 올바르지 않습니다.");
+                }
+
+                System.out.println("상품 " + i + ": orderItemCode=" + product.get("orderItemCode") +
+                        ", selectedQuantity=" + selectedQuantity + " (type: int)");
+
+                if (selectedQuantity <= 0) {
+                    System.err.println("ERROR: 상품 " + i + "의 selectedQuantity가 0 이하: " + selectedQuantity);
+                    throw new IllegalArgumentException("선택 수량이 0보다 커야 합니다. (상품 " + (i+1) + ")");
+                }
+            }
+
+            // 서비스 호출 - Map 데이터로 변환하여 호출
+            Map<String,Object> quote = orderService.computeRefundQuote(reqData);
+
+            response.put("success", true);
+            response.put("refundAmount", quote.get("refundAmount"));
+            response.put("deliveryFeeDeduction", quote.get("deliveryFeeDeduction"));
+            response.put("discountRollback", quote.get("discountRollback"));
+            response.put("cancelReason", reqData.get("cancelReason"));
+            response.put("products", quote.get("products"));
+
+            // 메시지 HTML 생성
+            String messageHtml = buildRefundMessageHtml(quote);
+            response.put("messageHtml", messageHtml);
+
+            System.out.println("환불 견적 계산 완료: " + response);
+
+            return ResponseEntity.ok(response);
+
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "code", "INVALID_QTY",
-                    "message", e.getMessage()
-            ));
+            System.err.println("환불 견적 요청 오류: " + e.getMessage());
+            response.put("success", false);
+            response.put("code", "INVALID_PARAMETER");
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of(
-                    "success", false,
-                    "code", "SERVER_ERROR",
-                    "message", e.getMessage()
-            ));
+            System.err.println("환불 견적 계산 중 서버 오류: " + e.getMessage());
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("code", "SERVER_ERROR");
+            response.put("message", "환불 견적 계산 중 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
         }
+    }
+
+    private int parseIntSafely(String value, int defaultValue) {
+        if (value == null || value.trim().isEmpty()) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            System.err.println("정수 파싱 실패: '" + value + "' -> 기본값 " + defaultValue + " 사용");
+            return defaultValue;
+        }
+    }
+
+    private String buildRefundMessageHtml(Map<String,Object> quote) {
+        int refundAmount = toInt(quote.get("refundAmount"));
+        int deliveryFeeDeduction = toInt(quote.get("deliveryFeeDeduction"));
+        int discountRollback = toInt(quote.get("discountRollback"));
+
+        StringBuilder html = new StringBuilder();
+        html.append("환불 예정 금액: <strong>").append(String.format("%,d", refundAmount)).append("원</strong>");
+
+        if (deliveryFeeDeduction > 0) {
+            html.append("<br>배송비 차감: ").append(String.format("%,d", deliveryFeeDeduction)).append("원");
+        }
+
+        if (discountRollback > 0) {
+            html.append("<br>할인 회수: ").append(String.format("%,d", discountRollback)).append("원");
+        }
+
+        return html.toString();
+    }
+
+    private int toInt(Object obj) {
+        if (obj == null) return 0;
+        if (obj instanceof Number) return ((Number) obj).intValue();
+        if (obj instanceof String) {
+            String str = ((String) obj).trim();
+            if (str.isEmpty() || "null".equals(str)) return 0;
+            try {
+                return Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                System.err.println("WARNING: toInt 파싱 실패 '" + str + "' -> 0 반환");
+                return 0;
+            }
+        }
+        return 0;
     }
 
     @GetMapping("/order/{orderCode}/refund-products")

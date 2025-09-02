@@ -153,4 +153,23 @@ public interface IF_OrderDao {
     Map<String,Object> getOrderItemByCode(int orderItemCode);
     Integer sumRefundedQty(int orderItemCode);
     Map<String,Object> getOrderHeaderForRefund(int orderCode);
+
+    /**
+     * 환불 신청 시 주문 상태 업데이트
+     * @param orderCode 주문 코드
+     * @param orderStatus 새로운 주문 상태 (REFUND_PENDING 또는 RETURN_REQUESTED)
+     * @param paymentStatus 새로운 결제 상태 (REFUND_PENDING)
+     * @param simpleStatus 새로운 간단 상태 (CANCELLED)
+     */
+    void updateOrderStatusForRefund(@Param("orderCode") int orderCode,
+                                    @Param("orderStatus") String orderStatus,
+                                    @Param("paymentStatus") String paymentStatus,
+                                    @Param("simpleStatus") String simpleStatus);
+
+    /**
+     * 환불 신청 중복 체크
+     * @param orderCode 주문 코드
+     * @return 환불 배치 개수
+     */
+    int countRefundBatchesByOrder(@Param("orderCode") int orderCode);
 }

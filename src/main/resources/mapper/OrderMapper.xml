@@ -858,4 +858,20 @@
         FROM orders
         WHERE order_code = #{orderCode}
     </select>
+
+    <update id="updateOrderStatusForRefund" parameterType="map">
+        UPDATE orders
+        SET order_status = #{orderStatus},
+            payment_status = #{paymentStatus},
+            simple_status = #{simpleStatus},
+            update_at = CURRENT_TIMESTAMP
+        WHERE order_code = #{orderCode}
+    </update>
+
+    <!-- 환불 신청 중복 체크 -->
+    <select id="countRefundBatchesByOrder" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM refund_batches
+        WHERE order_code = #{orderCode}
+    </select>
 </mapper>

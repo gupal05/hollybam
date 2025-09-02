@@ -227,7 +227,6 @@ public class MypageController {
             refundOrder.put("orderCode", request.getParameter("orderCode"));
             refundOrder.put("actionType", request.getParameter("actionType"));   // "cancel" | "return"
             refundOrder.put("cancelReason", request.getParameter("cancelReason")); // 예: "상품불량", "단순변심"
-            // 반품(RETURN)일 때만 의미(변심시 편도/왕복 차감금액). "상품불량"이면 서비스에서 0으로 처리됨.
             refundOrder.put("refundDeliveryFee", request.getParameter("refundDeliveryFee"));
 
             // 2) 환불 상품 파라미터 파싱
@@ -245,7 +244,6 @@ public class MypageController {
                 p.put("optionValue", request.getParameter("products[" + idx + "].optionValue"));
                 p.put("originalQuantity", Integer.parseInt(request.getParameter("products[" + idx + "].originalQuantity")));
                 p.put("selectedQuantity", Integer.parseInt(request.getParameter("products[" + idx + "].selectedQuantity")));
-                // unitPrice/refundAmount는 신뢰하지 않고 서버에서 DB 기준으로 다시 계산하지만, 로그용으로 넣어둠
                 p.put("unitPrice", Integer.parseInt(request.getParameter("products[" + idx + "].unitPrice")));
                 String df = request.getParameter("products[" + idx + "].deliveryFeeDeduction");
                 if (df != null && !df.isBlank()) {
@@ -264,23 +262,53 @@ public class MypageController {
                 System.out.println("orderCode          : " + refundOrder.get("orderCode"));
                 System.out.println("type               : " + refundOrder.get("actionType"));
                 System.out.println("reason             : " + refundOrder.get("cancelReason"));
-                System.out.println("defectReason       : " + out.get("defectReason"));     // true면 '상품불량'
-                System.out.println("fullRefund         : " + out.get("fullRefund"));        // true면 전체환불
+                System.out.println("defectReason       : " + out.get("defectReason"));
+                System.out.println("fullRefund         : " + out.get("fullRefund"));
                 System.out.println("remainingAmount(남은 결제 금액) : " + out.get("remainingAmount"));
                 System.out.println("refundAmount(환불 예정 금액)  : " + out.get("refundAmount"));
+                System.out.println("newOrderStatus     : " + out.get("newOrderStatus"));
                 System.out.println("=====================================");
             } catch (Exception ignore) { /* 안전하게 무시 */ }
 
             result.putAll(out);
             result.put("success", true);
-            result.put("message", "취소/반품 신청이 완료되었습니다.");
 
+            // 🆕 상태별 맞춤 메시지 생성
+            String actionType = refundOrder.get("actionType").toString();
+            String newOrderStatus = out.get("newOrderStatus").toString();
+            String statusMessage = generateRefundStatusMessage(actionType, newOrderStatus);
+
+            result.put("message", statusMessage);
+            result.put("statusMessage", statusMessage);
+
+        } catch (IllegalStateException e) {
+            // 🆕 중복 신청 등의 상태 오류 처리
+            result.put("success", false);
+            result.put("code", "DUPLICATE_REQUEST");
+            result.put("message", e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             result.put("success", false);
             result.put("message", "처리 중 오류: " + e.getMessage());
         }
         return result;
+    }
+
+    /**
+     * 🆕 환불 신청 완료 후 상태별 안내 메시지 생성
+     */
+    private String generateRefundStatusMessage(String actionType, String newOrderStatus) {
+        if ("CANCEL".equalsIgnoreCase(actionType)) {
+            return "취소 신청이 완료되었습니다.\n" +
+                    "관리자 검토 후 환불 처리가 진행됩니다.\n" +
+                    "처리 현황은 주문 목록에서 확인하실 수 있습니다.";
+        } else if ("RETURN".equalsIgnoreCase(actionType)) {
+            return "반품 신청이 완료되었습니다.\n" +
+                    "관리자 승인 후 반품 절차가 안내됩니다.\n" +
+                    "반품 상품 수거 일정은 별도 연락드리겠습니다.";
+        } else {
+            return "신청이 완료되었습니다.\n처리 현황은 주문 목록에서 확인하실 수 있습니다.";
+        }
     }
 
     @PostMapping("/order/refund-quote")

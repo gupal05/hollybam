@@ -45,13 +45,34 @@
             line-height: 1.6;
         }
 
-        /* 슬라이드 */
+        /* 슬라이드 - 수정된 부분 */
         .slide {
             width: 100%;
             height: 505.8px;
             overflow: hidden;
             position: relative;
         }
+
+        .slide-bg {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 0;
+            cursor: pointer;
+        }
+
+        .slide-bg.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
         .slide img {
             width: 100%;
             height: 100%;
@@ -760,6 +781,11 @@
 
         /* 태블릿 (1200px 이하) */
         @media (max-width: 1200px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .content {
                 padding: 50px 24px 0;
             }
@@ -825,11 +851,6 @@
                 height: 400px;
             }
 
-            .slide img {
-                object-fit: cover;
-                object-position: center center;
-            }
-
             .slide-nav {
                 width: 55px;
                 height: 110px;
@@ -863,6 +884,11 @@
 
         /* 태블릿 (1024px 이하) */
         @media (max-width: 1024px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .content {
                 padding: 45px 20px 0;
             }
@@ -928,11 +954,6 @@
                 height: 350px;
             }
 
-            .slide img {
-                object-fit: cover;
-                object-position: center center;
-            }
-
             .dots {
                 bottom: 15px;
                 gap: 8px;
@@ -954,6 +975,11 @@
 
         /* 모바일 가로 (900px 이하) */
         @media (max-width: 900px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .sale-badge-container {
                 min-width: 60px;
             }
@@ -1046,11 +1072,6 @@
                 height: 320px;
             }
 
-            .slide img {
-                object-fit: cover;
-                object-position: center center;
-            }
-
             .slide-nav {
                 width: 50px;
                 height: 100px;
@@ -1089,13 +1110,46 @@
 
         /* 웹에서는 모바일 할인율 뱃지 숨김, 기존 할인율 뱃지 표시 */
         @media (min-width: 769px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .mobile-sale-perc {
                 display: none !important;
             }
         }
 
-        /* 모바일 세로 (768px 이하) */
+        /* 모바일 세로 (768px 이하) - 수정된 슬라이드 부분 */
         @media (max-width: 768px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
+            /* 슬라이드 이미지 잘림 해결 */
+            .slide {
+                height: 280px;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .slide img {
+                width: auto;
+                height: 100%;
+                min-width: 100%;
+                max-width: none;
+                object-fit: cover;
+                object-position: center center;
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                opacity: 0;
+                transition: opacity 1s ease;
+                z-index: 0;
+            }
+
             .sale-badge-container {
                 flex-shrink: 0;
                 margin-left: auto;
@@ -1232,15 +1286,6 @@
                 padding: 1px 3px; /* 기존 1px 4px에서 축소 */
             }
 
-            .slide {
-                height: 280px;
-            }
-
-            .slide img {
-                object-fit: cover;
-                object-position: center center;
-            }
-
             .slide-nav {
                 display: none;
             }
@@ -1347,6 +1392,11 @@
 
         /* 모바일 세로 소형 (600px 이하) */
         @media (max-width: 600px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .sale-badge-container {
                 min-width: 50px;
             }
@@ -1474,11 +1524,6 @@
                 height: 250px;
             }
 
-            .slide img {
-                object-fit: cover;
-                object-position: center center;
-            }
-
             .card-product-title {
                 font-size: 11px;
             }
@@ -1522,6 +1567,11 @@
 
         /* 모바일 세로 극소형 (480px 이하) */
         @media (max-width: 480px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .sale-badge-container {
                 min-width: 45px;
             }
@@ -1671,11 +1721,6 @@
                 height: 220px;
             }
 
-            .slide img {
-                object-fit: cover;
-                object-position: center center;
-            }
-
             .product-row,
             .best-products-row,
             .new-products-row {
@@ -1797,6 +1842,11 @@
 
         /* 모바일 세로 초소형 (360px 이하) */
         @media (max-width: 360px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .sale-badge-container {
                 min-width: 40px;
             }
@@ -1919,14 +1969,8 @@
                 padding: 0.5px 1px;
             }
 
-
             .slide {
                 height: 200px;
-            }
-
-            .slide img {
-                object-fit: cover;
-                object-position: center center;
             }
 
             .review-card {
@@ -2034,6 +2078,11 @@
 
         /* iPhone 14 Pro (393px) 특별 최적화 */
         @media (max-width: 393px) and (min-width: 375px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .review-card {
                 flex: 0 0 calc(50% - 6px) !important;
                 width: calc(50% - 6px) !important;
@@ -2062,11 +2111,6 @@
 
             .slide {
                 height: 190px;
-            }
-
-            .slide img {
-                object-fit: cover;
-                object-position: center center;
             }
         }
 
@@ -2346,6 +2390,11 @@
 
         /* 태블릿 반응형 */
         @media (max-width: 1200px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .delivery-message {
                 font-size: 10px;
                 padding: 5px 8px;
@@ -2373,6 +2422,11 @@
 
         /* 모바일 반응형 */
         @media (max-width: 768px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .delivery-message {
                 font-size: 9px;
                 padding: 4px 6px;
@@ -2400,6 +2454,11 @@
 
         /* 모바일 소형 */
         @media (max-width: 480px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .delivery-message {
                 font-size: 8px;
                 padding: 3px 5px;
@@ -2530,6 +2589,11 @@
 
         /* 모바일 대응 */
         @media (max-width: 768px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .popup-overlay {
                 padding: 15px;
             }
@@ -2551,6 +2615,11 @@
         }
 
         @media (max-width: 480px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .popup-overlay {
                 padding: 10px;
             }
@@ -2572,6 +2641,11 @@
         }
 
         @media (max-width: 360px) {
+            .slide-bg {
+                background-size: cover;
+                background-position: center 30%; /* 상단 30% 지점을 중심으로 */
+            }
+
             .popup-container {
                 width: 280px; /* 매우 작은 모바일 */
             }
@@ -2591,22 +2665,22 @@
 <div class="slide">
 
     <!-- 슬라이드 이미지 반복 출력 -->
-    <div th:each="banner, stat : ${banner}">
-        <!-- 클릭 이벤트가 있으면 <a> 태그로 감싸고 -->
-        <a
-                th:if="${banner.bannerClickEvent != null}"
-                href="javascript:void(0)"
-                th:attr="data-url=${banner.bannerClickEvent}"
-                onclick="slideEvent(this.dataset.url)">
-            <img th:src="${banner['bannerUrl']}"
-                 th:alt="|배너 ${stat.index + 1}|"
-                 th:classappend="${stat.index == 0} ? 'active' : ''"/>
-        </a>
-        <!-- 클릭 이벤트 없으면 단순 이미지 -->
-        <img th:if="${banner['bannerClickEvent']} == null"
-             th:src="${banner['bannerUrl']}"
-             th:alt="|배너 ${stat.index + 1}|"
-             th:classappend="${stat.index == 0} ? 'active' : ''"/>
+    <div th:each="b, stat : ${banner}" th:with="click=${b['bannerClickEvent']}">
+        <!-- 클릭 이벤트가 있으면 <a> -->
+        <div th:if="${click != null}"
+             class="slide-bg"
+             th:style="'background-image: url(' + ${b['bannerUrl']} + ')'"
+             th:classappend="${stat.index == 0} ? 'active' : ''"
+             th:attr="data-url=${click}"
+             onclick="slideEvent(this.dataset.url)">
+        </div>
+
+        <!-- 없으면 그냥 div -->
+        <div th:if="${click == null}"
+             class="slide-bg"
+             th:style="'background-image: url(' + ${b['bannerUrl']} + ')'"
+             th:classappend="${stat.index == 0} ? 'active' : ''">
+        </div>
     </div>
 
     <!-- 네비게이션 화살표 -->
@@ -2753,11 +2827,22 @@
                             <i class="fas fa-shipping-fast delivery-icon"></i>
                             <span class="delivery-text">1시 이전 주문 시 당일발송</span>
                         </div>
+
+                        <!-- 🔥 수정된 리뷰 정보 표시 부분 -->
                         <div class="product_review_container">
                             <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             <span th:text="${product.wishCount}">0</span>
                             <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + ')'">0.0 (0)</span>
+
+                            <!-- productCode가 51인 경우 -->
+                            <span th:if="${product.productCode == 51}">5.0 (3)</span>
+
+                            <!-- productCode가 58, 36, 50, 52, 55인 경우 -->
+                            <span th:if="${product.productCode == 58 or product.productCode == 36 or product.productCode == 50 or product.productCode == 52 or product.productCode == 55}">5.0 (1)</span>
+
+                            <!-- 그 외의 경우 (기존 동적 값) -->
+                            <span th:unless="${product.productCode == 51 or product.productCode == 58 or product.productCode == 36 or product.productCode == 50 or product.productCode == 52 or product.productCode == 55}"
+                                  th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + ')'">0.0 (0)</span>
                         </div>
                     </div>
                 </a>
@@ -2782,7 +2867,7 @@
             <div class="reviews-slider-container">
                 <div class="reviews-slider" id="reviewsSlider">
                     <!-- 베스트 리뷰 동적 렌더링 -->
-                    <div class="review-card">
+                    <div class="review-card" onclick="location.href='/product/RA-001'">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
                             <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/KakaoTalk_20250724_170354656.jpg"
@@ -2842,7 +2927,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="review-card">
+                    <div class="review-card" onclick="location.href='/product/RA-001'">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
                             <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/KakaoTalk_20250724_170354656.jpg"
@@ -2902,7 +2987,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="review-card">
+                    <div class="review-card" onclick="location.href='/product/NA-001'">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
                             <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/스크린샷 2025-07-25 140134.png"
@@ -2962,7 +3047,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="review-card">
+                    <div class="review-card" onclick="location.href='/product/SM-001'">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
                             <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/SM패키지_title.png"
@@ -3022,7 +3107,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="review-card">
+                    <div class="review-card" onclick="location.href='/product/AN-002'">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
                             <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/KakaoTalk_20250724_170144490.jpg"
@@ -3082,7 +3167,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="review-card">
+                    <div class="review-card" onclick="location.href='/product/HO-001'">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
                             <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/스크린샷 2025-07-25 113551.png"
@@ -3143,7 +3228,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="review-card">
+                    <div class="review-card" onclick="location.href='/product/PA-D003'">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
                             <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/d35bc0a2ae1e6599bb8c083c0b725d8c.png"
@@ -3204,7 +3289,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="review-card">
+                    <div class="review-card" onclick="location.href='/product/RA-001'">
                         <div class="review-header">
                             <!-- 상품 이미지 -->
                             <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/product/KakaoTalk_20250724_170354656.jpg"
@@ -3399,11 +3484,22 @@
                             <i class="fas fa-shipping-fast delivery-icon"></i>
                             <span class="delivery-text">1시 이전 주문 시 당일발송</span>
                         </div>
+
+                        <!-- 🔥 수정된 리뷰 정보 표시 부분 -->
                         <div class="product_review_container">
                             <svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             <span th:text="${product.wishCount}">0</span>
                             <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + ')'">0.0 (0)</span>
+
+                            <!-- productCode가 51인 경우 -->
+                            <span th:if="${product.productCode == 51}">5.0 (3)</span>
+
+                            <!-- productCode가 58, 36, 50, 52, 55인 경우 -->
+                            <span th:if="${product.productCode == 58 or product.productCode == 36 or product.productCode == 50 or product.productCode == 52 or product.productCode == 55}">5.0 (1)</span>
+
+                            <!-- 그 외의 경우 (기존 동적 값) -->
+                            <span th:unless="${product.productCode == 51 or product.productCode == 58 or product.productCode == 36 or product.productCode == 50 or product.productCode == 52 or product.productCode == 55}"
+                                  th:text="${product.reviewAvg} + ' (' + ${product.reviewCount} + ')'">0.0 (0)</span>
                         </div>
                     </div>
                 </a>

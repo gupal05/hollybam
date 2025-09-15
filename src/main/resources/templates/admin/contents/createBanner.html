@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>배너 관리 - 관리자</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -779,7 +782,9 @@
             fetch('/admin/banner/delete', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                    [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                    document.querySelector('meta[name="_csrf"]').getAttribute('content'),
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 },
                 body: new URLSearchParams({ bannerCode })
             })
@@ -823,7 +828,9 @@
         fetch('/admin/banner/update', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                    document.querySelector('meta[name="_csrf"]').getAttribute('content'),
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             },
             body: JSON.stringify({ banners: bannerUpdates })
         })
@@ -855,7 +862,11 @@
     function logout() {
         if (confirm('로그아웃 하시겠습니까?')) {
             fetch('/admin/auth/logout', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                        document.querySelector('meta[name="_csrf"]').getAttribute('content'),
+                },
             })
                 .then(response => response.json())
                 .then(data => {

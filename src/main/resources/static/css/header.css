@@ -1275,3 +1275,91 @@ body.mobile-menu-active {
         width: 3px;
     }
 }
+
+/* 600px - 900px - 태블릿 (기존 80px → 65px로 축소) */
+@media (max-width: 900px) and (min-width: 600px) {
+    .header {
+        height: 65px !important; /* 기존 80px에서 65px로 축소 */
+        padding: 0 15px;
+        justify-content: space-between;
+    }
+
+    .header-nav:first-child img {
+        width: 75px !important; /* 기존 90px에서 75px로 축소 */
+        height: 75px !important;
+    }
+
+    .mobile-menu-btn {
+        right: 15px;
+    }
+}
+
+/* 320px - 599px - 모바일 (기존 70px → 55px로 축소) */
+@media (max-width: 599px) {
+    .header {
+        height: 55px !important; /* 기존 70px에서 55px로 축소 */
+        padding: 0 15px;
+        justify-content: space-between;
+    }
+
+    .header-nav:first-child img {
+        width: 60px !important; /* 기존 70px에서 60px로 축소 */
+        height: 60px !important;
+    }
+
+    .mobile-menu-btn {
+        right: 15px;
+    }
+}
+
+/* 320px 이하 - 초소형 모바일 (기존 60px → 50px로 축소) */
+@media (max-width: 320px) {
+    .header {
+        height: 50px !important; /* 기존 60px에서 50px로 축소 */
+        padding: 0 10px;
+    }
+
+    .header-nav:first-child {
+        left: 10px;
+    }
+
+    .mobile-menu-btn {
+        right: 10px;
+    }
+
+    .header-nav:first-child img {
+        width: 55px !important; /* 기존 60px에서 55px로 축소 */
+        height: 55px !important;
+    }
+}
+
+/* 슬라이드를 화면 최상단부터 시작 */
+.slide {
+    margin-top: 105.8px; /* 웹에서는 기존 헤더 높이 유지 */
+}
+
+/* 모바일에서는 margin-top 제거하여 배너가 상단부터 시작 */
+@media (max-width: 900px) {
+    .slide {
+        margin-top: 0 !important; /* 모바일에서는 여백 완전 제거 */
+    }
+}
+
+/* 검색창 위치도 함께 조정 */
+@media (max-width: 900px) and (min-width: 600px) {
+    .search-slide-down {
+        top: 60px !important; /* 축소된 태블릿 헤더 높이보다 5px 적게 */
+    }
+}
+
+@media (max-width: 599px) {
+    .search-slide-down {
+        top: 50px !important; /* 축소된 모바일 헤더 높이보다 5px 적게 */
+    }
+}
+
+@media (max-width: 320px) {
+    .search-slide-down {
+        top: 45px !important; /* 축소된 초소형 헤더 높이보다 5px 적게 */
+    }
+}

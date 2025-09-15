@@ -3029,17 +3029,19 @@
     function changePage(){ location.href = '/mypage/profile/edit'; }
 
     function cancelOrder(btn){
-        event.stopPropagation();
-        const orderItem = btn.closest('.order-item');
-        const orderCode = orderItem.querySelector('.modal-order-code').value;
-        openCancelReturnModal('cancel', orderCode);
+        alert("주문 취소/반품은 1:1 문의를 이용해주세요");
+        // event.stopPropagation();
+        // const orderItem = btn.closest('.order-item');
+        // const orderCode = orderItem.querySelector('.modal-order-code').value;
+        // openCancelReturnModal('cancel', orderCode);
     }
 
     function requestExchange(btn){
-        event.stopPropagation();
-        const orderItem = btn.closest('.order-item');
-        const orderCode = orderItem.querySelector('.modal-order-code').value;
-        openCancelReturnModal('return', orderCode);
+        alert("주문 취소/반품은 1:1 문의를 이용해주세요");
+        // event.stopPropagation();
+        // const orderItem = btn.closest('.order-item');
+        // const orderCode = orderItem.querySelector('.modal-order-code').value;
+        // openCancelReturnModal('return', orderCode);
     }
 
     function requestExchangeFromModal(){

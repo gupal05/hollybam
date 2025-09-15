@@ -169,4 +169,54 @@ public class AdminOrderServiceImpl implements IF_AdminOrderService {
         adminOrderDao.updateDeliveredStatus(orderCodes);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> searchOrdersWithConditions(Map<String, Object> searchParams) {
+        try {
+            log.info("검색 조건으로 주문 목록 조회: {}", searchParams);
+
+            // 페이지네이션 처리
+            int page = (Integer) searchParams.getOrDefault("page", 1);
+            int size = (Integer) searchParams.getOrDefault("size", 20);
+            int offset = (page - 1) * size;
+
+            // 검색 파라미터에 offset, limit 추가
+            searchParams.put("offset", offset);
+            searchParams.put("limit", size);
+
+            // DAO 호출
+            List<Map<String, Object>> result = adminOrderDao.searchOrdersWithConditions(searchParams);
+
+            log.info("검색된 주문 개수: {}", result.size());
+            return result;
+
+        } catch (Exception e) {
+            log.error("검색 조건으로 주문 목록 조회 중 오류 발생", e);
+            throw new RuntimeException("주문 검색 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int getSearchOrderCount(Map<String, Object> searchParams) {
+        try {
+            log.info("검색 조건으로 주문 개수 조회: {}", searchParams);
+
+            int count = adminOrderDao.getSearchOrderCount(searchParams);
+
+            log.info("검색된 총 주문 개수: {}", count);
+            return count;
+
+        } catch (Exception e) {
+            log.error("검색 조건으로 주문 개수 조회 중 오류 발생", e);
+            throw new RuntimeException("주문 개수 조회 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int countOrdersTotal(){
+        return adminOrderDao.countOrdersTotal();
+    }
+
 }

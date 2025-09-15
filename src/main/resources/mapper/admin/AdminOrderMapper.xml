@@ -730,4 +730,228 @@
             #{oc}
         </foreach>
     </update>
+
+    <!-- 검색 조건에 따른 주문 목록 조회 -->
+    <select id="searchOrdersWithConditions" parameterType="map" resultType="map">
+        <![CDATA[
+    WITH top_product AS (
+        SELECT
+            oi.order_code,
+            oi.product_code,
+            p.product_name,
+            p.product_id,
+            ROW_NUMBER() OVER (
+                PARTITION BY oi.order_code
+                ORDER BY oi.order_item_code ASC
+            ) AS rn
+        FROM order_items oi
+        JOIN product p ON p.product_code = oi.product_code
+    ),
+    latest_delivery AS (
+        SELECT * FROM (
+            SELECT
+                d.*,
+                ROW_NUMBER() OVER (
+                    PARTITION BY d.order_code
+                    ORDER BY COALESCE(d.updated_at, d.created_at) DESC, d.delivery_id DESC
+                ) AS rn
+            FROM delivery d
+        ) x
+        WHERE x.rn = 1
+    ),
+    item_kinds AS (
+        SELECT
+            order_code,
+            COUNT(DISTINCT product_code) AS product_type_count
+        FROM order_items
+        GROUP BY order_code
+    )
+    SELECT
+        o.order_code           AS orderCode,
+        o.order_id             AS orderId,
+        o.create_at            AS createAt,
+        o.payment_method       AS paymentMethod,
+        o.orderer_name         AS ordererName,
+        o.orderer_phone        AS ordererPhone,
+        o.orderer_email        AS ordererEmail,
+        o.receiver_name        AS receiverName,
+        o.receiver_phone       AS receiverPhone,
+        o.final_amount         AS finalAmount,
+        o.delivery_fee         AS deliveryFee,
+        o.discount_amount      AS discountAmount,
+        o.total_amount         AS totalAmount,
+        o.receiver_zip         AS receiverZip,
+        o.receiver_addr        AS receiverAddr,
+        o.receiver_addr_detail AS receiverAddrDetail,
+        o.delivery_request     AS deliveryRequest,
+        tp.product_code        AS productCode,
+        tp.product_name        AS productName,
+        COALESCE(ik.product_type_count, 0) AS productTypeCount,
+        ld.tracking_number     AS trackingNumber,
+        pl.created_at          AS payCreateAt,
+        CASE
+            WHEN o.payment_status = 'PENDING' THEN 'PAYPENDING'
+            WHEN o.payment_status = 'PAID' AND o.simple_status = 'PAID' THEN 'PAID'
+            WHEN o.payment_status = 'PAID' AND o.simple_status = 'SHIPPING' AND ld.delivery_status = 'SHIPPING' THEN 'SHIPPING'
+            WHEN o.payment_status = 'PAID' AND o.simple_status = 'DELIVERED' AND ld.delivery_status = 'DELIVERED' THEN 'DELIVERED'
+            WHEN o.payment_status = 'PAID' AND o.simple_status = 'PENDING' THEN 'ORDERPENDING'
+            WHEN o.payment_status = 'CANCELLED' THEN 'CANCELLED'
+            WHEN o.payment_status = 'REFUNDED' THEN 'REFUNDED'
+            ELSE 'UNKNOWN'
+        END AS status
+    FROM orders o
+    LEFT JOIN top_product tp ON o.order_code = tp.order_code AND tp.rn = 1
+    LEFT JOIN latest_delivery ld ON o.order_code = ld.order_code
+    LEFT JOIN item_kinds ik ON o.order_code = ik.order_code
+    LEFT JOIN payment_log pl ON o.order_code = pl.order_code
+    WHERE 1=1
+    ]]>
+
+        <!-- 🔍 검색 조건들 -->
+
+        <!-- 주문번호 검색 (완전일치) -->
+        <if test="searchParams.orderIdFilter != null and searchParams.orderIdFilter != ''">
+            AND o.order_id = #{searchParams.orderIdFilter}
+        </if>
+
+        <!-- 주문자명 검색 (부분일치) -->
+        <if test="searchParams.ordererNameFilter != null and searchParams.ordererNameFilter != ''">
+            AND o.orderer_name LIKE CONCAT('%', #{searchParams.ordererNameFilter}, '%')
+        </if>
+
+        <!-- 상품명 검색 (부분일치) - top_product와 조인 필요 -->
+        <if test="searchParams.productNameFilter != null and searchParams.productNameFilter != ''">
+            AND EXISTS (
+            SELECT 1 FROM order_items oi2
+            JOIN product p2 ON oi2.product_code = p2.product_code
+            WHERE oi2.order_code = o.order_code
+            AND p2.product_name LIKE CONCAT('%', #{searchParams.productNameFilter}, '%')
+            )
+        </if>
+
+        <!-- 주문일 범위 검색 -->
+        <if test="searchParams.startDate != null and searchParams.startDate != ''">
+            AND DATE(o.create_at) >= #{searchParams.startDate}
+        </if>
+        <if test="searchParams.endDate != null and searchParams.endDate != ''">
+            AND DATE(o.create_at) &lt;= #{searchParams.endDate}
+        </if>
+
+        <!-- 결제방법 검색 (완전일치) -->
+        <if test="searchParams.paymentMethodFilter != null and searchParams.paymentMethodFilter != ''">
+            AND o.payment_method = #{searchParams.paymentMethodFilter}
+        </if>
+
+        <!-- 상태 필터링 (기존 로직과 동일) -->
+        <choose>
+            <when test="searchParams.status == 'payPending'">
+                AND o.payment_status = 'PENDING'
+            </when>
+            <when test="searchParams.status == 'paid'">
+                AND o.payment_status = 'PAID' AND o.simple_status = 'PAID'
+            </when>
+            <when test="searchParams.status == 'orderPending'">
+                AND o.payment_status = 'PAID' AND o.simple_status = 'PENDING'
+            </when>
+            <when test="searchParams.status == 'shipping'">
+                AND o.payment_status = 'PAID' AND o.simple_status = 'SHIPPING' AND ld.delivery_status = 'SHIPPING'
+            </when>
+            <when test="searchParams.status == 'delivered'">
+                AND o.payment_status = 'PAID' AND o.simple_status = 'DELIVERED' AND ld.delivery_status = 'DELIVERED'
+            </when>
+            <!-- ALL인 경우 추가 조건 없음 -->
+        </choose>
+
+        ORDER BY o.create_at DESC
+
+        <!-- 페이지네이션 -->
+        <if test="searchParams.offset != null and searchParams.limit != null">
+            LIMIT #{searchParams.offset}, #{searchParams.limit}
+        </if>
+    </select>
+
+    <!-- 검색 조건에 따른 주문 개수 조회 -->
+    <select id="getSearchOrderCount" parameterType="map" resultType="int">
+        <![CDATA[
+    SELECT COUNT(DISTINCT o.order_code)
+    FROM orders o
+    LEFT JOIN (
+        SELECT DISTINCT oi.order_code, p.product_name
+        FROM order_items oi
+        JOIN product p ON oi.product_code = p.product_code
+    ) product_info ON o.order_code = product_info.order_code
+    LEFT JOIN (
+        SELECT * FROM (
+            SELECT
+                d.*,
+                ROW_NUMBER() OVER (
+                    PARTITION BY d.order_code
+                    ORDER BY COALESCE(d.updated_at, d.created_at) DESC, d.delivery_id DESC
+                ) AS rn
+            FROM delivery d
+        ) x
+        WHERE x.rn = 1
+    ) ld ON o.order_code = ld.order_code
+    WHERE 1=1
+    ]]>
+
+        <!-- 🔍 검색 조건들 (목록 조회와 동일) -->
+
+        <!-- 주문번호 검색 (완전일치) -->
+        <if test="searchParams.orderIdFilter != null and searchParams.orderIdFilter != ''">
+            AND o.order_id = #{searchParams.orderIdFilter}
+        </if>
+
+        <!-- 주문자명 검색 (부분일치) -->
+        <if test="searchParams.ordererNameFilter != null and searchParams.ordererNameFilter != ''">
+            AND o.orderer_name LIKE CONCAT('%', #{searchParams.ordererNameFilter}, '%')
+        </if>
+
+        <!-- 상품명 검색 (부분일치) -->
+        <if test="searchParams.productNameFilter != null and searchParams.productNameFilter != ''">
+            AND EXISTS (
+            SELECT 1 FROM order_items oi2
+            JOIN product p2 ON oi2.product_code = p2.product_code
+            WHERE oi2.order_code = o.order_code
+            AND p2.product_name LIKE CONCAT('%', #{searchParams.productNameFilter}, '%')
+            )
+        </if>
+
+        <!-- 주문일 범위 검색 -->
+        <if test="searchParams.startDate != null and searchParams.startDate != ''">
+            AND DATE(o.create_at) >= #{searchParams.startDate}
+        </if>
+        <if test="searchParams.endDate != null and searchParams.endDate != ''">
+            AND DATE(o.create_at) &lt;= #{searchParams.endDate}
+        </if>
+
+        <!-- 결제방법 검색 (완전일치) -->
+        <if test="searchParams.paymentMethodFilter != null and searchParams.paymentMethodFilter != ''">
+            AND o.payment_method = #{searchParams.paymentMethodFilter}
+        </if>
+
+        <!-- 상태 필터링 (기존 로직과 동일) -->
+        <choose>
+            <when test="searchParams.status == 'payPending'">
+                AND o.payment_status = 'PENDING'
+            </when>
+            <when test="searchParams.status == 'paid'">
+                AND o.payment_status = 'PAID' AND o.simple_status = 'PAID'
+            </when>
+            <when test="searchParams.status == 'orderPending'">
+                AND o.payment_status = 'PAID' AND o.simple_status = 'PENDING'
+            </when>
+            <when test="searchParams.status == 'shipping'">
+                AND o.payment_status = 'PAID' AND o.simple_status = 'SHIPPING' AND ld.delivery_status = 'SHIPPING'
+            </when>
+            <when test="searchParams.status == 'delivered'">
+                AND o.payment_status = 'PAID' AND o.simple_status = 'DELIVERED' AND ld.delivery_status = 'DELIVERED'
+            </when>
+            <!-- ALL인 경우 추가 조건 없음 -->
+        </choose>
+    </select>
+
+    <select id="countOrdersTotal" resultType="int">
+        SELECT COUNT(*) FROM orders
+    </select>
 </mapper>

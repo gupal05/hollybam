@@ -30,4 +30,28 @@ public interface IF_AdminOrderService {
     void updateOrderPendingStatus(@Param("orderCodes") List<Integer> orderCodes);
     void updateShippingStatus(List<Map<String, Object>> orders);
     void updateDeliveredStatus(@Param("orderCodes") List<Integer> orderCodes);
+    /**
+     * 검색 조건에 따른 주문 목록 조회
+     * @param searchParams 검색 조건 맵
+     *                    - status: 주문 상태 (ALL, payPending, paid, orderPending, shipping, delivered)
+     *                    - orderIdFilter: 주문번호 필터
+     *                    - ordererNameFilter: 주문자명 필터
+     *                    - productNameFilter: 상품명 필터
+     *                    - startDate: 검색 시작일 (yyyy-MM-dd)
+     *                    - endDate: 검색 종료일 (yyyy-MM-dd)
+     *                    - paymentMethodFilter: 결제방법 필터
+     *                    - page: 페이지 번호
+     *                    - size: 페이지 크기
+     * @return 검색된 주문 목록
+     */
+    List<Map<String, Object>> searchOrdersWithConditions(Map<String, Object> searchParams);
+
+    /**
+     * 검색 조건에 따른 주문 개수 조회
+     * @param searchParams 검색 조건 맵
+     * @return 검색된 주문 개수
+     */
+    int getSearchOrderCount(Map<String, Object> searchParams);
+
+    int countOrdersTotal();
 }

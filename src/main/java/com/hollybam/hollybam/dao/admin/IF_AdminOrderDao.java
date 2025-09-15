@@ -34,4 +34,21 @@ public interface IF_AdminOrderDao {
     void insertDeliveryStatus(@Param("orders") List<Map<String, Object>> orders);
     void updateShippingStatus(@Param("orderCodes") List<Integer> orderCodes);
     void updateDeliveredStatus(@Param("orderCodes") List<Integer> orderCodes);
+
+    // 🆕 검색 기능 메서드 추가
+    /**
+     * 검색 조건에 따른 주문 목록 조회
+     * @param searchParams 검색 조건 맵
+     * @return 검색된 주문 목록
+     */
+    List<Map<String, Object>> searchOrdersWithConditions(@Param("searchParams") Map<String, Object> searchParams);
+
+    /**
+     * 검색 조건에 따른 주문 개수 조회
+     * @param searchParams 검색 조건 맵
+     * @return 검색된 주문 개수
+     */
+    int getSearchOrderCount(@Param("searchParams") Map<String, Object> searchParams);
+
+    int countOrdersTotal();
 }

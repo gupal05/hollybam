@@ -17,25 +17,33 @@
     <script src="/js/adminSidebar.js"></script>
 
     <style>
-        /* 기본 스타일 (대시보드와 동일) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f8f9fa;
             color: #212529;
             line-height: 1.6;
-            margin: 0;
-            padding: 0;
         }
 
-        /* 헤더 */
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
         .header {
             background: #fff;
             border-bottom: 1px solid #e9ecef;
-            padding: 0 40px;
-            height: 80px;
+            padding: 0 30px;
+            height: 60px;
             display: flex;
-            align-items: center;
             justify-content: flex-end;
+            align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -49,37 +57,34 @@
 
         .admin-info {
             color: #6c757d;
-            font-size: 13px;
-            font-weight: 300;
+            font-size: 14px;
         }
 
         .logout-btn {
-            background: #fff;
-            color: #212529;
-            border: 1px solid #212529;
+            background: #dc3545;
+            color: #fff;
+            border: none;
             padding: 8px 16px;
-            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background 0.3s ease;
         }
 
         .logout-btn:hover {
-            background: #212529;
-            color: #fff;
+            background: #c82333;
         }
 
-        /* 컨테이너 */
         .container {
+            padding: 30px;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 40px 20px;
         }
 
-        /* 페이지 타이틀 */
         .page-title {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .page-title h2 {
@@ -87,43 +92,47 @@
             font-size: 28px;
             font-weight: 300;
             margin-bottom: 8px;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         .page-title p {
             color: #6c757d;
             font-size: 14px;
-            font-weight: 300;
         }
 
         /* 주문 상태 탭 */
         .order-status-tabs {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px 8px 0 0;
+            padding: 0;
+            margin-bottom: 0;
             display: flex;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #e9ecef;
             overflow-x: auto;
         }
 
         .status-tab {
-            padding: 15px 30px;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            cursor: pointer;
+            background: transparent;
             border: none;
-            background: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
-        .status-tab:hover,
-        .status-tab.active {
+        .status-tab:hover {
+            background: #f8f9fa;
             color: #212529;
-            border-bottom-color: #212529;
+        }
+
+        .status-tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+            background: #f8f9fa;
         }
 
         .status-tab .count {
@@ -131,70 +140,52 @@
             color: #6c757d;
             padding: 2px 8px;
             border-radius: 12px;
-            font-size: 10px;
+            font-size: 11px;
             margin-left: 8px;
-            font-weight: 400;
         }
 
         .status-tab.active .count {
-            background: #212529;
+            background: #007bff;
             color: #fff;
         }
 
-        /* 필터 섹션 */
-        .filter-section {
+        /* 검색 필터 */
+        .filters-section {
             background: #fff;
             border: 1px solid #e9ecef;
-            margin-bottom: 30px;
+            border-top: none;
+            padding: 25px 30px;
         }
 
-        .filter-header {
-            padding: 20px 30px;
-            border-bottom: 1px solid #e9ecef;
-            background: #f8f9fa;
-        }
-
-        .filter-title {
-            color: #212529;
-            font-size: 16px;
-            font-weight: 300;
-            margin: 0;
-            letter-spacing: 0.5px;
-        }
-
-        .filter-content {
-            padding: 30px;
-        }
-
-        .filter-row {
+        .filters-row {
             display: flex;
             gap: 20px;
             margin-bottom: 20px;
-            align-items: center;
             flex-wrap: wrap;
+            align-items: flex-end;
         }
 
         .filter-group {
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 150px;
         }
 
         .filter-label {
             color: #6c757d;
             font-size: 12px;
-            font-weight: 400;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-width: 80px;
+            letter-spacing: 1px;
         }
 
         .filter-input,
         .filter-select {
             padding: 8px 12px;
             border: 1px solid #dee2e6;
+            border-radius: 4px;
             font-size: 13px;
-            font-weight: 300;
             background: #fff;
             color: #212529;
             transition: all 0.3s ease;
@@ -451,67 +442,76 @@
         }
 
         .status-badge.paid {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .status-badge.confirmed {
             background: #d4edda;
             color: #155724;
         }
 
-        .status-badge.shipped {
+        .status-badge.confirmed {
+            background: #cce7ff;
+            color: #004085;
+        }
+
+        .status-badge.shipping {
             background: #e2e3e5;
             color: #383d41;
         }
 
-        .status-badge.shipping {
-            background: #cce5ff;
-            color: #004085;
-        }
-
         .status-badge.delivered {
-            background: #d4edda;
-            color: #155724;
+            background: #d1ecf1;
+            color: #0c5460;
         }
 
         /* 액션 버튼 */
         .action-cell {
-            min-width: 200px;
+            min-width: 150px;
         }
 
         .action-buttons {
             display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
         }
 
         .btn-small {
             padding: 4px 8px;
-            font-size: 9px;
+            font-size: 10px;
             min-width: auto;
         }
 
-        /* 체크박스 */
-        .checkbox-cell {
-            text-align: center;
+        .status-select {
+            padding: 4px 8px;
+            font-size: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background: #fff;
         }
 
-        .checkbox {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
+        /* 일괄 처리 */
+        .bulk-actions {
+            padding: 20px 30px;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .bulk-label {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 500;
         }
 
         /* 페이지네이션 */
         .pagination-section {
-            padding: 30px;
+            padding: 20px 30px;
             border-top: 1px solid #e9ecef;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
         }
 
         .pagination-info {
@@ -522,49 +522,30 @@
         .pagination {
             display: flex;
             gap: 5px;
-            align-items: center;
         }
 
         .page-btn {
             padding: 8px 12px;
-            background: #fff;
             border: 1px solid #dee2e6;
+            background: #fff;
             color: #6c757d;
             text-decoration: none;
             font-size: 12px;
             transition: all 0.3s ease;
         }
 
-        .page-btn:hover,
-        .page-btn.active {
-            background: #212529;
-            color: #fff;
-            border-color: #212529;
-        }
-
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* 일괄 처리 섹션 */
-        .bulk-actions {
-            padding: 20px 30px;
+        .page-btn:hover {
             background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
+            border-color: #adb5bd;
         }
 
-        .bulk-label {
-            color: #6c757d;
-            font-size: 12px;
-            font-weight: 400;
+        .page-btn.active {
+            background: #007bff;
+            border-color: #007bff;
+            color: #fff;
         }
 
-        /* ================== 개선된 모달 스타일 ================== */
+        /* 모달 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -573,100 +554,68 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(2px);
+            background-color: rgba(0,0,0,0.5);
         }
 
         .modal-content {
-            background: #fff;
-            margin: 2% auto;
+            background-color: #fff;
+            margin: 5% auto;
             padding: 0;
-            border: none;
-            border-radius: 12px;
-            width: 95%;
-            max-width: 1000px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
             max-height: 90vh;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: modalSlideIn 0.3s ease-out;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .modal-header {
-            padding: 25px 35px;
-            border-bottom: 1px solid #e9ecef;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            overflow-y: auto;
             position: relative;
         }
 
-        .modal-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 35px;
-            right: 35px;
-            height: 2px;
-            background: linear-gradient(90deg, #212529 0%, #6c757d 100%);
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 8px 8px 0 0;
         }
 
         .modal-title {
-            color: #212529;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 400;
+            color: #212529;
             margin: 0;
-            letter-spacing: 0.5px;
         }
 
         .close {
             color: #6c757d;
-            font-size: 28px;
-            font-weight: 300;
+            font-size: 24px;
+            font-weight: bold;
             cursor: pointer;
             border: none;
             background: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
+            padding: 0;
+            line-height: 1;
         }
 
         .close:hover {
             color: #212529;
-            background: #f8f9fa;
-            transform: rotate(90deg);
         }
 
         .modal-body {
-            padding: 0;
-            max-height: calc(90vh - 100px);
-            overflow-y: auto;
+            padding: 25px;
         }
 
-        /* 주문 상세 컨텐츠 스타일 */
+        /* 주문 상세 모달 스타일 */
         .order-detail-container {
-            display: grid;
-            gap: 0;
+            max-width: 100%;
         }
 
         .detail-section {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 20px;
             background: #fff;
-            border-bottom: 1px solid #f1f3f4;
+            overflow: hidden;
             transition: all 0.3s ease;
         }
 
@@ -777,60 +726,51 @@
         }
 
         .timeline-progress {
-            position: absolute;
-            top: 0;
-            left: 0;
             height: 100%;
-            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
-            transition: width 0.5s ease;
-            z-index: 2;
+            background: #007bff;
+            transition: width 0.8s ease;
         }
 
         .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
             position: relative;
-            z-index: 3;
-            text-align: center;
-            flex: 1;
+            z-index: 2;
+            background: #fff;
+            padding: 0 10px;
         }
 
         .timeline-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            margin: 0 auto 8px;
+            background: #e9ecef;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 16px;
             transition: all 0.3s ease;
-            border: 3px solid #e9ecef;
-            background: #fff;
-            color: #6c757d;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .timeline-step.completed .timeline-icon {
             background: #28a745;
-            border-color: #28a745;
-            color: white;
+            color: #fff;
         }
 
         .timeline-step.current .timeline-icon {
             background: #007bff;
-            border-color: #007bff;
-            color: white;
+            color: #fff;
             animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
         }
 
         .timeline-label {
             font-size: 11px;
             color: #6c757d;
+            text-align: center;
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -842,369 +782,145 @@
             font-weight: 600;
         }
 
-        /* 상품 목록 테이블 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* 상품 테이블 */
         .products-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            table-layout: fixed; /* 고정 레이아웃으로 컬럼 너비 일정하게 유지 */
+            margin: 20px 0;
         }
 
         .products-table th,
         .products-table td {
-            padding: 15px;
-            border-bottom: 1px solid #f1f3f4;
-            vertical-align: middle; /* 수직 중앙 정렬 */
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
         }
 
         .products-table th {
             background: #f8f9fa;
-            color: #6c757d;
             font-size: 11px;
-            font-weight: 600;
+            color: #6c757d;
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-align: center; /* 헤더는 중앙 정렬 */
-        }
-
-        .products-table td {
-            color: #212529;
-            font-size: 13px;
-            font-weight: 400;
-        }
-
-        .products-table tr:hover {
-            background: #f8f9fa;
-        }
-
-        /* 컬럼별 정렬 및 너비 설정 */
-        .products-table th:nth-child(1),
-        .products-table td:nth-child(1) {
-            width: 80px;
-            text-align: center; /* 이미지 중앙 정렬 */
-        }
-
-        .products-table th:nth-child(2),
-        .products-table td:nth-child(2) {
-            width: auto;
-            text-align: left; /* 상품명 좌측 정렬 */
-        }
-
-        .products-table th:nth-child(3),
-        .products-table td:nth-child(3) {
-            width: 120px;
-            text-align: left; /* 옵션 좌측 정렬 */
-        }
-
-        .products-table th:nth-child(4),
-        .products-table td:nth-child(4) {
-            width: 80px;
-            text-align: center; /* 수량 중앙 정렬 */
-        }
-
-        .products-table th:nth-child(5),
-        .products-table td:nth-child(5) {
-            width: 100px;
-            text-align: right; /* 단가 우측 정렬 */
-        }
-
-        .products-table th:nth-child(6),
-        .products-table td:nth-child(6) {
-            width: 100px;
-            text-align: right; /* 합계 우측 정렬 */
+            font-weight: 500;
         }
 
         .product-image {
             width: 50px;
             height: 50px;
-            border-radius: 8px;
             object-fit: cover;
-            border: 1px solid #e9ecef;
-            display: block;
-            margin: 0 auto; /* 이미지 중앙 정렬 */
+            border-radius: 4px;
         }
 
         .product-name-cell {
             font-weight: 500;
             color: #212529;
-            line-height: 1.4;
         }
 
         .product-option {
-            font-size: 11px;
+            font-size: 12px;
             color: #6c757d;
-            margin-top: 3px;
-            line-height: 1.3;
         }
 
+        .quantity-cell,
         .price-cell {
-            font-weight: 500;
-            white-space: nowrap; /* 가격 줄바꿈 방지 */
             text-align: center;
-        }
-
-        .quantity-cell {
             font-weight: 500;
         }
 
-        /* 빈 상태 스타일 */
-        .products-table .empty {
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-            padding: 40px 15px;
-        }
-
-        /* 결제 요약 카드 */
+        /* 결제 요약 */
         .payment-summary {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
-            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
             margin-top: 20px;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f3f4;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
 
         .summary-row:last-child {
-            border-bottom: none;
-            padding-top: 15px;
-            margin-top: 10px;
-            border-top: 2px solid #212529;
+            margin-bottom: 0;
+            padding-top: 10px;
+            border-top: 1px solid #dee2e6;
             font-weight: 600;
             font-size: 16px;
         }
 
         .summary-label {
             color: #6c757d;
-            font-size: 13px;
-            font-weight: 500;
         }
 
         .summary-value {
             color: #212529;
-            font-size: 14px;
             font-weight: 500;
-        }
-
-        .summary-row:last-child .summary-label,
-        .summary-row:last-child .summary-value {
-            color: #212529;
-            font-size: 16px;
-            font-weight: 600;
         }
 
         /* 배송 정보 카드 */
         .delivery-card {
-            background: #fff;
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
             padding: 20px;
             margin-top: 15px;
         }
 
-        .delivery-address-full {
-            font-size: 14px;
-            line-height: 1.5;
-            color: #212529;
-            margin-bottom: 10px;
-        }
-
+        .delivery-address-full,
         .delivery-request-full {
-            font-size: 12px;
-            color: #6c757d;
-            font-style: italic;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 6px;
-            border-left: 3px solid #007bff;
+            margin-bottom: 10px;
+            line-height: 1.6;
         }
 
-        /* 로딩 상태 */
-        .loading {
-            text-align: center;
-            padding: 60px 40px;
-            color: #6c757d;
+        .delivery-request-full:last-child {
+            margin-bottom: 0;
         }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f1f3f4;
-            border-radius: 50%;
-            border-top-color: #007bff;
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 20px;
+        /* 송장번호 입력 모달 */
+        .tracking-modal {
+            max-width: 500px;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .tracking-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .loading p {
-            font-size: 14px;
-            margin: 0;
-        }
-
-        /* 상태 변경 드롭다운 */
-        .status-select {
-            padding: 4px 8px;
-            font-size: 11px;
-            border: 1px solid #dee2e6;
-            background: #fff;
-            min-width: 100px;
-        }
-
-        .status-select:focus {
-            outline: none;
-            border-color: #212529;
-        }
-
-        /* 검색 결과 하이라이트 */
-        .highlight {
-            background: #fff3cd;
-            padding: 1px 2px;
-        }
-
-        /* 반응형 모달 */
-        @media (max-width: 768px) {
-            .modal-content {
-                width: 98%;
-                margin: 1% auto;
-                border-radius: 8px;
-            }
-
-            .modal-header {
-                padding: 20px 25px;
-            }
-
-            .modal-header::after {
-                left: 25px;
-                right: 25px;
-            }
-
-            .modal-title {
-                font-size: 18px;
-            }
-
-            .section-content,
-            .section-header-detail {
-                padding: 20px 25px;
-            }
-
-            .order-info-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .timeline-step {
-                font-size: 10px;
-            }
-
-            .timeline-icon {
-                width: 30px;
-                height: 30px;
-                font-size: 12px;
-            }
-
-            .products-table th,
-            .products-table td {
-                padding: 10px 8px;
-                font-size: 11px;
-            }
-
-            .payment-summary {
-                padding: 20px;
-            }
-        }
-
-        /* 반응형 */
-        @media (max-width: 768px) {
-            .header {
-                padding: 0 20px;
-            }
-
-            .container {
-                padding: 20px 15px;
-            }
-
-            .filter-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
-            }
-
-            .filter-group {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-label {
-                min-width: auto;
-            }
-
-            .section-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .section-actions {
-                justify-content: center;
-            }
-
-            .table th,
-            .table td {
-                padding: 10px 8px;
-                font-size: 11px;
-            }
-
-            .pagination-section {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .bulk-actions {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                gap: 3px;
-            }
-
-            .btn-small {
-                padding: 6px 8px;
-                font-size: 8px;
-            }
-        }
-
-        .tracking-form .info-item {
+        .form-group {
             display: flex;
             flex-direction: column;
             gap: 5px;
         }
 
-        .tracking-form .info-label {
-            color: #6c757d;
+        .form-label {
             font-size: 12px;
+            color: #6c757d;
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .tracking-form .info-value {
-            color: #212529;
-            font-size: 15px;
-            font-weight: 500;
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
         }
 
         .modal-actions {
@@ -1310,68 +1026,60 @@
 
         <!-- 주문 상태 탭 -->
         <div class="order-status-tabs">
-            <button class="status-tab" th:classappend="${currentStatus == 'ALL'} ? 'active' : ''" data-status="ALL">
-                전체 <span class="count" th:text="${totalCount}">156</span>
+            <button class="status-tab" th:classappend="${currentStatus == 'ALL'} ? 'active' : ''" data-status="ALL" onclick="loadOrdersByStatus('ALL')">
+                전체 <span class="count" th:text="${toc}">156</span>
             </button>
-            <button class="status-tab" th:classappend="${currentStatus == 'payPending'} ? 'active' : ''" data-status="payPending">
+            <button class="status-tab" th:classappend="${currentStatus == 'payPending'} ? 'active' : ''" data-status="payPending" onclick="loadOrdersByStatus('payPending')">
                 결제 대기 <span class="count" th:text="${orderCount.payPending}">12</span>
             </button>
-            <button class="status-tab" th:classappend="${currentStatus == 'paid'} ? 'active' : ''" data-status="paid">
+            <button class="status-tab" th:classappend="${currentStatus == 'paid'} ? 'active' : ''" data-status="paid" onclick="loadOrdersByStatus('paid')">
                 결제 완료 <span class="count" th:text="${orderCount.paid}">28</span>
             </button>
-            <button class="status-tab" th:classappend="${currentStatus == 'orderPending'} ? 'active' : ''" data-status="orderPending">
+            <button class="status-tab" th:classappend="${currentStatus == 'orderPending'} ? 'active' : ''" data-status="orderPending" onclick="loadOrdersByStatus('orderPending')">
                 주문 접수 <span class="count" th:text="${orderCount.orderPending}">45</span>
             </button>
-            <button class="status-tab" th:classappend="${currentStatus == 'shipping'} ? 'active' : ''" data-status="shipping">
+            <button class="status-tab" th:classappend="${currentStatus == 'shipping'} ? 'active' : ''" data-status="shipping" onclick="loadOrdersByStatus('shipping')">
                 배송중 <span class="count" th:text="${orderCount.shipping}">23</span>
             </button>
-            <button class="status-tab" th:classappend="${currentStatus == 'delivered'} ? 'active' : ''" data-status="delivered">
+            <button class="status-tab" th:classappend="${currentStatus == 'delivered'} ? 'active' : ''" data-status="delivered" onclick="loadOrdersByStatus('delivered')">
                 배송완료 <span class="count" th:text="${orderCount.delivered}">17</span>
             </button>
         </div>
 
-        <!-- 필터 섹션 -->
-        <div class="filter-section">
-            <div class="filter-header">
-                <h3 class="filter-title">검색 및 필터</h3>
-            </div>
-            <div class="filter-content">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label class="filter-label">주문번호</label>
-                        <input type="text" class="filter-input" id="orderIdFilter" placeholder="주문번호 입력">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">고객명</label>
-                        <input type="text" class="filter-input" id="customerNameFilter" placeholder="고객명 입력">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">상품명</label>
-                        <input type="text" class="filter-input" id="productNameFilter" placeholder="상품명 입력">
+        <!-- 검색 필터 -->
+        <div class="filters-section">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label class="filter-label">주문번호</label>
+                    <input type="text" class="filter-input" id="orderIdFilter" placeholder="주문번호 입력" th:value="${orderIdFilter}">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">주문자명</label>
+                    <input type="text" class="filter-input" id="ordererNameFilter" placeholder="주문자명 입력" th:value="${ordererNameFilter}">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">상품명</label>
+                    <input type="text" class="filter-input" id="productNameFilter" placeholder="상품명 입력" th:value="${productNameFilter}">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">주문일</label>
+                    <div class="date-range">
+                        <input type="date" class="filter-input" id="startDate" th:value="${startDate}">
+                        <span class="date-separator">~</span>
+                        <input type="date" class="filter-input" id="endDate" th:value="${endDate}">
                     </div>
                 </div>
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label class="filter-label">주문일시</label>
-                        <div class="date-range">
-                            <input type="date" class="filter-input" id="startDate">
-                            <span class="date-separator">~</span>
-                            <input type="date" class="filter-input" id="endDate">
-                        </div>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">결제방법</label>
-                        <select class="filter-select" id="paymentMethodFilter">
-                            <option value="">전체</option>
-                            <option value="CARD">카드결제</option>
-                            <option value="BANK_TRANSFER">무통장입금</option>
-                            <option value="VIRTUAL_ACCOUNT">가상계좌</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <button class="btn btn-primary" onclick="searchOrders()">검색</button>
-                        <button class="btn" onclick="resetFilters()">초기화</button>
-                    </div>
+                <div class="filter-group">
+                    <label class="filter-label">결제방법</label>
+                    <select class="filter-select" id="paymentMethodFilter">
+                        <option value="">전체</option>
+                        <option value="card" th:selected="${paymentMethodFilter == 'card'}">카드결제</option>
+                        <option value="transfer" th:selected="${paymentMethodFilter == 'transfer'}">무통장입금</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="btn btn-primary" onclick="searchOrders()">검색</button>
+                    <button class="btn" onclick="resetFilters()">초기화</button>
                 </div>
             </div>
         </div>
@@ -1391,7 +1099,9 @@
                         <option value="50">50개씩 보기</option>
                         <option value="100">100개씩 보기</option>
                     </select>
-                    <button class="btn" onclick="exportOrders()">Excel 내보내기</button>
+                    <button class="btn btn-success" onclick="exportOrders()">
+                        <i class="fas fa-download"></i> Excel 내보내기
+                    </button>
                 </div>
             </div>
 
@@ -1400,82 +1110,89 @@
                     <thead>
                     <tr>
                         <th>
-                            <input type="checkbox" class="checkbox" id="selectAll" onchange="toggleAllCheckboxes()">
+                            <input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes()">
                         </th>
                         <th>주문정보</th>
                         <th>고객정보</th>
                         <th>상품정보</th>
-                        <th>결제금액</th>
+                        <th>금액</th>
                         <th>배송정보</th>
                         <th>상태</th>
                         <th>관리</th>
                     </tr>
                     </thead>
-                    <tbody id="orderTableBody">
-                    <!-- 데이터는 서버에서 렌더링 또는 AJAX로 로드 -->
+                    <tbody>
                     <tr th:each="order : ${orderList}">
-                        <td class="checkbox-cell">
-                            <input type="checkbox" class="checkbox order-checkbox" th:value="${order.orderCode}">
+                        <td>
+                            <input type="checkbox" class="order-checkbox" th:value="${order['orderCode']}">
                         </td>
                         <td class="order-info">
-                            <input type="hidden" id="orderCode" th:value="${order.orderCode}">
-                            <div class="order-id" th:text="${order.orderId}" onclick="showOrderDetail(this.textContent)">
-                                ORD-2025-001
+                            <div class="order-id" th:text="${order['orderId']}"
+                                 onclick="showOrderDetail(this.textContent)">20241215_00000123
                             </div>
-                            <div class="order-date" th:text="${#temporals.format(order.createAt, 'yyyy-MM-dd')}">
-                                2025-01-15 14:30
+                            <div class="order-date"
+                                 th:text="${#temporals.format(order['createAt'], 'yyyy-MM-dd HH:mm')}">2024-12-15 14:30
                             </div>
                         </td>
                         <td class="customer-info">
-                            <div class="customer-name" th:text="${order.receiverName}">김**</div>
-                            <div class="customer-phone" th:text="${order.receiverPhone}">010-****-1234</div>
+                            <div class="customer-name" th:text="${order['ordererName']}">홍길동</div>
+                            <div class="customer-phone" th:text="${order['ordererPhone']}">010-1234-5678</div>
                         </td>
                         <td class="product-info">
-                            <div class="product-name" th:if="${order.productTypeCount > 1}" th:text="${order.productName}" style="color: #ee386d">성인용품 A</div>
-                            <div class="product-name" th:if="${order.productTypeCount == 1}" th:text="${order.productName}">성인용품 A</div>
+                            <div class="product-name" th:text="${order['productName']}">럭셔리 바이브레이터</div>
+                            <div class="product-details">
+                                수량: <span th:text="${order['productTypeCount']}">1</span>개
+                            </div>
                         </td>
                         <td class="amount-info">
-                            <div class="amount-value" th:text="|${#numbers.formatInteger(order.finalAmount, 0, 'COMMA')}원|">
-                                45,000원
+                            <div class="amount-value"
+                                 th:text="${#numbers.formatInteger(order['finalAmount'], 0, 'COMMA')} + '원'">89,000원
+                            </div>
+                            <div class="amount-details" th:if="${order['discountAmount'] > 0}">
+                                (할인: <span
+                                    th:text="${#numbers.formatInteger(order['discountAmount'], 0, 'COMMA')} + '원'">-10,000원</span>)
                             </div>
                         </td>
                         <td class="delivery-info">
-                            <div class="delivery-address" th:text="${order.receiverAddr}">
-                                서울시 강남구 테헤란로...
-                            </div>
-                            <div class="delivery-request" th:text="${order.deliveryRequest}">
-                                부재시 문앞에 놓아주세요
+                            <div class="delivery-address" th:text="${order['receiverAddr']}">서울시 강남구 테헤란로...</div>
+                            <div class="delivery-request" th:if="${order['deliveryRequest']}"
+                                 th:text="${order['deliveryRequest']}">문 앞에 놓아주세요
                             </div>
                         </td>
                         <td>
-                                <span class="status-badge"
-                                      th:classappend="${order.status == 'PAYPENDING' ? 'pay-pending' :
-                      (order.status == 'PAID' ? 'paid' :
-                      (order.status == 'ORDERPENDING' ? 'confirmed' :
-                      (order.status == 'SHIPPING' ? 'shipping' :
-                      (order.status == 'DELIVERED' ? 'delivered' : '' ))))}"
-                                      th:text="${order.status == 'PAYPENDING' ? '결제대기' :
-                (order.status == 'PAID' ? '결제완료' :
-                (order.status == 'ORDERPENDING' ? '주문접수' :
-                (order.status == 'SHIPPING' ? '배송중' :
-                (order.status == 'DELIVERED' ? '배송완료' : '알수없음'))))}">
-  결제완료
-</span>
+        <span class="status-badge"
+              th:classappend="${order['status'] == 'PAYPENDING' ? 'pay-pending' :
+                      (order['status'] == 'PAID' ? 'paid' :
+                      (order['status'] == 'ORDERPENDING' ? 'confirmed' :
+                      (order['status'] == 'SHIPPING' ? 'shipping' :
+                      (order['status'] == 'DELIVERED' ? 'delivered' : '' ))))}"
+              th:text="${order['status'] == 'PAYPENDING' ? '결제대기' :
+                (order['status'] == 'PAID' ? '결제완료' :
+                (order['status'] == 'ORDERPENDING' ? '주문접수' :
+                (order['status'] == 'SHIPPING' ? '배송중' :
+                (order['status'] == 'DELIVERED' ? '배송완료' : '알수없음'))))}">
+            결제완료
+        </span>
                         </td>
                         <td class="action-cell">
                             <div class="action-buttons">
                                 <button class="btn btn-small"
-                                        th:attr="data-order-id=${order.orderId}"
+                                        th:attr="data-order-id=${order['orderId']}"
                                         onclick="showOrderDetail(this.dataset.orderId)">
                                     상세
                                 </button>
-                                <select class="status-select" th:data-order-id="${order.orderId}" onchange="changeOrderStatus(this)">
+                                <select class="status-select" th:data-order-id="${order['orderId']}"
+                                        onchange="changeOrderStatus(this)">
                                     <option value="">상태변경</option>
-                                    <option value="PAYPENDING" th:selected="${order.status == 'PAYPENDING'}">결제대기</option>
-                                    <option value="PAID" th:selected="${order.status == 'PAID'}">결제완료</option>
-                                    <option value="ORDERPENDING" th:selected="${order.status == 'ORDERPENDING'}">주문접수</option>
-                                    <option value="SHIPPING" th:selected="${order.status == 'SHIPPING'}">배송중</option>
-                                    <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">배송완료</option>
+                                    <option value="PAYPENDING" th:selected="${order['status'] == 'PAYPENDING'}">결제대기
+                                    </option>
+                                    <option value="PAID" th:selected="${order['status'] == 'PAID'}">결제완료</option>
+                                    <option value="ORDERPENDING" th:selected="${order['status'] == 'ORDERPENDING'}">
+                                        주문접수
+                                    </option>
+                                    <option value="SHIPPING" th:selected="${order['status'] == 'SHIPPING'}">배송중</option>
+                                    <option value="DELIVERED" th:selected="${order['status'] == 'DELIVERED'}">배송완료
+                                    </option>
                                 </select>
                             </div>
                         </td>
@@ -1507,68 +1224,63 @@
                 </div>
                 <div class="pagination">
                     <a href="#" class="page-btn" onclick="goToPage(1)">&laquo;</a>
-                    <a href="#" class="page-btn" th:onclick="|goToPage(${currentPage - 1})|">&lsaquo;</a>
+                    <a href="#" class="page-btn" th:onclick="|goToPage(${currentPage - 1})|" th:if="${currentPage > 1}">&lsaquo;</a>
 
                     <!-- 페이지 번호들 -->
-                    <a href="#" class="page-btn" th:each="page : ${pageNumbers}"
-                       th:classappend="${page == currentPage} ? 'active' : ''"
-                       th:onclick="|goToPage(${page})|"
-                       th:text="${page}">1</a>
+                    <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                          th:if="${pageNum >= currentPage - 2 and pageNum <= currentPage + 2}">
+                        <a href="#" class="page-btn"
+                           th:classappend="${pageNum == currentPage} ? 'active' : ''"
+                           th:onclick="|goToPage(${pageNum})|"
+                           th:text="${pageNum}">
+                        </a>
+                    </span>
 
-                    <a href="#" class="page-btn" th:onclick="|goToPage(${currentPage + 1})|">&rsaquo;</a>
-                    <a href="#" class="page-btn" th:onclick="|goToPage(${totalPages})|">&raquo;</a>
+                    <a href="#" class="page-btn" th:onclick="|goToPage(${currentPage + 1})|" th:if="${currentPage < totalPages}">&rsaquo;</a>
+                    <a href="#" class="page-btn" th:onclick="|goToPage(${totalPages})|" th:if="${currentPage < totalPages}">&raquo;</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 개선된 주문 상세 모달 -->
+<!-- 주문 상세 모달 -->
 <div id="orderDetailModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title">주문 상세 정보</h4>
             <button class="close" onclick="closeOrderDetail()">&times;</button>
         </div>
-        <div class="modal-body" id="orderDetailContent">
-            <!-- 주문 상세 내용이 여기에 동적으로 로드됩니다 -->
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <p>주문 정보를 불러오는 중...</p>
+        <div class="modal-body">
+            <div id="orderDetailContent">
+                <!-- 동적으로 생성되는 주문 상세 내용 -->
             </div>
         </div>
     </div>
 </div>
 
-<!-- 송장번호 입력 모달 (단일 주문용) -->
+<!-- 송장번호 입력 모달 -->
 <div id="trackingNumberModal" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
+    <div class="modal-content tracking-modal">
         <div class="modal-header">
             <h4 class="modal-title">송장번호 입력</h4>
             <button class="close" onclick="closeTrackingModal()">&times;</button>
         </div>
-        <div class="modal-body" style="padding: 30px;">
+        <div class="modal-body">
             <div class="tracking-form">
-                <div class="info-item" style="margin-bottom: 20px;">
-                    <span class="info-label">주문번호</span>
-                    <span class="info-value" id="singleOrderId">-</span>
+                <div class="form-group">
+                    <label class="form-label">주문번호</label>
+                    <input type="text" class="form-input" id="singleOrderId" readonly>
+                    <input type="hidden" id="orderCode">
                 </div>
-                <div class="info-item" style="margin-bottom: 20px;">
-                    <span class="info-label">택배회사</span>
-                    <span class="info-value">CJ 대한통운</span>
+                <div class="form-group">
+                    <label class="form-label">송장번호</label>
+                    <input type="text" class="form-input" id="singleTrackingNumber" placeholder="송장번호를 입력하세요">
                 </div>
-                <div class="info-item" style="margin-bottom: 20px;">
-                    <label class="info-label" for="singleTrackingNumber">송장번호 *</label>
-                    <input type="text"
-                           id="singleTrackingNumber"
-                           class="filter-input"
-                           placeholder="송장번호를 입력하세요"
-                           style="width: 100%; margin-top: 8px;">
-                </div>
-                <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-                    <button class="btn" onclick="closeTrackingModal()">취소</button>
-                    <button class="btn btn-primary" onclick="confirmSingleStatusChange()">확인</button>
-                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeTrackingModal()">취소</button>
+                <button class="btn btn-primary" onclick="confirmSingleStatusChange()">배송중으로 변경</button>
             </div>
         </div>
     </div>
@@ -1576,24 +1288,18 @@
 
 <!-- 일괄 송장번호 입력 모달 -->
 <div id="bulkTrackingModal" class="modal">
-    <div class="modal-content" style="max-width: 800px;">
+    <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title">일괄 송장번호 입력</h4>
             <button class="close" onclick="closeBulkTrackingModal()">&times;</button>
         </div>
-        <div class="modal-body" style="padding: 30px; max-height: 600px; overflow-y: auto;">
-            <div class="bulk-tracking-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                <p style="margin: 0; color: #6c757d; font-size: 13px;">
-                    <strong>선택된 주문 <span id="selectedOrderCount">0</span>건</strong>의 송장번호를 입력해주세요.
-                    <br>택배회사: <strong>CJ 대한통운</strong>
-                </p>
+        <div class="modal-body">
+            <div id="bulkTrackingFormContainer">
+                <!-- 동적으로 생성되는 일괄 송장번호 입력 폼 -->
             </div>
-            <div id="bulkTrackingForm">
-                <!-- 선택된 주문들의 송장번호 입력 폼이 동적으로 생성됩니다 -->
-            </div>
-            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+            <div class="modal-actions">
                 <button class="btn" onclick="closeBulkTrackingModal()">취소</button>
-                <button class="btn btn-primary" onclick="confirmBulkStatusChange()">확인</button>
+                <button class="btn btn-primary" onclick="confirmBulkStatusChange()">일괄 배송중으로 변경</button>
             </div>
         </div>
     </div>
@@ -1651,29 +1357,64 @@
 
     // 주문 상태별 로드
     function loadOrdersByStatus(status) {
-        console.log('주문 상태별 로드:', status);
-        window.location.href = window.location.pathname + '?status=' + status;
+        // 현재 검색 조건들을 URL에서 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 상태만 변경하고 나머지 검색 조건은 유지
+        urlParams.set('status', status);
+        urlParams.set('page', '1'); // 상태 변경 시 첫 페이지로
+
+        // 페이지 이동
+        window.location.href = `/admin/order?${urlParams.toString()}`;
     }
 
     // 주문 검색
     function searchOrders() {
-        const filters = {
-            orderId: document.getElementById('orderIdFilter').value,
-            customerName: document.getElementById('customerNameFilter').value,
-            productName: document.getElementById('productNameFilter').value,
-            startDate: document.getElementById('startDate').value,
-            endDate: document.getElementById('endDate').value,
-            paymentMethod: document.getElementById('paymentMethodFilter').value,
-            status: document.querySelector('.status-tab.active').dataset.status
-        };
+        const orderIdFilter = document.getElementById('orderIdFilter').value.trim();
+        const ordererNameFilter = document.getElementById('ordererNameFilter').value.trim();
+        const productNameFilter = document.getElementById('productNameFilter').value.trim();
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const paymentMethodFilter = document.getElementById('paymentMethodFilter').value;
 
-        console.log('주문 검색:', filters);
+        // 검색 조건 유효성 검증
+        if (!orderIdFilter && !ordererNameFilter && !productNameFilter &&
+            !startDate && !endDate && !paymentMethodFilter) {
+            alert('최소 하나의 검색 조건을 입력해주세요.');
+            return;
+        }
+
+        // 날짜 범위 유효성 검증
+        if (startDate && endDate && startDate > endDate) {
+            alert('시작일이 종료일보다 늦을 수 없습니다.');
+            return;
+        }
+
+        // 현재 활성화된 탭의 상태 가져오기
+        const activeTab = document.querySelector('.status-tab.active');
+        const currentStatus = activeTab ? activeTab.getAttribute('data-status') : 'ALL';
+
+        // URL 파라미터 구성
+        const urlParams = new URLSearchParams();
+        urlParams.set('page', '1'); // 검색 시 첫 페이지로
+        urlParams.set('status', currentStatus);
+
+        if (orderIdFilter) urlParams.set('orderIdFilter', orderIdFilter);
+        if (ordererNameFilter) urlParams.set('ordererNameFilter', ordererNameFilter);
+        if (productNameFilter) urlParams.set('productNameFilter', productNameFilter);
+        if (startDate) urlParams.set('startDate', startDate);
+        if (endDate) urlParams.set('endDate', endDate);
+        if (paymentMethodFilter) urlParams.set('paymentMethodFilter', paymentMethodFilter);
+
+        // 페이지 이동
+        window.location.href = `/admin/order?${urlParams.toString()}`;
     }
 
     // 필터 초기화
     function resetFilters() {
+        // 검색 입력값들 초기화
         document.getElementById('orderIdFilter').value = '';
-        document.getElementById('customerNameFilter').value = '';
+        document.getElementById('ordererNameFilter').value = '';
         document.getElementById('productNameFilter').value = '';
         document.getElementById('startDate').value = '';
         document.getElementById('endDate').value = '';
@@ -1683,7 +1424,8 @@
         document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
         document.querySelector('.status-tab[data-status="ALL"]').classList.add('active');
 
-        loadOrdersByStatus('ALL');
+        // 기본 페이지로 이동 (검색 조건 없이)
+        window.location.href = '/admin/order?status=ALL&page=1';
     }
 
     // 개선된 주문 상세 보기
@@ -2157,7 +1899,10 @@
 
     // 페이지 이동
     function goToPage(page) {
-        console.log('페이지 이동:', page);
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('page', page);
+
+        window.location.href = `/admin/order?${urlParams.toString()}`;
     }
 
     // Excel 내보내기
@@ -2205,7 +1950,41 @@
                 }
             }
         });
+
+        document.getElementById('orderIdFilter').addEventListener('keypress', handleEnterKeySearch);
+        document.getElementById('ordererNameFilter').addEventListener('keypress', handleEnterKeySearch);
+        document.getElementById('productNameFilter').addEventListener('keypress', handleEnterKeySearch);
     });
+
+    function handleEnterKeySearch(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            searchOrders();
+        }
+    }
+
+    function showSearchStatus() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasSearchParams = urlParams.get('orderIdFilter') ||
+            urlParams.get('ordererNameFilter') ||
+            urlParams.get('productNameFilter') ||
+            urlParams.get('startDate') ||
+            urlParams.get('endDate') ||
+            urlParams.get('paymentMethodFilter');
+
+        if (hasSearchParams) {
+            // 검색 중임을 표시하는 UI 추가 (선택사항)
+            const searchStatus = document.createElement('div');
+            searchStatus.className = 'search-status-indicator';
+            searchStatus.innerHTML = '<i class="fas fa-search"></i> 검색 결과';
+            searchStatus.style.cssText = 'color: #007bff; font-weight: bold; margin-bottom: 10px;';
+
+            const tableContainer = document.querySelector('.table-responsive');
+            if (tableContainer) {
+                tableContainer.parentNode.insertBefore(searchStatus, tableContainer);
+            }
+        }
+    }
 
     // 모달 외부 클릭시 닫기 (기존 함수에 추가)
     window.onclick = function(event) {
@@ -2223,6 +2002,8 @@
             closeBulkTrackingModal();
         }
     }
+
+    document.addEventListener('DOMContentLoaded', showSearchStatus);
 </script>
 </body>
 </html>

@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -259,9 +261,26 @@ public class AdminOrderController {
     public void exportOrdersToExcel(
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
+            @RequestParam(value = "selectedOrders", required = false) List<Integer> selectedOrders, // 🆕 이 줄만 추가
             HttpServletResponse response) {
 
         try {
+            // 🆕 선택된 주문이 있는지 확인하고 분기 처리
+            if (selectedOrders != null && !selectedOrders.isEmpty()) {
+                // 유효한 주문 코드만 필터링
+                selectedOrders = selectedOrders.stream()
+                        .filter(Objects::nonNull)
+                        .filter(code -> code > 0)
+                        .collect(Collectors.toList());
+
+                if (!selectedOrders.isEmpty()) {
+                    log.info("선택된 주문 엑셀 내보내기 - {}개", selectedOrders.size());
+                    adminOrderService.exportSelectedOrdersToExcel(selectedOrders, response);
+                    return; // 🆕 선택된 주문 처리 후 종료
+                }
+            }
+
+            // 🔄 기존 로직 그대로 유지 (선택된 주문이 없을 때)
             log.info("주문 엑셀 내보내기 요청 - 시작일: {}, 종료일: {}", startDate, endDate);
 
             // 날짜 형식 유효성 검사 (간단한 체크)
@@ -284,6 +303,7 @@ public class AdminOrderController {
             log.info("주문 엑셀 내보내기 완료");
 
         } catch (IllegalArgumentException e) {
+            // 🔄 기존 예외 처리 로직 그대로 유지
             log.warn("엑셀 내보내기 파라미터 오류: {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             try {

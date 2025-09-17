@@ -62,4 +62,11 @@ public interface IF_AdminOrderDao {
 
     String getOrdererName(@Param("orderCode") int orderCode);
     String getOrdererPhone(@Param("orderCode") int orderCode);
+
+    /**
+     * 선택된 주문들의 엑셀 내보내기용 데이터 조회
+     * @param selectedOrders 선택된 주문 코드 목록
+     * @return 선택된 주문의 엑셀용 데이터 목록
+     */
+    List<Map<String, Object>> getSelectedOrdersForExcel(@Param("selectedOrders") List<Integer> selectedOrders);
 }

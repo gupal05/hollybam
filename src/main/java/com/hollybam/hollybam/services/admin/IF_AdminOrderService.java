@@ -67,4 +67,12 @@ public interface IF_AdminOrderService {
 
     String getOrdererName(@Param("orderCode") int orderCode);
     String getOrdererPhone(@Param("orderCode") int orderCode);
+
+    /**
+     * 선택된 주문들만 엑셀 파일로 내보내기
+     * @param selectedOrders 선택된 주문 코드 목록
+     * @param response HTTP 응답 객체
+     * @throws Exception 엑셀 생성 중 오류 발생 시
+     */
+    void exportSelectedOrdersToExcel(List<Integer> selectedOrders, HttpServletResponse response) throws Exception;
 }

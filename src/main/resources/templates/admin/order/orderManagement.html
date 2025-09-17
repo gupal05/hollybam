@@ -1939,6 +1939,9 @@
     // Excel 내보내기
     function exportOrders() {
         try {
+            // 선택된 주문 ID 가져오기
+            const selectedOrderIds = getSelectedOrders();
+
             // 현재 설정된 날짜 필터 값 가져오기
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
@@ -1951,20 +1954,53 @@
 
             // URL 파라미터 구성
             const params = new URLSearchParams();
-            if (startDate) {
-                params.append('startDate', startDate);
+
+            // 선택된 주문이 있는 경우
+            if (selectedOrderIds.length > 0) {
+                // 선택된 주문 코드들을 파라미터로 추가
+                selectedOrderIds.forEach(orderCode => {
+                    params.append('selectedOrders', orderCode);
+                });
+
+                // 사용자에게 확인 메시지
+                if (!confirm(`선택된 ${selectedOrderIds.length}개 주문을 엑셀로 다운로드하시겠습니까?`)) {
+                    return;
+                }
+            } else {
+                // 선택된 주문이 없는 경우 기존 날짜 필터 적용
+                if (startDate) {
+                    params.append('startDate', startDate);
+                }
+                if (endDate) {
+                    params.append('endDate', endDate);
+                }
+
+                // 전체/필터된 주문 다운로드 확인
+                const message = (startDate || endDate)
+                    ? `${startDate || '처음'}부터 ${endDate || '현재'}까지의 주문을 엑셀로 다운로드하시겠습니까?`
+                    : '전체 주문을 엑셀로 다운로드하시겠습니까?';
+
+                if (!confirm(message)) {
+                    return;
+                }
             }
-            if (endDate) {
-                params.append('endDate', endDate);
+
+            // 🔧 버튼 요소를 직접 찾아서 조작 (event 객체 의존성 제거)
+            const exportButton = document.querySelector('button[onclick="exportOrders()"]') ||
+                document.querySelector('button[onclick*="exportOrders"]');
+
+            if (!exportButton) {
+                console.error('엑셀 내보내기 버튼을 찾을 수 없습니다.');
+                return;
             }
 
             // 엑셀 내보내기 URL 생성
             const exportUrl = `/admin/order/export?${params.toString()}`;
 
             // 로딩 상태 표시
-            const originalText = event.target.textContent;
-            event.target.textContent = '내보내는 중...';
-            event.target.disabled = true;
+            const originalText = exportButton.textContent;
+            exportButton.textContent = '내보내는 중...';
+            exportButton.disabled = true;
 
             // 임시 링크 생성하여 다운로드 실행
             const link = document.createElement('a');
@@ -1976,19 +2012,33 @@
             link.click();
             document.body.removeChild(link);
 
-            // 잠시 후 버튼 상태 원복
+            // 잠시 후 버튼 상태 원복 및 성공 메시지
             setTimeout(() => {
-                event.target.textContent = originalText;
-                event.target.disabled = false;
+                exportButton.textContent = originalText;
+                exportButton.disabled = false;
 
-                // 성공 메시지 표시
-                if (startDate || endDate) {
-                    const dateRange = startDate && endDate ?
-                        `${startDate} ~ ${endDate}` :
-                        startDate ? `${startDate} 이후` : `${endDate} 이전`;
-                    alert(`${dateRange} 기간의 주문 데이터를 엑셀 파일로 다운로드합니다.`);
+                // 다운로드 완료 메시지
+                if (selectedOrderIds.length > 0) {
+                    alert(`선택된 ${selectedOrderIds.length}개 주문의 엑셀 파일이 다운로드됩니다.`);
+
+                    // 선택 해제 (다운로드 후 체크박스 초기화)
+                    document.querySelectorAll('.order-checkbox:checked').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    const selectAllCheckbox = document.getElementById('selectAll');
+                    if (selectAllCheckbox) {
+                        selectAllCheckbox.checked = false;
+                    }
+
+                    // 버튼 텍스트 업데이트
+                    updateExportButtonText();
+                } else if (startDate || endDate) {
+                    const dateRange = startDate && endDate
+                        ? `${startDate} ~ ${endDate}`
+                        : startDate ? `${startDate} 이후` : `${endDate} 이전`;
+                    alert(`${dateRange} 기간의 주문 데이터 엑셀 파일이 다운로드됩니다.`);
                 } else {
-                    alert('전체 주문 데이터를 엑셀 파일로 다운로드합니다.');
+                    alert('전체 주문 데이터 엑셀 파일이 다운로드됩니다.');
                 }
             }, 1000);
 
@@ -1998,13 +2048,59 @@
             console.error('엑셀 내보내기 오류:', error);
             alert('엑셀 파일 다운로드 중 오류가 발생했습니다.');
 
-            // 오류 발생 시 버튼 상태 원복
-            if (event.target) {
-                event.target.textContent = 'Excel 내보내기';
-                event.target.disabled = false;
+            // 🔧 오류 발생 시 버튼 상태 원복 (event 객체 없이)
+            const exportButton = document.querySelector('button[onclick="exportOrders()"]') ||
+                document.querySelector('button[onclick*="exportOrders"]');
+            if (exportButton) {
+                exportButton.textContent = 'Excel 내보내기';
+                exportButton.disabled = false;
             }
         }
     }
+
+    function updateExportButtonText() {
+        const selectedCount = document.querySelectorAll('.order-checkbox:checked').length;
+        const exportButton = document.querySelector('button[onclick="exportOrders()"]') ||
+            document.querySelector('button[onclick*="exportOrders"]');
+
+        if (exportButton) {
+            if (selectedCount > 0) {
+                exportButton.textContent = `선택 ${selectedCount}개 Excel 내보내기`;
+                exportButton.style.background = '#007bff';
+                exportButton.style.color = 'white';
+            } else {
+                exportButton.textContent = 'Excel 내보내기';
+                exportButton.style.background = '';
+                exportButton.style.color = '';
+            }
+        }
+    }
+
+    // 🆕 체크박스 변경 시 버튼 텍스트 업데이트 (기존 함수에 추가)
+    function toggleAllCheckboxes() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.order-checkbox');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+
+        // 버튼 텍스트 업데이트
+        updateExportButtonText();
+    }
+
+    // 🔧 개별 체크박스 변경 시에도 버튼 텍스트 업데이트 - 수정된 버전
+    document.addEventListener('DOMContentLoaded', function() {
+        // 개별 체크박스에 이벤트 리스너 추가
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('order-checkbox')) {
+                updateExportButtonText();
+            }
+        });
+
+        // 페이지 로드 시 초기 상태 설정
+        updateExportButtonText();
+    });
 
     // 로그아웃
     function logout() {

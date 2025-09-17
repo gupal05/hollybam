@@ -229,7 +229,7 @@
                     ), 0
                   )
         FROM orders
-        WHERE payment_status != 'FAILED'
+        WHERE payment_status != 'FAILED' AND order_status != 'REFUND_PENDING'
     </select>
 
 

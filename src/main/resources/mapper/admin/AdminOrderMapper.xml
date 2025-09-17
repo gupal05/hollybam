@@ -76,76 +76,77 @@
     </select>
 
     <select id="selectOrderSummaryWithStatus" resultType="map">
-        <![CDATA[
-            WITH top_product AS (
-                SELECT
-                    oi.order_code,
-                    oi.product_code,
-                    p.product_name,
-                    ROW_NUMBER() OVER (
-                        PARTITION BY oi.order_code
-                        ORDER BY oi.order_item_code ASC
-                        ) AS rn
-                FROM order_items oi
-                         JOIN product p ON p.product_code = oi.product_code
-            ),
-                 latest_delivery AS (
-                     SELECT * FROM (
-                                       SELECT
-                                           d.*,
-                                           ROW_NUMBER() OVER (
-                                               PARTITION BY d.order_code
-                                               ORDER BY COALESCE(d.updated_at, d.created_at) DESC, d.delivery_id DESC
-                                               ) AS rn
-                                       FROM delivery d
-                                   ) x
-                     WHERE x.rn = 1
-                 ),
-                 item_kinds AS (
-                     SELECT
-                         order_code,
-                         COUNT(DISTINCT product_code) AS product_type_count
-                     FROM order_items
-                     GROUP BY order_code
-                 )
+    <![CDATA[
+        WITH top_product AS (
             SELECT
-                o.order_code           AS orderCode,
-                o.order_id             AS orderId,
-                o.create_at            AS createAt,
-                o.receiver_name        AS receiverName,
-                o.receiver_phone       AS receiverPhone,
-                o.final_amount         AS finalAmount,
-                o.delivery_fee         AS deliveryFee,
-                o.receiver_addr        AS receiverAddr,
-                o.receiver_addr_detail AS receiverAddrDetail,
-                o.delivery_request     AS deliveryRequest,
-                tp.product_code        AS productCode,
-                tp.product_name        AS productName,
-                COALESCE(ik.product_type_count, 0) AS productTypeCount,
-                CASE
-                    WHEN o.payment_status = 'PENDING' THEN 'PAYPENDING'
-                    WHEN o.payment_status = 'PAID' AND o.order_status IS NULL THEN 'PAID'
-                    WHEN o.payment_status = 'PAID' AND o.order_status IS NOT NULL THEN
-                        CASE
-                            WHEN o.order_status = 'SHIPPED' THEN
-                                CASE
-                                    WHEN ld.delivery_status IN ('SHIPPING','DELIVERED')
-                                        THEN ld.delivery_status
-                                    ELSE 'SHIPPED'
-                                    END
-                            WHEN o.order_status = 'PENDING' THEN 'ORDERPENDING'
-                            ELSE o.order_status
-                            END
-                    ELSE o.payment_status
-                    END AS status
-            FROM orders o
-                     JOIN top_product tp ON tp.order_code = o.order_code AND tp.rn = 1
-                     LEFT JOIN latest_delivery ld ON ld.order_code = o.order_code
-                     LEFT JOIN item_kinds ik ON ik.order_code = o.order_code
-            WHERE o.payment_status <> 'FAILED'
-            ORDER BY o.create_at DESC
+                oi.order_code,
+                oi.product_code,
+                p.product_name,
+                ROW_NUMBER() OVER (
+                    PARTITION BY oi.order_code
+                    ORDER BY oi.order_item_code ASC
+                    ) AS rn
+            FROM order_items oi
+                     JOIN product p ON p.product_code = oi.product_code
+        ),
+             latest_delivery AS (
+                 SELECT * FROM (
+                                   SELECT
+                                       d.*,
+                                       ROW_NUMBER() OVER (
+                                           PARTITION BY d.order_code
+                                           ORDER BY COALESCE(d.updated_at, d.created_at) DESC, d.delivery_id DESC
+                                           ) AS rn
+                                   FROM delivery d
+                               ) x
+                 WHERE x.rn = 1
+             ),
+             item_kinds AS (
+                 SELECT
+                     order_code,
+                     COUNT(DISTINCT product_code) AS product_type_count
+                 FROM order_items
+                 GROUP BY order_code
+             )
+        SELECT
+            o.order_code           AS orderCode,
+            o.order_id             AS orderId,
+            o.create_at            AS createAt,
+            o.receiver_name        AS receiverName,
+            o.receiver_phone       AS receiverPhone,
+            o.final_amount         AS finalAmount,
+            o.delivery_fee         AS deliveryFee,
+            o.receiver_addr        AS receiverAddr,
+            o.receiver_addr_detail AS receiverAddrDetail,
+            o.delivery_request     AS deliveryRequest,
+            tp.product_code        AS productCode,
+            tp.product_name        AS productName,
+            COALESCE(ik.product_type_count, 0) AS productTypeCount,
+            CASE
+                WHEN o.payment_status = 'PENDING' THEN 'PAYPENDING'
+                WHEN o.payment_status = 'PAID' AND o.order_status IS NULL THEN 'PAID'
+                WHEN o.payment_status = 'PAID' AND o.order_status IS NOT NULL THEN
+                    CASE
+                        WHEN o.order_status = 'SHIPPED' THEN
+                            CASE
+                                WHEN ld.delivery_status IN ('SHIPPING','DELIVERED')
+                                    THEN ld.delivery_status
+                                ELSE 'SHIPPED'
+                                END
+                        WHEN o.order_status = 'PENDING' THEN 'ORDERPENDING'
+                        ELSE o.order_status
+                        END
+                ELSE o.payment_status
+                END AS status
+        FROM orders o
+                 JOIN top_product tp ON tp.order_code = o.order_code AND tp.rn = 1
+                 LEFT JOIN latest_delivery ld ON ld.order_code = o.order_code
+                 LEFT JOIN item_kinds ik ON ik.order_code = o.order_code
+        WHERE o.payment_status <> 'FAILED'
+          AND (o.order_status IS NULL OR o.order_status <> 'REFUND_PENDING')
+        ORDER BY o.create_at DESC
         ]]>
-    </select>
+</select>
 
     <select id="getOrderListPending" resultType="map">
         <![CDATA[
@@ -805,21 +806,18 @@
     LEFT JOIN item_kinds ik ON o.order_code = ik.order_code
     LEFT JOIN payment_log pl ON o.order_code = pl.order_code
     WHERE 1=1
+      AND (o.order_status IS NULL OR o.order_status <> 'REFUND_PENDING')
     ]]>
 
         <!-- 🔍 검색 조건들 -->
-
-        <!-- 주문번호 검색 (완전일치) -->
         <if test="searchParams.orderIdFilter != null and searchParams.orderIdFilter != ''">
             AND o.order_id = #{searchParams.orderIdFilter}
         </if>
 
-        <!-- 주문자명 검색 (부분일치) -->
         <if test="searchParams.ordererNameFilter != null and searchParams.ordererNameFilter != ''">
             AND o.orderer_name LIKE CONCAT('%', #{searchParams.ordererNameFilter}, '%')
         </if>
 
-        <!-- 상품명 검색 (부분일치) - top_product와 조인 필요 -->
         <if test="searchParams.productNameFilter != null and searchParams.productNameFilter != ''">
             AND EXISTS (
             SELECT 1 FROM order_items oi2
@@ -829,7 +827,6 @@
             )
         </if>
 
-        <!-- 주문일 범위 검색 -->
         <if test="searchParams.startDate != null and searchParams.startDate != ''">
             AND DATE(o.create_at) >= #{searchParams.startDate}
         </if>
@@ -837,12 +834,10 @@
             AND DATE(o.create_at) &lt;= #{searchParams.endDate}
         </if>
 
-        <!-- 결제방법 검색 (완전일치) -->
         <if test="searchParams.paymentMethodFilter != null and searchParams.paymentMethodFilter != ''">
             AND o.payment_method = #{searchParams.paymentMethodFilter}
         </if>
 
-        <!-- 상태 필터링 (기존 로직과 동일) -->
         <choose>
             <when test="searchParams.status == 'payPending'">
                 AND o.payment_status = 'PENDING'
@@ -859,12 +854,10 @@
             <when test="searchParams.status == 'delivered'">
                 AND o.payment_status = 'PAID' AND o.simple_status = 'DELIVERED' AND ld.delivery_status = 'DELIVERED'
             </when>
-            <!-- ALL인 경우 추가 조건 없음 -->
         </choose>
 
         ORDER BY o.create_at DESC
 
-        <!-- 페이지네이션 -->
         <if test="searchParams.offset != null and searchParams.limit != null">
             LIMIT #{searchParams.offset}, #{searchParams.limit}
         </if>
@@ -952,7 +945,7 @@
     </select>
 
     <select id="countOrdersTotal" resultType="int">
-        SELECT COUNT(*) FROM orders
+        SELECT COUNT(*) FROM orders where order_status != 'REFUND_PENDING'
     </select>
 
     <!-- 엑셀 내보내기용 주문 데이터 조회 -->

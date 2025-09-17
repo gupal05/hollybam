@@ -2,6 +2,9 @@ package com.hollybam.hollybam.dao;
 
 import com.hollybam.hollybam.dto.MemberDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 @Mapper
 public interface IF_LoginDao {
@@ -26,4 +29,6 @@ public interface IF_LoginDao {
      * @return 존재하면 1 이상, 없으면 0
      */
     int isGoogleMember(String googleId);
+
+    public void upMemberTestPassword(@Param("data") Map<String, Object> data);
 }

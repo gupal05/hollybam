@@ -1,5 +1,6 @@
 package com.hollybam.hollybam.services.admin;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -54,4 +55,16 @@ public interface IF_AdminOrderService {
     int getSearchOrderCount(Map<String, Object> searchParams);
 
     int countOrdersTotal();
+
+    /**
+     * 주문 데이터를 엑셀 파일로 내보내기
+     * @param startDate 시작 날짜 (yyyy-MM-dd 형식, null 가능)
+     * @param endDate 종료 날짜 (yyyy-MM-dd 형식, null 가능)
+     * @param response HTTP 응답 객체
+     * @throws Exception 엑셀 생성 중 오류 발생 시
+     */
+    void exportOrdersToExcel(String startDate, String endDate, HttpServletResponse response) throws Exception;
+
+    String getOrdererName(@Param("orderCode") int orderCode);
+    String getOrdererPhone(@Param("orderCode") int orderCode);
 }

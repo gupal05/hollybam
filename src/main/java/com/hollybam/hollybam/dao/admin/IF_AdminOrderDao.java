@@ -51,4 +51,15 @@ public interface IF_AdminOrderDao {
     int getSearchOrderCount(@Param("searchParams") Map<String, Object> searchParams);
 
     int countOrdersTotal();
+
+    /**
+     * 엑셀 내보내기용 주문 데이터 조회
+     * @param startDate 시작 날짜 (yyyy-MM-dd)
+     * @param endDate 종료 날짜 (yyyy-MM-dd)
+     * @return 엑셀용 주문 데이터 목록
+     */
+    List<Map<String, Object>> getOrdersForExcel(@Param("startDate") String startDate, @Param("endDate") String endDate);
+
+    String getOrdererName(@Param("orderCode") int orderCode);
+    String getOrdererPhone(@Param("orderCode") int orderCode);
 }

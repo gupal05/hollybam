@@ -1,6 +1,7 @@
 package com.hollybam.hollybam.controller.adminController;
 
 import com.hollybam.hollybam.services.admin.IF_AdminOrderService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -119,7 +120,15 @@ public class AdminOrderController {
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("orderCount", orderCount);
         model.addAttribute("currentStatus", status);
+        for(int i=0; i<orderList.size();i++){
+            int orderCode = (int)orderList.get(i).get("orderCode");
+            String ordererName = adminOrderService.getOrdererName(orderCode);
+            String ordererPhone = adminOrderService.getOrdererPhone(orderCode);
+            orderList.get(i).put("ordererName", ordererName);
+            orderList.get(i).put("ordererPhone", ordererPhone);
+        }
         model.addAttribute("orderList", orderList);
+
         model.addAttribute("totalPages", (int) Math.ceil((double) totalCount / size));
 
         model.addAttribute("toc", adminOrderService.countOrdersTotal());
@@ -238,5 +247,58 @@ public class AdminOrderController {
         adminOrderService.updateShippingStatus(orders);
         System.out.println("배송중");
         return ResponseEntity.ok(true);
+    }
+
+    /**
+     * 주문 데이터 엑셀 내보내기
+     * @param startDate 시작 날짜 (yyyy-MM-dd 형식, 선택사항)
+     * @param endDate 종료 날짜 (yyyy-MM-dd 형식, 선택사항)
+     * @param response HTTP 응답 객체
+     */
+    @GetMapping("/export")
+    public void exportOrdersToExcel(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            HttpServletResponse response) {
+
+        try {
+            log.info("주문 엑셀 내보내기 요청 - 시작일: {}, 종료일: {}", startDate, endDate);
+
+            // 날짜 형식 유효성 검사 (간단한 체크)
+            if (startDate != null && !startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                throw new IllegalArgumentException("시작 날짜 형식이 올바르지 않습니다. (yyyy-MM-dd)");
+            }
+
+            if (endDate != null && !endDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                throw new IllegalArgumentException("종료 날짜 형식이 올바르지 않습니다. (yyyy-MM-dd)");
+            }
+
+            // 날짜 범위 유효성 검사
+            if (startDate != null && endDate != null && startDate.compareTo(endDate) > 0) {
+                throw new IllegalArgumentException("시작 날짜가 종료 날짜보다 늦을 수 없습니다.");
+            }
+
+            // 엑셀 내보내기 실행
+            adminOrderService.exportOrdersToExcel(startDate, endDate, response);
+
+            log.info("주문 엑셀 내보내기 완료");
+
+        } catch (IllegalArgumentException e) {
+            log.warn("엑셀 내보내기 파라미터 오류: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            try {
+                response.getWriter().write("파라미터 오류: " + e.getMessage());
+            } catch (Exception ex) {
+                log.error("에러 응답 작성 실패", ex);
+            }
+        } catch (Exception e) {
+            log.error("주문 엑셀 내보내기 중 오류 발생", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            try {
+                response.getWriter().write("엑셀 파일 생성 중 오류가 발생했습니다.");
+            } catch (Exception ex) {
+                log.error("에러 응답 작성 실패", ex);
+            }
+        }
     }
 }

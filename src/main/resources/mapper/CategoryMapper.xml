@@ -58,7 +58,7 @@
     <select id="getSpecialSalePrice" parameterType="int" resultType="int">
         select special_sale_price
         from special_sale
-        where product_code = #{productCode}
+        where product_code = #{productCode} AND active = 1
     </select>
 
 </mapper>

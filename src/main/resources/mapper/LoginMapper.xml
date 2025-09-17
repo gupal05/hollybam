@@ -29,4 +29,10 @@
         where mem_id = #{googleId}
     </select>
 
+    <update id="upMemberTestPassword" parameterType="map">
+        update member
+        set mem_pw = #{data.memberPw}
+        where hollybam.member.mem_id = #{data.memberId}
+    </update>
+
 </mapper>

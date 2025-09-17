@@ -1181,7 +1181,9 @@
                                         onclick="showOrderDetail(this.dataset.orderId)">
                                     상세
                                 </button>
-                                <select class="status-select" th:data-order-id="${order['orderId']}"
+                                <select class="status-select"
+                                        th:data-order-id="${order['orderId']}"
+                                        th:data-order-code="${order['orderCode']}"
                                         onchange="changeOrderStatus(this)">
                                     <option value="">상태변경</option>
                                     <option value="PAYPENDING" th:selected="${order['status'] == 'PAYPENDING'}">결제대기
@@ -1624,13 +1626,14 @@
     // 주문 상태 변경
     function changeOrderStatus(selectElement) {
         const orderId = selectElement.dataset.orderId;
+        const orderCode = selectElement.dataset.orderCode; // 👈 추가
         const newStatus = selectElement.value;
 
         if (!newStatus) return;
 
         // 배송중으로 변경하는 경우 송장번호 입력 모달 표시
         if (newStatus === 'SHIPPING') {
-            showTrackingNumberModal(orderId);
+            showTrackingNumberModal(orderCode, orderId); // 👈
             selectElement.value = ''; // 선택 초기화
             return; // 👈 여기서 return으로 DB 업데이트 안함
         }
@@ -1655,9 +1658,10 @@
         }
     }
 
-    function showTrackingNumberModal(orderId) {
+    function showTrackingNumberModal(orderCode, orderId) {
         currentSingleOrderId = orderId;
-        document.getElementById('singleOrderId').textContent = orderId;
+        document.getElementById('singleOrderId').value = orderId;
+        document.getElementById('orderCode').value = orderCode; // 👈 여기 추가
         document.getElementById('singleTrackingNumber').value = '';
         document.getElementById('trackingNumberModal').style.display = 'block';
 
@@ -1907,8 +1911,72 @@
 
     // Excel 내보내기
     function exportOrders() {
-        console.log('Excel 내보내기');
-        alert('Excel 파일을 다운로드합니다.');
+        try {
+            // 현재 설정된 날짜 필터 값 가져오기
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            // 날짜 유효성 검사
+            if (startDate && endDate && startDate > endDate) {
+                alert('시작일이 종료일보다 늦을 수 없습니다.');
+                return;
+            }
+
+            // URL 파라미터 구성
+            const params = new URLSearchParams();
+            if (startDate) {
+                params.append('startDate', startDate);
+            }
+            if (endDate) {
+                params.append('endDate', endDate);
+            }
+
+            // 엑셀 내보내기 URL 생성
+            const exportUrl = `/admin/order/export?${params.toString()}`;
+
+            // 로딩 상태 표시
+            const originalText = event.target.textContent;
+            event.target.textContent = '내보내는 중...';
+            event.target.disabled = true;
+
+            // 임시 링크 생성하여 다운로드 실행
+            const link = document.createElement('a');
+            link.href = exportUrl;
+            link.download = ''; // 브라우저가 파일명을 서버에서 받아옴
+
+            // 링크 클릭 이벤트 실행
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // 잠시 후 버튼 상태 원복
+            setTimeout(() => {
+                event.target.textContent = originalText;
+                event.target.disabled = false;
+
+                // 성공 메시지 표시
+                if (startDate || endDate) {
+                    const dateRange = startDate && endDate ?
+                        `${startDate} ~ ${endDate}` :
+                        startDate ? `${startDate} 이후` : `${endDate} 이전`;
+                    alert(`${dateRange} 기간의 주문 데이터를 엑셀 파일로 다운로드합니다.`);
+                } else {
+                    alert('전체 주문 데이터를 엑셀 파일로 다운로드합니다.');
+                }
+            }, 1000);
+
+            console.log('엑셀 내보내기 요청:', exportUrl);
+
+        } catch (error) {
+            console.error('엑셀 내보내기 오류:', error);
+            alert('엑셀 파일 다운로드 중 오류가 발생했습니다.');
+
+            // 오류 발생 시 버튼 상태 원복
+            if (event.target) {
+                event.target.textContent = 'Excel 내보내기';
+                event.target.disabled = false;
+            }
+        }
     }
 
     // 로그아웃
@@ -2004,6 +2072,16 @@
     }
 
     document.addEventListener('DOMContentLoaded', showSearchStatus);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 엑셀 내보내기 버튼 찾기
+        const exportButton = document.querySelector('button[onclick="exportOrders()"]');
+        if (exportButton) {
+            // 기존 onclick 제거하고 새로운 이벤트 리스너 추가
+            exportButton.removeAttribute('onclick');
+            exportButton.addEventListener('click', exportOrders);
+        }
+    });
 </script>
 </body>
 </html>

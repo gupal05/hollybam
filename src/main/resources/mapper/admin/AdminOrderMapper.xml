@@ -954,4 +954,85 @@
     <select id="countOrdersTotal" resultType="int">
         SELECT COUNT(*) FROM orders
     </select>
+
+    <!-- 엑셀 내보내기용 주문 데이터 조회 -->
+    <select id="getOrdersForExcel" parameterType="map" resultType="map">
+        <![CDATA[
+    SELECT
+        o.order_id AS orderNumber,
+        o.delivery_request AS deliveryMessage,
+        o.total_amount AS totalAmountBeforeDiscount,
+        o.final_amount AS finalAmount,
+        p.product_id AS productId,
+        p.product_name AS productName,
+        CASE
+            WHEN po.option_code IS NOT NULL THEN CONCAT(po.option_name, ': ', po.option_value)
+            ELSE NULL
+        END AS optionName,
+        oi.quantity AS quantity,
+        o.receiver_name AS receiverName,
+        o.receiver_phone AS receiverPhone,
+        o.receiver_zip AS receiverZip,
+        o.receiver_addr AS receiverAddr,
+        o.receiver_addr_detail AS receiverAddrDetail,
+        CASE
+            WHEN o.payment_status = 'PENDING' THEN '결제 대기'
+            WHEN o.payment_status = 'PAID' THEN '결제 완료'
+            ELSE o.payment_status
+        END AS paymentStatus,
+        CASE
+            WHEN o.payment_method = 'card' THEN '카드'
+            WHEN o.payment_method = 'bank' THEN '무통장입금'
+            ELSE o.payment_method
+        END AS paymentMethod,
+        c.coupon_id AS couponId,
+        d.discount_id AS discountCodeId,
+        delivery.shipped_at AS shippingStartDate,
+        o.create_at AS orderDate
+    FROM orders o
+    INNER JOIN order_items oi ON o.order_code = oi.order_code
+    INNER JOIN product p ON oi.product_code = p.product_code
+    LEFT JOIN product_option po ON oi.option_code = po.option_code
+    LEFT JOIN (
+        SELECT DISTINCT d.order_code, d.shipped_at
+        FROM delivery d
+        WHERE d.delivery_status IN ('SHIPPING', 'DELIVERED')
+    ) delivery ON o.order_code = delivery.order_code
+    LEFT JOIN (
+        SELECT cm.order_code, c.coupon_id
+        FROM coupon_member cm
+        INNER JOIN coupon c ON cm.coupon_code = c.coupon_code
+        WHERE cm.used = 1
+    ) c ON o.order_code = c.order_code
+    LEFT JOIN (
+        SELECT dcu.order_code, d.discount_id
+        FROM discount_code_usage dcu
+        INNER JOIN discount d ON dcu.discount_code = d.discount_code
+    ) d ON o.order_code = d.order_code
+    WHERE 1=1
+        AND o.payment_status NOT IN ('FAILED', 'CANCELLED', 'REFUNDED')
+        AND (o.order_status IS NULL OR o.order_status NOT IN ('CANCELLED', 'REFUNDED', 'RETURN_REQUESTED', 'REFUND_PENDING'))
+    ]]>
+
+        <!-- 날짜 필터링 조건 -->
+        <if test="startDate != null and startDate != ''">
+            AND DATE(o.create_at) >= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND DATE(o.create_at) &lt;= #{endDate}
+        </if>
+
+        ORDER BY o.create_at DESC, o.order_code ASC, oi.order_item_code ASC
+    </select>
+    
+    <select id="getOrdererName" parameterType="int" resultType="String">
+        select orders.orderer_name as ordererName
+        from orders
+        where order_code = #{orderCode}
+    </select>
+    <select id="getOrdererPhone" parameterType="int" resultType="String">
+        select orders.orderer_phone as ordererPhone
+        from orders
+        where order_code = #{orderCode}
+    </select>
 </mapper>

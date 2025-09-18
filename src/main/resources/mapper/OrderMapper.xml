@@ -35,14 +35,16 @@
     </resultMap>
 
     <!-- 주문 등록 -->
-    <insert id="insertOrder" parameterType="com.hollybam.hollybam.dto.OrderDto" useGeneratedKeys="true" keyProperty="orderCode">
+    <insert id="insertOrder" parameterType="com.hollybam.hollybam.dto.OrderDto"
+            useGeneratedKeys="true" keyProperty="orderCode">
         INSERT INTO orders (
             order_id, mem_code, guest_code, orderer_name, orderer_phone, orderer_email,
             receiver_name, receiver_phone, receiver_zip, receiver_addr, receiver_addr_detail,
             delivery_request, payment_method, total_amount, discount_amount, delivery_fee,
             final_amount, payment_status, adult_verified, adult_verified_at, depositor_name
         ) VALUES (
-                     #{orderId}, #{memCode}, #{guestCode}, #{ordererName}, #{ordererPhone}, #{ordererEmail},
+                     CONCAT(#{orderId}, '_', #{memberCode}),
+                     #{memCode}, #{guestCode}, #{ordererName}, #{ordererPhone}, #{ordererEmail},
                      #{receiverName}, #{receiverPhone}, #{receiverZip}, #{receiverAddr}, #{receiverAddrDetail},
                      #{deliveryRequest}, #{paymentMethod}, #{totalAmount}, #{discountAmount}, #{deliveryFee},
                      #{finalAmount}, #{paymentStatus}, #{adultVerified}, #{adultVerifiedAt}, #{depositorName}

@@ -57,4 +57,6 @@ public class OrderDto {
     private List<OrderItemDto> orderItems;
     private MemberDto memberDto;
     private DeliveryDto deliveryDto;
+
+    private int memberCode;
 }

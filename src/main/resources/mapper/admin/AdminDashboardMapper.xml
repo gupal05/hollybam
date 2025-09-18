@@ -227,9 +227,10 @@
                                 ELSE 0
                                 END
                     ), 0
-                  )
+                  ) AS valid_order_count
         FROM orders
-        WHERE payment_status != 'FAILED' AND order_status != 'REFUND_PENDING'
+        WHERE (payment_status IS NULL OR payment_status != 'FAILED')
+          AND (order_status IS NULL OR order_status != 'REFUND_PENDING')
     </select>
 
 

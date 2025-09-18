@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hollybam.hollybam.dao.admin.IF_AdminMemberDao">
+
+    <!-- 관리자용 회원 목록 조회 -->
+    <select id="selectMemberList" parameterType="map" resultType="map">
+        SELECT
+        m.mem_code as memberCode,
+        m.mem_name as memberName,
+        m.mem_phone as memberPhone,
+        CASE
+        WHEN m.mem_login_type IS NULL OR m.mem_login_type = '' THEN '일반가입'
+        WHEN m.mem_login_type = 'naver' THEN '네이버'
+        WHEN m.mem_login_type = 'google' THEN '구글'
+        WHEN m.mem_login_type = 'kakao' THEN '카카오'
+        ELSE m.mem_login_type
+        END as loginType,
+        m.mem_gender as gender,
+        CASE
+        WHEN o.order_count > 0 THEN 'O'
+        ELSE 'X'
+        END as hasPurchase,
+        DATE_FORMAT(m.adult_verified_at, '%Y-%m-%d %H:%i:%s') as adultVerifiedAt,
+        DATE_FORMAT(m.create_at, '%Y-%m-%d %H:%i:%s') as joinDate
+        FROM member m
+        LEFT JOIN (
+        SELECT
+        mem_code,
+        COUNT(*) as order_count
+        FROM orders
+        WHERE mem_code IS NOT NULL
+        GROUP BY mem_code
+        ) o ON m.mem_code = o.mem_code
+        WHERE m.is_deleted = 0
+
+        <!-- 검색 조건 -->
+        <if test="params.searchType != null and params.searchType != '' and params.searchKeyword != null and params.searchKeyword != ''">
+            <choose>
+                <when test="params.searchType == 'name'">
+                    AND m.mem_name LIKE CONCAT('%', #{params.searchKeyword}, '%')
+                </when>
+                <when test="params.searchType == 'phone'">
+                    AND m.mem_phone LIKE CONCAT('%', #{params.searchKeyword}, '%')
+                </when>
+                <when test="params.searchType == 'id'">
+                    AND m.mem_id LIKE CONCAT('%', #{params.searchKeyword}, '%')
+                </when>
+            </choose>
+        </if>
+
+        <!-- 가입 경로 필터 -->
+        <if test="params.loginType != null and params.loginType != ''">
+            <choose>
+                <when test="params.loginType == 'normal'">
+                    AND (m.mem_login_type IS NULL OR m.mem_login_type = '')
+                </when>
+                <otherwise>
+                    AND m.mem_login_type = #{params.loginType}
+                </otherwise>
+            </choose>
+        </if>
+
+        <!-- 성별 필터 -->
+        <if test="params.gender != null and params.gender != ''">
+            AND m.mem_gender = #{params.gender}
+        </if>
+
+        <!-- 구매 여부 필터 -->
+        <if test="params.hasPurchase != null and params.hasPurchase != ''">
+            <choose>
+                <when test="params.hasPurchase == 'Y'">
+                    AND o.order_count > 0
+                </when>
+                <when test="params.hasPurchase == 'N'">
+                    AND (o.order_count IS NULL OR o.order_count = 0)
+                </when>
+            </choose>
+        </if>
+
+        <!-- 정렬 -->
+        <choose>
+            <when test="params.sortBy == 'name'">
+                ORDER BY m.mem_name
+            </when>
+            <when test="params.sortBy == 'joinDate'">
+                ORDER BY m.create_at
+            </when>
+            <when test="params.sortBy == 'adultVerified'">
+                ORDER BY m.adult_verified_at
+            </when>
+            <otherwise>
+                ORDER BY m.create_at
+            </otherwise>
+        </choose>
+
+        <choose>
+            <when test="params.sortOrder == 'asc'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+
+        <!-- 페이징 -->
+        LIMIT #{params.offset}, #{params.size}
+    </select>
+
+    <!-- 관리자용 회원 총 개수 조회 -->
+    <select id="selectMemberCount" parameterType="map" resultType="int">
+        SELECT COUNT(DISTINCT m.mem_code)
+        FROM member m
+        LEFT JOIN (
+        SELECT
+        mem_code,
+        COUNT(*) as order_count
+        FROM orders
+        WHERE mem_code IS NOT NULL
+        GROUP BY mem_code
+        ) o ON m.mem_code = o.mem_code
+        WHERE m.is_deleted = 0
+
+        <!-- 검색 조건 (위와 동일) -->
+        <if test="params.searchType != null and params.searchType != '' and params.searchKeyword != null and params.searchKeyword != ''">
+            <choose>
+                <when test="params.searchType == 'name'">
+                    AND m.mem_name LIKE CONCAT('%', #{params.searchKeyword}, '%')
+                </when>
+                <when test="params.searchType == 'phone'">
+                    AND m.mem_phone LIKE CONCAT('%', #{params.searchKeyword}, '%')
+                </when>
+                <when test="params.searchType == 'id'">
+                    AND m.mem_id LIKE CONCAT('%', #{params.searchKeyword}, '%')
+                </when>
+            </choose>
+        </if>
+
+        <!-- 가입 경로 필터 -->
+        <if test="params.loginType != null and params.loginType != ''">
+            <choose>
+                <when test="params.loginType == 'normal'">
+                    AND (m.mem_login_type IS NULL OR m.mem_login_type = '')
+                </when>
+                <otherwise>
+                    AND m.mem_login_type = #{params.loginType}
+                </otherwise>
+            </choose>
+        </if>
+
+        <!-- 성별 필터 -->
+        <if test="params.gender != null and params.gender != ''">
+            AND m.mem_gender = #{params.gender}
+        </if>
+
+        <!-- 구매 여부 필터 -->
+        <if test="params.hasPurchase != null and params.hasPurchase != ''">
+            <choose>
+                <when test="params.hasPurchase == 'Y'">
+                    AND o.order_count > 0
+                </when>
+                <when test="params.hasPurchase == 'N'">
+                    AND (o.order_count IS NULL OR o.order_count = 0)
+                </when>
+            </choose>
+        </if>
+    </select>
+
+</mapper>

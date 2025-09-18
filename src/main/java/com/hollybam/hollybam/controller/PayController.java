@@ -174,7 +174,16 @@ public class PayController {
                     session.removeAttribute("pendingGuest");
                     session.removeAttribute("tempOrderId");
 
-                    return "redirect:/order/order-complete/" + order.getOrderId();
+                    int memberCode = 0;
+                    if(session.getAttribute("member") != null){
+                        MemberDto mem = (MemberDto) session.getAttribute("member");
+                        memberCode = mem.getMemberCode();
+                    } else if (session.getAttribute("guest") != null) {
+                        GuestDto gu = (GuestDto) session.getAttribute("guest");
+                        memberCode = gu.getGuestCode();
+                    }
+                    String id = order.getOrderId()+"_"+memberCode;
+                    return "redirect:/order/order-complete/" + id;
 
                 } catch (Exception e) {
                     log.error("결제 성공 후 주문 생성 실패", e);

@@ -945,7 +945,9 @@
     </select>
 
     <select id="countOrdersTotal" resultType="int">
-        SELECT COUNT(*) FROM orders where order_status != 'REFUND_PENDING'
+        SELECT COUNT(*)
+        FROM orders
+        WHERE order_status IS NULL OR order_status != 'REFUND_PENDING'
     </select>
 
     <!-- 엑셀 내보내기용 주문 데이터 조회 -->

@@ -57,6 +57,15 @@ public class OrderServiceImpl implements IF_OrderService {
 
             OrderDto order = createOrderFromData(orderData, cartItems);
             order.setDiscountAmount(order.getDiscountAmount() + usePoints);
+            int memberCode = 0;
+            if(session.getAttribute("member") != null){
+                MemberDto member = (MemberDto) session.getAttribute("member");
+                memberCode = member.getMemberCode();
+            } else if (session.getAttribute("guest") != null) {
+                GuestDto guest = (GuestDto) session.getAttribute("guest");
+                memberCode = guest.getGuestCode();
+            }
+            order.setMemberCode(memberCode);
             orderDao.insertOrder(order);
             log.info("주문 저장 완료. 주문코드: {}", order.getOrderCode());
 
@@ -140,6 +149,15 @@ public class OrderServiceImpl implements IF_OrderService {
 
             OrderDto order = createOrderFromData(orderData, null);
             order.setDiscountAmount(order.getDiscountAmount() + usePoints);
+            int memberCode = 0;
+            if(session.getAttribute("member") != null){
+                MemberDto member = (MemberDto) session.getAttribute("member");
+                memberCode = member.getMemberCode();
+            } else if (session.getAttribute("guest") != null) {
+                GuestDto guest = (GuestDto) session.getAttribute("guest");
+                memberCode = guest.getGuestCode();
+            }
+            order.setMemberCode(memberCode);
             orderDao.insertOrder(order);
             log.info("바로 구매 주문 저장 완료. 주문코드: {}", order.getOrderCode());
             session.setAttribute("orderData", orderData);
@@ -341,7 +359,25 @@ public class OrderServiceImpl implements IF_OrderService {
     @Transactional(readOnly = true)
     public OrderDto getOrderDetail(String orderId) throws Exception {
         try {
-            OrderDto order = orderDao.selectOrderByOrderId(orderId);
+            int memberCode = 0;
+            if(session.getAttribute("member") != null){
+                MemberDto member = (MemberDto) session.getAttribute("member");
+                memberCode = member.getMemberCode();
+            } else if (session.getAttribute("guest") != null) {
+                GuestDto guest = (GuestDto) session.getAttribute("guest");
+                memberCode = guest.getGuestCode();
+            }
+            String originId = orderId; // 예시
+            String[] parts = originId.split("_");
+            String processedOrderId;
+
+            // 4개 조각일 경우 마지막 파트 제거
+            if (parts.length == 4) {
+                processedOrderId = String.join("_", parts[0], parts[1], parts[2]);
+            } else {
+                processedOrderId = originId;
+            }
+            OrderDto order = orderDao.selectOrderByOrderId(processedOrderId);
             if (order == null) {
                 throw new Exception("주문을 찾을 수 없습니다: " + orderId);
             }
@@ -522,6 +558,15 @@ public class OrderServiceImpl implements IF_OrderService {
 
             // 주문 기본 정보 생성
             OrderDto order = createOrderFromData(orderData, null);
+            int memberCode = 0;
+            if(session.getAttribute("member") != null){
+                MemberDto member = (MemberDto) session.getAttribute("member");
+                memberCode = member.getMemberCode();
+            } else if (session.getAttribute("guest") != null) {
+                GuestDto guest = (GuestDto) session.getAttribute("guest");
+                memberCode = guest.getGuestCode();
+            }
+            order.setMemberCode(memberCode);
             orderDao.insertOrder(order);
             log.info("임시 주문 저장 완료. 주문코드: {}", order.getOrderCode());
 
@@ -700,6 +745,15 @@ public class OrderServiceImpl implements IF_OrderService {
         List<CartDto> cartItems = paymentDao.selectCartItemsWithDetails(cartCodes);
         OrderDto order = createOrderFromData(orderData, cartItems);
         order.setDiscountAmount(order.getDiscountAmount() + usePoints);
+        int memberCode = 0;
+        if(session.getAttribute("member") != null){
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            memberCode = member.getMemberCode();
+        } else if (session.getAttribute("guest") != null) {
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+            memberCode = guest.getGuestCode();
+        }
+        order.setMemberCode(memberCode);
         orderDao.insertOrder(order);
         List<OrderItemDto> orderItems = createOrderItemsFromCart(order.getOrderCode(), cartItems);
         orderDao.insertOrderItems(orderItems);
@@ -749,6 +803,15 @@ public class OrderServiceImpl implements IF_OrderService {
         int usePoints = Integer.parseInt(String.valueOf(orderData.get("usePoints")));
         OrderDto order = createOrderFromData(orderData, null);
         order.setDiscountAmount(order.getDiscountAmount() + usePoints);
+        int memberCode = 0;
+        if(session.getAttribute("member") != null){
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            memberCode = member.getMemberCode();
+        } else if (session.getAttribute("guest") != null) {
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+            memberCode = guest.getGuestCode();
+        }
+        order.setMemberCode(memberCode);
         orderDao.insertOrder(order);
         int productCode = (Integer) orderData.get("productCode");
         Integer optionCode = (Integer) orderData.get("optionCode");

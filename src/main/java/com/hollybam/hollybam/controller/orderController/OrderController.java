@@ -579,10 +579,18 @@ public class OrderController {
      * 주문 완료 페이지
      */
     @GetMapping("/order-complete/{orderId}")
-    public ModelAndView orderComplete(@PathVariable String orderId) {
+    public ModelAndView orderComplete(HttpSession session, @PathVariable String orderId) {
         ModelAndView mav = new ModelAndView();
         try {
-            OrderDto order = orderService.getOrderDetail(orderId);
+            int memberCode = 0;
+            if(session.getAttribute("member") != null){
+                MemberDto member = (MemberDto) session.getAttribute("member");
+                memberCode = member.getMemberCode();
+            } else if (session.getAttribute("guest") != null) {
+                GuestDto guest = (GuestDto) session.getAttribute("guest");
+                memberCode = guest.getGuestCode();
+            }
+            OrderDto order = orderService.getOrderDetail(orderId+"_"+memberCode);
             List<Map<String, Object>> orderDetails = orderService.getOrderDetails(order.getOrderCode());
             mav.addObject("orderDetails", orderDetails);
             System.out.println("주문 후 디테일 : "+orderDetails);
@@ -976,8 +984,18 @@ public class OrderController {
         Map<String, Object> response = new HashMap<>();
         System.out.println("오더 : "+orderData);
         OrderDto order = orderService.createOrderByBank(orderData, session);
+        int memberCode = 0;
+        if(session.getAttribute("member") != null){
+            MemberDto member = (MemberDto) session.getAttribute("member");
+            memberCode = member.getMemberCode();
+        } else if (session.getAttribute("guest") != null) {
+            GuestDto guest = (GuestDto) session.getAttribute("guest");
+            memberCode = guest.getGuestCode();
+        }
+        order.setMemberCode(memberCode);
         response.put("success", true);
-        response.put("orderId", order.getOrderId());
+        response.put("orderId", order.getOrderId()+"_"+memberCode);
+        System.out.println("화아아아아악인 : "+response.get("orderId").toString());
         return ResponseEntity.ok(response);
     }
 

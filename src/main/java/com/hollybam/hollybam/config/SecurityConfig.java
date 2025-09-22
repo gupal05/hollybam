@@ -38,9 +38,9 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .sessionFixation().changeSessionId()
+                        .sessionFixation().none() // ← changeSessionId() → none()으로 변경
                         .invalidSessionUrl("/")
-                        .maximumSessions(3)
+                        .maximumSessions(5) // ← 3 → 5로 증가
                         .maxSessionsPreventsLogin(false)
                         .sessionRegistry(sessionRegistry())
                 )

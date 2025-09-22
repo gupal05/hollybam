@@ -86,7 +86,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         // startsWith로 체크하는 경로들
         String[] prefixPaths = {
                 "/css/", "/js/", "/images/", "/favicon.ico",
-                "/auth/", "/nice/", "/naver/", "/google/", "/error"
+                "/auth/", "/nice/", "/naver/", "/google/", "/error", "/pay/"
         };
 
         return Arrays.stream(prefixPaths).anyMatch(requestURI::startsWith);

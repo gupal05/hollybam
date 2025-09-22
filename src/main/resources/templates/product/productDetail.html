@@ -1417,7 +1417,7 @@
                                 <div class="delivery-main">
                                     <span class="highlight">오후 1시 이전</span> 주문 시 당일 발송
                                 </div>
-                                <div class="delivery-sub">무료배송 (3만원 이상 구매시)</div>
+                                <div class="delivery-sub">무료배송 (5만원 이상 구매시)</div>
                             </div>
                         </div>
                     </div>
@@ -1636,9 +1636,6 @@
                             <div class="reviewer-info">
                                 <h4 th:text="${review.writerName}">김○○</h4>
                                 <p>
-                                    <span th:text="${review.writerAge}">20대</span>
-                                    <span th:text="${review.writerGender == '남자' ? '남성' : '여성'}">여성</span>
-                                    ·
                                     <span th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2024.07.15</span>
                                 </p>
                             </div>
@@ -1702,7 +1699,7 @@
                             </div>
                             <div class="shipping-row">
                                 <span class="shipping-label">배송비</span>
-                                <span class="shipping-value"><span class="shipping-highlight">무료배송</span> (3만원 이상)</span>
+                                <span class="shipping-value"><span class="shipping-highlight">무료배송</span> (5만원 이상)</span>
                             </div>
                             <div class="shipping-row">
                                 <span class="shipping-label">배송기간</span>

@@ -581,7 +581,8 @@
             </div>
             <div class="review-footer">
               <div class="author-info">
-                <div class="author-name" th:text="${review.writerName}">작성자명</div>
+                <div class="author-name"
+                     th:text="${#strings.substring(review.writerName, 0, 1) + '**'}">작성자명</div>
                 <div class="review-date" th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2025.07.10</div>
               </div>
               <div class="review-likes" th:data-review-code="${review.review_code}" th:classappend="${review.isLiked == 1} ? 'liked' : ''">
@@ -779,6 +780,11 @@
 
       // 좋아요 상태에 따른 클래스 및 아이콘
       const likedClass = review.isLiked ? 'liked' : '';
+      const maskedWriterName = review.writerName
+              ? (review.writerName.length === 2
+                      ? review.writerName[0] + '*'
+                      : review.writerName[0] + '**')
+              : '';
 
       const cardHtml = `
         <div class="review-card ${isPhotoReview ? 'photo-review' : 'text-review'}" data-review-code="${review.review_code}">
@@ -802,7 +808,7 @@
             <div class="review-text">${review.content}</div>
             <div class="review-footer">
               <div class="author-info">
-                <div class="author-name">${review.writerName}</div>
+                <div class="author-name">${maskedWriterName}</div>
                 <div class="review-date">${reviewDate}</div>
               </div>
               <div class="review-likes ${likedClass}" data-review-code="${review.review_code}">

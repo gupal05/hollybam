@@ -58,9 +58,9 @@ public class HomeController {
         String userAgent = request.getHeader("User-Agent");
         String deviceType = detectDevice(userAgent);
         System.out.println(deviceType);
-        if(session.getAttribute("member") != null){
+        if (session.getAttribute("pendingOrderData") == null) {
+            // 결제 진행 중이 아닐 때만 세션 삭제
             session.removeAttribute("member");
-        } else if(session.getAttribute("guest") != null){
             session.removeAttribute("guest");
         }
         try {

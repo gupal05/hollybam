@@ -3092,6 +3092,8 @@
                     document.getElementById("ediDate").value = data.ediDate;
                     document.getElementById("encData").value = data.encData;
                     document.getElementById("userIp").value = data.userIp;
+                    // ✅ ordNo 저장 (hidden input이나 localStorage)
+                    localStorage.setItem("ordNo", data.ordNo);
 
                     isPaymentProcessing = true;
 

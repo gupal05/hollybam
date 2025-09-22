@@ -148,8 +148,14 @@ public class PayController {
                         throw new Exception("주문 타입을 판단할 수 없습니다.");
                     }
 
+                    String mc = null;
+                    if(member != null){
+                        mc = String.valueOf(member.getMemberCode());
+                    } else if(guest != null){
+                        mc = String.valueOf(guest.getGuestCode());
+                    }
                     // PAID 상태로 설정
-                    orderService.updatePaymentStatus(order.getOrderId(), "PAID");
+                    orderService.updatePaymentStatus(order.getOrderId()+"_"+mc, "PAID");
 
                     // 결제 로그 저장
                     PaymentLogDto paymentLogDto = new PaymentLogDto();
@@ -213,7 +219,13 @@ public class PayController {
                             throw new Exception("주문 타입을 판단할 수 없습니다.");
                         }
 
-                        orderService.updatePaymentStatus(order.getOrderId(), "FAILED");
+                        String mcd = null;
+                        if(member != null){
+                            mcd = String.valueOf(member.getMemberCode());
+                        } else if(guest != null){
+                            mcd = String.valueOf(guest.getGuestCode());
+                        }
+                        orderService.updatePaymentStatus(order.getOrderId()+"_"+mcd, "FAILED");
 
                         // 결제 실패 로그 저장
                         PaymentLogDto paymentLogDto = new PaymentLogDto();

@@ -2,6 +2,8 @@ package com.hollybam.hollybam.services;
 
 import com.hollybam.hollybam.dao.IF_CouponDao;
 import com.hollybam.hollybam.dto.CouponDto;
+import com.hollybam.hollybam.dto.MemberDto;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -149,5 +151,15 @@ public class CouponService implements IF_CouponService {
 
     public Map<String, Object> selectCouponStats(){
         return couponDao.selectCouponStats();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getBuyCouponDate(){
+        return couponDao.getBuyCouponDate();
+    }
+
+    @Transactional
+    public void deleteBuyCoupon(int cmCode){
+        couponDao.deleteBuyCoupon(cmCode);
     }
 }

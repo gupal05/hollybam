@@ -254,4 +254,17 @@
             SUM(CASE WHEN issued_at &gt; CURDATE() THEN 1 ELSE 0 END) as pending_coupons
         FROM coupon
     </select>
+
+    <select id="getBuyCouponDate" resultType="map">
+        select issued_at as issuedAt,
+               coupon_member_code as cmCode
+        from hollybam.coupon_member
+        where coupon_code = 2
+    </select>
+
+    <delete id="deleteBuyCoupon" parameterType="int">
+        delete
+        from hollybam.coupon_member
+        where hollybam.coupon_member.coupon_member_code = #{cmCode} AND hollybam.coupon_member.coupon_code = 2
+    </delete>
 </mapper>

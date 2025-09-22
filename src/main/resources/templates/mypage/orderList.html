@@ -3738,118 +3738,122 @@
         }
     }
 
-    /* ===== 제출: 서버 견적 → 최종 신청 ===== */
-    async function submitCancelReturn(){
-        const reason = document.getElementById('cancelReason').value;
-        const selectedProducts = getSelectedProducts();
-
-        if (!reason) {
-            alert('사유를 선택해주세요.');
-            return;
-        }
-        if (selectedProducts.length === 0) {
-            alert('취소/반품할 상품을 선택해주세요.');
-            return;
-        }
-
-        const orderCode = document.getElementById('cr_orderCode').value;
-        const actionType = document.getElementById('cr_actionType').value;
-
-        // 저장된 견적이 있는지 확인
-        let quote = window.lastRefundQuote;
-
-        // 견적이 없거나 상품/사유가 변경된 경우 새로 계산
-        if (!quote || !isQuoteValid(quote, selectedProducts, reason)) {
-            console.log('견적 재계산 필요');
-
-            const isFullRefund =
-                selectedProducts.length === totalProductsCount &&
-                selectedProducts.every(p => p.selectedQuantity === p.originalQuantity);
-
-            const payload = {
-                orderCode: Number(orderCode),
-                actionType,
-                cancelReason: reason,
-                fullRefund: isFullRefund,
-                products: selectedProducts.map(p => ({
-                    orderItemCode: p.orderItemCode,
-                    selectedQuantity: p.selectedQuantity
-                }))
-            };
-
-            try {
-                const res = await fetch('/mypage/order/refund-quote', {
-                    method:'POST',
-                    headers:{ 'Content-Type':'application/json', [getCSRFHeader()]:getCSRFToken() },
-                    body: JSON.stringify(payload)
-                });
-                quote = await res.json();
-            } catch(e){
-                console.error(e);
-                alert('환불 금액 계산 중 오류가 발생했습니다.');
-                return;
-            }
-
-            if (!quote || !quote.success) {
-                alert(quote?.message || '환불 금액 계산 중 오류가 발생했습니다.');
-                return;
-            }
-        }
-
-        // 최종 확인 메시지 표시
-        const confirmMessage = buildConfirmMessage(quote, actionType, selectedProducts.length);
-        if (!confirm(confirmMessage)) {
-            return;
-        }
-
-        // 2) FormData로 최종 신청
-        const fd = new FormData();
-        fd.append('orderCode', orderCode);
-        fd.append('actionType', actionType);
-        fd.append('cancelReason', reason);
-        fd.append('refundAmount', Number(quote.refundAmount||0));
-        fd.append('refundDeliveryFee', Number(quote.deliveryFeeDeduction||0));
-
-        selectedProducts.forEach((p,i)=>{
-            fd.append(`products[${i}].productId`,         p.productId);
-            fd.append(`products[${i}].productName`,       p.productName||'');
-            fd.append(`products[${i}].optionName`,        p.optionName||'');
-            fd.append(`products[${i}].optionValue`,       p.optionValue||'');
-            fd.append(`products[${i}].originalQuantity`,  p.originalQuantity);
-            fd.append(`products[${i}].selectedQuantity`,  p.selectedQuantity);
-            fd.append(`products[${i}].unitPrice`,         p.price);
-            fd.append(`products[${i}].refundAmount`,      0); // 최종 정산은 서버
-        });
-
-        const btn = document.getElementById('submitBtn');
-        btn.disabled = true;
-        btn.textContent = '처리중...';
-
-        $.ajax({
-            url: '/mypage/order/cancel-order-complete',
-            method: 'POST',
-            data: fd,
-            processData: false,
-            contentType: false,
-            success: function(resp){
-                if (resp.success) {
-                    showRefundSuccessMessage(resp, actionType, selectedProducts.length, quote);
-                    closeCancelReturnModal();
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    handleRefundError(resp);
-                }
-            },
-            error: function(xhr, s, e){
-                console.error('AJAX Error:', e);
-                alert('처리 중 오류가 발생했습니다. 다시 시도해주세요.');
-            },
-            complete: function(){
-                btn.disabled = false;
-                btn.textContent = (currentActionType==='return') ? '반품 신청하기' : '취소 신청하기';
-            }
-        });
+    function submitCancelReturn(){
+        alert("주문 취소/환불은 1:1 문의를 이용해주세요");
     }
+
+    /* ===== 제출: 서버 견적 → 최종 신청 ===== */
+    // async function submitCancelReturn(){
+    //     const reason = document.getElementById('cancelReason').value;
+    //     const selectedProducts = getSelectedProducts();
+    //
+    //     if (!reason) {
+    //         alert('사유를 선택해주세요.');
+    //         return;
+    //     }
+    //     if (selectedProducts.length === 0) {
+    //         alert('취소/반품할 상품을 선택해주세요.');
+    //         return;
+    //     }
+    //
+    //     const orderCode = document.getElementById('cr_orderCode').value;
+    //     const actionType = document.getElementById('cr_actionType').value;
+    //
+    //     // 저장된 견적이 있는지 확인
+    //     let quote = window.lastRefundQuote;
+    //
+    //     // 견적이 없거나 상품/사유가 변경된 경우 새로 계산
+    //     if (!quote || !isQuoteValid(quote, selectedProducts, reason)) {
+    //         console.log('견적 재계산 필요');
+    //
+    //         const isFullRefund =
+    //             selectedProducts.length === totalProductsCount &&
+    //             selectedProducts.every(p => p.selectedQuantity === p.originalQuantity);
+    //
+    //         const payload = {
+    //             orderCode: Number(orderCode),
+    //             actionType,
+    //             cancelReason: reason,
+    //             fullRefund: isFullRefund,
+    //             products: selectedProducts.map(p => ({
+    //                 orderItemCode: p.orderItemCode,
+    //                 selectedQuantity: p.selectedQuantity
+    //             }))
+    //         };
+    //
+    //         try {
+    //             const res = await fetch('/mypage/order/refund-quote', {
+    //                 method:'POST',
+    //                 headers:{ 'Content-Type':'application/json', [getCSRFHeader()]:getCSRFToken() },
+    //                 body: JSON.stringify(payload)
+    //             });
+    //             quote = await res.json();
+    //         } catch(e){
+    //             console.error(e);
+    //             alert('환불 금액 계산 중 오류가 발생했습니다.');
+    //             return;
+    //         }
+    //
+    //         if (!quote || !quote.success) {
+    //             alert(quote?.message || '환불 금액 계산 중 오류가 발생했습니다.');
+    //             return;
+    //         }
+    //     }
+    //
+    //     // 최종 확인 메시지 표시
+    //     const confirmMessage = buildConfirmMessage(quote, actionType, selectedProducts.length);
+    //     if (!confirm(confirmMessage)) {
+    //         return;
+    //     }
+    //
+    //     // 2) FormData로 최종 신청
+    //     const fd = new FormData();
+    //     fd.append('orderCode', orderCode);
+    //     fd.append('actionType', actionType);
+    //     fd.append('cancelReason', reason);
+    //     fd.append('refundAmount', Number(quote.refundAmount||0));
+    //     fd.append('refundDeliveryFee', Number(quote.deliveryFeeDeduction||0));
+    //
+    //     selectedProducts.forEach((p,i)=>{
+    //         fd.append(`products[${i}].productId`,         p.productId);
+    //         fd.append(`products[${i}].productName`,       p.productName||'');
+    //         fd.append(`products[${i}].optionName`,        p.optionName||'');
+    //         fd.append(`products[${i}].optionValue`,       p.optionValue||'');
+    //         fd.append(`products[${i}].originalQuantity`,  p.originalQuantity);
+    //         fd.append(`products[${i}].selectedQuantity`,  p.selectedQuantity);
+    //         fd.append(`products[${i}].unitPrice`,         p.price);
+    //         fd.append(`products[${i}].refundAmount`,      0); // 최종 정산은 서버
+    //     });
+    //
+    //     const btn = document.getElementById('submitBtn');
+    //     btn.disabled = true;
+    //     btn.textContent = '처리중...';
+    //
+    //     $.ajax({
+    //         url: '/mypage/order/cancel-order-complete',
+    //         method: 'POST',
+    //         data: fd,
+    //         processData: false,
+    //         contentType: false,
+    //         success: function(resp){
+    //             if (resp.success) {
+    //                 showRefundSuccessMessage(resp, actionType, selectedProducts.length, quote);
+    //                 closeCancelReturnModal();
+    //                 setTimeout(() => location.reload(), 1500);
+    //             } else {
+    //                 handleRefundError(resp);
+    //             }
+    //         },
+    //         error: function(xhr, s, e){
+    //             console.error('AJAX Error:', e);
+    //             alert('처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+    //         },
+    //         complete: function(){
+    //             btn.disabled = false;
+    //             btn.textContent = (currentActionType==='return') ? '반품 신청하기' : '취소 신청하기';
+    //         }
+    //     });
+    // }
 
     function isQuoteValid(quote, selectedProducts, reason) {
         if (!quote || !quote.products) return false;

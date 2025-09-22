@@ -51,4 +51,8 @@ public interface IF_CouponDao {
                           @Param("status") String status);
 
     Map<String, Object> selectCouponStats();
+
+    List<Map<String, Object>> getBuyCouponDate();
+
+    void deleteBuyCoupon(@Param("cmCode") int cmCode);
 }

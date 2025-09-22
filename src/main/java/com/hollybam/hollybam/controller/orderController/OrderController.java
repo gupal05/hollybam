@@ -596,6 +596,9 @@ public class OrderController {
             System.out.println("주문 후 디테일 : "+orderDetails);
             mav.addObject("order", order);
             System.out.println("주문 후 주문 : "+order);
+            if(orderService.isBuyCoupon() > 0){
+                orderService.insBuyCoupon();
+            }
             mav.setViewName("paymentResult");
 
         } catch (Exception e) {

@@ -681,7 +681,7 @@
            class="v4-product"
            th:classappend="${product['productQuantity'] <= 0 ? ' sold-out' : ''}">
 
-        <a th:href="@{/product/{code}(code=${product['productCode']})}"
+        <a th:href="@{/product/{id}(id=${product['productId']})}"
            class="card-product-widget">
 
           <!-- SOLD OUT 뱃지 -->

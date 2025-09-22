@@ -536,6 +536,7 @@
         r.content,
         r.created_at as reviewDate,
         p.product_name as productName,
+        p.product_id as productId,
         img.image_url as productImage,
         ri.image_url as reviewImage,
         COALESCE(rl.like_count, 0) as likeCount,
@@ -588,6 +589,7 @@
         r.content,
         r.created_at as reviewDate,
         p.product_name as productName,
+        p.product_id as productId,
         img.image_url as productImage,
         ri.image_url as reviewImage,
         COALESCE(rl.like_count, 0) as likeCount,
@@ -640,6 +642,7 @@
         r.content,
         r.created_at as reviewDate,
         p.product_name as productName,
+        p.product_id as productId,
         img.image_url as productImage,
         ri.image_url as reviewImage,
         COALESCE(rl.like_count, 0) as likeCount,
@@ -692,6 +695,7 @@
         r.content,
         r.created_at as reviewDate,
         p.product_name as productName,
+        p.product_id as productId,
         img.image_url as productImage,
         COALESCE(rl.like_count, 0) as likeCount,
         CASE
@@ -745,6 +749,7 @@
         r.content,
         r.created_at as reviewDate,
         p.product_name as productName,
+        p.product_id as productId,
         img.image_url as productImage,
         COALESCE(rl.like_count, 0) as likeCount,
         CASE
@@ -798,6 +803,7 @@
         r.content,
         r.created_at as reviewDate,
         p.product_name as productName,
+        p.product_id as productId,
         img.image_url as productImage,
         COALESCE(rl.like_count, 0) as likeCount,
         CASE

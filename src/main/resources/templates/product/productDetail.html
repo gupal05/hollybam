@@ -1559,11 +1559,11 @@
 
         <div class="review-controls">
             <div class="review-type-tabs">
-                <button class="type-tab active" data-type="photo" onclick="switchReviewTab('photo')">
-                    포토리뷰 <span id="photoReviewCount" th:text="'(' + ${reviewCount.photoReviews} + ')'"></span>
-                </button>
-                <button class="type-tab" data-type="text" onclick="switchReviewTab('text')">
+                <button class="type-tab active" data-type="text" onclick="switchReviewTab('text')">
                     텍스트리뷰 <span id="textReviewCount" th:text="'(' + ${reviewCount.textReviews} + ')'"></span>
+                </button>
+                <button class="type-tab" data-type="photo" onclick="switchReviewTab('photo')">
+                    포토리뷰 <span id="photoReviewCount" th:text="'(' + ${reviewCount.photoReviews} + ')'"></span>
                 </button>
             </div>
 
@@ -1586,7 +1586,42 @@
         </div>
 
         <div class="review-list" id="reviewList">
-            <div id="photoReviewSection" style="display: block;">
+            <div id="textReviewSection" style="display: block;">
+                <div th:each="review : ${initialTextReviews}" class="review-item" th:data-review-code="${review.review_code}">
+                    <div class="review-header">
+                        <div class="reviewer-profile">
+                            <div class="reviewer-avatar" th:text="${#strings.substring(review.writerName, 0, 1)}">김</div>
+                            <div class="reviewer-info">
+                                <h4 th:text="${review.writerName}">김○○</h4>
+                                <p>
+                                    <span th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2024.07.15</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="stars">
+                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : ''" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </th:block>
+                        </div>
+                    </div>
+
+                    <div class="review-text" th:text="${review.content}">리뷰 내용</div>
+
+                    <div class="review-actions">
+                        <button class="like-button" th:classappend="${review.isLiked == 1} ? 'liked' : ''"
+                                th:onclick="'toggleReviewLike(' + ${review.review_code} + ', this)'">
+                            <svg class="heart-icon" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span class="like-count" th:text="${review.likeCount}">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="photoReviewSection" style="display: none;">
                 <div th:each="review : ${initialPhotoReviews}" class="review-item" th:data-review-code="${review.review_code}">
                     <div class="review-header">
                         <div class="reviewer-profile">
@@ -1615,41 +1650,6 @@
                     <div class="review-images" th:if="${review.reviewImage}">
                         <img th:src="${review.reviewImage}" alt="리뷰 이미지" onclick="showImageModal(this.src)" class="review-image">
                     </div>
-
-                    <div class="review-actions">
-                        <button class="like-button" th:classappend="${review.isLiked == 1} ? 'liked' : ''"
-                                th:onclick="'toggleReviewLike(' + ${review.review_code} + ', this)'">
-                            <svg class="heart-icon" viewBox="0 0 24 24">
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                            </svg>
-                            <span class="like-count" th:text="${review.likeCount}">0</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="textReviewSection" style="display: none;">
-                <div th:each="review : ${initialTextReviews}" class="review-item" th:data-review-code="${review.review_code}">
-                    <div class="review-header">
-                        <div class="reviewer-profile">
-                            <div class="reviewer-avatar" th:text="${#strings.substring(review.writerName, 0, 1)}">김</div>
-                            <div class="reviewer-info">
-                                <h4 th:text="${review.writerName}">김○○</h4>
-                                <p>
-                                    <span th:text="${#temporals.format(review.reviewDate, 'yyyy.MM.dd')}">2024.07.15</span>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="stars">
-                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                                <svg class="star" th:classappend="${i <= review.rating} ? 'filled' : ''" viewBox="0 0 24 24">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                </svg>
-                            </th:block>
-                        </div>
-                    </div>
-
-                    <div class="review-text" th:text="${review.content}">리뷰 내용</div>
 
                     <div class="review-actions">
                         <button class="like-button" th:classappend="${review.isLiked == 1} ? 'liked' : ''"
@@ -2093,7 +2093,7 @@
     }
 
     // Review functionality
-    let currentTab = 'photo';
+    let currentTab = 'text';
     let currentSort = 'latest';
     let currentRating = null;
     let currentPage = 2;
@@ -2112,8 +2112,8 @@
         });
         document.querySelector(`[data-type="${type}"]`).classList.add('active');
 
-        document.getElementById('photoReviewSection').style.display = type === 'photo' ? 'block' : 'none';
         document.getElementById('textReviewSection').style.display = type === 'text' ? 'block' : 'none';
+        document.getElementById('photoReviewSection').style.display = type === 'photo' ? 'block' : 'none';
 
         // 탭 전환 시 더보기 버튼 표시 여부 업데이트
         updateLoadMoreButton();

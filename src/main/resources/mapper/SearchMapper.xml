@@ -34,6 +34,7 @@
     <select id="searchProductsByPage" parameterType="map" resultType="map">
         SELECT
             p.product_code          AS productCode,
+            p.product_id            AS productId,
             p.product_name          AS productName,
             p.product_description   AS productDescription,
             p.product_quantity      AS productQuantity,

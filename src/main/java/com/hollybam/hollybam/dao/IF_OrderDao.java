@@ -172,4 +172,8 @@ public interface IF_OrderDao {
      * @return 환불 배치 개수
      */
     int countRefundBatchesByOrder(@Param("orderCode") int orderCode);
+
+    int isBuyCoupon();
+
+    void insBuyCoupon();
 }

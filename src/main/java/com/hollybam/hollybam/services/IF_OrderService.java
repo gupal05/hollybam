@@ -71,4 +71,8 @@ public interface IF_OrderService {
      * @return 환불 견적 정보 (refundAmount, deliveryFeeDeduction, discountRollback 등)
      */
     Map<String,Object> computeRefundQuote(Map<String, Object> reqData);
+
+    int isBuyCoupon();
+
+    void insBuyCoupon();
 }

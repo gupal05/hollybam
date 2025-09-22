@@ -947,6 +947,11 @@
       }
     });
   });
+
+  function goProduct(el) {
+    const id = el.dataset.productId;
+    location.href = '/product/' + id;
+  }
 </script>
 </body>
 </html>

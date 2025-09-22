@@ -1472,5 +1472,18 @@ public class OrderServiceImpl implements IF_OrderService {
             return 0;
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int isBuyCoupon(){
+        return orderDao.isBuyCoupon();
+    }
+
+    @Override
+    @Transactional
+    public void insBuyCoupon(){
+        orderDao.insBuyCoupon();
+    }
+
     private static int safe(Integer v) { return v == null ? 0 : v; }
 }

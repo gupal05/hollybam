@@ -876,4 +876,15 @@
         FROM refund_batches
         WHERE order_code = #{orderCode}
     </select>
+
+    <select id="isBuyCoupon" resultType="int">
+        select count(*)
+        from coupon
+        where coupon_code = 2
+    </select>
+
+    <insert id="insBuyCoupon" parameterType="map">
+        INSERT INTO coupon_member (mem_code, coupon_code, used, issued_at)
+        VALUES (#{memberCode}, #{couponCode}, 0, now())
+    </insert>
 </mapper>

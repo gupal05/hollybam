@@ -175,5 +175,5 @@ public interface IF_OrderDao {
 
     int isBuyCoupon();
 
-    void insBuyCoupon();
+    void insBuyCoupon(@Param("memberCode") int memberCode, @Param("couponCode") int couponCode);
 }

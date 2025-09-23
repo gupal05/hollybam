@@ -74,5 +74,5 @@ public interface IF_OrderService {
 
     int isBuyCoupon();
 
-    void insBuyCoupon();
+    void insBuyCoupon(int memberCode, int couponCode);
 }

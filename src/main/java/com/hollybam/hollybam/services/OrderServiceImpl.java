@@ -1481,8 +1481,8 @@ public class OrderServiceImpl implements IF_OrderService {
 
     @Override
     @Transactional
-    public void insBuyCoupon(){
-        orderDao.insBuyCoupon();
+    public void insBuyCoupon(int memberCode, int couponCode){
+        orderDao.insBuyCoupon(memberCode, couponCode);
     }
 
     private static int safe(Integer v) { return v == null ? 0 : v; }

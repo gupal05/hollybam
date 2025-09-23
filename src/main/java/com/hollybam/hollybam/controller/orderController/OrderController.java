@@ -597,7 +597,13 @@ public class OrderController {
             mav.addObject("order", order);
             System.out.println("주문 후 주문 : "+order);
             if(orderService.isBuyCoupon() > 0){
-                orderService.insBuyCoupon();
+                System.out.println("상품 구매 사용자 : "+order.getMemCode());
+                orderService.insBuyCoupon(order.getMemCode(), 2);
+                mav.addObject("buyCoupon", true);
+
+                // 🔍 디버깅 로그 추가
+                System.out.println("🎁 buyCoupon 설정됨: true");
+                System.out.println("🎁 ModelAndView 확인: " + mav.getModel().get("buyCoupon"));
             }
             mav.setViewName("paymentResult");
 

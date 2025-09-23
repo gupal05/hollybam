@@ -318,6 +318,133 @@
             color: #004085;
         }
 
+        /* 쿠폰 팝업 모달 스타일 */
+        .coupon-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .coupon-modal-overlay.show {
+            display: flex !important;
+        }
+
+        .coupon-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.4s ease;
+            overflow: hidden;
+            transform: translate(0, 0);
+        }
+
+        .coupon-image-container {
+            width: 100%;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .coupon-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .coupon-buttons {
+            display: flex;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .coupon-btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            margin: 0;
+        }
+
+        .coupon-btn-primary {
+            background: #EE386D;
+            color: white;
+            border-radius: 0 0 20px 0;
+        }
+
+        .coupon-btn-primary:hover {
+            background: #d63060;
+        }
+
+        .coupon-btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border-radius: 0 0 0 20px;
+        }
+
+        .coupon-btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .coupon-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10000;
+        }
+
+        .coupon-close:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .coupon-close i {
+            font-size: 16px;
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         @media (max-width: 768px) {
             .main-container {
                 padding: 20px 16px;
@@ -348,12 +475,20 @@
             .success-icon i {
                 font-size: 24px;
             }
+
+            .coupon-modal {
+                max-width: 350px;
+                margin: 20px;
+            }
         }
     </style>
 </head>
 <body>
 <!-- 고정 헤더 -->
 <div th:replace="~{layout/header :: header}"></div>
+
+<!-- 디버깅용 hidden input -->
+<input type="hidden" id="buyCouponFlag" th:value="${buyCoupon ?: false}">
 
 <!-- 메인 컨테이너 -->
 <div class="main-container">
@@ -506,14 +641,75 @@
     </div>
 </div>
 
+<!-- 쿠폰 팝업 모달 -->
+<div class="coupon-modal-overlay" id="couponModal">
+    <div class="coupon-modal">
+        <button class="coupon-close" onclick="closeCouponModal()">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <!-- 쿠폰 이미지 -->
+        <div class="coupon-image-container">
+            <!-- 임시 이미지 - 나중에 실제 쿠폰 이미지로 교체 -->
+            <img src="https://hollybam-static-image.s3.ap-northeast-2.amazonaws.com/popup/buy_popup.jpg"
+                 alt="쿠폰 이미지"
+                 class="coupon-image">
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="coupon-buttons">
+            <button class="coupon-btn coupon-btn-secondary" onclick="closeCouponModal()">
+                나중에 사용하기
+            </button>
+            <button class="coupon-btn coupon-btn-primary" onclick="useCoupon()">
+                쿠폰 사용하기
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- 고정 풋터 -->
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
+    // 쿠폰 팝업 관련 함수들
+    function showCouponModal() {
+        console.log('🎁 쿠폰 팝업 표시');
+        $('#couponModal').addClass('show').fadeIn(300);
+        $('body').css('overflow', 'hidden'); // 스크롤 방지
+    }
+
+    function closeCouponModal() {
+        console.log('🎁 쿠폰 팝업 닫기');
+        $('#couponModal').removeClass('show').fadeOut(300);
+        $('body').css('overflow', 'auto'); // 스크롤 복원
+    }
+
+    function useCoupon() {
+        console.log('🎁 쿠폰 사용하기 클릭');
+        // 쿠폰 사용 페이지로 이동 또는 쿠폰 적용 로직
+        closeCouponModal();
+        // 예: window.location.href = '/coupon/use';
+        // 또는 쿠폰 코드를 세션에 저장하고 쇼핑 계속하기
+        window.location.href = '/main';
+    }
+
+    // 모달 배경 클릭 시 닫기
+    $('#couponModal').on('click', function(e) {
+        if (e.target === this) {
+            closeCouponModal();
+        }
+    });
+
+    // ESC 키로 모달 닫기
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape' && $('#couponModal').is(':visible')) {
+            closeCouponModal();
+        }
+    });
+
     // 페이지 로드 시 애니메이션 효과
     $(document).ready(function() {
-        // ========== 기존 애니메이션 코드들... ==========
-
         // 성공 아이콘 애니메이션
         $('.success-icon').css({
             'transform': 'scale(0)',
@@ -537,7 +733,31 @@
         localStorage.removeItem('paymentInfo');
         sessionStorage.removeItem('paymentData');
 
-        // ========== 🆕 즉시 삭제 방지 로직 추가 ==========
+        // 쿠폰 팝업 표시 로직
+        // 여러 방법으로 buyCoupon 값 확인
+
+        // 방법 1: Thymeleaf 인라인 (기존)
+        var buyCouponInline = /*[[${buyCoupon ?: false}]]*/ false;
+
+        // 방법 2: Hidden input에서 가져오기 (가장 확실)
+        var buyCouponInput = $('#buyCouponFlag').val();
+        var buyCoupon = (buyCouponInput === 'true');
+
+        console.log('🎁 buyCoupon 인라인 값:', buyCouponInline, typeof buyCouponInline);
+        console.log('🎁 buyCoupon Input 값:', buyCouponInput, typeof buyCouponInput);
+        console.log('🎁 buyCoupon 최종 값:', buyCoupon, typeof buyCoupon);
+
+        if (buyCoupon === true) {
+            console.log('✅ 쿠폰 팝업 표시 조건 만족 - 1초 후 팝업 표시');
+            // 페이지 로드 애니메이션이 완료된 후 쿠폰 팝업 표시 (1초 후)
+            setTimeout(function() {
+                showCouponModal();
+            }, 1000);
+        } else {
+            console.log('❌ 쿠폰 팝업 표시 조건 불만족');
+        }
+
+        // 기존 즉시 삭제 방지 로직
         console.log('💳 결제 성공 페이지 로드 - 즉시 삭제 시스템 정리');
 
         // 1) 부모 창(opener)의 즉시 삭제 시스템 정리
@@ -592,8 +812,6 @@
         console.log('✅ 결제 성공 페이지 초기화 완료');
     });
 
-    // ========== 기존 뒤로가기 방지 코드... ==========
-
     // 브라우저 뒤로가기 방지 (결제 완료 후)
     history.pushState(null, null, location.href);
     window.addEventListener('popstate', function(event) {
@@ -601,7 +819,7 @@
         history.pushState(null, null, location.href);
     });
 
-    // ========== 🆕 페이지가 닫힐 때도 정리 ==========
+    // 페이지가 닫힐 때도 정리
     window.addEventListener('beforeunload', function() {
         try {
             if (window.opener && typeof window.opener.cleanupInstantDelete === 'function') {

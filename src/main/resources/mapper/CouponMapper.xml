@@ -267,4 +267,10 @@
         from hollybam.coupon_member
         where hollybam.coupon_member.coupon_member_code = #{cmCode} AND hollybam.coupon_member.coupon_code = 2
     </delete>
+
+    <select id="isWelcomeCoupon" parameterType="int" resultType="int">
+        select count(*)
+        from coupon_member
+        where mem_code = #{memberCode} AND coupon_code = 1
+    </select>
 </mapper>

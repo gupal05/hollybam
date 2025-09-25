@@ -52,6 +52,8 @@ public class HomeController {
     private AdminPopupService adminPopupService;
     @Autowired
     private AdminSpecialSaleService adminSpecialSaleService;
+    @Autowired
+    private CouponService couponService;
 
     @GetMapping("/")
     public String introPage(HttpServletRequest request, Model model) {
@@ -208,6 +210,11 @@ public class HomeController {
         String userAgent = request.getHeader("User-Agent");
         String deviceType = detectDevice(userAgent);
         List<Map<String,Object>> bannerList = adminBannerService.getBannerList();
+//        if(session.getAttribute("member") != null){
+//            MemberDto member = (MemberDto)session.getAttribute("member");
+//            System.out.println("화아아아아아악인"+member);
+//            couponService.isWelcomeCoupon(member.getMemberCode());
+//        }
         if(deviceType.equals("pc")){
             proList = productService.selectBestProducts();
         } else {

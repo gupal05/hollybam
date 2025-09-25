@@ -176,4 +176,9 @@ public interface IF_OrderDao {
     int isBuyCoupon();
 
     void insBuyCoupon(@Param("memberCode") int memberCode, @Param("couponCode") int couponCode);
+
+    Integer getMemberOrGuestCode(String phone);
+
+    int isMemberCodeByPhone(@Param("phone") String phone);
+    int isGuestCodeByPhone(@Param("phone") String phone);
 }

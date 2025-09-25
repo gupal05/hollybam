@@ -943,6 +943,7 @@
         p.product_code,
         p.product_id,
         p.product_name,
+        p.product_id,
 
         img.image_code,
         img.image_url,

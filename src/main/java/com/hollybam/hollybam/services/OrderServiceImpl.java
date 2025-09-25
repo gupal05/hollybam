@@ -156,6 +156,9 @@ public class OrderServiceImpl implements IF_OrderService {
             } else if (session.getAttribute("guest") != null) {
                 GuestDto guest = (GuestDto) session.getAttribute("guest");
                 memberCode = guest.getGuestCode();
+            } else {
+                String phone = orderData.get("ordererPhone").toString();
+                memberCode = orderDao.getMemberOrGuestCode(phone);
             }
             order.setMemberCode(memberCode);
             orderDao.insertOrder(order);
@@ -258,6 +261,8 @@ public class OrderServiceImpl implements IF_OrderService {
         OrderDto order = new OrderDto();
         order.setOrderId(generateOrderId());
 
+
+
         if(session.getAttribute("member") != null){
             MemberDto member = (MemberDto) session.getAttribute("member");
             order.setMemCode(member.getMemberCode());
@@ -265,6 +270,12 @@ public class OrderServiceImpl implements IF_OrderService {
         if(session.getAttribute("guest") != null){
             GuestDto guest = (GuestDto) session.getAttribute("guest");
             order.setGuestCode(guest.getGuestCode());
+        } else {
+            if(orderDao.isMemberCodeByPhone(orderData.get("ordererPhone").toString()) > 0){
+                order.setMemCode(orderDao.getMemberOrGuestCode(orderData.get("ordererPhone").toString()));
+            } else if(orderDao.isGuestCodeByPhone(orderData.get("ordererPhone").toString()) > 0){
+                order.setGuestCode(orderDao.getMemberOrGuestCode(orderData.get("ordererPhone").toString()));
+            }
         }
 
         order.setOrdererName((String) orderData.get("ordererName"));

@@ -513,24 +513,23 @@
                         </thead>
                         <tbody>
                         <tr th:each="member : ${members}">
-                            <td th:text="${member.memberName}">홍길동</td>
-                            <td th:text="${member.memberPhone ?: '-'}">010-1234-5678</td>
+                            <td th:text="${member['memberName']}">홍길동</td>
+                            <td th:text="${member['memberPhone'] ?: '-'}">010-1234-5678</td>
                             <td>
-                                <span class="badge badge-secondary" th:text="${member.loginType}">일반가입</span>
+                                <span class="badge badge-secondary" th:text="${member['loginType']}">일반가입</span>
                             </td>
                             <td>
-                                    <span class="badge"
-                                          th:classappend="${member.gender == '남자'} ? 'badge-primary' : 'badge-danger'"
-                                          th:text="${member.gender}">남자</span>
+  <span class="badge"
+        th:classappend="${member['gender'] == '남자'} ? 'badge-primary' : 'badge-danger'"
+        th:text="${member['gender']}">남자</span>
                             </td>
                             <td>
-                                    <span class="badge"
-                                          th:classappend="${member.hasPurchase == 'O'} ? 'badge-success' : 'badge-secondary'"
-                                          th:text="${member.hasPurchase}">O</span>
+  <span class="badge"
+        th:classappend="${member['hasPurchase'] == 'O'} ? 'badge-success' : 'badge-secondary'"
+        th:text="${member['hasPurchase']}">O</span>
                             </td>
-                            <span th:text="${member['adultVerifiedAt'] != null ? member['adultVerifiedAt'] : '-'}"></span>
-
-                            <td th:text="${member.joinDate}">2025-01-15 10:20:15</td>
+                            <td th:text="${member['adultVerifiedAt'] != null ? member['adultVerifiedAt'] : '-'}"></td>
+                            <td th:text="${member['joinDate']}">2025-01-15 10:20:15</td>
                         </tr>
                         </tbody>
                     </table>

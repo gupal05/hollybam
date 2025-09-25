@@ -55,4 +55,6 @@ public interface IF_CouponDao {
     List<Map<String, Object>> getBuyCouponDate();
 
     void deleteBuyCoupon(@Param("cmCode") int cmCode);
+
+    int isWelcomeCoupon(@Param("memberCode") int memberCode);
 }

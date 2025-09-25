@@ -887,4 +887,24 @@
         INSERT INTO coupon_member (mem_code, coupon_code, used, issued_at)
         VALUES (#{memberCode}, #{couponCode}, 0, now())
     </insert>
+
+    <select id="getMemberOrGuestCode" parameterType="string" resultType="int">
+        SELECT
+            COALESCE(m.mem_code, g.guest_code) AS memberCode
+        FROM (SELECT #{phone} AS phone) p
+                 LEFT JOIN member m ON m.mem_phone = p.phone
+                 LEFT JOIN guest g  ON g.guest_phone = p.phone
+    </select>
+
+    <select id="isMemberCodeByPhone" parameterType="String" resultType="int">
+        select count(*)
+        from hollybam.member
+        where mem_phone = #{phone}
+    </select>
+
+    <select id="isGuestCodeByPhone" parameterType="String" resultType="int">
+        select count(*)
+        from hollybam.guest
+        where guest_phone = #{phone}
+    </select>
 </mapper>

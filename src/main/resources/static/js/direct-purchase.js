@@ -475,7 +475,7 @@ function setDiscountButtonLoading(isLoading) {
 }
 
 // 최대 할인 금액 상수 (쿠폰/할인코드만 적용)
-const MAX_DISCOUNT_AMOUNT = 50000; // 5만원
+const MAX_DISCOUNT_AMOUNT = 100000; // 5만원
 
 // 쿠폰 적용 (단독 사용)
 function applyCoupon(selectedOption) {

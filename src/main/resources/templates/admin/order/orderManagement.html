@@ -1485,7 +1485,7 @@
         const productRows = data.orderDetailProductInfo.map(p => `
     <tr>
       <td class="product-name-cell">
-        ${escapeHtml(p.productName)}
+        ${escapeHtml(p.productName)} (${escapeHtml(p.productId)})
         ${p.optionName ? `<div class="product-option">${escapeHtml(p.optionName)} : ${escapeHtml(p.optionValue)}</div>` : ''}
       </td>
       <td class="quantity-cell">${p.quantity}</td>

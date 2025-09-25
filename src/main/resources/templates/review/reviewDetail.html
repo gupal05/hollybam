@@ -726,7 +726,6 @@
                     <div class="author-name" th:text="${review.writerName}">작성자명</div>
                     <div class="author-details">
                         <span th:text="${review.writerAge}">20대</span>
-                        <span th:text="${review.writerGender}">남성</span>
                     </div>
                     <div class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy년 MM월 dd일')}">2025년 01월 15일</div>
                 </div>

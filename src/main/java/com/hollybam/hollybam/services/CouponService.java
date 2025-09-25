@@ -162,4 +162,11 @@ public class CouponService implements IF_CouponService {
     public void deleteBuyCoupon(int cmCode){
         couponDao.deleteBuyCoupon(cmCode);
     }
+
+    @Transactional
+    public void isWelcomeCoupon(int memberCode){
+        if(couponDao.isWelcomeCoupon(memberCode) <= 0){
+            couponDao.giveCouponToMember(memberCode, 1);
+        }
+    }
 }

@@ -21,6 +21,7 @@ public class BestReviewDto {
     private Integer orderItemCode;
     private Integer rating;
     private String content;
+    private String productId;
     private int likeCount;              // 좋아요 수
     private LocalDateTime createdAt;
 

@@ -822,7 +822,9 @@
             </span>
 
             <!-- 페이지 번호 -->
-            <th:block th:with="startPage=${(currentPage - 1) / 5 * 5 + 1}, endPage=${#numbers.arrayMin(new int[]{startPage + 4, totalPages})}">
+            <th:block th:with="
+   startPage=${(currentPage - 1) / 5 * 5 + 1},
+   endPage=${(startPage + 4) > totalPages ? totalPages : (startPage + 4)}">
                 <a th:href="@{/mypage/points(page=${page})}"
                    th:each="page : ${#numbers.sequence(startPage, endPage)}"
                    th:classappend="${page == currentPage ? 'current' : ''}"

@@ -74,6 +74,11 @@ public class ReviewService implements IF_ReviewService {
                         log.info("리뷰 이미지 저장 완료. imageUrl: {}", imageUrl);
                     }
                 }
+                if(reviewDto.getMemCode() != null){
+                    reviewDao.insertPhotoReviewEventPoint(reviewDto);
+                }
+            } else {
+                reviewDao.insertTextReviewEventPoint(reviewDto);
             }
         } catch (Exception e) {
             log.error("리뷰 작성 중 오류 발생", e);

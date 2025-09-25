@@ -52,6 +52,16 @@
         VALUES (#{reviewCode}, #{imageUrl}, #{imageOrder})
     </insert>
 
+    <insert id="insertTextReviewEventPoint" parameterType="com.hollybam.hollybam.dto.ReviewDto">
+        insert into point(mem_code, point_change, point_type, description, related_order_code)
+        values (#{memCode}, 500, 'SAVE', '텍스트 리뷰 작성(500원)', null)
+    </insert>
+
+    <insert id="insertPhotoReviewEventPoint" parameterType="com.hollybam.hollybam.dto.ReviewDto">
+        insert into point(mem_code, point_change, point_type, description, related_order_code)
+        values (#{memCode}, 1000, 'SAVE', '포토 리뷰 작성(1000원)', null)
+    </insert>
+
     <select id="isWroteReview" parameterType="int" resultType="int">
         select count(*)
         from review
@@ -1442,9 +1452,8 @@
 
     <!-- 리뷰 논리 삭제 -->
     <update id="deleteReviewLogical">
-        UPDATE review
-        SET is_active = 0,
-            updated_at = NOW()
+        delete
+        from review
         WHERE review_code = #{reviewCode}
     </update>
 

@@ -19,7 +19,9 @@ public interface IF_ReviewDao {
                             @Param("memCode") Integer memCode,
                             @Param("guestCode") Integer guestCode);
     void insertReview(ReviewDto reviewDto);
+    void insertTextReviewEventPoint(ReviewDto reviewDto);
     void insertReviewImage(ReviewImageDto reviewImageDto);
+    void insertPhotoReviewEventPoint(ReviewDto reviewDto);
     int isWroteReview(int orderItemCode);
 
     // ====== 베스트 리뷰 관련 메서드들 ======
